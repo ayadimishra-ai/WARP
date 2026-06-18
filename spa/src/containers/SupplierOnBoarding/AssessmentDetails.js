@@ -742,7 +742,7 @@ class AssessmentDetails extends Component {
                       type: "snowkap-isRefreshPage",
                       questionId: params_new,
                     }),
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                 }
               }
@@ -887,7 +887,7 @@ class AssessmentDetails extends Component {
                       type: "warp-decline-re-submit-refresh",
                       response: true,
                     }),
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                   setTimeout(() => {
                     this.setState({ loading: false });
@@ -932,7 +932,7 @@ class AssessmentDetails extends Component {
                       questionId: messageData.data.formDetails.questionId,
                       invitationId: messageData.data.formDetails.invitationId,
                     }),
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                   iframeDeclineAnswer.src = iframeDeclineAnswer.src;
                   // iframeDeclineAnswer.contentWindow.postMessage(
@@ -1001,7 +1001,7 @@ this.setState({ loading: false });
                       questionId: messageData.data.formDetails.questionId,
                       invitationId: messageData.data.formDetails.invitationId,
                     }),
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                   iframeDeclineAnswer.src = iframeDeclineAnswer.src;
 
@@ -1163,7 +1163,7 @@ this.setState({ loading: false });
                     response: true,
                     step: step,
                   }),
-                  "*"
+                  WARP_Link ? new URL(WARP_Link).origin : "*"
                 );
               },
               "I want to review",
@@ -1186,7 +1186,7 @@ this.setState({ loading: false });
                     step: buttonName,
                     nextActivetabId: activeTab,
                   }),
-                  "*"
+                  WARP_Link ? new URL(WARP_Link).origin : "*"
                 );
               },
               "Cancel",
@@ -1200,7 +1200,7 @@ this.setState({ loading: false });
                     step: buttonName,
                     nextActivetabId: activeTab,
                   }),
-                  "*"
+                  WARP_Link ? new URL(WARP_Link).origin : "*"
                 );
               }
             );
@@ -1213,7 +1213,7 @@ this.setState({ loading: false });
                 token: localStorage.getItem("tokenId"),
                 serviceurl: getServiceUrl(),
               }),
-              "*"
+              WARP_Link ? new URL(WARP_Link).origin : "*"
             );
             break;
           case "close-main-loader":
@@ -1246,7 +1246,7 @@ this.setState({ loading: false });
                 formFieldId: this.state.formFieldId,
                 selectedData: messageData.data.selectedData,
               }),
-              "*"
+              WARP_Link ? new URL(WARP_Link).origin : "*"
             );
             break;
           case "suggestionCardText_Popup":
@@ -1305,7 +1305,7 @@ this.setState({ loading: false });
                 JSON.stringify({
                   type: "reCaptchaValidation",
                 }),
-                "*"
+                WARP_Link ? new URL(WARP_Link).origin : "*"
               );
             } else {
               alert("Captcha verification failed. Please try again.");
@@ -1701,7 +1701,7 @@ this.setState({ loading: false });
         selectedData: [],
         isHTMLSuggestion: this.state.isHTMLSuggestion,
       }),
-      "*"
+      WARP_Link ? new URL(WARP_Link).origin : "*"
     );
   };
   handleQuestionWithQueriesClose = () => {
@@ -2624,7 +2624,7 @@ this.setState({ loading: false });
                         {
                           type: "PARENT_CLICK_OUTSIDE",
                         },
-                        "*"
+                        WARP_Link ? new URL(WARP_Link).origin : "*"
                       );
                     }
                   };

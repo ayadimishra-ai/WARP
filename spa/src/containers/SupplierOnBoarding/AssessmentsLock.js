@@ -687,7 +687,9 @@ class AssessmentsLock extends Component {
 
   sendMessage = () => {
     const iframe = document.querySelector("iframe");
-    iframe.contentWindow.postMessage("Hi Son!", process.env.WARP_URL);
+    const warpLink = GetWARPUrl();
+    const warpOrigin = warpLink ? (() => { try { return new URL(warpLink).origin; } catch(e) { return "*"; } })() : "*";
+    iframe.contentWindow.postMessage("Hi Son!", warpOrigin);
   };
 
   handleDrawerClose = () => {

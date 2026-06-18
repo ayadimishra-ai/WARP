@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { decodeOpAccessToken } from "../../utility";
 import { GetGHGEstimationUrl } from "../../config";
+const GHGEstimate_Link = GetGHGEstimationUrl();
 import { popupAlert } from "../../UI/Popups/popup";
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -76,7 +77,7 @@ class SupplierMaterialMapping extends Component {
                           mappingId: this.state.pendingDeleteMappingId,
                         },
                       }),
-                      "*"
+                      GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                     );
                   }
                   this.setState({ pendingDeleteMappingId: null });

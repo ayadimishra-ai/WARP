@@ -14,6 +14,7 @@ import {
   captchaValidation,
 } from "../../google-invisible-recaptcha/RecaptchaProvider";
 let messageData = "";
+const GHGEstimate_Link = GetGHGEstimationUrl();
 
 class UserActivityMapping extends Component {
   static contextType = ReCaptchaContext;
@@ -73,7 +74,7 @@ class UserActivityMapping extends Component {
                 JSON.stringify({
                   type: "refetch-user-activity-mappings",
                 }),
-                "*",
+                GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
               );
               break;
             case "blank-update-data":

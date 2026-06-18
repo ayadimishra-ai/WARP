@@ -130,7 +130,7 @@ class BulkUploadSupplierMaterialMapping extends React.Component {
                       );
                       iFrame.contentWindow.postMessage(
                         JSON.stringify({ type: "bulk-page-refresh" }),
-                        "*"
+                        GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                       );
                     }
                   })

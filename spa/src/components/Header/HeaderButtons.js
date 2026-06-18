@@ -22,6 +22,7 @@ import { showLockUpPopup } from "../../UI/Popups/lockUpPopUp";
 import ManualFormActivityHeaderButton from "./manual-form-activity-header-button";
 import { de } from "date-fns/locale";
 import { refreshIframe } from "../../store/actions/monthlyActivityData";
+const WARP_Link = GetWARPUrl();
 
 const FileSaver = require('file-saver');
 class HeaderButtons extends Component {
@@ -233,7 +234,7 @@ class HeaderButtons extends Component {
                             response: true,
                             invitationId: this.props.match.params.warpInvitationId
                         }), 
-                        "*"
+                        WARP_Link ? new URL(WARP_Link).origin : "*"
                     );
                 }
             },
@@ -385,11 +386,11 @@ class HeaderButtons extends Component {
                                         // Post message to trigger dialog
                                         window.postMessage(JSON.stringify({
                                                 type: "warp-new-invitation-started-Report",
-                                                data: { 
-                                                    isOpenedPopup: true, 
-                                                    formType: formType 
+                                                data: {
+                                                    isOpenedPopup: true,
+                                                    formType: formType
                                                 }
-                                            }), "*");
+                                            }), window.location.origin);
                                         } else {
                                             this.props.isOpen(true);
                                         }
@@ -427,11 +428,11 @@ class HeaderButtons extends Component {
                                         // Post message to trigger dialog
                                         window.postMessage(JSON.stringify({
                                                 type: "warp-new-invitation-started-Report",
-                                                data: { 
-                                                    isOpenedPopup: true, 
-                                                    formType: formType 
+                                                data: {
+                                                    isOpenedPopup: true,
+                                                    formType: formType
                                                 }
-                                            }), "*");
+                                            }), window.location.origin);
                                         } else {
                                             this.props.isOpen(true);
                                         }

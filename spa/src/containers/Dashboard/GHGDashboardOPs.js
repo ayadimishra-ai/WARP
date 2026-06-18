@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import * as PageKeys from "../../pagekeys";
 import { Redirect } from "react-router-dom";
-import { getNextJSServiceUrl, getUserPermision } from "../../config";
+import { getNextJSServiceUrl, getUserPermision, GetGHGEstimationUrl } from "../../config";
 import * as RoleCodes from "../../rolecodes";
 import axios from "axios";
 import { getServiceUrl } from "../../config";
@@ -9,6 +9,7 @@ import Spinner from "../../UI/Spinner/Spinner";
 import { decodeOpAccessToken } from "../../utility";
 
 let messageData = "";
+const GHGEstimate_Link = GetGHGEstimationUrl();
 let ShowOtherCompanyDetails = false;
 class GHGDashboardOPs extends Component {
   constructor(props) {
@@ -51,7 +52,7 @@ class GHGDashboardOPs extends Component {
             type: "getparams",
             params: CurrentparamsRedirect,
           }),
-          "*"
+          GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
         );
       }
     };

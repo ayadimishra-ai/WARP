@@ -508,7 +508,7 @@ class DocumentRepositoryPage extends Component {
                     let sendRemoveData = document.getElementById("listIframe");
                     sendRemoveData.contentWindow.postMessage(
                       { type: "document-repository-expired-documents-popup-closed" },
-                      "*"
+                      WARP_Link ? new URL(WARP_Link).origin : "*"
                     );
                     this.setState({
                       expiredDocumentsDialog: { isOpened: false },
@@ -528,7 +528,7 @@ class DocumentRepositoryPage extends Component {
                   let sendRemoveData = document.getElementById("listIframe");
                   sendRemoveData.contentWindow.postMessage(
                     { type: "document-repository-expired-documents-popup-closed" },
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                   this.setState({
                     expiredDocumentsDialog: { isOpened: false },

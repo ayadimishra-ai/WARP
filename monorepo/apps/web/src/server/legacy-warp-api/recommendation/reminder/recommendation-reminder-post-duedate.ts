@@ -18,7 +18,7 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const response: any = await sendRecommenationReminderPostDueDate(
       req.body.type,
-      sharedKey
+      incomingKey
     );
 
     if (response === undefined) {

@@ -390,7 +390,7 @@ class BulkUploadBtnDownloadTemplateDropdown extends Component {
     if (listIframe1 && listIframe1.contentWindow) {
       listIframe1.contentWindow.postMessage(
         JSON.stringify({ type: "bulk-page-refresh" }),
-        "*"
+        GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
       );
     }
   };
@@ -613,7 +613,7 @@ class BulkUploadBtnDownloadTemplateDropdown extends Component {
                         JSON.stringify({
                           type: "manual-upload",
                         }),
-                        "*"
+                        GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                       );
 
                       iFrame.src = iFrame.src;
@@ -1044,12 +1044,12 @@ class BulkUploadBtnDownloadTemplateDropdown extends Component {
             JSON.stringify({
               type: "ai-upload-pop-up-closed",
             }),
-            "*"
+            GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
           );
           iFrame.contentWindow.postMessage(JSON.stringify({
             type: "ai-upload",
           }),
-            "*"
+            GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
           );
         }
       } else {

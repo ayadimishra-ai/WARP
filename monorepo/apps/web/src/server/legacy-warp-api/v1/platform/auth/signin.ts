@@ -115,10 +115,13 @@ const addOPSToIQCurationFromSubscriptions = async (
 };
 
 const PlatformAuthSigninHandler: NextApiHandler = async (req, res) => {
-  const sharedKey = String(req.headers["x-warp-shared-key"]);
-  const secretKey = String(req.headers["x-warp-shared-secret"]);
+  const sharedKey = req.headers["x-warp-shared-key"];
+  const secretKey = req.headers["x-warp-shared-secret"];
 
-  const validHeaders = sharedKey && secretKey;
+  // Ensure headers are non-empty strings (prevents String(undefined) = "undefined" bypass)
+  const validHeaders =
+    typeof sharedKey === "string" && sharedKey.length > 0 &&
+    typeof secretKey === "string" && secretKey.length > 0;
 
   if (!validHeaders)
     throw CustomError({
@@ -132,8 +135,8 @@ const PlatformAuthSigninHandler: NextApiHandler = async (req, res) => {
   req.body.userEmail = await choosemethod(req.body.userEmail, "encrypt");
   const platformIdAndUserDetails =
     await sdk.getPlatformAndUserDetailsToGenerateToken({
-      sharedKey,
-      secretKey,
+      sharedKey: sharedKey as string,
+      secretKey: secretKey as string,
       ...requestBody,
     });
 

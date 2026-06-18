@@ -244,7 +244,7 @@ class BulkUploadSupplierMasterEnterpriseSetup extends React.Component {
                         JSON.stringify({
                           type: "manual-upload",
                         }),
-                        "*"
+                        GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                       );
 
                       iFrame.src = iFrame.src;

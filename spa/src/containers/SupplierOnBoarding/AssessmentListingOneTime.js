@@ -204,9 +204,10 @@ class Assessments extends Component {
     }
   }
 
-  sendMessage = () => { 
+  sendMessage = () => {
     const iframe = document.querySelector("iframe");
-    iframe.contentWindow.postMessage("Hi Son!", process.env.WARP_URL);
+    const opsOrigin = configOpsURL ? (() => { try { return new URL(configOpsURL()).origin; } catch(e) { return "*"; } })() : "*";
+    iframe.contentWindow.postMessage("Hi Son!", opsOrigin);
   }
 
   handleDrawerClose = () => {

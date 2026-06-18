@@ -118,7 +118,7 @@ class BulkUploadSupplierLocationMaster extends React.Component {
                       const iFrame = document.getElementById("supplierLocationMasterListing");
                       iFrame.contentWindow.postMessage(
                         JSON.stringify({ type: "bulk-page-refresh" }),
-                        "*"
+                        GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                       );
                     }
                   })
