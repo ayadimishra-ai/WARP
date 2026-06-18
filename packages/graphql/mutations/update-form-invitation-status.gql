@@ -1,0 +1,15 @@
+mutation updateFormInvitationStatus(
+  $invitationId: uuid!
+  $invitationStatus: String!
+) {
+  update_FormInvitation(
+    _set: { status: $invitationStatus }
+    where: { id: { _eq: $invitationId } }
+  ) {
+    affected_rows
+    returning {
+      id
+      status
+    }
+  }
+}

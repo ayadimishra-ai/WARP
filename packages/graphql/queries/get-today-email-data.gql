@@ -1,0 +1,23 @@
+query getTodayEmailData(
+  $startDate: timestamptz
+  $endDate: timestamptz
+  $status: String
+  $limit: Int
+) {
+  EmailNotifications(
+    where: {
+      created_at: { _gte: $startDate, _lte: $endDate }
+      status: { _eq: $status }
+    }
+    limit: $limit
+  ) {
+    id
+    emailId
+    subject
+    invitationId
+    mailBody
+    configData
+    ccEmails
+    bccEmailId
+  }
+}

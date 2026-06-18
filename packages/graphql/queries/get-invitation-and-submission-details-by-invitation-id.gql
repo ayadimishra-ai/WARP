@@ -1,0 +1,55 @@
+query getInvitationAndSubmissionDetailsByInvitationId(
+  $invitationId: uuid!
+  $includeAllSections: Boolean!
+) {
+  FormInvitation(
+    where: {
+      _and: [{ id: { _eq: $invitationId } }, { isActive: { _eq: true } }]
+    }
+  ) {
+    id
+    status
+    formId
+    parentcompanyId
+    interimCheck
+    companyId
+    reviewerDetails
+    metadata
+    ParentCompanyMapping {
+      Id
+      UserId
+      ParentUserId
+    }
+    parentCompanyMappingByReviewerparentcompanyid {
+      Id
+      UserId
+      ParentUserId
+    }
+    FormSubmissions(where: { _and: [{ isActive: { _eq: true } }] }) {
+      id
+      status
+    }
+
+    Form {
+      formtype
+      isDelegateQuestion
+      name
+      Sections(order_by: { key: asc }, limit: 1) {
+        Questions(order_by: { key: asc }, limit: 1) {
+          id
+          content
+        }
+      }
+      AllSections: Sections @include(if: $includeAllSections) {
+        Questions {
+          FormFields {
+            id
+            interfaceOptions
+            groupField
+            questionId
+          }
+        }
+      }
+    }
+  }
+}

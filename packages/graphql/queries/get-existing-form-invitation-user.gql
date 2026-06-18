@@ -1,0 +1,48 @@
+query GetExistingFormInvitationByUserAndAddressId(
+  $userId: [uuid!]
+  $addressId: uuid!
+  $companyId: uuid!
+  $formId: uuid!
+  $durationFrom: date!
+  $durationTo: date!
+) {
+  FormInvitation(
+    where: {
+      formId: { _eq: $formId }
+      ParentCompanyMapping: {
+        UserId: { _in: $userId }
+        AddressId: { _eq: $addressId }
+        CompanyId: { _eq: $companyId }
+      }
+      _or: [
+        {
+          _and: [
+            { durationFrom: { _lte: $durationFrom } }
+            { durationTo: { _gte: $durationFrom } }
+          ]
+        }
+        {
+          _and: [
+            { durationFrom: { _gte: $durationFrom } }
+            { durationTo: { _lte: $durationTo } }
+          ]
+        }
+        {
+          _and: [
+            { durationFrom: { _lte: $durationTo } }
+            { durationTo: { _gte: $durationTo } }
+          ]
+        }
+      ]
+    }
+  ) {
+    durationFrom
+    durationTo
+    formId
+    ParentCompanyMapping {
+      AddressId
+      CompanyId
+      ParentCompanyId
+    }
+  }
+}

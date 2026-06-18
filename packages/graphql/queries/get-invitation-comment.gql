@@ -1,0 +1,24 @@
+query getinvitationcomment($where: InvitationComment_bool_exp) {
+  InvitationComment(where: $where) {
+    id
+    content
+    status
+    created_at
+    formFieldId
+    User {
+      id
+      name
+      UserRoles {
+        roleName
+      }
+      Company {
+        id
+        name
+      }
+    }
+    Company {
+      id
+      name
+    }
+  }
+}

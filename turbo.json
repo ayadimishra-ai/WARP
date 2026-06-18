@@ -1,0 +1,44 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "globalEnv": [
+    "NEXTAUTH_URL",
+    "NEXTAUTH_SECRET",
+    "NEXT_PUBLIC_GRAPHQL_API_URL",
+    "HASURA_GRAPHQL_ADMIN_SECRET",
+    "HASURA_GRAPHQL_JWT_SECRET",
+    "NEXT_PUBLIC_API_BASE_URL",
+    "NEXT_PUBLIC_AIAPI_BASE_URL",
+    "Email_From",
+    "EMAIL_SMTP_HOST",
+    "EMAIL_SMTP_PORT",
+    "EMAIL_SMTP_SECURE",
+    "EMAIL_SMTP_USER",
+    "EMAIL_SMTP_PASSWORD",
+    "NODE_ENV",
+    "S3_BUCKET_ACCESS_KEY",
+    "S3_BUCKET",
+    "S3_BUCKET_REGION",
+    "S3_BUCKET_BACKUP",
+    "S3_BUCKET_SECRET_ACCESS_KEY",
+    "NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET",
+    "AI_SERVICES_AUTHORIZATION",
+    "DOCUMENT_EXPIRY_NOTIFICATION_WEBHOOK_SECRET"
+  ],
+  "pipeline": {
+    "dev:directus": { "dependsOn": [], "outputs": [] },
+    "start:docker": { "dependsOn": [], "outputs": [] },
+    "dev:docker": { "dependsOn": [], "outputs": [] },
+    "dev:hasura": { "dependsOn": [], "outputs": [] },
+    "codegen": { "dependsOn": [], "outputs": [] },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "dev": {
+      "cache": false
+    }
+  }
+}

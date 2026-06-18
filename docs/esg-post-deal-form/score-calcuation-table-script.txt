@@ -1,0 +1,61 @@
+--SELECT column_name  FROM information_schema.columns
+-- WHERE table_schema = 'public'
+--   AND table_name   = 'esg_post_deal_form';
+  
+--select * from pg_available_extensions
+--
+--CREATE EXTENSION "uuid-ossp";
+
+create table esg_post_deal_form_score (
+id uuid primary key default uuid_generate_v4(),
+esg_post_deal_form_id uuid not null,
+environment numeric(10,8) not null,
+environment_s1 numeric(10,8) not null,
+environment_s1_q1 numeric(10,8) not null,
+environment_s1_q2 numeric(10,8) not null,
+environment_s1_q3 numeric(10,8) not null,
+environment_s1_q3_1 numeric(10,8) not null,
+environment_s1_q4 numeric(10,8) not null,
+environment_s1_q5 numeric(10,8) not null,
+environment_s1_q6 numeric(10,8) not null,
+environment_s1_q7 numeric(10,8) not null,
+environment_s2 numeric(10,8) not null,
+environment_s2_q1 numeric(10,8) not null,
+environment_s2_q2 numeric(10,8) not null,
+environment_s2_q3 numeric(10,8) not null,
+environment_s2_q4 numeric(10,8) not null,
+environment_s2_q5 numeric(10,8) not null,
+environment_s2_q6 numeric(10,8) not null,
+social numeric(10,8) not null,
+social_s3 numeric(10,8) not null,
+social_s3_q1 numeric(10,8) not null,
+social_s3_q2 numeric(10,8) not null,
+social_s3_q3 numeric(10,8) not null,
+social_s3_q4 numeric(10,8) not null,
+social_s3_q5 numeric(10,8) not null,
+social_s3_q6 numeric(10,8) not null,
+social_s3_q7 numeric(10,8) not null,
+social_s3_q8 numeric(10,8) not null,
+social_s3_q9 numeric(10,8) not null,
+social_s4 numeric(10,8) not null,
+social_s4_q1 numeric(10,8) not null,
+social_s4_q2 numeric(10,8) not null,
+social_s4_q3 numeric(10,8) not null,
+social_s4_q4 numeric(10,8) not null,
+governance numeric(10,8) not null,
+governance_s5 numeric(10,8) not null,
+governance_s5_q1 numeric(10,8) not null,
+governance_s5_q2 numeric(10,8) not null,
+governance_s5_q3 numeric(10,8) not null,
+governance_s5_q4 numeric(10,8) not null,
+governance_s5_q5 numeric(10,8) not null,
+governance_s6 numeric(10,8) not null,
+governance_s6_q1 numeric(10,8) not null,
+governance_s6_q2 numeric(10,8) not null,
+governance_s6_q3 numeric(10,8) not null,
+governance_s6_q4 numeric(10,8) not null,
+governance_s6_q5 numeric(10,8) not null,
+governance_s6_q6 numeric(10,8) not null,
+governance_s6_q7 numeric(10,8) not null,
+total numeric(10,8) not null
+)

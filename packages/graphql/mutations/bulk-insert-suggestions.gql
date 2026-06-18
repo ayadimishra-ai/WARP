@@ -1,0 +1,14 @@
+mutation bulkInsertSuggestions($objects: [Suggestions_insert_input!]!) {
+  insert_Suggestions(objects: $objects) {
+    affected_rows
+    returning {
+      id
+      formFieldId
+      formInvitationId
+      isSelected
+      selectedByUserId
+      suggestion
+      created_at
+    }
+  }
+}

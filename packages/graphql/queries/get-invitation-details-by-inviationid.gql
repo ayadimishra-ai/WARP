@@ -1,0 +1,17 @@
+query getInvitationDetailsByInviationId($invitationId: uuid) {
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    id
+    AssesseeUserMappings {
+      userByUserid {
+        id
+        UserRoles(where: { roleName: { _eq: "Responder" } }) {
+          User {
+            id
+            name
+            email
+          }
+        }
+      }
+    }
+  }
+}

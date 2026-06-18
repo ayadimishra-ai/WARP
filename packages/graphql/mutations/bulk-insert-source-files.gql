@@ -1,0 +1,32 @@
+mutation bulk_insert_sourceFiles($data: [SourceFiles_insert_input!]!) {
+  insert_SourceFiles(
+    objects: $data
+    on_conflict: { constraint: SourceFiles_pkey }
+  ) {
+    returning {
+      id
+      error
+      fileName
+      filePath
+      originalFileName
+      originalFileUrl
+      Sources {
+        FormInvitation {
+          id
+          companyId
+          formId
+          Company {
+            name
+          }
+          FormSubmissions(
+            where: { isActive: { _eq: true } }
+            order_by: { updated_at: desc }
+          ) {
+            id
+          }
+        }
+        id
+      }
+    }
+  }
+}

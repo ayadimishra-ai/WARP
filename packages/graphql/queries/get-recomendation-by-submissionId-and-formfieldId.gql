@@ -1,0 +1,63 @@
+query getRecomendationBySubmissionIdAndFormfieldId(
+  $formfieldid: [uuid!]!
+  $submissionid: uuid
+) {
+  Interim_Answer(
+    where: {
+      submissionId: { _eq: $submissionid }
+      formFieldId: { _in: $formfieldid }
+    }
+  ) {
+    formFieldId
+    Interim_Recommendations(where: { status: { _neq: "Closed" } }) {
+      id
+      answeroption
+      status
+      interim_answer_id
+    }
+    Interim_Answer {
+      formFieldId
+      Interim_Recommendations(where: { status: { _neq: "Closed" } }) {
+        id
+        answeroption
+        status
+        interim_answer_id
+      }
+    }
+  }
+  Answer(
+    where: {
+      submissionId: { _eq: $submissionid }
+      formFieldId: { _in: $formfieldid }
+    }
+  ) {
+    formFieldId
+    Interim_Answers {
+      formFieldId
+      Interim_Recommendations(where: { status: { _neq: "Closed" } }) {
+        id
+        answeroption
+        status
+        interim_answer_id
+      }
+      Interim_Answer {
+        formFieldId
+        Interim_Recommendations(where: { status: { _neq: "Closed" } }) {
+          id
+          answeroption
+          status
+          interim_answer_id
+        }
+      }
+      Interim_Answers {
+        formFieldId
+        Interim_Recommendations(where: { status: { _neq: "Closed" } }) {
+          id
+          answeroption
+          status
+          interim_answer_id
+        }
+      }
+    }
+  }
+}

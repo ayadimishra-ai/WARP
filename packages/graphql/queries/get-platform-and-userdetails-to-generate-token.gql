@@ -1,0 +1,23 @@
+query getPlatformAndUserDetailsToGenerateToken(
+  $sharedKey: uuid!
+  $secretKey: String!
+  $companyId: uuid!
+  $userEmail: String!
+) {
+  Platform(where: { id: { _eq: $sharedKey }, apiKey: { _eq: $secretKey } }) {
+    id
+    Companies(where: { id: { _eq: $companyId } }) {
+      id
+      Users(
+        where: { companyId: { _eq: $companyId }, email: { _eq: $userEmail } }
+      ) {
+        id
+        companyId
+        email
+        UserRoles {
+          roleName
+        }
+      }
+    }
+  }
+}

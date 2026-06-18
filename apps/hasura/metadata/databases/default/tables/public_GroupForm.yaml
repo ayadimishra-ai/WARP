@@ -1,0 +1,10 @@
+table:
+  name: GroupForm
+  schema: public
+object_relationships:
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+  - name: formByGroupformid
+    using:
+      foreign_key_constraint_on: groupFormId

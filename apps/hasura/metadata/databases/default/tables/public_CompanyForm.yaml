@@ -1,0 +1,130 @@
+table:
+  name: CompanyForm
+  schema: public
+object_relationships:
+  - name: Company
+    using:
+      foreign_key_constraint_on: companyId
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+insert_permissions:
+  - role: Creator
+    permission:
+      check: {}
+      columns:
+        - companyId
+        - formId
+        - id
+  - role: Platform
+    permission:
+      check:
+        Company:
+          platformId:
+            _eq: x-hasura-platform-id
+      columns:
+        - companyId
+        - formId
+        - id
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - companyId
+        - formId
+        - id
+      filter:
+        Company:
+          platformId:
+            _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - companyId
+        - formId
+        - id
+      filter:
+        _and:
+          - companyId:
+              _eq: x-hasura-company-id
+          - Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - parentCompanyId:
+                    _eq: x-hasura-company-id
+  - role: Creator
+    permission:
+      columns:
+        - companyId
+        - formId
+        - id
+      filter: {}
+  - role: Invitee
+    permission:
+      columns:
+        - companyId
+        - formId
+        - id
+      filter:
+        _and:
+          - companyId:
+              _eq: x-hasura-company-id
+          - Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - id:
+                    _eq: x-hasura-company-id
+  - role: Inviter
+    permission:
+      columns:
+        - companyId
+        - formId
+        - id
+      filter:
+        _and:
+          - companyId:
+              _eq: x-hasura-company-id
+          - Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - parentCompanyId:
+                    _eq: x-hasura-company-id
+  - role: Platform
+    permission:
+      columns:
+        - companyId
+        - formId
+        - id
+      filter:
+        Company:
+          platformId:
+            _eq: x-hasura-platform-id
+update_permissions:
+  - role: Creator
+    permission:
+      columns:
+        - companyId
+        - formId
+        - id
+      filter: {}
+      check: null
+  - role: Platform
+    permission:
+      columns:
+        - companyId
+        - formId
+        - id
+      filter:
+        Company:
+          platformId:
+            _eq: x-hasura-platform-id
+      check: null

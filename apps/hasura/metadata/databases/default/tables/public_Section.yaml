@@ -1,0 +1,226 @@
+table:
+  name: Section
+  schema: public
+object_relationships:
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+  - name: ParentSection
+    using:
+      foreign_key_constraint_on: sectionId
+array_relationships:
+  - name: ChildSections
+    using:
+      foreign_key_constraint_on:
+        column: sectionId
+        table:
+          name: Section
+          schema: public
+  - name: FormFields
+    using:
+      foreign_key_constraint_on:
+        column: sectionId
+        table:
+          name: FormField
+          schema: public
+  - name: FormResults
+    using:
+      foreign_key_constraint_on:
+        column: sectionId
+        table:
+          name: FormResult
+          schema: public
+  - name: Questions
+    using:
+      foreign_key_constraint_on:
+        column: sectionId
+        table:
+          name: Question
+          schema: public
+computed_fields:
+  - name: json_tags
+    definition:
+      function:
+        name: fn_parse_section_tags_to_jsonb
+        schema: public
+insert_permissions:
+  - role: Creator
+    permission:
+      check:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+      columns:
+        - tags
+        - calc
+        - weightage
+        - content
+        - key
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - sectionId
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - tags
+        - calc
+        - weightage
+        - content
+        - key
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - sectionId
+      computed_fields:
+        - json_tags
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - tags
+        - calc
+        - weightage
+        - content
+        - key
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - sectionId
+      computed_fields:
+        - json_tags
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - parentCompanyId:
+                    _eq: x-hasura-company-id
+  - role: Creator
+    permission:
+      columns:
+        - tags
+        - calc
+        - weightage
+        - content
+        - key
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - sectionId
+      computed_fields:
+        - json_tags
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - tags
+        - calc
+        - weightage
+        - content
+        - key
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - sectionId
+      computed_fields:
+        - json_tags
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - id:
+                    _eq: x-hasura-company-id
+  - role: Inviter
+    permission:
+      columns:
+        - tags
+        - calc
+        - weightage
+        - content
+        - key
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - sectionId
+      computed_fields:
+        - json_tags
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - parentCompanyId:
+                    _eq: x-hasura-company-id
+  - role: Platform
+    permission:
+      columns:
+        - tags
+        - calc
+        - weightage
+        - content
+        - key
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - sectionId
+      computed_fields:
+        - json_tags
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+update_permissions:
+  - role: Creator
+    permission:
+      columns:
+        - calc
+        - content
+        - formId
+        - key
+        - sectionId
+        - tags
+        - updated_at
+        - weightage
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+      check: null

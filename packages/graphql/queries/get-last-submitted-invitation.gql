@@ -1,0 +1,42 @@
+query getLastSubmittedInvitation(
+  $formId: uuid!
+  $companyId: uuid!
+  $currentInvitationId: uuid!
+) {
+  FormSubmission(
+    where: {
+      _and: [
+        { status: { _eq: "Successful" } }
+        { isActive: { _eq: true } }
+        { FormInvitation: { formId: { _eq: $formId } } }
+        { FormInvitation: { companyId: { _eq: $companyId } } }
+        { FormInvitation: { isActive: { _eq: true } } }
+        { invitationId: { _neq: $currentInvitationId } }
+      ]
+    }
+    order_by: { updated_at: desc }
+    limit: 1
+  ) {
+    id
+    invitationId
+    status
+    created_at
+    updated_at
+    FormInvitation {
+      id
+      companyId
+      formId
+      status
+      created_at
+      email
+    }
+    Answers {
+      id
+      questionId
+      formFieldId
+      data
+      status
+      isDeleted
+    }
+  }
+}

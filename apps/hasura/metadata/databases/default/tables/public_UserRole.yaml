@@ -1,0 +1,59 @@
+table:
+  name: UserRole
+  schema: public
+object_relationships:
+  - name: Role
+    using:
+      foreign_key_constraint_on: roleName
+  - name: User
+    using:
+      foreign_key_constraint_on: userId
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - roleName
+        - userId
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id
+  - role: Approver
+    permission:
+      columns:
+        - roleName
+        - userId
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id
+  - role: Creator
+    permission:
+      columns:
+        - roleName
+        - userId
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id
+  - role: Invitee
+    permission:
+      columns:
+        - roleName
+        - userId
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id
+  - role: Inviter
+    permission:
+      columns:
+        - roleName
+        - userId
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id
+  - role: Platform
+    permission:
+      columns:
+        - roleName
+        - userId
+      filter:
+        userId:
+          _eq: X-Hasura-User-Id

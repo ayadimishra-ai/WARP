@@ -1,0 +1,13 @@
+mutation bulkinsertOPSToIQCuration(
+  $opsToIQCurationInsertInput: [OPSToIQCuration_insert_input!]!
+) {
+  insert_OPSToIQCuration(
+    objects: $opsToIQCurationInsertInput
+    on_conflict: { constraint: OPSToIQCuration_pkey }
+  ) {
+    returning {
+      id
+      formInvitationId
+    }
+  }
+}

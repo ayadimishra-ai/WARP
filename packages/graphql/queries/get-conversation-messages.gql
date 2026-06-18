@@ -1,0 +1,43 @@
+query GetConversationMessages(
+  $conversationId: uuid!
+  $limit: Int = 20
+  $cursor: timestamptz
+  $withCursor: Boolean = false
+) {
+  AIMessages(
+    where: {
+      conversationId: { _eq: $conversationId }
+      _and: [{ createdAt: { _lt: $cursor } }]
+    }
+    order_by: [{ createdAt: desc }]
+    limit: $limit
+  ) @include(if: $withCursor) {
+    messageId
+    conversationId
+    role
+    content
+    rephrasedContent
+    sources
+    type
+    createdAt
+    updatedAt
+    metadata
+  }
+
+  AIMessagesAll: AIMessages(
+    where: { conversationId: { _eq: $conversationId } }
+    order_by: [{ createdAt: desc }]
+    limit: $limit
+  ) @skip(if: $withCursor) {
+    messageId
+    conversationId
+    role
+    content
+    rephrasedContent
+    sources
+    type
+    createdAt
+    updatedAt
+    metadata
+  }
+}

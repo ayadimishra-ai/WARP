@@ -1,0 +1,159 @@
+table:
+  name: Platform
+  schema: public
+array_relationships:
+  - name: Companies
+    using:
+      foreign_key_constraint_on:
+        column: platformId
+        table:
+          name: Company
+          schema: public
+  - name: EmailConfigs
+    using:
+      foreign_key_constraint_on:
+        column: platformId
+        table:
+          name: EmailConfiguration
+          schema: public
+  - name: EmailTemplates
+    using:
+      foreign_key_constraint_on:
+        column: platformId
+        table:
+          name: EmailTemplate
+          schema: public
+  - name: GlobalMasters
+    using:
+      foreign_key_constraint_on:
+        column: platformId
+        table:
+          name: GlobalMaster
+          schema: public
+computed_fields:
+  - name: json_origin
+    definition:
+      function:
+        name: fn_parse_platform_origin_to_jsonb
+        schema: public
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - origin
+        - isActive
+        - apiKey
+        - name
+        - created_at
+        - expiry
+        - updated_at
+        - id
+      computed_fields:
+        - json_origin
+      filter:
+        Companies:
+          platformId:
+            _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - origin
+        - isActive
+        - apiKey
+        - name
+        - created_at
+        - expiry
+        - updated_at
+        - id
+      computed_fields:
+        - json_origin
+      filter:
+        Companies:
+          platformId:
+            _eq: x-hasura-platform-id
+  - role: Creator
+    permission:
+      columns:
+        - origin
+        - isActive
+        - apiKey
+        - name
+        - created_at
+        - expiry
+        - updated_at
+        - id
+      computed_fields:
+        - json_origin
+      filter:
+        Companies:
+          platformId:
+            _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - origin
+        - isActive
+        - apiKey
+        - name
+        - created_at
+        - expiry
+        - updated_at
+        - id
+      computed_fields:
+        - json_origin
+      filter:
+        id:
+          _eq: x-hasura-platform-id
+  - role: Inviter
+    permission:
+      columns:
+        - origin
+        - isActive
+        - apiKey
+        - name
+        - created_at
+        - expiry
+        - updated_at
+        - id
+      computed_fields:
+        - json_origin
+      filter:
+        Companies:
+          platformId:
+            _eq: x-hasura-platform-id
+  - role: Platform
+    permission:
+      columns:
+        - origin
+        - isActive
+        - apiKey
+        - name
+        - created_at
+        - expiry
+        - updated_at
+        - id
+      computed_fields:
+        - json_origin
+      filter:
+        Companies:
+          platformId:
+            _eq: x-hasura-platform-id
+      limit: 5
+      allow_aggregations: true
+update_permissions:
+  - role: Platform
+    permission:
+      columns:
+        - origin
+        - isActive
+        - apiKey
+        - name
+        - created_at
+        - expiry
+        - updated_at
+        - id
+      filter:
+        Companies:
+          platformId:
+            _eq: x-hasura-platform-id
+      check: null

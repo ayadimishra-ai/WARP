@@ -1,0 +1,23 @@
+mutation bulkInsertRecommendationComment(
+  $interim_recommendation: [Interim_Recommendation_insert_input!]!
+  $interim_comments: [Interim_Comments_insert_input!]!
+) {
+  insert_Interim_Recommendation(
+    objects: $interim_recommendation
+    on_conflict: { constraint: Interim_Recommendation_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+  insert_Interim_Comments(
+    objects: $interim_comments
+    on_conflict: { constraint: Interim_Comments_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+}

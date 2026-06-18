@@ -1,0 +1,18 @@
+mutation insertIntoSubmissionTable(
+  $FormSubmissionInput: [FormSubmission_insert_input!]!
+) {
+  insert_FormSubmission(
+    objects: $FormSubmissionInput
+    on_conflict: { constraint: FormSubmission_pkey }
+  ) {
+    affected_rows
+    returning {
+      FormInvitation {
+        id
+        interimCheck
+        companyId
+      }
+      id
+    }
+  }
+}

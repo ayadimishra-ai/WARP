@@ -1,0 +1,20 @@
+mutation updateSkipStatusByInvitationId(
+  $status: Boolean
+  $formInvitationId: uuid!
+  $invitationStatus: String!
+) {
+  update_FormInvitation(
+    where: { id: { _eq: $formInvitationId } }
+    _set: { status: $invitationStatus }
+  ) {
+    returning {
+      id
+      status
+    }
+  }
+  insert_FormSubmission_one(
+    object: { invitationId: $formInvitationId, isActive: true }
+  ) {
+    id
+  }
+}

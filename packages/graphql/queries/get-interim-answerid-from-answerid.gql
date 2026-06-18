@@ -1,0 +1,7 @@
+query getInterimAnsweridFromAnswerid($answerId: [uuid!]!) {
+  Interim_Answer(where: { answerId: { _in: $answerId } }) {
+    id
+    answerId
+    interim_answer_id
+  }
+}

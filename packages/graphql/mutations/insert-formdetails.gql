@@ -1,0 +1,22 @@
+mutation InsertFormDetailsOne(
+  $formid: uuid!
+  $framework: String!
+  $focusArea: jsonb!
+  $timeInMinutes: Int!
+  $bodyTemplate: String!
+  $questions: Int!
+) {
+  insert_FormDetails_one(
+    object: {
+      formId: $formid
+      framework: $framework
+      focusArea: $focusArea
+      timeInMinutes: $timeInMinutes
+      bodyTemplate: $bodyTemplate
+      questions: $questions
+    }
+  ) {
+    id
+    formId
+  }
+}

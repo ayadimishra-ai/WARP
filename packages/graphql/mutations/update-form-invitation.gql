@@ -1,0 +1,13 @@
+mutation updateFormInvitation(
+  $invitationId: uuid!
+  $set: FormInvitation_set_input!
+) {
+  update_FormInvitation(_set: $set, where: { id: { _eq: $invitationId } }) {
+    affected_rows
+    returning {
+      id
+      status
+      metadata
+    }
+  }
+}

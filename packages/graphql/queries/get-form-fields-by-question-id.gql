@@ -1,0 +1,20 @@
+query getFormFieldsByQuestionId($questionId: uuid) {
+  FormField(
+    where: { questionId: { _eq: $questionId } }
+    order_by: { field: asc }
+  ) {
+    id
+    field
+    type
+    questionId
+    groupField
+    displayRules
+    fieldOptions
+    interface
+    interfaceOptions
+    display
+    displayOptions
+    validationRules
+    seqIndex
+  }
+}

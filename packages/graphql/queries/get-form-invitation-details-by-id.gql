@@ -1,0 +1,52 @@
+query getFormInvitationDetailsbyId($invitationId: uuid, $sourceType: String!) {
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    status
+    created_by
+    metadata
+    ParentUser {
+      Company {
+        name
+      }
+      UserRoles {
+        roleName
+      }
+    }
+    ParentCompanyMapping {
+      Id
+      ParentCompanyId
+      UserId
+    }
+    id
+    durationTo
+    durationFrom
+    companyId
+    Company {
+      id
+      name
+      IsManufacturing
+      metadata
+    }
+    completion
+    Form {
+      id
+      name
+      title
+      isAIDataPointsAdded
+    }
+    interimCheck
+    formId
+    FormSubmissions(where: { isActive: { _eq: true } }) {
+      id
+    }
+    AIBulkDocumentProcessings {
+      id
+      requestStatus
+    }
+    Sources(where: { type: { _eq: $sourceType } }) {
+      SourceFile {
+        id
+        status
+      }
+    }
+  }
+}

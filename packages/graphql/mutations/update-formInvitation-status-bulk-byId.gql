@@ -1,0 +1,48 @@
+mutation updateFormInvitationStatusBulkbyId(
+  $formInvitationUpdateData: [FormInvitation_updates!]!
+  $webCurationUpdateData: [WebCuration_updates!]!
+  $aiBulkDocumentProcessingUpdateData: [AIBulkDocumentProcessing_updates!]!
+  $opsCurationUpdateData: [OPSToIQCuration_updates!]!
+) {
+  update_FormInvitation_many(updates: $formInvitationUpdateData) {
+    returning {
+      id
+      status
+      formId
+      companyId
+      ParentCompanyMapping {
+        ParentCompanyId
+        companyByParentcompanyid {
+          platformId
+        }
+      }
+      Form {
+        id
+        formtype
+      }
+    }
+  }
+  update_WebCuration_many(updates: $webCurationUpdateData) {
+    returning {
+      id
+      formInvitationId
+      status
+    }
+  }
+  update_AIBulkDocumentProcessing_many(
+    updates: $aiBulkDocumentProcessingUpdateData
+  ) {
+    returning {
+      id
+      formInvitationId
+      requestStatus
+    }
+  }
+  update_OPSToIQCuration_many(updates: $opsCurationUpdateData) {
+    returning {
+      id
+      formInvitationId
+      status
+    }
+  }
+}

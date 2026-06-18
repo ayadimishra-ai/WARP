@@ -1,0 +1,41 @@
+query getAssessmentListingDetails($companyId: uuid!) {
+  GlobalMaster_InternalRequestCompany: GlobalMaster(
+    where: { type: { _eq: "InternalRequestCompany" } }
+  ) {
+    id
+    type
+    data
+  }
+
+  GlobalMaster_InviterFormAutoAppover: GlobalMaster(
+    where: { type: { _eq: "InviterFormAutoAppover" } }
+  ) {
+    id
+    type
+    data
+  }
+
+  Company(where: { id: { _eq: $companyId }, isActive: { _eq: true } }) {
+    id
+    name
+    primaryContact
+    details
+    platformId
+    metadata
+    ParentCompany {
+      id
+      name
+    }
+    ParentCompanyMappings(where: { isActive: { _eq: true } }) {
+      ParentCompanyId
+    }
+    AssessorConsultantMappings {
+      id
+      consultantCompanyId
+      assessorCompanyId
+      Form {
+        id
+      }
+    }
+  }
+}

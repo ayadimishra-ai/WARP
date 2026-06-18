@@ -1,0 +1,8 @@
+mutation updateInterimAnswer($interimAnswerId: uuid!, $answerData: jsonb!) {
+  update_Interim_Answer(
+    where: { id: { _eq: $interimAnswerId } }
+    _set: { data: $answerData }
+  ) {
+    affected_rows
+  }
+}

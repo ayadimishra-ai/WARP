@@ -1,0 +1,35 @@
+mutation insertIntoInterimComments(
+  $interim_recommendation_id: uuid
+  $comments: String
+  $upload_document: String!
+  $filename: String!
+  $userId: uuid
+  $status: String
+  $recommendationId: uuid
+  $isApproved: Boolean
+  $invitationId: uuid
+) {
+  insert_Interim_Comments(
+    on_conflict: { constraint: Interim_Comments_pkey }
+    objects: {
+      comments: $comments
+      filename: $filename
+      upload_document: $upload_document
+      interim_recommendation_id: $interim_recommendation_id
+      created_by: $userId
+      updated_by: $userId
+      invitationId: $invitationId
+    }
+  ) {
+    returning {
+      id
+      comments
+    }
+  }
+  update_Interim_Recommendation(
+    _set: { status: $status, isApproved: $isApproved, updated_at: now }
+    where: { id: { _eq: $recommendationId } }
+  ) {
+    affected_rows
+  }
+}

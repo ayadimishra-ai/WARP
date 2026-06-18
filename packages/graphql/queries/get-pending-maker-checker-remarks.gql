@@ -1,0 +1,23 @@
+query GetPendingMakerCheckerRemarks($where: MakerCheckerRemarks_bool_exp!) {
+  MakerCheckerRemarks(where: $where) {
+    id
+    created_by
+    ReviewerDetailsMapping {
+      questionId
+      FormInvitation {
+        id
+        companyId
+        formId
+        Company {
+          platformId
+        }
+        ParentCompanyMapping {
+          UserId
+        }
+      }
+    }
+    status
+    Ismailsent
+    created_at
+  }
+}

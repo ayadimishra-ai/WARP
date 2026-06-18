@@ -1,0 +1,13 @@
+mutation bulkinsertwebCuration(
+  $webCurationInsertInput: [WebCuration_insert_input!]!
+) {
+  insert_WebCuration(
+    objects: $webCurationInsertInput
+    on_conflict: { constraint: WebCurationLogs_pkey }
+  ) {
+    returning {
+      id
+      formInvitationId
+    }
+  }
+}

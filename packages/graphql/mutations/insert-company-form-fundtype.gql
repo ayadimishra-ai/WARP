@@ -1,0 +1,12 @@
+mutation insertcompanyformfundtype(
+  $object: [CompanyFormFundtype_insert_input!]!
+) {
+  insert_CompanyFormFundtype(
+    objects: $object
+    on_conflict: { constraint: CompanyFormFundtype_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+}

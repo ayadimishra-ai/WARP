@@ -1,0 +1,12 @@
+mutation insert_EmailNotifications(
+  $emailData: [EmailNotifications_insert_input!]!
+) {
+  insert_EmailNotifications(
+    objects: $emailData
+    on_conflict: { constraint: EmailNotifications_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+}

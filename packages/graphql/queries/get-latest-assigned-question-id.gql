@@ -1,0 +1,15 @@
+query getLatestAssignedQuestionId($invitationId: uuid, $userId: uuid) {
+  AssesseeUserMapping(
+    where: {
+      _and: [{ userId: { _eq: $userId } }]
+      InvitationId: { _eq: $invitationId }
+    }
+    limit: 1
+    order_by: { updated_at: desc }
+  ) {
+    id
+    userId
+    questionId
+    InvitationId
+  }
+}

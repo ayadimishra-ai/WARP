@@ -1,0 +1,10 @@
+mutation bulkUpdateInterimRecommendationByInterimAnswerId(
+  $Interim_Recommendation: [Interim_Recommendation_updates!]!
+) {
+  update_Interim_Recommendation_many(updates: $Interim_Recommendation) {
+    returning {
+      id
+      status
+    }
+  }
+}

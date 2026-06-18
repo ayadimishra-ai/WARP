@@ -1,0 +1,56 @@
+query getAnswerByDate($startDate: timestamptz, $endDate: timestamptz) {
+  Answer(where: { created_at: { _gte: $startDate, _lte: $endDate } }) {
+    id
+    questionId
+    submissionId
+    formFieldId
+    created_by
+    FormSubmission {
+      FormInvitation {
+        id
+      }
+    }
+    Question {
+      id
+      key
+      content
+      FormFields {
+        questionId
+        field
+        interfaceOptions
+        groupField
+      }
+    }
+    FormField {
+      id
+      field
+      fieldOptions
+      type
+      subtheme
+      interfaceOptions
+      interface
+      Section {
+        id
+        content
+        ParentSection {
+          id
+          content
+        }
+      }
+      Form {
+        FormFields(
+          where: { interface: { _in: ["group-wizard", "group-detail"] } }
+        ) {
+          interfaceOptions
+          interface
+          questionId
+          groupField
+        }
+      }
+      Question {
+        id
+        content
+      }
+    }
+  }
+}

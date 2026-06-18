@@ -1,0 +1,2 @@
+CREATE TABLE "public"."FormDetails" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "formId" UUID NOT NULL, "framework" Text, "focusArea" jsonb, "timeInMinutes" integer, "bodyTemplate" Text, "notes" jsonb, PRIMARY KEY ("id") , FOREIGN KEY ("formId") REFERENCES "public"."Form"("id") ON UPDATE restrict ON DELETE restrict, UNIQUE ("formId"));COMMENT ON TABLE "public"."FormDetails" IS E'Form details';
+CREATE EXTENSION IF NOT EXISTS pgcrypto;

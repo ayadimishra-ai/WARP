@@ -1,0 +1,14 @@
+query getinvitationstatusandreopenlist($invitationId: uuid!, $type: String) {
+  FormInvitation(where: { _and: [{ id: { _eq: $invitationId } }] }) {
+    id
+    formId
+    status
+    companyByParentcompanyid {
+      id
+    }
+  }
+  GlobalMaster(where: { type: { _eq: $type } }) {
+    data
+    id
+  }
+}

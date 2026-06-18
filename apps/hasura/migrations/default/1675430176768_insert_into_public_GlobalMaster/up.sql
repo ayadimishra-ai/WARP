@@ -1,0 +1,1 @@
+INSERT INTO "public"."GlobalMaster"("id", "platformId", "type", "data") VALUES (E'52863262-ca48-4315-b414-adf31aabb4a0', E'8459adc3-5375-4828-b127-4fc630b16c44', E'SendSuccessEmailOnSubmissionFormList', '[{"formId":"47859d80-4783-49a1-b7b0-a47b67e3bcc7"}]');

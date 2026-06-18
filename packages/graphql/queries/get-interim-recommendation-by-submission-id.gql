@@ -1,0 +1,13 @@
+query getInterimRecommendationBySubmissionId($submissionId: uuid) {
+  Interim_Answer(where: { submissionId: { _eq: $submissionId } }) {
+    id
+    status
+    submissionId
+    Interim_Recommendations {
+      id
+      recommendations
+      status
+      interim_answer_id
+    }
+  }
+}

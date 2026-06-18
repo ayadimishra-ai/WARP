@@ -1,0 +1,50 @@
+mutation UpdateAddress(
+  $id: uuid!
+  $addressLine1: String!
+  $addressLine2: String
+  $addressLine3: String
+  $poBoxNumber: String
+  $city: uuid!
+  $country: uuid!
+  $state: uuid!
+  $zipcode: String
+  $phoneNo: String
+  $landMark: String
+  $isDefault: Boolean
+  $gstNumber: String
+  $companyId: uuid!
+  $ownershipType: String
+  $addresstype: jsonb!
+  $IsActive: Boolean
+  $addressLable: String
+) {
+  update_Addresses(
+    _set: {
+      addressLine1: $addressLine1
+      addressLine2: $addressLine2
+      addressLine3: $addressLine3
+      poBoxNumber: $poBoxNumber
+      city: $city
+      country: $country
+      state: $state
+      zipcode: $zipcode
+      phoneNo: $phoneNo
+      landMark: $landMark
+      isDefault: $isDefault
+      gstNumber: $gstNumber
+      companyId: $companyId
+      ownershipType: $ownershipType
+      addressType: $addresstype
+      IsActive: $IsActive
+      addressLable: $addressLable
+    }
+    where: { id: { _eq: $id } }
+  ) {
+    returning {
+      id
+      addressLine1
+      addressLine2
+      addressLine3
+    }
+  }
+}

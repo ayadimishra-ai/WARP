@@ -1,0 +1,1043 @@
+import {
+  Box,
+  createEmotionCache,
+  Global,
+  MantineProvider,
+} from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
+import { warpContentSize } from "@warp/client/services/platform-window-message.service";
+import { theme } from "@warp/client/themes";
+import { AppPropsType } from "@warp/client/types/page-types";
+import { ClientProvider } from "@warp/graphql/provider";
+import { FC, useEffect, useState } from "react";
+import "react-datepicker/dist/react-datepicker.css";
+import AppPageWrapper from "../components/AppPageWrapper";
+import "../styles/global.css";
+
+function GlobalStyles() {
+  return (
+    <Global
+      styles={(theme) => ({
+        body: {
+          background: "transparent",
+        },
+        "*, *::before, *::after": { boxSizing: "border-box" },
+        ".labelStyle": {
+          fontSize: theme.fontSizes.md + "px !important",
+        },
+        ".mantine-TextInput-error": {
+          fontSize: "12px !important",
+        },
+        ".mantine-Select-error": {
+          fontSize: "12px !important",
+        },
+        ".mantine-Checkbox-error": {
+          fontSize: "12px !important",
+        },
+        ".mantine-Radio-error": {
+          fontSize: "12px !important",
+        },
+        ".mantine-MultiSelect-error": {
+          fontSize: "12px !important",
+        },
+        ".mantine-DatePicker-error": {
+          fontSize: "12px !important",
+        },
+        ".mantine-Autocomplete-error": {
+          fontSize: "12px !important",
+        },
+        ".mantine-Textarea-error": {
+          fontSize: "12px !important",
+        },
+        ".mantine-Switch-error": {
+          fontSize: "12px !important",
+        },
+        ".mantine-Select-dropdown": {
+          zIndex: "999999 !important",
+        },
+        ".mantine-Select-input": {
+          "&:disabled, &[data-disabled]": {
+            backgroundColor: "#E4E9EE !important",
+            color: "#9FA8B0 !important",
+            opacity: 1,
+            cursor: "not-allowed",
+          },
+        },
+        ".mantine-Input-icon": {
+          top: "2.6px" + "!important",
+          fontSize: "12px" + "!important",
+          left: "5px" + "!important",
+          justifyContent: "flex-start !important",
+        },
+        ".mantine-Input-suffix": {
+          top: "2.6px" + "!important",
+          fontSize: "12px" + "!important",
+          color: "#868E96",
+        },
+        ".AssignQuestion-TextInput-input": {
+          border: "none",
+          backgroundColor: "transparent",
+          padding: "0 0 8px 5px" + "!important",
+          fontSize: "12px" + "!important",
+          height: "27px",
+          minHeight: "27px",
+          maxHeight: "27px",
+          "&:focus": {
+            border: "none" + "!important",
+          },
+          "&:focus-within": {
+            border: "none" + "!important",
+          },
+        },
+       
+        ".mantine-MultiSelect-input": {
+          "&:focus": {
+            border: "1px solid #038FC7" + "!important",
+          },
+          "&:focus-within": {
+            border: "1px solid #038FC7" + "!important",
+          },
+        },
+        ".mantine-Textarea-input": {
+          "&:focus": {
+            border: "1px solid #038FC7" + "!important",
+          },
+          "&:focus-within": {
+            border: "1px solid #038FC7" + "!important",
+          },
+        },
+        ".mantine-DatePicker-input": {
+          "&:focus": {
+            border: "1px solid #038FC7" + "!important",
+          },
+          "&:focus-within": {
+            border: "1px solid #038FC7" + "!important",
+          },
+        },
+        // ".mantine-DatePicker-input": {
+        //   "&:focus": {
+        //     border: "1px solid #003b52" + "!important",
+        //   },
+        //   "&:focus-within": {
+        //     border: "1px solid #003b52" + "!important",
+        //   },
+        // },
+        ".searchInput": {
+          //paddingLeft: "24px !important",
+          "&:[placeholder]": {
+            textOverflow: "ellipsis",
+          },
+        },
+        ".TextInput-root": {
+          border: "1px solid #CED4DA",
+          borderRadius: "3px",
+          padding: "6px 12px",
+          lineHeight: "0.5",
+          height: "51px",
+        },
+        ".TextInput-root-orange": {
+          border: "1px solid #038FC7",
+          borderRadius: "3px",
+          padding: "6px 12px",
+          lineHeight: "0.5",
+          height: "51px",
+        },
+        ".TextInput-label": {
+          margin: "7px 0 5px 0" + "!important",
+          color: "#666" + "!important",
+          fontWeight: "400" + "!important",
+          fontSize: "10px" + "!important",
+          paddingLeft: "5px" + "!important",
+        },
+        ".TextInput-input": {
+          border: "none",
+          backgroundColor: "transparent",
+          padding: "0 0 8px 5px" + "!important",
+          fontSize: "12px" + "!important",
+          height: "27px",
+          minHeight: "27px",
+          maxHeight: "27px",
+        },
+        ".DisabledBG": {
+          background: "#E4E9EE",
+          cursor: "not-allowed",
+        },
+        ".TextInput-disabled": {
+          border: "none" + "!important",
+          // backgroundColor: "transparent" + "!important",
+          padding: "0 0 0 5px" + "!important",
+          fontSize: "12px" + "!important",
+          borderRadius: "0",
+          height: "22px",
+          minHeight: "22px",
+          maxHeight: "22px",
+        },
+        ".Select-root": {
+          border: "1px solid #CED4DA",
+          borderRadius: "3px",
+          padding: "6px 12px",
+          lineHeight: "0.5",
+          height: "51px",
+        },
+        ".Select-root-orange": {
+          border: "1px solid #038FC7" + "!important",
+          borderRadius: "3px",
+          padding: "6px 12px",
+          lineHeight: "0.5",
+          height: "51px",
+        },
+        ".Select-label": {
+          margin: "7px 0 5px 0" + "!important",
+          color: "#666" + "!important",
+          fontWeight: "400" + "!important",
+          fontSize: "10px" + "!important",
+          paddingLeft: "5px" + "!important",
+        },
+        ".Select-input": {
+          border: "none",
+          backgroundColor: "transparent",
+          padding: "0 0 8px 5px" + "!important",
+          fontSize: "12px" + "!important",
+          height: "29px",
+          minHeight: "29px",
+          maxHeight: "29px",
+          "&:focus": {
+            border: "none" + "!important",
+          },
+          "&:focus-within": {
+            border: "none" + "!important",
+          },
+        },
+        ".Select-disabled": {
+          border: "none" + "!important",
+          backgroundColor: "transparent" + "!important",
+          fontSize: "12px" + "!important",
+          borderRadius: "0",
+          height: "29px",
+          minHeight: "29px",
+          maxHeight: "29px",
+        },
+        ".Select-rightSection": { color: "#666" },
+        ".react-datepicker__month-text": {
+          fontSize: theme.fontSizes.sm + "px !important",
+          // fontFamily: " Sora",
+          color: "#000",
+          height: "38px",
+          lineHeight: "38px",
+        },
+        ".react-datepicker": {
+          background: " #fff",
+          border: "1px solid #e9ecef",
+          padding: "5px",
+          boxShadow:
+            "0 1px 3px rgb(0 0 0 / 5%), rgb(0 0 0 / 5%) 0px 20px 25px -5px, rgb(0 0 0 / 4%) 0px 10px 10px -5px",
+        },
+        ".react-datepicker__month-text--keyboard-selected": {
+          backgroundColor: "#003b52" + " !important",
+          color: "#fff",
+        },
+        ".react-datepicker__month-text--keyboard-selected:hover": {
+          backgroundColor: "#003b52",
+        },
+        ".react-datepicker__header": {
+          backgroundColor: "#fff",
+          border: "none",
+        },
+        ".react-datepicker__navigation": {
+          top: "10px",
+        },
+        ".react-datepicker__navigation-icon::before": {
+          borderWidth: "2px 2px 0 0",
+          borderColor: "#3b3b3b",
+        },
+        ".mantine-Autocomplete-dropdown": {
+          maxHeight: "300px",
+          overflowY: "scroll",
+        },
+        ".mainCaintainer": {
+          gap: "0" + "!important",
+        },
+        ".breadCrumbsCointainer": {
+          display: "flex",
+          alignItems: "center",
+          minHeight: "48px",
+          borderRadius: "5px",
+          background: " #F2F2F2",
+          marginBottom: "20px",
+          boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.10)",
+          "& p": {
+            margin: "0 20px" + "!important",
+            fontSize: "16px",
+            fontWeight: "600",
+          },
+        },
+        ".questionText": {
+          marginBottom: "10px",
+          "& p": {
+            fontSize: "16px",
+            fontWeight: "600",
+            marginBottom: "0px",
+          },
+        },
+        ".SubQuestionText": {
+          margin: "0 30px",
+          "& p": {
+            fontSize: "16px",
+            fontWeight: "600",
+            marginBottom: "0px",
+          },
+        },
+        ".latestCommentBoxBlue": {
+          marginLeft: "25px",
+          marginBottom: "15px",
+          borderRadius: "5px",
+          background: " #EEFCFA",
+          padding: "10px",
+          width: "max-content",
+          maxWidth: "95%",
+          wordBreak: "break-all",
+          "& p": {
+            marginBottom: "0px",
+            fontSize: " 12px",
+            fontStyle: "normal",
+            fontWeight: "400",
+            lineHeight: "18px",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            "& span": {
+              fontWeight: "600",
+            },
+          },
+        },
+        ".latestCommentBoxGrey": {
+          marginBottom: "10px",
+          marginLeft: "25px",
+          borderRadius: "5px",
+          background: " #F1F1F1",
+          padding: "10px",
+          maxWidth: "95%",
+          "& p": {
+            marginBottom: "0px",
+            fontSize: " 12px",
+            fontStyle: "normal",
+            fontWeight: "400",
+            lineHeight: "18px",
+            "& span": {
+              fontWeight: "600",
+            },
+          },
+        },
+        ".actionButtonsBox": {
+          display: "flex",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          gap: "14px",
+          margin: "0 25px",
+        },
+        ".actionsButtonStyleOrange": {
+          width: "max-content",
+          borderRadius: "20px" + "!important",
+          border: "1px solid #FFA93C",
+          background: "#FFA93C" + "!important",
+          height: "34px" + "!important",
+          padding: "8px 16px",
+          "&:hover": {
+            border: "1px solid #FFA93C",
+          },
+        },
+        ".actionsButtonStyle": {
+          width: "max-content",
+          borderRadius: "20px" + "!important",
+          border: "1px solid #72D0C6",
+          background: "#72D0C6",
+          height: "34px" + "!important",
+          padding: "8px 16px",
+          "& span": {
+            display: "flex",
+            gap: "10px" + "!important",
+            justifyContent: "space-between",
+          },
+          "& p": {
+            margin: "0" + "!important",
+          },
+        },
+        ".commentCount": {
+          // lineHeight: "6px",
+          position: "absolute",
+          right: "-8px",
+          top: "-5px",
+          background: "#FF9907",
+          color: "#fff",
+          fontSize: "8px",
+          fontStyle: "normal",
+          fontWeight: "400",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          // padding: "4px",
+          //aspectRatio: "1 / 1",
+          width: "16px",
+          height: "16px",
+          borderRadius: "50%",
+        },
+        ".disabledQuestion": {
+          background: "#f5f5f5",
+          padding: "10px 25px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "15px",
+          borderRadius: "5px",
+          marginBottom: "20px",
+        },
+        ".disabledQuestion .questionText ": {
+          opacity: "0.5",
+          pointerEvents: "none",
+          userSelect: "none",
+          marginBottom: "0",
+        },
+        ".disabledQuestion .commentBox": {
+          opacity: "0.5",
+          pointerEvents: "none",
+          userSelect: "none",
+          margin: "0",
+        },
+        ".disabledQuestion .latestCommentBoxBlue": {
+          marginLeft: 0,
+          marginBottom: 0,
+          wordBreak: "break-all",
+        },
+        ".actionBoxWarning": {
+          color: "#F00",
+          fontSize: "11px",
+          fontStyle: "normal",
+          fontWeight: "400",
+          lineHeight: "30px,",
+          margin: "0",
+          userSelect: "none",
+        },
+        ".disabledItem": {
+          filter: "opacity(0.5)",
+          pointerEvents: "none",
+          userSelect: "none",
+        },
+        ".questionnaireReportTable": {
+          width: "99.75%",
+          borderRadius: "10px",
+          borderSpacing: "0",
+          boxShadow: "0px 2px 2px 0px rgba(159, 162, 191, 0.32)",
+          border: "1px solid #ededed99",
+          "& thead tr": {
+            height: "43px",
+            background: "#003b52",
+            "& td": {
+              color: "#fff",
+              fontWeight: "600",
+              fontSize: "12px",
+              "& button": {
+                //color: "red",
+              },
+            },
+            "& td:first-of-type": {
+              borderTopLeftRadius: "10px" + "!important",
+              paddingLeft: "18px",
+            },
+            "& td:last-of-type": {
+              borderTopRightRadius: "10px" + "!important",
+            },
+          },
+          "& tbody tr": {
+            height: "43px",
+            "& td:first-of-type": {
+              paddingLeft: "18px",
+              width: "320px",
+            },
+            "& td": {
+              color: "#444444",
+              fontWeight: "400",
+              fontSize: "12px",
+              padding: "10px 0",
+            },
+          },
+          ".statusResponded": {
+            padding: "4px 8px",
+            borderRadius: "20px",
+            background: "#72D0C6",
+            color: "#000",
+            textAlign: "center",
+            fontSize: "12px",
+            fontStyle: "normal",
+            fontWeight: "400",
+            lineHeight: "12px",
+          },
+          ".statusPending": {
+            padding: "4px 8px",
+            borderRadius: "20px",
+            background: "#FFCF92",
+            color: "#000",
+            textAlign: "center",
+            fontSize: "12px",
+            fontStyle: "normal",
+            fontWeight: "400",
+            lineHeight: "12px",
+          },
+        },
+        ".deviationReportTable": {
+          width: "99.75%",
+          borderRadius: "10px",
+          borderSpacing: "0",
+          boxShadow: "0px 2px 2px 0px rgba(159, 162, 191, 0.32)",
+          border: "1px solid #ededed99",
+          "& thead tr": {
+            height: "43px",
+            background: "#F1F3F6",
+            "& td": {
+              color: "#1A1A1A",
+              fontWeight: "600",
+              fontSize: "12px",
+              borderBottom: "none !important",
+            },
+            "& td:first-of-type": {
+              borderTopLeftRadius: "10px" + "!important",
+              // paddingLeft: "18px",
+              width: 500,
+            },
+            "& td:last-of-type": {
+              borderTopRightRadius: "10px" + "!important",
+            },
+          },
+          "& tbody tr": {
+            height: "43px",
+            "& td:first-of-type": {
+              paddingLeft: "10px",
+              width: "320px",
+            },
+            "& td": {
+              color: "#1A1A1A",
+              fontWeight: "600",
+              fontSize: "12px",
+              padding: "10px 0px",
+              borderBottom: "none !important",
+            },
+          },
+          ".statusResponded": {
+            padding: "3px 5px",
+            borderRadius: "3px",
+            background: "#72D0C6",
+            color: "#000",
+            textAlign: "center",
+            fontSize: "12px",
+            fontStyle: "normal",
+            fontWeight: "400",
+            lineHeight: "12px",
+          },
+          ".statusPending": {
+            padding: "3px 5px",
+            borderRadius: "3px",
+            background: "#FFCF92",
+            color: "#000",
+            textAlign: "center",
+            fontSize: "12px",
+            fontStyle: "normal",
+            fontWeight: "400",
+            lineHeight: "12px",
+          },
+        },
+        ".isResponderUserhide h4::nth-of-type(3),.isResponderUserhide ul": {
+          display: "none",
+        },
+        ".sendBtn": {
+          background: "transparent" + "!important",
+          border: "1px solid #ced4da" + "!important",
+          height: "48px" + "!important",
+          borderLeft: 0 + "!important",
+          borderTopLeftRadius: 0 + "!important",
+          borderBottomLeftRadius: 0 + "!important",
+          color: "#000" + "!important",
+          "&:hover": {
+            background: "transparent" + "!important",
+            border: "1px solid #ced4da" + "!important",
+            height: "auto" + "!important",
+            borderLeft: 0 + "!important",
+            borderTopLeftRadius: 0 + "!important",
+            borderBottomLeftRadius: 0 + "!important",
+          },
+        },
+        ".sendIcon": {
+          stroke: "#666" + "!important",
+          "&:hover": {
+            stroke: "#000" + "!important",
+          },
+        },
+        ".chatInput": {
+          "& textarea": {
+            borderRight: "0",
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+            height: 48.5,
+            lineHeight: 1.9,
+            "&:focus": {
+              borderColor: "#ced4da",
+            },
+          },
+        },
+        ".recommendationBox": {
+          borderRadius: "5px",
+          // border: "2px dashed #1C9689",
+          background: "#FFF",
+          boxShadow: " 0px 4px 10px 0px rgba(0, 0, 0, 0.15)",
+          padding: "20px",
+        },
+        ".recommendationTitle": {
+          marginBottom: "5px",
+          "& p": {
+            color: "#000",
+            fontFamily: "Open Sans",
+            fontSize: "14px",
+            fontStyle: "normal",
+            fontWeight: "600",
+            lineHeight: "16px",
+            marginBottom: "0",
+          },
+        },
+        ".recommendationExpectedTime": {
+          marginBottom: "4px",
+          "& p": {
+            color: "#1C9689",
+            // fontFamily: "Sora, sans-serif",
+            fontSize: "12px",
+            fontStyle: "normal",
+            fontWeight: "600",
+            lineHeight: "16px",
+            marginBottom: "0",
+          },
+        },
+        ".recommendationCommentBox": {
+          marginTop: "20px",
+          display: "flex",
+          flexDirection: "column",
+          // gap: 15,
+        },
+        ".recommendationCommentBoxHide": {
+          marginTop: "0px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 0,
+        },
+        ".commentLogContainer": {
+          maxHeight: "40vh",
+          overflow: "hidden",
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 15,
+          paddingRight: "8px",
+        },
+        ".receivedComment": {
+          display: "flex",
+          gap: 5,
+          flexDirection: "column",
+        },
+        ".senderInfo": {
+          display: "flex",
+          gap: 4,
+        },
+        ".senderIcon": {
+          width: 15,
+          height: 15,
+          borderRadius: "5px 5px 5px 0px",
+          background: "#2C9E92",
+        },
+        ".senderName": {
+          color: "#2C9E92",
+          textAlign: "right",
+          // fontFamily: "Sora",
+          fontSize: "11px",
+          fontStyle: "normal",
+          fontWeight: "700",
+          lineHeight: "14px",
+        },
+        ".senderCommentTextBox": {
+          minWidth: "60%",
+          maxWidth: "60%",
+          padding: "10px 20px 10px 10px",
+          borderRadius: "5px 5px 5px 0px",
+          background: " #EEFCFA",
+          color: "#000",
+          fontFamily: "Open Sans",
+          fontSize: "12px",
+          fontStyle: "normal",
+          fontWeight: "600",
+          lineHeight: "18px",
+          "& .uploadedAttachment": {
+            marginTop: 20,
+            display: "flex",
+            gap: 5,
+            "& span": {
+              color: "#666",
+              fontFamily: "Open Sans",
+              fontSize: 12,
+              fontStyle: "normal",
+              fontWeight: 700,
+              lineHeight: "18px",
+            },
+            "& a": {
+              color: "#FF9907",
+              fontFamily: "Open Sans",
+              fontSize: 12,
+              fontStyle: "normal",
+              fontWeight: "700",
+              lineHeight: "18px",
+              maxWidth: "70%",
+              width: "70%",
+              whiteSpace: "nowrap",
+              textOverflow: "clip",
+              overflow: "hidden",
+            },
+          },
+        },
+        ".commentDayDateTime": {
+          fontFamily: "Open Sans",
+          fontSize: 11,
+          fontStyle: "normal",
+          // fontWeight: 400,
+          lineHeight: "normal",
+        },
+        ".selfSentComment": {
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          alignItems: "end",
+          gap: 5,
+        },
+        ".selfSentInfo": {
+          display: "flex",
+          gap: 4,
+        },
+        ".selfUserName": {
+          color: "#FFA93C",
+          textAlign: "right",
+          //fontFamily: "Sora",
+          fontSize: 11,
+          fontStyle: "normal",
+          fontWeight: 700,
+          lineHeight: "14px",
+        },
+        ".selfSentIcon": {
+          width: 15,
+          height: 15,
+          borderRadius: "5px 5px 0px 5px",
+          background: " #FFA93C",
+        },
+        ".selfSentCommentTextBox": {
+          padding: "10px 20px 10px 10px",
+          borderRadius: "5px 5px 0px 5px",
+          background: "#F1F1F1",
+          minWidth: "60%",
+          maxWidth: "60%",
+          color: "#000",
+          fontFamily: "Open Sans",
+          fontSize: 12,
+          fontStyle: "normal",
+          fontWeight: 600,
+          lineHeight: "18px",
+          "& .uploadedAttachment": {
+            marginTop: 20,
+            display: "flex",
+            gap: 5,
+            "& span": {
+              color: "#666",
+              fontFamily: "Open Sans",
+              fontSize: 12,
+              fontStyle: "normal",
+              fontWeight: 700,
+              lineHeight: "18px",
+            },
+            "& a": {
+              color: "#FF9907",
+              fontFamily: "Open Sans",
+              fontSize: 12,
+              fontStyle: "normal",
+              fontWeight: "700",
+              lineHeight: "18px",
+              maxWidth: "70%",
+              width: "70%",
+              whiteSpace: "nowrap",
+              textOverflow: "clip",
+              overflow: "hidden",
+            },
+          },
+        },
+        ".selfSentcommentDayDateTime": {
+          fontFamily: "Open Sans",
+          fontSize: 11,
+          fontStyle: "normal",
+          // fontWeight: 400,
+          lineHeight: "normal",
+        },
+        ".commentInputSend": {
+          height: 48,
+          display: "flex",
+          alignItems: "center",
+          padding: 6,
+          borderRadius: "3px",
+          border: " 1px solid #CED4DA",
+          background: "#FFF",
+          marginTop: 10,
+        },
+        ".commentInputSendOrange": {
+          height: 48,
+          display: "flex",
+          alignItems: "center",
+          padding: 6,
+          borderRadius: "3px",
+          border: " 1px solid #038FC7",
+          background: "#FFF",
+          marginTop: 10,
+        },
+        ".RecommendationCommentInput": {
+          border: "none",
+          "&:focus": {
+            border: "none" + "!important",
+          },
+          "&:focus-within": {
+            border: "none" + "!important",
+          },
+        },
+        ".commentInputUploadSend": {
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 15,
+          height: 67,
+          marginTop: 10,
+        },
+        ".actionButtonsContainer": {
+          display: "flex",
+          gap: 12,
+        },
+        ".input-comment": {
+          height: "48px" + "!important",
+        },
+        ".fileUpload-comment": {
+          height: "48px" + "!important",
+          "&:focus": {
+            border: "1px solid #038FC7" + "!important",
+          },
+          "&:focus-within": {
+            border: "1px solid #038FC7" + "!important",
+          },
+        },
+        ".mantine-TextInput-invalid": {
+          border: "1px solid #FC4E4E" + "!important",
+        },
+        ".mantine-Textarea-invalid": {
+          border: "1px solid #FC4E4E" + "!important",
+        },
+        ".mantine-DatePicker-dropdown-Position": {
+          marginTop: "45px",
+        },
+        ".addRecomm": {
+          "&:hover path": {
+            opacity: "1",
+            stroke: "#162F4B",
+          },
+          "&:hover g": {
+            opacity: "1",
+            stroke: "#162F4B",
+          },
+        },
+        ".mantine-Menu-item": {
+          "&:hover svg path, &:hover svg g": {
+            stroke: "#fff",
+          },
+          ".downloadExcel path": {
+            strokeWidth: 0.1,
+            stroke: "#fff",
+          },
+          "&:hover .downloadExcel path:last-of-type": {
+            strokeWidth: 0,
+            stroke: "#fff",
+          },
+          "&:hover .downloadExcel path:first-of-type": {
+            strokeWidth: 0,
+            stroke: "#fff",
+            fill: "#ffffff",
+          },
+          "&:hover .fillIcon path": {
+            fill: "#ffffff",
+            strokeWidth: 0,
+          },
+        },
+        ".assessment_listing_recommendation_icon": {
+          ".addRecomm": {
+            path: {
+              opacity: "1",
+              stroke: "#454545",
+            },
+            g: {
+              opacity: "1",
+              stroke: "#454545",
+            },
+          },
+        },
+        ".raiseRespondQuery": {
+          "&:hover": {
+            opacity: "1",
+            stroke: "#162F4B",
+          },
+        },
+        ".noteInfoStrip": {
+          padding: "8px 10px",
+          borderRadius: 5,
+          background: " #FFE1D3",
+          color: "#444",
+          // fontFamily: "Open Sans",
+          fontSize: 12,
+          fontStyle: "normal",
+          fontWeight: 400,
+          lineHeight: "16px",
+          marginTop: "15px",
+          marginBottom: 0,
+        },
+        ".noteInfoStripListing": {
+          padding: "8px 10px",
+          borderRadius: 5,
+          background: " #FFE1D3",
+          color: "#444",
+          // fontFamily: "Open Sans",
+          fontSize: 12,
+          fontStyle: "normal",
+          fontWeight: 400,
+          lineHeight: "16px",
+          marginBottom: 9,
+        },
+        ".searchInput::placeholder": {
+          color: "#5e5e5e" + "!important",
+        },
+        ".tableTextAreaStyles": {
+          minHeight: "36px" + " !important",
+          maxHeight: "600px" + " !important",
+          height: "100%" + " !important",
+          // margin: 12,
+          paddingTop: "5px" + " !important",
+          paddingBottom: "5px" + " !important",
+          paddingRight: "30px" + " !important",
+          paddingLeft: "5px" + " !important",
+        },
+        ".deviationValue": {
+          textAlign: "center",
+          margin: "0 auto",
+          padding: "3px 5px",
+          borderRadius: "3px",
+          width: "max-content",
+
+          //float: "right",
+        },
+        ".tableHeadingContent": {
+          position: "relative",
+          width: "max-content",
+          gap: "0",
+        },
+        ".spinner_parent": {
+          width: "100%",
+          background: "#fff",
+          opacity: 0.75,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 999999,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        ".spinner": {
+          width: "40px",
+          height: "40px",
+          position: "relative",
+        },
+        ".double-bounce1,\n.double-bounce2": {
+          width: "100%",
+          height: "100%",
+          borderRadius: "50%",
+          backgroundColor: "#72d0c6",
+          opacity: 0.6,
+          position: "absolute",
+          top: "0",
+          left: "0",
+          WebkitAnimation: "sk-bounce 2s infinite ease-in-out",
+          animation: "sk-bounce 2s infinite ease-in-out",
+        },
+        ".double-bounce2": {
+          WebkitAnimationDelay: "-1s",
+          animationDelay: "-1s",
+        },
+        "@-webkit-keyframes sk-bounce": {
+          "0%, 100%": { WebkitTransform: "scale(0)" },
+          "50%": { WebkitTransform: "scale(1)" },
+        },
+        "@keyframes sk-bounce": {
+          "0%, 100%": { transform: "scale(0)", WebkitTransform: "scale(0)" },
+          "50%": { transform: "scale(1)", WebkitTransform: "scale(1)" },
+        },
+        ".mantine-Pagination-item": {
+          transform: "none !important",
+        },
+        ".mantine-ScrollArea-Classes-scrollbar.mantine-ScrollArea-Classes-scrollbar": {
+          position: "static !important" as any,
+        },
+      })}
+    />
+  );
+}
+
+const myCache = createEmotionCache({ key: "mantine" });
+
+type PageTitlePropsType = { title?: string };
+
+const PageTitle: FC<PageTitlePropsType> = ({ title }) => {
+  const [pageTitle, setPageTitle] = useState("WARP");
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !title) setPageTitle("WARP");
+    else if (!!title) setPageTitle(`WARP - ${title}`);
+  }, [title]);
+
+  return <title>{pageTitle}</title>;
+};
+
+const postParentMessage = (message: string) =>
+  window.parent?.postMessage(message, "*");
+
+export default function App({ Component, pageProps }: AppPropsType) {
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver((e) => {
+      postParentMessage(warpContentSize(e[0].contentRect.height));
+    });
+    resizeObserver.observe(document.body);
+    return () => {
+      resizeObserver.unobserve(document.body);
+    };
+  }, []);
+
+  return (
+    <Box>
+      <PageTitle title={Component.title} />
+      <ClientProvider>
+        <MantineProvider
+          emotionCache={myCache}
+          withGlobalStyles
+          withNormalizeCSS
+          theme={theme}
+        >
+          {/* <CustomFonts /> */}
+          <GlobalStyles />
+          <NotificationsProvider position="top-right" zIndex={2077}>
+            <AppPageWrapper Component={Component} pageProps={pageProps} />
+          </NotificationsProvider>
+        </MantineProvider>
+      </ClientProvider>
+    </Box>
+  );
+}

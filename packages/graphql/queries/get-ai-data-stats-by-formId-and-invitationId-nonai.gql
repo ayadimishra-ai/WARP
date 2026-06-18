@@ -1,0 +1,19 @@
+query getAIDataStatsByFormIdAndInviationIdNonAi(
+  $formId: uuid!
+  $inputFields: [String!]!
+) {
+  FormField(
+    where: {
+      type: { _in: $inputFields }
+      questionId: { _is_null: false }
+      formId: { _eq: $formId }
+    }
+  ) {
+    id
+    fieldOptions
+    dataPoint
+    Form {
+      isAIDataPointsAdded
+    }
+  }
+}

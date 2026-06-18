@@ -1,0 +1,6 @@
+query formWithDataPoints {
+  Form(where: { isAIDataPointsAdded: { _eq: true } }) {
+    id
+    isAIDataPointsAdded
+  }
+}

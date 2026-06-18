@@ -1,0 +1,18 @@
+query getPostSubmissionRequiredDetails($formSubmissionId: uuid!) {
+  FormSubmission(where: { id: { _eq: $formSubmissionId } }) {
+    FormInvitation {
+      companyId
+      reviewerParentCompanyId
+      Form {
+        id
+      }
+      Company {
+        parentCompanyId
+        metadata
+      }
+    }
+  }
+  Platform {
+    id
+  }
+}

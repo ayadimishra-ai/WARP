@@ -1,0 +1,246 @@
+table:
+  name: FormField
+  schema: public
+object_relationships:
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+  - name: Question
+    using:
+      foreign_key_constraint_on: questionId
+  - name: Section
+    using:
+      foreign_key_constraint_on: sectionId
+array_relationships:
+  - name: Answers
+    using:
+      foreign_key_constraint_on:
+        column: formFieldId
+        table:
+          name: Answer
+          schema: public
+insert_permissions:
+  - role: Creator
+    permission:
+      check:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+      columns:
+        - seqIndex
+        - display
+        - displayOptions
+        - displayRules
+        - fieldOptions
+        - interfaceOptions
+        - validationRules
+        - field
+        - groupField
+        - interface
+        - type
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - questionId
+        - sectionId
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - seqIndex
+        - display
+        - displayOptions
+        - displayRules
+        - fieldOptions
+        - interfaceOptions
+        - validationRules
+        - field
+        - groupField
+        - interface
+        - type
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - questionId
+        - sectionId
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - seqIndex
+        - display
+        - displayOptions
+        - displayRules
+        - fieldOptions
+        - interfaceOptions
+        - validationRules
+        - field
+        - groupField
+        - interface
+        - type
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - questionId
+        - sectionId
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - parentCompanyId:
+                    _eq: x-hasura-company-id
+  - role: Creator
+    permission:
+      columns:
+        - seqIndex
+        - display
+        - displayOptions
+        - displayRules
+        - fieldOptions
+        - interfaceOptions
+        - validationRules
+        - field
+        - groupField
+        - interface
+        - type
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - questionId
+        - sectionId
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - seqIndex
+        - display
+        - displayOptions
+        - displayRules
+        - fieldOptions
+        - interfaceOptions
+        - validationRules
+        - field
+        - groupField
+        - interface
+        - type
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - questionId
+        - sectionId
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - id:
+                    _eq: x-hasura-company-id
+  - role: Inviter
+    permission:
+      columns:
+        - seqIndex
+        - display
+        - displayOptions
+        - displayRules
+        - fieldOptions
+        - interfaceOptions
+        - validationRules
+        - field
+        - groupField
+        - interface
+        - type
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - questionId
+        - sectionId
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - parentCompanyId:
+                    _eq: x-hasura-company-id
+  - role: Platform
+    permission:
+      columns:
+        - seqIndex
+        - display
+        - displayOptions
+        - displayRules
+        - fieldOptions
+        - interfaceOptions
+        - validationRules
+        - field
+        - groupField
+        - interface
+        - type
+        - created_at
+        - updated_at
+        - formId
+        - id
+        - questionId
+        - sectionId
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+update_permissions:
+  - role: Creator
+    permission:
+      columns:
+        - display
+        - displayOptions
+        - displayRules
+        - field
+        - fieldOptions
+        - formId
+        - groupField
+        - interface
+        - interfaceOptions
+        - questionId
+        - sectionId
+        - seqIndex
+        - type
+        - updated_at
+        - validationRules
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+      check: null

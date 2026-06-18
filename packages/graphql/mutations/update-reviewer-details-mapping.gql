@@ -1,0 +1,15 @@
+mutation UpdateReviewerDetailsMapping(
+  $id: uuid!
+  $currentStatus: String!
+  $updatedBy: uuid!
+) {
+  update_ReviewerDetailsMapping_by_pk(
+    pk_columns: { id: $id }
+    _set: { currentStatus: $currentStatus, updated_by: $updatedBy }
+  ) {
+    id
+    currentStatus
+    questionId
+    FormInvitationId
+  }
+}

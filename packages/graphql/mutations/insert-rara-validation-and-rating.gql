@@ -1,0 +1,7 @@
+mutation insertRaraValidationAndRating(
+  $object: [RaraValidationAndRating_insert_input!]!
+) {
+  insert_RaraValidationAndRating(objects: $object) {
+    affected_rows
+  }
+}

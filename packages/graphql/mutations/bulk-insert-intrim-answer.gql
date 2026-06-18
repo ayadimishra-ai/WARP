@@ -1,0 +1,19 @@
+mutation bulkInsertInterimAnswer(
+  $interinm_input: [Interim_Answer_insert_input!]!
+) {
+  insert_Interim_Answer(
+    objects: $interinm_input
+    on_conflict: {
+      constraint: Interim_Answer_formFieldId_submissionId_questionId_key
+      update_columns: [data, updated_by, isDeleted]
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      formFieldId
+      questionId
+      data
+    }
+  }
+}

@@ -1,0 +1,46 @@
+mutation insertAddress(
+  $addressLine1: String!
+  $addressLine2: String
+  $addressLine3: String
+  $poBoxNumber: String
+  $city: uuid!
+  $country: uuid!
+  $state: uuid!
+  $zipcode: String
+  $phoneNo: String
+  $landMark: String
+  $isDefault: Boolean
+  $gstNumber: String
+  $companyId: uuid!
+  $ownershipType: String
+  $addresstype: jsonb!
+  $addressLable: String
+) {
+  insert_Addresses(
+    objects: {
+      addressLine1: $addressLine1
+      addressLine2: $addressLine2
+      addressLine3: $addressLine3
+      poBoxNumber: $poBoxNumber
+      city: $city
+      country: $country
+      isDefault: $isDefault
+      landMark: $landMark
+      companyId: $companyId
+      state: $state
+      zipcode: $zipcode
+      phoneNo: $phoneNo
+      gstNumber: $gstNumber
+      ownershipType: $ownershipType
+      addressType: $addresstype
+      addressLable: $addressLable
+    }
+  ) {
+    returning {
+      id
+      addressLine1
+      addressLine2
+      addressLine3
+    }
+  }
+}

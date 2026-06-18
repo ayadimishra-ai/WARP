@@ -1,0 +1,24 @@
+mutation bulkUpdateSourceAndSources($SourceFiles: [SourceFiles_updates!]!, $Sources: [Sources_updates!]!) {
+  update_SourceFiles_many(updates: $SourceFiles) {
+    returning {
+      id
+      status
+      originalFileUrl
+      fileName
+      originalFileName
+       Sources {
+        FormInvitation {
+          id
+          companyId
+          formId
+        }
+        id
+      }
+    }
+  }
+   update_Sources_many(updates: $Sources) {
+    returning {
+      id
+    }
+  }
+}

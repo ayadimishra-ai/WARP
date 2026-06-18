@@ -1,0 +1,22 @@
+query getFormFormDetailsCompanyList {
+  Form {
+    id
+    name
+    title
+    description
+  }
+  FormDetails {
+    id
+    formId
+    focusArea
+    timeInMinutes
+  }
+  Company(where: { isActive: { _eq: true } }) {
+    id
+    name
+    country
+    primaryContact
+    details
+    isActive
+  }
+}

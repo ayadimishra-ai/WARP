@@ -1,0 +1,10 @@
+mutation insertInterimFormLogs($input: [InterimFormLogs_insert_input!]!) {
+  insert_InterimFormLogs(objects: $input) {
+    returning {
+      id
+      questionId
+      score
+      status
+    }
+  }
+}

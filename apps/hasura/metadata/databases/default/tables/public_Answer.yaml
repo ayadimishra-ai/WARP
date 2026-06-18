@@ -1,0 +1,246 @@
+table:
+  name: Answer
+  schema: public
+object_relationships:
+  - name: FormField
+    using:
+      foreign_key_constraint_on: formFieldId
+  - name: FormSubmission
+    using:
+      foreign_key_constraint_on: submissionId
+  - name: Question
+    using:
+      foreign_key_constraint_on: questionId
+array_relationships:
+  - name: AnswerFiles
+    using:
+      foreign_key_constraint_on:
+        column: answerId
+        table:
+          name: AnswerFile
+          schema: public
+insert_permissions:
+  - role: Approver
+    permission:
+      check:
+        FormSubmission:
+          _and:
+            - isActive:
+                _eq: true
+            - FormInvitation:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - Company:
+                      _and:
+                        - isActive:
+                            _eq: true
+                        - platformId:
+                            _eq: x-hasura-platform-id
+                        - parentCompanyId:
+                            _eq: x-hasura-company-id
+      columns:
+        - data
+        - status
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - questionId
+        - submissionId
+        - updated_by
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - data
+        - status
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - questionId
+        - submissionId
+        - updated_by
+      filter:
+        Question:
+          Section:
+            Form:
+              CompanyForms:
+                Company:
+                  platformId:
+                    _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - data
+        - status
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - questionId
+        - submissionId
+        - updated_by
+      filter:
+        FormSubmission:
+          _and:
+            - isActive:
+                _eq: true
+            - FormInvitation:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - Company:
+                      _and:
+                        - isActive:
+                            _eq: true
+                        - platformId:
+                            _eq: x-hasura-platform-id
+                        - parentCompanyId:
+                            _eq: x-hasura-company-id
+  - role: Creator
+    permission:
+      columns:
+        - data
+        - status
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - questionId
+        - submissionId
+        - updated_by
+      filter: {}
+  - role: Invitee
+    permission:
+      columns:
+        - data
+        - status
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - questionId
+        - submissionId
+        - updated_by
+      filter:
+        FormSubmission:
+          _and:
+            - isActive:
+                _eq: true
+            - FormInvitation:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - Company:
+                      _and:
+                        - isActive:
+                            _eq: true
+                        - platformId:
+                            _eq: x-hasura-platform-id
+                        - id:
+                            _eq: x-hasura-company-id
+  - role: Inviter
+    permission:
+      columns:
+        - created_at
+        - created_by
+        - data
+        - formFieldId
+        - id
+        - questionId
+        - status
+        - submissionId
+        - updated_at
+        - updated_by
+      filter:
+        FormSubmission:
+          _and:
+            - isActive:
+                _eq: true
+            - FormInvitation:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - Company:
+                      _and:
+                        - isActive:
+                            _eq: true
+                        - platformId:
+                            _eq: x-hasura-platform-id
+                        - parentCompanyId:
+                            _eq: x-hasura-company-id
+  - role: Platform
+    permission:
+      columns:
+        - data
+        - status
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - questionId
+        - submissionId
+        - updated_by
+      filter:
+        Question:
+          Section:
+            Form:
+              CompanyForms:
+                Company:
+                  platformId:
+                    _eq: x-hasura-platform-id
+update_permissions:
+  - role: Approver
+    permission:
+      columns:
+        - data
+        - status
+        - updated_at
+        - updated_by
+      filter:
+        FormSubmission:
+          _and:
+            - isActive:
+                _eq: true
+            - FormInvitation:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - Company:
+                      _and:
+                        - isActive:
+                            _eq: true
+                        - platformId:
+                            _eq: x-hasura-platform-id
+                        - parentCompanyId:
+                            _eq: x-hasura-company-id
+      check: null
+  - role: Invitee
+    permission:
+      columns:
+        - data
+        - status
+        - updated_at
+        - updated_by
+      filter:
+        FormSubmission:
+          _and:
+            - isActive:
+                _eq: true
+            - FormInvitation:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - Company:
+                      _and:
+                        - isActive:
+                            _eq: true
+                        - platformId:
+                            _eq: x-hasura-platform-id
+                        - id:
+                            _eq: x-hasura-company-id
+      check: null
+      set:
+        updated_by: x-hasura-User-Id

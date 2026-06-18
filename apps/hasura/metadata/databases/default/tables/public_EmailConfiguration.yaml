@@ -1,0 +1,7 @@
+table:
+  name: EmailConfiguration
+  schema: public
+object_relationships:
+  - name: Platform
+    using:
+      foreign_key_constraint_on: platformId

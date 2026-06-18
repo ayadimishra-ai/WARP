@@ -1,0 +1,1 @@
+CREATE TABLE "public"."UserRole" ("userId" uuid NOT NULL, "Role" text NOT NULL, PRIMARY KEY ("userId","Role") , FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON UPDATE restrict ON DELETE restrict, FOREIGN KEY ("Role") REFERENCES "public"."Role"("name") ON UPDATE restrict ON DELETE restrict);COMMENT ON TABLE "public"."UserRole" IS E'User Role relational table';

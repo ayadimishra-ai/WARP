@@ -1,0 +1,30 @@
+mutation bulk_update_document_logFiles(
+  $deletes: [DocumentLogs_updates!]!
+  $updates: [DocumentLogs_updates!]!
+) {
+  # First, perform any delete/update-to-Deleted operations (if provided)
+  delete_result: update_DocumentLogs_many(updates: $deletes) {
+    affected_rows
+    returning {
+      id
+      status
+      error
+      fileName
+      fileUrl
+      originalFileName
+    }
+  }
+
+  # Then update the newly uploaded/inserted DocumentLogs row to Uploaded (or Error)
+  update_result: update_DocumentLogs_many(updates: $updates) {
+    affected_rows
+    returning {
+      id
+      status
+      error
+      fileName
+      fileUrl
+      originalFileName
+    }
+  }
+}

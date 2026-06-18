@@ -1,0 +1,101 @@
+query getScoreCalculationDetails(
+  $invitationId: uuid!
+  $submissionId: uuid!
+  $formId: uuid!
+) {
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    companyId
+    created_by
+    interimCheck
+  }
+  Form(where: { id: { _eq: $formId } }) {
+    id
+    calc
+    Sections {
+      id
+      key
+      calc
+      ChildSections {
+        id
+        key
+        calc
+      }
+      Questions {
+        id
+        key
+        calc
+        FormFields {
+          id
+          field
+          interface
+          recommendationCalc
+          displayRules
+        }
+        Answers(
+          where: {
+            submissionId: { _eq: $submissionId }
+            isDeleted: { _eq: false }
+          }
+        ) {
+          id
+          data
+          status
+          created_by
+          updated_by
+          FormField {
+            id
+            field
+          }
+          Interim_Answers {
+            id
+            answerId
+            interim_answer_id
+            Interim_Recommendations {
+              status
+              answeroption
+            }
+          }
+        }
+        Interim_Answers(
+          where: {
+            submissionId: { _eq: $submissionId }
+            isDeleted: { _eq: false }
+          }
+        ) {
+          id
+          data
+          status
+          created_by
+          updated_by
+          FormField {
+            id
+            field
+          }
+        }
+      }
+      sectionId
+    }
+  }
+  GlobalMaster(where: { type: { _eq: "OnFormScoreCalculationTrigger" } }) {
+    id
+    platformId
+    data
+    type
+  }
+  reopenlist_FormInvitation: FormInvitation(
+    where: { _and: [{ id: { _eq: $invitationId } }] }
+  ) {
+    id
+    formId
+    status
+    companyByParentcompanyid {
+      id
+    }
+  }
+  reopenlist_GlobalMaster: GlobalMaster(
+    where: { type: { _eq: "Recommendation_new" } }
+  ) {
+    id
+    data
+  }
+}

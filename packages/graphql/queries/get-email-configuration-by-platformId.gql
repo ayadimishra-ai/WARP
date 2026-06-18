@@ -1,0 +1,10 @@
+query GetEmailConfigurationByplatformId($platformId: uuid) {
+  EmailConfiguration(where: { platformId: { _eq: $platformId } }) {
+    fromEmail
+    host
+    port
+    isSecure
+    user
+    password
+  }
+}

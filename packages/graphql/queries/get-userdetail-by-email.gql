@@ -1,0 +1,17 @@
+query getUserDetailByEmail($newEmail: [String!]) {
+  User(where: { email: { _in: $newEmail } }) {
+    email
+    id
+    name
+    companyId
+    AddressMappings {
+      AddressId
+      id
+    }
+  }
+  Company(where: { primaryContact: { _contains: { email: $newEmail } } }) {
+    id
+    name
+    primaryContact
+  }
+}

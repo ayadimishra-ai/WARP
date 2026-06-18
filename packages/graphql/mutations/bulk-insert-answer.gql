@@ -1,0 +1,13 @@
+mutation bulkInsertAnswer($answerData: [Answer_insert_input!]!) {
+  insert_Answer(
+    objects: $answerData
+    on_conflict: { constraint: Answer_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+      submissionId
+      formFieldId
+    }
+  }
+}

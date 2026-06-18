@@ -1,0 +1,54 @@
+query getFormFieldsAndAnswerDataByInvitationId($invitationId: uuid!) {
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    Form {
+      FormFields(order_by: { field: asc }) {
+        id
+        field
+        type
+        Section {
+          id
+          key
+          content
+          parentSectionId: sectionId
+          ParentSection {
+            id
+            key
+            content
+          }
+        }
+        Question {
+          id
+          key
+          parentQuestionId
+        }
+        fieldOptions
+        interface
+        interfaceOptions
+        display
+        displayRules
+        groupField
+        subtheme
+        formId
+        InvitationComments_aggregate(
+          where: { invitationId: { _eq: $invitationId } }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    }
+    FormSubmissions(where: { _and: [{ isActive: { _eq: true } }] }) {
+      id
+      Answers {
+        id
+        questionId
+        formFieldId
+        data
+        status
+        updated_at
+        created_at
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+mutation bulkDeleteSourceFilesFromId($id: [uuid!]!) {
+  # delete_SuggestionSourceMapping(
+  #   where: { Source: { SourceFile: { id: { _in: $id } } } }
+  # ) {
+  #   returning {
+  #     id
+  #   }
+  # }
+  delete_Sources(where: { sourceFilesId: { _in: $id } }) {
+    returning {
+      id
+    }
+  }
+  delete_SourceFiles(where: { id: { _in: $id } }) {
+    returning {
+      id
+    }
+  }
+}

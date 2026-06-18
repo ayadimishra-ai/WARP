@@ -1,0 +1,16 @@
+{
+  "name": "@warp/hasura",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start:docker": "docker-compose up -d",
+    "stop:docker": "docker-compose stop",
+    "console": "hasura console --console-port 5000 --api-port 5001",
+    "dev": "yarn console",
+    "hasura:apply:meta": "hasura metadata apply",
+    "hasura:apply:mig": "hasura migrate apply",
+    "hasura:apply:all": "yarn hasura:apply:meta && yarn hasura:apply:meta"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

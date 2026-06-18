@@ -1,0 +1,259 @@
+table:
+  name: FormSubmission
+  schema: public
+object_relationships:
+  - name: ApproverUser
+    using:
+      foreign_key_constraint_on: approvedBy
+  - name: FormInvitation
+    using:
+      foreign_key_constraint_on: invitationId
+  - name: userBySubmittedby
+    using:
+      foreign_key_constraint_on: submittedBy
+array_relationships:
+  - name: Answers
+    using:
+      foreign_key_constraint_on:
+        column: submissionId
+        table:
+          name: Answer
+          schema: public
+  - name: FormResults
+    using:
+      foreign_key_constraint_on:
+        column: submissionId
+        table:
+          name: FormResult
+          schema: public
+insert_permissions:
+  - role: Approver
+    permission:
+      check:
+        _and:
+          - isActive:
+              _eq: true
+          - FormInvitation:
+              _and:
+                - isActive:
+                    _eq: true
+                - Company:
+                    _and:
+                      - isActive:
+                          _eq: true
+                      - platformId:
+                          _eq: x-hasura-platform-id
+                      - parentCompanyId:
+                          _eq: x-hasura-company-id
+      columns:
+        - isActive
+        - remarks
+        - created_at
+        - updated_at
+        - approvedBy
+        - id
+        - invitationId
+        - submittedBy
+  - role: Invitee
+    permission:
+      check:
+        _and:
+          - isActive:
+              _eq: true
+          - FormInvitation:
+              Company:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - platformId:
+                      _eq: x-hasura-platform-id
+                  - id:
+                      _eq: x-hasura-company-id
+      columns:
+        - isActive
+        - remarks
+        - created_at
+        - updated_at
+        - approvedBy
+        - id
+        - invitationId
+        - submittedBy
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - isActive
+        - remarks
+        - created_at
+        - updated_at
+        - approvedBy
+        - id
+        - invitationId
+        - submittedBy
+      filter:
+        ApproverUser:
+          Company:
+            platformId:
+              _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - isActive
+        - remarks
+        - created_at
+        - updated_at
+        - approvedBy
+        - id
+        - invitationId
+        - submittedBy
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - FormInvitation:
+              _and:
+                - isActive:
+                    _eq: true
+                - Company:
+                    _and:
+                      - isActive:
+                          _eq: true
+                      - platformId:
+                          _eq: x-hasura-platform-id
+                      - parentCompanyId:
+                          _eq: x-hasura-company-id
+  - role: Creator
+    permission:
+      columns:
+        - isActive
+        - remarks
+        - created_at
+        - updated_at
+        - approvedBy
+        - id
+        - invitationId
+        - submittedBy
+      filter:
+        ApproverUser:
+          Company:
+            platformId:
+              _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - isActive
+        - remarks
+        - created_at
+        - updated_at
+        - approvedBy
+        - id
+        - invitationId
+        - submittedBy
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - FormInvitation:
+              Company:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - platformId:
+                      _eq: x-hasura-platform-id
+                  - id:
+                      _eq: x-hasura-company-id
+  - role: Inviter
+    permission:
+      columns:
+        - isActive
+        - remarks
+        - created_at
+        - updated_at
+        - approvedBy
+        - id
+        - invitationId
+        - submittedBy
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - FormInvitation:
+              _and:
+                - isActive:
+                    _eq: true
+                - Company:
+                    _and:
+                      - isActive:
+                          _eq: true
+                      - platformId:
+                          _eq: x-hasura-platform-id
+                      - parentCompanyId:
+                          _eq: x-hasura-company-id
+  - role: Platform
+    permission:
+      columns:
+        - isActive
+        - remarks
+        - created_at
+        - updated_at
+        - approvedBy
+        - id
+        - invitationId
+        - submittedBy
+      filter:
+        ApproverUser:
+          Company:
+            platformId:
+              _eq: x-hasura-platform-id
+update_permissions:
+  - role: Approver
+    permission:
+      columns:
+        - approvedBy
+        - invitationId
+        - isActive
+        - remarks
+        - submittedBy
+        - updated_at
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - FormInvitation:
+              _and:
+                - isActive:
+                    _eq: true
+                - Company:
+                    _and:
+                      - isActive:
+                          _eq: true
+                      - platformId:
+                          _eq: x-hasura-platform-id
+                      - parentCompanyId:
+                          _eq: x-hasura-company-id
+      check: null
+      set:
+        approvedBy: x-hasura-User-Id
+  - role: Invitee
+    permission:
+      columns:
+        - approvedBy
+        - invitationId
+        - isActive
+        - remarks
+        - submittedBy
+        - updated_at
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - FormInvitation:
+              Company:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - platformId:
+                      _eq: x-hasura-platform-id
+                  - id:
+                      _eq: x-hasura-company-id
+      check: null

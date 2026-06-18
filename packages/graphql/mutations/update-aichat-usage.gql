@@ -1,0 +1,25 @@
+mutation UpdateAIChatUsage(
+  $id: uuid!
+  $textualUsed: Int!
+  $graphicalUsed: Int!
+  $metadata: jsonb
+) {
+  update_AIChatUsage_by_pk(
+    pk_columns: { id: $id }
+    _set: {
+      textualUsed: $textualUsed
+      graphicalUsed: $graphicalUsed
+      metadata: $metadata
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    subscriptionId
+    companyId
+    allocationId
+    textualUsed
+    graphicalUsed
+    metadata
+    updatedAt
+  }
+}

@@ -1,0 +1,18 @@
+mutation createParentCompanyMapping(
+  $input: [ParentCompanyMapping_insert_input!]!
+) {
+  insert_ParentCompanyMapping(
+    objects: $input
+    on_conflict: { constraint: ParentCompanyMapping_pkey }
+  ) {
+    returning {
+      Id
+      CompanyId
+      ParentCompanyId
+      User {
+        id
+        email
+      }
+    }
+  }
+}

@@ -1,0 +1,145 @@
+query getInvitationCommentsByDate(
+  $startDate: timestamptz
+  $endDate: timestamptz
+) {
+  InvitationComment(
+    where: {
+      created_at: { _gte: $startDate, _lte: $endDate }
+      isActive: { _eq: true }
+    }
+  ) {
+    id
+    companyId
+    invitationId
+    userId
+    content
+    isActive
+    FormField {
+      id
+      field
+      fieldOptions
+      type
+      subtheme
+      interfaceOptions
+      interface
+      Section {
+        id
+        content
+        ParentSection {
+          id
+          content
+        }
+      }
+      Form {
+        id
+        name
+        FormFields(
+          where: { interface: { _in: ["group-wizard", "group-detail"] } }
+        ) {
+          interfaceOptions
+          interface
+          questionId
+          groupField
+        }
+        FormsIds {
+          formId
+          groupFormId
+        }
+      }
+      Question {
+        id
+        key
+        content
+        FormFields {
+          questionId
+          field
+          interfaceOptions
+          groupField
+        }
+      }
+    }
+    Company {
+      name
+      Platform {
+        origin
+      }
+    }
+    User {
+      id
+      name
+      isEmailSubscribed
+      UserRoles {
+        userId
+        roleName
+      }
+    }
+    FormInvitation {
+      email
+      ParentCompanyMapping {
+        ParentUserId
+        UserId
+        CompanyId
+        ParentCompanyId
+        VCCompanyUser: companyByParentcompanyid {
+          Users(where: { UserRoles: { roleName: { _eq: "Inviter" } } }) {
+            id
+            name
+            email
+            isEmailSubscribed
+          }
+        }
+        PCCompanyUser: Company {
+          Users(where: { UserRoles: { roleName: { _eq: "Invitee" } } }) {
+            id
+            name
+            email
+            isEmailSubscribed
+          }
+        }
+        VCuser: userByParentuserid {
+          id
+          name
+          email
+          isEmailSubscribed
+        }
+        PCUser: User {
+          id
+          name
+          email
+          isEmailSubscribed
+        }
+      }
+      Company {
+        Users(where: { UserRoles: { roleName: { _eq: "Inviter" } } }) {
+          id
+          name
+          email
+          isEmailSubscribed
+        }
+      }
+      parentcompanyId
+      companyByParentcompanyid {
+        name
+        metadata
+        Users(where: { UserRoles: { roleName: { _eq: "Inviter" } } }) {
+          id
+          name
+          email
+          isEmailSubscribed
+        }
+      }
+      ParentCompanyMapping {
+        ParentCompanyId
+        companyByParentcompanyid {
+          name
+          Users(where: { UserRoles: { roleName: { _eq: "Inviter" } } }) {
+            id
+            name
+            email
+            isEmailSubscribed
+          }
+        }
+      }
+    }
+  }
+}

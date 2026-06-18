@@ -1,0 +1,13 @@
+1. Create new column in FormSubmission
+    - Column Name : "status"
+    - Type : Text
+    - Values : 
+        > New (Default)
+        > Submitted : When form submitted
+        > InProgress : Post submition operation started
+        > Successful : Post submition operations are sucessfully completed
+        > Failed : Post submition operations are failed
+2. Create New webhook endpoint for Hasura action
+    - Table : FormSubmission
+    - Trigger : Update
+3. On form submit update status form submission to "Submitted"

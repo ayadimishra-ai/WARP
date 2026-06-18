@@ -1,0 +1,68 @@
+table:
+  name: GlobalMaster
+  schema: public
+object_relationships:
+  - name: Platform
+    using:
+      foreign_key_constraint_on: platformId
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - data
+        - type
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - data
+        - type
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+  - role: Creator
+    permission:
+      columns:
+        - data
+        - type
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - data
+        - type
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+  - role: Inviter
+    permission:
+      columns:
+        - data
+        - type
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+  - role: Platform
+    permission:
+      columns:
+        - data
+        - type
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id

@@ -1,0 +1,23 @@
+query getassesseeuserbyinvitationId($invitationId: uuid!) {
+  AssesseeUserMapping(where: { InvitationId: { _eq: $invitationId } }) {
+    id
+    parentCompanyMappingId
+    userId
+    parentUserId
+    questionId
+    formFieldId
+    formId
+    reviewerUserId
+    InvitationId
+    roleId
+    IsActive
+    userByUserid {
+      id
+      name
+    }
+    User {
+      id
+      name
+    }
+  }
+}

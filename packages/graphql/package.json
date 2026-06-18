@@ -1,0 +1,40 @@
+{
+  "name": "@warp/graphql",
+  "version": "0.1.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "license": "MIT",
+  "scripts": {
+    "codegen": "graphql-codegen",
+    "build": "yarn codegen",
+    "lint": "eslint *.ts*"
+  },
+  "devDependencies": {
+    "@apollo/client": "^3.6.9",
+    "@graphql-codegen/cli": "^2.11.6",
+    "@graphql-codegen/import-types-preset": "^2.2.4",
+    "@graphql-codegen/named-operations-object": "^2.3.1",
+    "@graphql-codegen/near-operation-file-preset": "^2.4.2",
+    "@graphql-codegen/typescript": "^2.7.4",
+    "@graphql-codegen/typescript-apollo-client-helpers": "^2.2.4",
+    "@graphql-codegen/typescript-document-nodes": "^2.3.4",
+    "@graphql-codegen/typescript-generic-sdk": "^3.0.1",
+    "@graphql-codegen/typescript-graphql-request": "^4.5.3",
+    "@graphql-codegen/typescript-operations": "^2.5.4",
+    "@graphql-codegen/typescript-react-apollo": "^3.3.4",
+    "@graphql-codegen/typescript-resolvers": "^2.7.3",
+    "@types/react": "^18.0.18",
+    "dotenv": "^16.0.1",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
+    "graphql": "^16.6.0",
+    "react": "18.2.0",
+    "tsconfig": "*",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "@warp/configs": "*",
+    "@warp/shared": "*",
+    "graphql-request": "^4.3.0"
+  }
+}

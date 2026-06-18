@@ -1,0 +1,27 @@
+mutation UpdateAssesseeUserMappingForResponder(
+  $invitationId: uuid!
+  $invitationStatus: String!
+  $userId: uuid!
+  $questionId: uuid!
+  $isResponder: Boolean
+  $updatedAt: timestamptz!
+  $responderStatus: String!
+) {
+  update_AssesseeUserMapping(
+    _set: {
+      Status: $invitationStatus
+      updated_by: $userId
+      IsResponder: $isResponder
+      updated_at: $updatedAt
+      ResponderStatus: $responderStatus
+    }
+    where: {
+      _and: [
+        { InvitationId: { _eq: $invitationId } }
+        { questionId: { _eq: $questionId } }
+      ]
+    }
+  ) {
+    affected_rows
+  }
+}

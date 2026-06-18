@@ -1,0 +1,82 @@
+query getsubmittedformtodownloadexcel(
+  $invitationId: uuid
+  $submissionId: uuid
+) {
+  FormSubmission(
+    where: {
+      _and: [
+        { invitationId: { _eq: $invitationId } }
+        { id: { _eq: $submissionId } }
+        { isActive: { _eq: true } }
+        { FormInvitation: { isActive: { _eq: true } } }
+      ]
+    }
+  ) {
+    FormInvitation {
+      id
+      Company {
+        id
+        name
+      }
+      Form {
+        name
+        Sections(order_by: { key: asc }) {
+          id
+          content
+          weightage
+          ParentSection {
+            id
+            content
+            weightage
+            ParentSection {
+              id
+              content
+              weightage
+            }
+          }
+          FormResults(where: { submissionId: { _eq: $submissionId } }) {
+            sectionId
+            questionId
+            score
+          }
+          Questions(order_by: { created_at: asc }) {
+            content
+            weightage
+            subtheme
+            key
+            FormResults(where: { submissionId: { _eq: $submissionId } }) {
+              sectionId
+              questionId
+              score
+            }
+            FormFields(order_by: { field: asc, seqIndex: desc }) {
+              type
+              interface
+              interfaceOptions
+              id
+              fieldOptions
+              field
+              groupField
+              seqIndex
+              autoCalculatedCalculation
+              subtheme
+              created_at
+            }
+            Answers(where: { submissionId: { _eq: $submissionId } }) {
+              id
+              data
+              formFieldId
+            }
+          }
+        }
+        FormFields(where: { questionId: { _is_null: true } }) {
+          id
+          field
+          interfaceOptions
+          interface
+          groupField
+        }
+      }
+    }
+  }
+}

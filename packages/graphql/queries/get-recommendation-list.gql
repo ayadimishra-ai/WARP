@@ -1,0 +1,118 @@
+query getRecommendationList($invitationId: uuid) {
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    id
+    created_at
+    Form {
+      id
+      name
+    }
+    Company {
+      name
+    }
+    reviewerDetails
+    FormSubmissions(where: { _and: [{ isActive: { _eq: true } }] }) {
+      id
+      Interim_Answers(
+        where: { Interim_Recommendations: { id: { _is_null: false } } }
+        order_by: { created_at: desc }
+      ) {
+        submissionId
+        questionId
+        formFieldId
+        isViewOnly
+        Interim_Recommendations(order_by: { created_at: desc }) {
+          created_at
+          updated_at
+          created_by
+          updated_by
+          status
+          recommendations
+          questionId
+          Question {
+            key
+          }
+          Interim_Answer {
+            FormField {
+              field
+              created_at
+            }
+          }
+          isActive
+          id
+          expectedDate
+          answeroption
+          ReminderIntervalAfterDueDate
+          Interim_Comments(order_by: { created_at: asc }) {
+            id
+            comments
+            upload_document
+            updated_by
+            updated_at
+            interim_recommendation_id
+            created_by
+            created_at
+            filename
+            User {
+              id
+              name
+            }
+          }
+        }
+      }
+      carryForWardData: Interim_Answers(
+        where: { Interim_Answer: { id: { _is_null: false } } }
+        order_by: { created_at: desc }
+      ) {
+        formFieldId
+        isViewOnly
+        questionId
+        Interim_Answer {
+          Interim_Recommendations(order_by: { created_at: desc }) {
+            updated_by
+            updated_at
+            status
+            recommendations
+            questionId
+            Question {
+              key
+            }
+            isActive
+            interim_answer_id
+            Interim_Answer {
+              FormField {
+                field
+                created_at
+              }
+            }
+            id
+            expectedDate
+            created_by
+            created_at
+            answeroption
+            isApproved
+            ReminderIntervalAfterDueDate
+            Interim_Comments {
+              upload_document
+              updated_by
+              updated_at
+              interim_recommendation_id
+              id
+              filename
+              created_by
+              created_at
+              comments
+            }
+          }
+        }
+      }
+    }
+    ParentCompanyMapping {
+      UserId
+      User {
+        id
+        name
+        email
+      }
+    }
+  }
+}

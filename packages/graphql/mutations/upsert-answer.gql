@@ -1,0 +1,25 @@
+mutation upsertAnswer(
+  $answerData: [Answer_insert_input!]!
+  $submissionId: uuid
+  $questionId: uuid
+) {
+  delete_Answer(
+    where: {
+      _and: [
+        { questionId: { _eq: $questionId } }
+        { submissionId: { _eq: $submissionId } }
+      ]
+    }
+  ) {
+    affected_rows
+  }
+  insert_Answer(
+    objects: $answerData
+    on_conflict: {
+      constraint: Answer_submissionId_questionId_formFieldId_key
+      update_columns: [data]
+    }
+  ) {
+    affected_rows
+  }
+}

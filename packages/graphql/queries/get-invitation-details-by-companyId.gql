@@ -1,0 +1,14 @@
+query getInvitationDetailsByCompanyId($companyId: uuid) {
+  FormInvitation(
+    where: {
+      companyId: { _eq: $companyId }
+      _and: { reviewerDetails: { _neq: "null" } }
+    }
+  ) {
+    id
+    email
+    companyId
+    reviewerDetails
+    reviewerParentCompanyId
+  }
+}

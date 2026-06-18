@@ -1,0 +1,35 @@
+{
+  "name": "@warp/server",
+  "version": "0.1.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint *.ts*"
+  },
+  "dependencies": {
+    "@types/nodemailer": "^6.4.6",
+    "@warp/graphql": "*",
+    "@warp/shared": "*",
+    "nodemailer": "^6.7.8",
+    "jsdom": "^25.0.1",
+    "html-to-pdfmake": "^2.4.26"
+  },
+  "devDependencies": {
+    "@types/formidable": "^2.0.5",
+    "@types/jsdom": "^21.1.6",
+    "@warp/configs": "*",
+    "@warp/graphql": "*",
+    "aws-sdk": "^2.1210.0",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
+    "formidable": "^2.0.1",
+    "next": "^13.4.19",
+    "next-auth": "^4.24.0",
+    "tsconfig": "*",
+    "yup": "^0.32.11",
+    "typescript": "^4.5.2",
+    "busboy": "1.6.0",
+    "@types/busboy": "^1.5.0"
+  }
+}

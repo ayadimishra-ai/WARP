@@ -1,0 +1,58 @@
+query getAssesseeUserMappings($where: AssesseeUserMapping_bool_exp!) {
+  AssesseeUserMapping(where: $where) {
+    id
+    userId
+    parentUserId
+    InvitationId
+    questionId
+    Question {
+      id
+      key
+      content
+      FormFields {
+        questionId
+        field
+        interfaceOptions
+        groupField
+      }
+    }
+    ParentCompanyMapping {
+      Id
+      Company {
+        id
+        Users {
+          id
+          name
+          email
+          IsPasswordReset
+        }
+      }
+    }
+    User {
+      id
+      name
+      email
+      isEmailSubscribed
+      UserRoles {
+        roleName
+      }
+    }
+    userByUserid {
+      id
+      name
+      email
+      isEmailSubscribed
+      UserRoles {
+        roleName
+      }
+    }
+    FormInvitation {
+      id
+      email
+      companyByParentcompanyid {
+        name
+        metadata
+      }
+    }
+  }
+}

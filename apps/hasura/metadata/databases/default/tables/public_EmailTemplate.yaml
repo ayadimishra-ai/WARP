@@ -1,0 +1,153 @@
+table:
+  name: EmailTemplate
+  schema: public
+object_relationships:
+  - name: Company
+    using:
+      foreign_key_constraint_on: companyId
+  - name: Platform
+    using:
+      foreign_key_constraint_on: platformId
+insert_permissions:
+  - role: Creator
+    permission:
+      check:
+        platformId:
+          _eq: x-hasura-platform-id
+      columns:
+        - ccEmails
+        - subject
+        - template
+        - type
+        - created_at
+        - updated_at
+        - id
+        - platformId
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - ccEmails
+        - subject
+        - template
+        - type
+        - created_at
+        - updated_at
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - ccEmails
+        - subject
+        - template
+        - type
+        - created_at
+        - updated_at
+        - id
+        - platformId
+      filter:
+        _and:
+          - platformId:
+              _eq: x-hasura-platform-id
+          - Company:
+              _and:
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - _or:
+                    - parentCompanyId:
+                        _eq: x-hasura-company-id
+                    - id:
+                        _eq: x-hasura-company-id
+  - role: Creator
+    permission:
+      columns:
+        - ccEmails
+        - subject
+        - template
+        - type
+        - created_at
+        - updated_at
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - ccEmails
+        - subject
+        - template
+        - type
+        - created_at
+        - updated_at
+        - id
+        - platformId
+      filter:
+        _and:
+          - platformId:
+              _eq: x-hasura-platform-id
+          - Company:
+              _and:
+                - parentCompanyId:
+                    _eq: x-hasura-company-id
+                - platformId:
+                    _eq: x-hasura-platform-id
+  - role: Inviter
+    permission:
+      columns:
+        - ccEmails
+        - subject
+        - template
+        - type
+        - created_at
+        - updated_at
+        - id
+        - platformId
+      filter:
+        _and:
+          - platformId:
+              _eq: x-hasura-platform-id
+          - Company:
+              _and:
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - _or:
+                    - parentCompanyId:
+                        _eq: x-hasura-company-id
+                    - id:
+                        _eq: x-hasura-company-id
+  - role: Platform
+    permission:
+      columns:
+        - ccEmails
+        - subject
+        - template
+        - type
+        - created_at
+        - updated_at
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+update_permissions:
+  - role: Creator
+    permission:
+      columns:
+        - ccEmails
+        - subject
+        - template
+        - type
+        - created_at
+        - updated_at
+        - id
+        - platformId
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+      check: null

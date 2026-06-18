@@ -1,0 +1,13 @@
+query GetAIChatUsageBySubscriptionId($subscriptionId: uuid!) {
+  AIChatUsage(where: { subscriptionId: { _eq: $subscriptionId } }) {
+    id
+    subscriptionId
+    companyId
+    allocationId
+    textualUsed
+    graphicalUsed
+    metadata
+    createdAt
+    updatedAt
+  }
+}

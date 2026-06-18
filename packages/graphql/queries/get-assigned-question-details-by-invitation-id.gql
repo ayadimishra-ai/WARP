@@ -1,0 +1,51 @@
+query getAssignedQuestionDetailsByInvitationId($invitationId: uuid) {
+  AssesseeUserMapping(
+    where: {
+      _and: { InvitationId: { _eq: $invitationId }, IsActive: { _eq: true } }
+    }
+    order_by: { updated_at: desc }
+  ) {
+    id
+    InvitationId
+    formId
+    questionId
+    userId
+    Status
+    created_at
+    updated_at
+    updated_by
+    FormField {
+      field
+    }
+    User {
+      id
+      name
+    }
+    userByUserid {
+      id
+      name
+    }
+    Form {
+      id
+      name
+    }
+    Question {
+      id
+      key
+      FormFields {
+        id
+        interfaceOptions
+        interface
+        subtheme
+      }
+      Section {
+        id
+        content
+        ParentSection {
+          id
+          content
+        }
+      }
+    }
+  }
+}

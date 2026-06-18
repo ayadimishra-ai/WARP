@@ -1,0 +1,13 @@
+mutation bulkInsertInterimRecommendation(
+  $interinm_recommendation: [Interim_Recommendation_insert_input!]!
+) {
+  insert_Interim_Recommendation(
+    objects: $interinm_recommendation
+    on_conflict: { constraint: Interim_Recommendation_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+}

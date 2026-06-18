@@ -1,0 +1,116 @@
+table:
+  name: FormResult
+  schema: public
+object_relationships:
+  - name: FormSubmission
+    using:
+      foreign_key_constraint_on: submissionId
+  - name: Question
+    using:
+      foreign_key_constraint_on: questionId
+  - name: Section
+    using:
+      foreign_key_constraint_on: sectionId
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - score
+        - id
+        - questionId
+        - sectionId
+        - submissionId
+      filter: {}
+  - role: Approver
+    permission:
+      columns:
+        - score
+        - id
+        - questionId
+        - sectionId
+        - submissionId
+      filter:
+        Section:
+          Form:
+            CompanyForms:
+              Company:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - platformId:
+                      _eq: x-hasura-platform-id
+                  - parentCompanyId:
+                      _eq: x-hasura-company-id
+  - role: Creator
+    permission:
+      columns:
+        - score
+        - id
+        - questionId
+        - sectionId
+        - submissionId
+      filter:
+        Section:
+          Form:
+            CompanyForms:
+              Company:
+                platformId:
+                  _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - score
+        - id
+        - questionId
+        - sectionId
+        - submissionId
+      filter:
+        _and:
+          - FormSubmission:
+              isActive:
+                _eq: true
+          - FormSubmission:
+              FormInvitation:
+                Company:
+                  _and:
+                    - isActive:
+                        _eq: true
+                    - platformId:
+                        _eq: x-hasura-platform-id
+                    - id:
+                        _eq: x-hasura-company-id
+  - role: Inviter
+    permission:
+      columns:
+        - score
+        - id
+        - questionId
+        - sectionId
+        - submissionId
+      filter:
+        Section:
+          Form:
+            CompanyForms:
+              Company:
+                _and:
+                  - isActive:
+                      _eq: true
+                  - platformId:
+                      _eq: x-hasura-platform-id
+                  - parentCompanyId:
+                      _eq: x-hasura-company-id
+  - role: Platform
+    permission:
+      columns:
+        - score
+        - id
+        - questionId
+        - sectionId
+        - submissionId
+      filter:
+        Section:
+          Form:
+            CompanyForms:
+              Company:
+                platformId:
+                  _eq: x-hasura-platform-id

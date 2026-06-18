@@ -1,0 +1,21 @@
+mutation updateFormInvitationMetadata(
+  $formInvitationId: uuid!
+  $status: String!
+  $metadata: jsonb
+) {
+  update_FormInvitation(
+    where: { id: { _eq: $formInvitationId } }
+    _set: { metadata: $metadata, status: $status }
+  ) {
+    returning {
+      id
+      status
+      metadata
+    }
+  }
+  insert_FormSubmission_one(
+    object: { invitationId: $formInvitationId, isActive: true }
+  ) {
+    id
+  }
+}

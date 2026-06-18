@@ -1,0 +1,8 @@
+mutation DeleteAnswersBySubmissionId($SubmissionId: uuid!) {
+  delete_Answer(where: { submissionId: { _eq: $SubmissionId } }) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+}

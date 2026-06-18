@@ -1,0 +1,43 @@
+query getProcessingDataById($Id: [uuid!]!, $inputFields: [String!]!) {
+  AIBulkDocumentProcessing(where: { id: { _in: $Id } }) {
+    id
+    formInvitationId
+    processedDocuments
+    requestStatus
+    FormInvitation {
+      id
+      FormSubmissions(where: { isActive: { _eq: true } }) {
+        Answers {
+          formFieldId
+          data
+          FormField {
+            id
+            type
+            field
+            questionId
+            fieldOptions
+          }
+        }
+      }
+      Form {
+        FormFields(
+          where: {
+            questionId: { _is_null: false }
+            type: { _in: $inputFields }
+          }
+        ) {
+          id
+          fieldOptions
+          displayRules
+          type
+          questionId
+          Question {
+            key
+          }
+        }
+        formtype
+        id
+      }
+    }
+  }
+}

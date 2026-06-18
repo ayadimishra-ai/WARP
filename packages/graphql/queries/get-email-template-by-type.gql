@@ -1,0 +1,23 @@
+query getEmailTemplateByType($emailType: String, $platformId: uuid) {
+  EmailTemplate(where: { type: { _eq: $emailType } }) {
+    bccEmails
+    ccEmails
+    subject
+    template
+    companyId
+    formId
+    platformId
+    Platform {
+      id
+      origin
+      EmailConfigs(where: { platformId: { _eq: $platformId } }) {
+        fromEmail
+        host
+        port
+        isSecure
+        user
+        password
+      }
+    }
+  }
+}

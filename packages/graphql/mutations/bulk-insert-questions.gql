@@ -1,0 +1,19 @@
+mutation BulkInsertQuestions($objects: [Question_insert_input!]!) {
+  insert_Question(
+    objects: $objects
+    on_conflict: {
+      constraint: Question_pkey
+      update_columns: [sectionId, key, tags, content, weightage]
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      key
+      content
+      sectionId
+      tags
+      weightage
+    }
+  }
+}

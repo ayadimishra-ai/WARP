@@ -1,0 +1,11 @@
+mutation updateInterimRecommendationByInterimAnswerId(
+  $interimAnswerId: uuid!
+  $status: String!
+) {
+  update_Interim_Recommendation(
+    where: { interim_answer_id: { _eq: $interimAnswerId } }
+    _set: { status: $status }
+  ) {
+    affected_rows
+  }
+}

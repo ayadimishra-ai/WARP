@@ -1,0 +1,38 @@
+query getQuestionsFromFormId($formId: uuid!) {
+  Question(
+    where: {
+      Section: { formId: { _eq: $formId } }
+      parentQuestionId: { _is_null: true }
+    }
+    order_by: { created_at: asc }
+  ) {
+    content
+    id
+    key
+    parentQuestionId
+    sectionId
+    tags
+    updated_at
+    weightage
+    calc
+    FormFields(order_by: { seqIndex: asc }) {
+      created_at
+      display
+      displayOptions
+      displayRules
+      field
+      fieldOptions
+      formId
+      groupField
+      id
+      interface
+      interfaceOptions
+      questionId
+      sectionId
+      seqIndex
+      type
+      updated_at
+      validationRules
+    }
+  }
+}

@@ -1,0 +1,44 @@
+query GetUserConversations(
+  $userId: uuid!
+  $limit: Int = 20
+  $cursor: timestamptz
+  $withCursor: Boolean = false
+  $searchTerm: String = ""
+) {
+  # With cursor pagination (FTS)
+  search_conversations_fts_cursor(
+    args: {
+      search_text: $searchTerm
+      user_id_filter: $userId
+      cursor_time: $cursor
+      result_limit: $limit
+    }
+  ) @include(if: $withCursor) {
+    conversationId
+    userId
+    companyId
+    allocationId
+    title
+    createdAt
+    updatedAt
+    isActive
+  }
+
+  # Without cursor (FTS)
+  AIConversationsAll: search_conversations_fts(
+    args: {
+      search_text: $searchTerm
+      user_id_filter: $userId
+      result_limit: $limit
+    }
+  ) @skip(if: $withCursor) {
+    conversationId
+    userId
+    companyId
+    allocationId
+    title
+    createdAt
+    updatedAt
+    isActive
+  }
+}

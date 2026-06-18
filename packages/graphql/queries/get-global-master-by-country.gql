@@ -1,0 +1,7 @@
+query GetGlobalMasterByCountry {
+  GlobalMaster(where: { type: { _eq: "CountryMaster" } }) {
+    id
+    type
+    data
+  }
+}

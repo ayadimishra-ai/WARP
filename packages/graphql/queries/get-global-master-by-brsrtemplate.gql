@@ -1,0 +1,8 @@
+query GetGlobalMasterByBRSRTemplate {
+  GlobalMaster(where: { type: { _eq: "BRSRTemplate" } }) {
+    id
+    platformId
+    type
+    data
+  }
+}

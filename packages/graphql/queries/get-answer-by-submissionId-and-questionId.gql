@@ -1,0 +1,15 @@
+query getAnswerBySubmissionIdAndquestionId(
+  $SubmissionId: uuid
+  $questionId: uuid
+) {
+  FormSubmission(where: { id: { _eq: $SubmissionId } }) {
+    Answers(where: { questionId: { _eq: $questionId } }) {
+      id
+      questionId
+      submissionId
+      formFieldId
+      data
+      status
+    }
+  }
+}

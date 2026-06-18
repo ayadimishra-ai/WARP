@@ -1,0 +1,18 @@
+query formInvitationDatawithCompanyId($companyId: [uuid!]!) {
+  FormInvitation(
+    distinct_on: created_by
+    where: { companyId: { _in: $companyId } }
+  ) {
+    id
+    created_by
+    ParentUser {
+      UserRoles {
+        userId
+        roleName
+      }
+      Company {
+        id
+      }
+    }
+  }
+}

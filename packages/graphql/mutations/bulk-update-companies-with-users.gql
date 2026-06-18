@@ -1,0 +1,56 @@
+mutation BulkUpdateCompaniesWithUsers(
+  $companyUpdate: [Company_updates!]!
+  $userUpdate: [User_updates!]!
+  $userroleUpdate: [UserRole_updates!]!
+  $parentCompanyMapping: [ParentCompanyMapping_updates!]!
+) {
+  update_Company_many(updates: $companyUpdate) {
+    returning {
+      id
+      name
+      country
+      details
+      primaryContact
+      parentCompanyId
+      created_by
+      updated_by
+      created_at
+      updated_at
+      isActive
+    }
+  }
+  update_User_many(updates: $userUpdate) {
+    returning {
+      id
+      name
+      email
+      emailVerified
+      details
+      image
+      companyId
+      phone
+      phoneVerified
+      created_by
+      updated_by
+      created_at
+      updated_at
+      isActive
+      UserRoles {
+        roleName
+      }
+    }
+  }
+  update_UserRole_many(updates: $userroleUpdate) {
+    returning {
+      userId
+      roleName
+    }
+  }
+
+  update_ParentCompanyMapping_many(updates: $parentCompanyMapping) {
+    returning {
+      Id
+      ParentCompanyId
+    }
+  }
+}

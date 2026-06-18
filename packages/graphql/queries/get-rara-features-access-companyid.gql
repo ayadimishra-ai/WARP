@@ -1,0 +1,14 @@
+query raraCompanyAccess($companyIdList: [uuid!]!, $companyId: uuid!) {
+  ParentCompanyMapping(
+    where: {
+      ParentCompanyId: { _in: $companyIdList }
+      CompanyId: { _eq: $companyId }
+      isActive: { _eq: true }
+    }
+  ) {
+    CompanyId
+    ParentCompanyId
+    Id
+    __typename
+  }
+}

@@ -1,0 +1,13 @@
+mutation BulkInsertSources($data: [Sources_insert_input!]!) {
+  insert_Sources(objects: $data) {
+    returning {
+      id
+      formInvitationId
+      type
+      url
+      sourceFilesId
+      created_at
+      documentLogsId
+    }
+  }
+}

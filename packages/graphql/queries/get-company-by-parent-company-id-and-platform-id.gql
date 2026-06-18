@@ -1,0 +1,23 @@
+query GetCompanyByParentCompanyIdAndPlatformId(
+  $parentCompanyId: uuid
+  $platformId: uuid
+  $allConsultantCompanyIds: [uuid!]
+) {
+  Company(
+    where: {
+      _and: [{ isActive: { _eq: true } }, { platformId: { _eq: $platformId } }]
+      ParentCompanyMappings: {
+        ParentCompanyId: { _eq: $parentCompanyId }
+        isActive: { _eq: true }
+      }
+      id: { _nin: $allConsultantCompanyIds }
+    }
+  ) {
+    id
+    name
+    country
+    primaryContact
+    isActive
+    IsManufacturing
+  }
+}

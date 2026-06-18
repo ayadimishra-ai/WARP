@@ -1,0 +1,8 @@
+query getParentCompanyDetailByUserId($userId: [uuid!]) {
+  ParentCompanyMapping(where: { UserId: { _in: $userId } }) {
+    Id
+    UserId
+    ParentUserId
+    AddressId
+  }
+}

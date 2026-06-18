@@ -1,0 +1,23 @@
+mutation insertRecommendationReminderEmails(
+  $emailId: String!
+  $ccEmailId: String!
+  $subject: String!
+  $invitationId: uuid
+  $bccEmailId: String
+) {
+  insert_EmailNotifications(
+    objects: {
+      emailId: $emailId
+      ccEmailId: $ccEmailId
+      subject: $subject
+      invitationId: $invitationId
+      bccEmailId: $bccEmailId
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      emailId
+    }
+  }
+}

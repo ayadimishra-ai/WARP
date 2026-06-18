@@ -1,0 +1,45 @@
+query GetExistingFormInvitation(
+  $companyId: [uuid!]
+  $formId: [uuid!]
+  $durationFrom: date!
+  $durationTo: date!
+  $parentcompanyId: [uuid!]
+) {
+  FormInvitation(
+    where: {
+      _and: [
+        { formId: { _in: $formId } }
+        { companyId: { _in: $companyId } }
+        { parentcompanyId: { _in: $parentcompanyId } }
+        {
+          _or: [
+            {
+              _and: [
+                { durationFrom: { _lte: $durationFrom } }
+                { durationTo: { _gte: $durationFrom } }
+              ]
+            }
+            {
+              _and: [
+                { durationFrom: { _gte: $durationFrom } }
+                { durationTo: { _lte: $durationTo } }
+              ]
+            }
+            {
+              _and: [
+                { durationFrom: { _lte: $durationTo } }
+                { durationTo: { _gte: $durationTo } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ) {
+    durationFrom
+    durationTo
+    companyId
+    formId
+    id
+  }
+}

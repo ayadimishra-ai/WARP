@@ -1,0 +1,23 @@
+query getinterimcommentsbyrecommendid($recommendationId: uuid) {
+  Interim_Comments(
+    where: { interim_recommendation_id: { _eq: $recommendationId } }
+    order_by: { created_at: asc }
+  ) {
+    id
+    comments
+    upload_document
+    updated_by
+    updated_at
+    filename
+    interim_recommendation_id
+    created_by
+    created_at
+    User {
+      id
+      name
+    }
+    Interim_Recommendation {
+      status
+    }
+  }
+}

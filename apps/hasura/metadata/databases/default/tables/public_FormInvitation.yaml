@@ -1,0 +1,225 @@
+table:
+  name: FormInvitation
+  schema: public
+object_relationships:
+  - name: Company
+    using:
+      foreign_key_constraint_on: companyId
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+array_relationships:
+  - name: FormSubmissions
+    using:
+      foreign_key_constraint_on:
+        column: invitationId
+        table:
+          name: FormSubmission
+          schema: public
+insert_permissions:
+  - role: Inviter
+    permission:
+      check:
+        _and:
+          - isActive:
+              _eq: true
+          - Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: X-Hasura-Platform-Id
+                - parentCompanyId:
+                    _eq: X-Hasura-Company-Id
+      set:
+        created_at: x-hasura-
+        created_by: x-hasura-User-Id
+      columns:
+        - isActive
+        - durationFrom
+        - durationTo
+        - email
+        - status
+        - created_at
+        - updated_at
+        - companyId
+        - created_by
+        - formId
+        - id
+        - updated_by
+        - ReviewerDetails
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - isActive
+        - durationFrom
+        - durationTo
+        - email
+        - status
+        - created_at
+        - updated_at
+        - companyId
+        - created_by
+        - formId
+        - id
+        - updated_by
+        - ReviewerDetails
+      filter:
+        Company:
+          platformId:
+            _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - isActive
+        - durationFrom
+        - durationTo
+        - email
+        - status
+        - created_at
+        - updated_at
+        - companyId
+        - created_by
+        - formId
+        - id
+        - updated_by
+        - ReviewerDetails
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: X-Hasura-Platform-Id
+                - parentCompanyId:
+                    _eq: X-Hasura-Company-Id
+  - role: Creator
+    permission:
+      columns:
+        - isActive
+        - durationFrom
+        - durationTo
+        - email
+        - status
+        - created_at
+        - updated_at
+        - companyId
+        - created_by
+        - formId
+        - id
+        - updated_by
+        - ReviewerDetails
+      filter:
+        Company:
+          platformId:
+            _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - isActive
+        - durationFrom
+        - durationTo
+        - email
+        - status
+        - created_at
+        - updated_at
+        - companyId
+        - created_by
+        - formId
+        - id
+        - updated_by
+        - ReviewerDetails
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: X-Hasura-Platform-Id
+                - id:
+                    _eq: x-hasura-company-id
+  - role: Inviter
+    permission:
+      columns:
+        - isActive
+        - durationFrom
+        - durationTo
+        - email
+        - status
+        - created_at
+        - updated_at
+        - companyId
+        - created_by
+        - formId
+        - id
+        - updated_by
+        - ReviewerDetails
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: X-Hasura-Platform-Id
+                - parentCompanyId:
+                    _eq: X-Hasura-Company-Id
+  - role: Platform
+    permission:
+      columns:
+        - isActive
+        - durationFrom
+        - durationTo
+        - email
+        - status
+        - created_at
+        - updated_at
+        - companyId
+        - created_by
+        - formId
+        - id
+        - updated_by
+        - ReviewerDetails
+      filter:
+        Company:
+          platformId:
+            _eq: x-hasura-platform-id
+update_permissions:
+  - role: Inviter
+    permission:
+      columns:
+        - isActive
+        - durationFrom
+        - durationTo
+        - email
+        - status
+        - created_at
+        - updated_at
+        - companyId
+        - created_by
+        - formId
+        - id
+        - updated_by
+        - ReviewerDetails
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: X-Hasura-Platform-Id
+                - parentCompanyId:
+                    _eq: X-Hasura-Company-Id
+      check: null

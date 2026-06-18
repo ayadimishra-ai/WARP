@@ -1,0 +1,42 @@
+query getaddressesbyuser_id($userId: uuid!, $companyId: uuid!) {
+  Addresses(where: { AddressMappings: { UserId: { _eq: $userId } } }) {
+    id
+    addressLine1
+    addressLine2
+    addressLine3
+    poBoxNumber
+    zipcode
+    phoneNo
+    landMark
+    isDefault
+    region
+    gstNumber
+    ownershipType
+    IsActive
+    countryName
+    stateName
+    cityName
+    addressLable
+    companyId
+  }
+  AddressesByCompanyId: Addresses(where: { companyId: { _eq: $companyId } }) {
+    id
+    addressLine1
+    addressLine2
+    addressLine3
+    poBoxNumber
+    zipcode
+    phoneNo
+    landMark
+    isDefault
+    region
+    gstNumber
+    ownershipType
+    IsActive
+    countryName
+    stateName
+    cityName
+    addressLable
+    companyId
+  }
+}

@@ -1,0 +1,28 @@
+query getAnswersByFormSubmissionId($SubmissionId: uuid!) {
+  Answer(where: { submissionId: { _eq: $SubmissionId } }) {
+    questionId
+    data
+    submissionId
+    created_by
+    updated_by
+    status
+    formFieldId
+  }
+  carryForWardData: Answer(
+    where: {
+      _and: {
+        submissionId: { _eq: $SubmissionId }
+        Interim_Answers: { answerId: { _is_null: false } }
+      }
+    }
+  ) {
+    submissionId
+    formFieldId
+    questionId
+    Interim_Answers {
+      id
+      answerId
+      interim_answer_id
+    }
+  }
+}

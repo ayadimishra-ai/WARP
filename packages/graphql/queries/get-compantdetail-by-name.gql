@@ -1,0 +1,5 @@
+query getCompanyDetailByName($newName: [String!]) {
+  Company(where: { name: { _in: $newName }, isActive: { _eq: true } }) {
+    name
+  }
+}

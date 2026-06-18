@@ -1,0 +1,15 @@
+mutation updateCompletionPercentage(
+  $invitationId: uuid!
+  $completionPercentage: String!
+) {
+  update_FormInvitation(
+    _set: { completion: $completionPercentage }
+    where: { id: { _eq: $invitationId } }
+  ) {
+    affected_rows
+    returning {
+      id
+      status
+    }
+  }
+}

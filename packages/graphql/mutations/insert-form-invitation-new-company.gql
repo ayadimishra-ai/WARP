@@ -1,0 +1,22 @@
+mutation InsertFormInvitationNewCompany(
+  $object: [FormInvitation_insert_input!]!
+) {
+  insert_FormInvitation(
+    objects: $object
+    on_conflict: { constraint: FormInvitation_pkey }
+  ) {
+    returning {
+      id
+      email
+      companyId
+      formId
+      status
+      interimCheck
+      reviewerDetails
+      Form {
+        id
+        name
+      }
+    }
+  }
+}

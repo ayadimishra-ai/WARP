@@ -1,0 +1,2 @@
+Snowkap_Warp:
+  component: "@sls-next/serverless-component"

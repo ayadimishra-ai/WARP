@@ -1,0 +1,16 @@
+query getInvitationDetails($formId: uuid, $companyId: uuid!) {
+  FormInvitation(
+    where: {
+      _and: { formId: { _eq: $formId } }
+      companyId: { _eq: $companyId }
+      # status: { _eq: "Submitted" }
+    }
+    order_by: { created_at: desc }
+  ) {
+    id
+    formId
+    companyId
+    status
+    created_at
+  }
+}

@@ -1,0 +1,154 @@
+table:
+  name: FormDetails
+  schema: public
+object_relationships:
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+insert_permissions:
+  - role: Creator
+    permission:
+      check:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+      columns:
+        - timeInMinutes
+        - focusArea
+        - notes
+        - bodyTemplate
+        - framework
+        - formId
+        - id
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - timeInMinutes
+        - focusArea
+        - notes
+        - bodyTemplate
+        - framework
+        - formId
+        - id
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - timeInMinutes
+        - focusArea
+        - notes
+        - bodyTemplate
+        - framework
+        - formId
+        - id
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - parentCompanyId:
+                    _eq: x-hasura-company-id
+  - role: Creator
+    permission:
+      columns:
+        - timeInMinutes
+        - focusArea
+        - notes
+        - bodyTemplate
+        - framework
+        - formId
+        - id
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - timeInMinutes
+        - focusArea
+        - notes
+        - bodyTemplate
+        - framework
+        - formId
+        - id
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - id:
+                    _eq: x-hasura-company-id
+  - role: Inviter
+    permission:
+      columns:
+        - timeInMinutes
+        - focusArea
+        - notes
+        - bodyTemplate
+        - framework
+        - formId
+        - id
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              _and:
+                - isActive:
+                    _eq: true
+                - platformId:
+                    _eq: x-hasura-platform-id
+                - parentCompanyId:
+                    _eq: x-hasura-company-id
+  - role: Platform
+    permission:
+      columns:
+        - timeInMinutes
+        - focusArea
+        - notes
+        - bodyTemplate
+        - framework
+        - formId
+        - id
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+update_permissions:
+  - role: Creator
+    permission:
+      columns:
+        - timeInMinutes
+        - focusArea
+        - notes
+        - bodyTemplate
+        - framework
+        - formId
+        - id
+      filter:
+        Form:
+          CompanyForms:
+            Company:
+              platformId:
+                _eq: x-hasura-platform-id
+      check: null

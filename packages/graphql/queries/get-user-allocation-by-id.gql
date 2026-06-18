@@ -1,0 +1,23 @@
+query GetUserAllocationById($id: uuid!) {
+  AIChatUserAllocation(where: {id: {_eq: $id}}) {
+    id
+    subscriptionId
+    companyId
+    userId
+    textualAllocated
+    graphicalAllocated
+    isActive
+    allocatedBy
+    metadata
+    createdAt
+    updatedAt
+    AIChatUsages {
+      id
+      textualUsed
+      graphicalUsed
+      metadata
+      createdAt
+      updatedAt
+    }
+  }
+}

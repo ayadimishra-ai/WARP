@@ -1,0 +1,46 @@
+query getformFieldsbyInvitationId($invitationId: uuid!, $questionId: uuid!) {
+  FormInvitation(where: { _and: [{ id: { _eq: $invitationId } }] }) {
+    id
+    status
+    companyId
+    formId
+    Form {
+      id
+      name
+      isDelegateQuestion
+      FormFields(
+        order_by: { field: asc }
+        where: { questionId: { _eq: $questionId } }
+      ) {
+        id
+        field
+        Question {
+          id
+        }
+        field
+        type
+        fieldOptions
+        interface
+        interfaceOptions
+        display
+        displayOptions
+        groupField
+        InvitationComments_aggregate(
+          where: { invitationId: { _eq: $invitationId } }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    }
+    parentcompanyId
+    ParentCompanyMapping {
+      ParentCompanyId
+    }
+    FormSubmissions {
+      id
+      status
+    }
+  }
+}

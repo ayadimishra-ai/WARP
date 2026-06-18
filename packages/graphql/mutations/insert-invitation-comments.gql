@@ -1,0 +1,41 @@
+mutation InsertFormInvitationComment(
+  $companyId: uuid
+  $content: String
+  $invitationId: uuid
+  $userId: uuid
+  $formFieldId: uuid!
+  $status: String
+) {
+  insert_InvitationComment(
+    on_conflict: { constraint: InvitationComment_pkey }
+    objects: {
+      companyId: $companyId
+      content: $content
+      invitationId: $invitationId
+      userId: $userId
+      formFieldId: $formFieldId
+    }
+  ) {
+    returning {
+      id
+      content
+      FormInvitation {
+        InvitationComments_aggregate(
+          where: { formFieldId: { _eq: $formFieldId } }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    }
+  }
+  update_FormInvitation(
+    where: { companyId: { _eq: $companyId }, id: { _eq: $invitationId } }
+    _set: { status: $status, updated_by: $userId, updated_at: "now()" }
+  ) {
+    returning {
+      id
+    }
+  }
+}

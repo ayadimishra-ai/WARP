@@ -1,0 +1,40 @@
+query getAssignedQuestionUserDetailsByQuestionId(
+  $questionId: uuid
+  $invitationId: uuid
+) {
+  FormInvitation(
+    where: {
+      _and: [{ id: { _eq: $invitationId } }, { isActive: { _eq: true } }]
+    }
+  ) {
+    id
+    ParentCompanyMapping {
+      Id
+      UserId
+    }
+  }
+  AssesseeUserMapping(
+    where: {
+      _and: [
+        { questionId: { _eq: $questionId } }
+        { InvitationId: { _eq: $invitationId } }
+        { IsActive: { _eq: true } }
+      ]
+    }
+  ) {
+    id
+    questionId
+    userId
+    userByUserid {
+      id
+      name
+      email
+      isActive
+      UserRoles {
+        userId
+        roleName
+        # IsActive
+      }
+    }
+  }
+}

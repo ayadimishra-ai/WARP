@@ -1,0 +1,32 @@
+mutation BulkInsertFormFields($objects: [FormField_insert_input!]!) {
+  insert_FormField(
+    objects: $objects
+    on_conflict: {
+      constraint: FormField_pkey
+      update_columns: [
+        field
+        type
+        interface
+        seqIndex
+        dataPoint
+        subtheme
+        interfaceOptions
+        fieldOptions
+        displayOptions
+        displayRules
+        validationRules
+        warningRules
+        tags
+        updated_at
+      ]
+    }
+  ) {
+    returning {
+      id
+      formId
+      sectionId
+      questionId
+    }
+    affected_rows
+  }
+}

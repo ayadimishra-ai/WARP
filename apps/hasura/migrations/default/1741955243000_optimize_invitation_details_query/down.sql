@@ -1,0 +1,10 @@
+DROP INDEX IF EXISTS "public"."idx_maker_checker_remarks_mapping_id";
+DROP INDEX IF EXISTS "public"."idx_reviewer_details_mapping_invitation_id";
+DROP INDEX IF EXISTS "public"."idx_reviewer_details_mapping_question_id";
+DROP INDEX IF EXISTS "public"."idx_form_invitation_form_id";
+DROP INDEX IF EXISTS "public"."idx_form_submission_invitation_id";
+DROP INDEX IF EXISTS "public"."idx_section_form_id";
+DROP INDEX IF EXISTS "public"."idx_question_section_id";
+DROP INDEX IF EXISTS "public"."idx_form_field_section_id";
+DROP INDEX IF EXISTS "public"."idx_form_field_question_id";
+DROP INDEX IF EXISTS "public"."idx_form_field_form_id";

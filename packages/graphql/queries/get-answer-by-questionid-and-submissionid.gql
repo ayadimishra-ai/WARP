@@ -1,0 +1,59 @@
+query getAnswerByQuestionIdAndSubmissionId(
+  $questionId: uuid!
+  $submissionId: uuid!
+) {
+  FormSubmission(where: { id: { _eq: $submissionId } }) {
+    id
+    FormInvitation {
+      id
+      status
+    }
+  }
+
+  Answer(
+    where: {
+      questionId: { _eq: $questionId }
+      submissionId: { _eq: $submissionId }
+    }
+  ) {
+    id
+    questionId
+    data
+    submissionId
+    status
+    formFieldId
+    FormField {
+      interface
+    }
+    Interim_Answers {
+      id
+      data
+      Interim_Recommendations {
+        id
+        answeroption
+        status
+      }
+    }
+  }
+
+  Interim_Answer(
+    where: {
+      questionId: { _eq: $questionId }
+      submissionId: { _eq: $submissionId }
+    }
+  ) {
+    id
+    questionId
+    data
+    submissionId
+    formFieldId
+    FormField {
+      interface
+    }
+    Interim_Recommendations {
+      id
+      answeroption
+      status
+    }
+  }
+}

@@ -1,0 +1,11 @@
+mutation upsertFormInvitationCompletion(
+  $invitationId: uuid!
+  $completion: String!
+) {
+  update_FormInvitation(
+    _set: { completion: $completion }
+    where: { id: { _eq: $invitationId } }
+  ) {
+    affected_rows
+  }
+}

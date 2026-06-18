@@ -1,0 +1,13 @@
+mutation updateValidationWarningLogs($formfieldId: uuid, $invitationId: uuid) {
+  update_ValidationWarningLogs(
+    _set: { IsActive: false }
+    where: {
+      _and: [
+        { formFieldId: { _eq: $formfieldId } }
+        { InvitationId: { _eq: $invitationId } }
+      ]
+    }
+  ) {
+    affected_rows
+  }
+}

@@ -1,0 +1,17 @@
+query getAssessorConsultantMapping {
+  AssessorConsultantMapping(where: { isActive: { _eq: true } }) {
+    id
+    formId
+    consultantCompanyId
+    assessorCompanyId
+    isActive
+    Company {
+      Users {
+        UserRoles {
+          userId
+          roleName
+        }
+      }
+    }
+  }
+}

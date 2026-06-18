@@ -1,0 +1,7 @@
+query GetForms($ids: [uuid!]!) {
+  Form(where: { id: { _in: $ids } }) {
+    id
+    name
+    isAIDataPointsAdded
+  }
+}

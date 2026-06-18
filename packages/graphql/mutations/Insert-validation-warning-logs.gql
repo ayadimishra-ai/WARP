@@ -1,0 +1,16 @@
+mutation upsertValidationWarningLogs(
+  $object: [ValidationWarningLogs_insert_input!]!
+  $deleteobject: ValidationWarningLogs_bool_exp!
+) {
+  delete_ValidationWarningLogs(where: $deleteobject) {
+    affected_rows
+  }
+  insert_ValidationWarningLogs(
+    objects: $object
+    on_conflict: { constraint: ValidationWarningLogs_pkey }
+  ) {
+    returning {
+      Id
+    }
+  }
+}

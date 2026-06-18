@@ -1,0 +1,7 @@
+mutation updateStatusOfEmail($emailData: [EmailNotifications_updates!]!) {
+  update_EmailNotifications_many(updates: $emailData) {
+    returning {
+      id
+    }
+  }
+}

@@ -1,0 +1,11 @@
+mutation bulkUpdateProcessingData(
+  $AIBulkDocumentProcessingUpdate: [AIBulkDocumentProcessing_updates!]!
+) {
+  update_AIBulkDocumentProcessing_many(
+    updates: $AIBulkDocumentProcessingUpdate
+  ) {
+    returning {
+      id
+    }
+  }
+}

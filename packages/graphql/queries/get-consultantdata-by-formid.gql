@@ -1,0 +1,35 @@
+query getConsultantDataByFormId(
+  $where1: AssessorConsultantMapping_bool_exp!
+  $where2: AssessorConsultantMapping_bool_exp!
+) {
+  AssessorConsultantMapping(where: $where1) {
+    formId
+    companyByConsultantcompanyid {
+      id
+      name
+      Users {
+        email
+        name
+        isEmailSubscribed
+        UserRoles {
+          roleName
+        }
+      }
+    }
+  }
+  GroupForm: AssessorConsultantMapping(where: $where2) {
+    formId
+    companyByConsultantcompanyid {
+      id
+      name
+      Users {
+        email
+        name
+        isEmailSubscribed
+        UserRoles {
+          roleName
+        }
+      }
+    }
+  }
+}

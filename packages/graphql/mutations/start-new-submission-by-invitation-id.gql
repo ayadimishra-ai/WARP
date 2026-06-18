@@ -1,0 +1,10 @@
+mutation startNewSubmissionByInvitationId($invitationId: uuid!) {
+  update_FormInvitation(
+    _set: { status: "Draft" }
+    where: {
+      _and: [{ id: { _eq: $invitationId } }, { status: { _eq: "Invited" } }]
+    }
+  ) {
+    affected_rows
+  }
+}

@@ -1,0 +1,96 @@
+table:
+  name: Role
+  schema: public
+array_relationships:
+  - name: UserRoles
+    using:
+      foreign_key_constraint_on:
+        column: roleName
+        table:
+          name: UserRole
+          schema: public
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - description
+        - name
+        - created_at
+        - updated_at
+        - id
+      filter:
+        UserRoles:
+          userId:
+            _eq: X-Hasura-User-Id
+  - role: Approver
+    permission:
+      columns:
+        - description
+        - name
+        - created_at
+        - updated_at
+        - id
+      filter:
+        UserRoles:
+          _and:
+            - userId:
+                _eq: x-hasura-user-id
+            - roleName:
+                _eq: x-hasura-role
+  - role: Creator
+    permission:
+      columns:
+        - description
+        - name
+        - created_at
+        - updated_at
+        - id
+      filter:
+        UserRoles:
+          _and:
+            - userId:
+                _eq: x-hasura-user-id
+            - roleName:
+                _eq: x-hasura-role
+  - role: Invitee
+    permission:
+      columns:
+        - description
+        - name
+        - created_at
+        - updated_at
+        - id
+      filter:
+        UserRoles:
+          _and:
+            - userId:
+                _eq: x-hasura-user-id
+            - roleName:
+                _eq: x-hasura-role
+  - role: Inviter
+    permission:
+      columns:
+        - description
+        - name
+        - created_at
+        - updated_at
+        - id
+      filter:
+        UserRoles:
+          _and:
+            - userId:
+                _eq: x-hasura-user-id
+            - roleName:
+                _eq: x-hasura-role
+  - role: Platform
+    permission:
+      columns:
+        - description
+        - name
+        - created_at
+        - updated_at
+        - id
+      filter:
+        UserRoles:
+          userId:
+            _eq: X-Hasura-User-Id

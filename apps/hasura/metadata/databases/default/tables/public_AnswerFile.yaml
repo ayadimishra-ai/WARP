@@ -1,0 +1,171 @@
+table:
+  name: AnswerFile
+  schema: public
+object_relationships:
+  - name: Answer
+    using:
+      foreign_key_constraint_on: answerId
+insert_permissions:
+  - role: Invitee
+    permission:
+      check:
+        Answer:
+          Question:
+            Section:
+              Form:
+                CompanyForms:
+                  Company:
+                    platformId:
+                      _eq: x-hasura-platform-id
+      columns:
+        - name
+        - path
+        - provider
+        - sizeInBytes
+        - type
+        - created_at
+        - answerId
+        - id
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - name
+        - path
+        - provider
+        - sizeInBytes
+        - type
+        - created_at
+        - answerId
+        - id
+      filter:
+        Answer:
+          Question:
+            Section:
+              Form:
+                CompanyForms:
+                  Company:
+                    platformId:
+                      _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - name
+        - path
+        - provider
+        - sizeInBytes
+        - type
+        - created_at
+        - answerId
+        - id
+      filter:
+        Answer:
+          Question:
+            Section:
+              Form:
+                CompanyForms:
+                  Company:
+                    platformId:
+                      _eq: x-hasura-platform-id
+  - role: Creator
+    permission:
+      columns:
+        - name
+        - path
+        - provider
+        - sizeInBytes
+        - type
+        - created_at
+        - answerId
+        - id
+      filter:
+        Answer:
+          Question:
+            Section:
+              Form:
+                CompanyForms:
+                  Company:
+                    platformId:
+                      _eq: x-hasura-platform-id
+  - role: Invitee
+    permission:
+      columns:
+        - name
+        - path
+        - provider
+        - sizeInBytes
+        - type
+        - created_at
+        - answerId
+        - id
+      filter:
+        Answer:
+          Question:
+            Section:
+              Form:
+                CompanyForms:
+                  Company:
+                    platformId:
+                      _eq: x-hasura-platform-id
+  - role: Inviter
+    permission:
+      columns:
+        - name
+        - path
+        - provider
+        - sizeInBytes
+        - type
+        - created_at
+        - answerId
+        - id
+      filter:
+        Answer:
+          Question:
+            Section:
+              Form:
+                CompanyForms:
+                  Company:
+                    platformId:
+                      _eq: x-hasura-platform-id
+  - role: Platform
+    permission:
+      columns:
+        - name
+        - path
+        - provider
+        - sizeInBytes
+        - type
+        - created_at
+        - answerId
+        - id
+      filter:
+        Answer:
+          Question:
+            Section:
+              Form:
+                CompanyForms:
+                  Company:
+                    platformId:
+                      _eq: x-hasura-platform-id
+update_permissions:
+  - role: Invitee
+    permission:
+      columns:
+        - name
+        - path
+        - provider
+        - sizeInBytes
+        - type
+        - created_at
+        - answerId
+        - id
+      filter:
+        Answer:
+          Question:
+            Section:
+              Form:
+                CompanyForms:
+                  Company:
+                    platformId:
+                      _eq: x-hasura-platform-id
+      check: null

@@ -1,0 +1,12 @@
+query GetAISuggestedDocuments {
+  AISuggestedDocuments(order_by: { isOther: asc }) {
+    id
+    title
+    maxSize
+    sampleFileUrl
+    seqIndex
+    acceptedFormats
+    isOther
+    masterDocumentKey
+  }
+}

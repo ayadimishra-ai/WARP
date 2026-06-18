@@ -1,0 +1,8 @@
+query getglobalmasterdataforfundtype {
+  GlobalMaster(where: { type: { _eq: "companyFundType" } }) {
+    id
+    data
+    platformId
+    type
+  }
+}

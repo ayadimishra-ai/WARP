@@ -1,0 +1,8 @@
+query GetAnswersByIds($where: Answer_bool_exp!) {
+  Answer(where: $where) {
+    id
+    submissionId
+    questionId
+    formFieldId
+  }
+}

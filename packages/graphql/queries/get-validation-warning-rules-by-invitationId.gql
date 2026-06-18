@@ -1,0 +1,54 @@
+query getvalidationWarningRulesbyInvitationId(
+  $invitationId: uuid
+  $userId: uuid
+) {
+  ValidationWarningLogs(
+    where: { InvitationId: { _eq: $invitationId }, IsActive: { _eq: true } }
+    order_by: { created_at: desc }
+  ) {
+    Id
+    values
+    formFieldId
+    QuestionId
+    Question {
+      id
+      key
+      FormFields {
+        field
+        id
+        fieldOptions
+        interfaceOptions
+        interface
+        subtheme
+        groupField
+        created_at
+        AssesseeUserMappings(
+          where: {
+            InvitationId: { _eq: $invitationId }
+            userId: { _eq: $userId }
+          }
+        ) {
+          id
+          parentCompanyMappingId
+          userId
+          parentUserId
+          questionId
+          formFieldId
+          formId
+          reviewerUserId
+          InvitationId
+          roleId
+          IsActive
+        }
+      }
+      Section {
+        id
+        content
+        ParentSection {
+          id
+          content
+        }
+      }
+    }
+  }
+}

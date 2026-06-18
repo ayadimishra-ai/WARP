@@ -1,0 +1,11 @@
+query getFormInvitationbyStatus($status: String!, $curationStatus: String!) {
+  FormInvitation(where: { status: { _eq: $status } }) {
+    WebCurations(where: { status: { _eq: $curationStatus } }) {
+      id
+      status
+    }
+    id
+    status
+    companyId
+  }
+}

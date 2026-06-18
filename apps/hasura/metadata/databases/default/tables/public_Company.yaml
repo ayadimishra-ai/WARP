@@ -1,0 +1,216 @@
+table:
+  name: Company
+  schema: public
+object_relationships:
+  - name: ParentCompany
+    using:
+      foreign_key_constraint_on: parentCompanyId
+  - name: Platform
+    using:
+      foreign_key_constraint_on: platformId
+array_relationships:
+  - name: ChildCompanies
+    using:
+      foreign_key_constraint_on:
+        column: parentCompanyId
+        table:
+          name: Company
+          schema: public
+  - name: CompanyForms
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: CompanyForm
+          schema: public
+  - name: EmailTemplates
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: EmailTemplate
+          schema: public
+  - name: FormInvitations
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: FormInvitation
+          schema: public
+  - name: Users
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: User
+          schema: public
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - isActive
+        - details
+        - primaryContact
+        - country
+        - name
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - parentCompanyId
+        - platformId
+        - updated_by
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+  - role: Approver
+    permission:
+      columns:
+        - isActive
+        - details
+        - primaryContact
+        - country
+        - name
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - parentCompanyId
+        - platformId
+        - updated_by
+      filter:
+        _and:
+          - platformId:
+              _eq: X-Hasura-Platform-Id
+          - _or:
+              - parentCompanyId:
+                  _eq: X-Hasura-Company-Id
+              - id:
+                  _eq: X-Hasura-Company-Id
+  - role: Creator
+    permission:
+      columns:
+        - isActive
+        - details
+        - primaryContact
+        - country
+        - name
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - parentCompanyId
+        - platformId
+        - updated_by
+      filter:
+        id:
+          _eq: x-hasura-company-id
+  - role: Invitee
+    permission:
+      columns:
+        - isActive
+        - details
+        - primaryContact
+        - country
+        - name
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - parentCompanyId
+        - platformId
+        - updated_by
+      filter:
+        _and:
+          - platformId:
+              _eq: X-Hasura-Platform-Id
+          - id:
+              _eq: X-Hasura-Company-Id
+  - role: Inviter
+    permission:
+      columns:
+        - isActive
+        - details
+        - primaryContact
+        - country
+        - name
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - parentCompanyId
+        - platformId
+        - updated_by
+      filter:
+        _and:
+          - platformId:
+              _eq: X-Hasura-Platform-Id
+          - _or:
+              - parentCompanyId:
+                  _eq: X-Hasura-Company-Id
+              - id:
+                  _eq: X-Hasura-Company-Id
+  - role: Platform
+    permission:
+      columns:
+        - isActive
+        - details
+        - primaryContact
+        - country
+        - name
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - parentCompanyId
+        - platformId
+        - updated_by
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+update_permissions:
+  - role: Platform
+    permission:
+      columns:
+        - isActive
+        - details
+        - primaryContact
+        - country
+        - name
+        - created_at
+        - updated_at
+        - created_by
+        - id
+        - parentCompanyId
+        - platformId
+        - updated_by
+      filter:
+        platformId:
+          _eq: x-hasura-platform-id
+      check: null
+event_triggers:
+  - name: ManageCompany
+    definition:
+      delete:
+        columns: '*'
+      enable_manual: false
+      insert:
+        columns: '*'
+      update:
+        columns: '*'
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook: https://alphams.snowkap.com/api/warp/webhook/company/manage
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: EzqUt3IXQxidMdRA
+    request_transform:
+      body:
+        action: transform
+        template: '{{$body.event}}'
+      template_engine: Kriti
+      version: 2

@@ -1,0 +1,14 @@
+mutation updateMultipleSelectInterfaceOptionsChoices(
+  $id: uuid!
+  $input: jsonb
+) {
+  update_FormField(
+    where: { id: { _eq: $id } }
+    _set: { interfaceOptions: $input }
+  ) {
+    returning {
+      id
+      interfaceOptions
+    }
+  }
+}

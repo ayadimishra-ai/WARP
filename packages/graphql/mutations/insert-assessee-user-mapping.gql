@@ -1,0 +1,19 @@
+mutation insertAssesseeUserMapping(
+  $object: [AssesseeUserMapping_insert_input!]!
+) {
+  insert_AssesseeUserMapping(
+    objects: $object
+    on_conflict: { constraint: AssesseeUserMapping_pkey }
+  ) {
+    returning {
+      id
+      parentCompanyMappingId
+      userId
+      parentUserId
+      questionId
+      formId
+      InvitationId
+      IsActive
+    }
+  }
+}

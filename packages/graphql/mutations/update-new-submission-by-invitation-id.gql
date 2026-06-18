@@ -1,0 +1,28 @@
+mutation updateNewSubmissionByInvitationId(
+  $invitationId: uuid!
+  $formId: uuid!
+  $metadata: jsonb!
+  $companyId: uuid!
+  $isManufacturing: Boolean!
+) {
+  update_FormInvitation(
+    _set: { formId: $formId }
+    where: { _and: [{ id: { _eq: $invitationId } }] }
+  ) {
+    affected_rows
+  }
+
+  update_Company(
+    _set: { metadata: $metadata, IsManufacturing: $isManufacturing }
+    where: { _and: [{ id: { _eq: $companyId } }] }
+  ) {
+    affected_rows
+  }
+
+  update_CompanyFormFundtype(
+    where: { companyId: { _eq: $companyId } }
+    _set: { formId: $formId }
+  ) {
+    affected_rows
+  }
+}

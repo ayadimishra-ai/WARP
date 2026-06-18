@@ -1,0 +1,12 @@
+query GetCompanyByName($where: Company_bool_exp) {
+  Company(where: $where) {
+    id
+    name
+    primaryContact
+    ParentCompanyMappings(where: { isActive: { _eq: true } }) {
+      ParentCompanyId
+    }
+    metadata
+    IsManufacturing
+  }
+}

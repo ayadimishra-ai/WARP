@@ -1,0 +1,55 @@
+{
+  "name": "warp",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start:docker": "turbo run start:docker",
+    "stop:docker": "turbo run stop:docker",
+    "dev:hasura": "turbo run dev --scope=\"@warp/hasura\"",
+    "dev:hasura:docker": "turbo run dev:docker --scope=\"@warp/hasura\"",
+    "dev:directus": "turbo run dev --scope=\"@warp/directus-app\"",
+    "dev:web": "turbo run dev --scope=\"@warp/web\"",
+    "codegen": "turbo run codegen --scope=\"@warp/graphql\"",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "build": "turbo run build"
+  },
+  "devDependencies": {
+    "@types/draft-js": "^0.11.18",
+    "@types/react-table": "^7.7.12",
+    "@types/uuid": "^11.0.0",
+    "eslint-config-custom": "*",
+    "prettier": "latest",
+    "turbo": "^1.6.3"
+  },
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@mantine/dropzone": "^5.3.0",
+    "@mantine/rte": "^5.4.1",
+    "@types/busboy": "^1.5.0",
+    "dompurify": "^3.3.0",
+    "draft-js": "^0.11.7",
+    "draft-js-export-html": "^1.4.1",
+    "he": "^1.2.0",
+    "quill": "^2.0.3",
+    "react-icons": "^5.4.0",
+    "react-table": "^7.8.0",
+    "uuid": "^13.0.0",
+    "zod": "^3.25.76"
+  },
+  "packageManager": "yarn@1.22.19",
+  "resolutions": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0"
+  },
+  "volta": {
+    "node": "18.20.0"
+  }
+}

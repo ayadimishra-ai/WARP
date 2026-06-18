@@ -1,0 +1,8 @@
+mutation bulkUpdateSourceFiles($SourceFiles: [SourceFiles_updates!]!) {
+  update_SourceFiles_many(updates: $SourceFiles) {
+    returning {
+      id
+      status
+    }
+  }
+}

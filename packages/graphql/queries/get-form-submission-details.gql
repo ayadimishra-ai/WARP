@@ -1,0 +1,18 @@
+query getFormSubmissionDetails($invitationId: uuid!) {
+  FormSubmission(
+    where: {
+      _and: [
+        { invitationId: { _eq: $invitationId } }
+        { isActive: { _eq: true } }
+      ]
+    }
+  ) {
+    id
+    Answers {
+      id
+      questionId
+      data
+      status
+    }
+  }
+}

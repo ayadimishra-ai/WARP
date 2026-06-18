@@ -1,0 +1,11 @@
+query getcompanyfundtypeavailability($formId: uuid, $vcCompanyId: uuid) {
+  CompanyFormFundtype(
+    where: { formId: { _eq: $formId }, vcCompanyId: { _eq: $vcCompanyId } }
+  ) {
+    id
+    companyId
+    vcCompanyId
+    formId
+    fundType
+  }
+}

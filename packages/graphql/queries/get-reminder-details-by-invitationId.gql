@@ -1,0 +1,9 @@
+query getReminderDetailsByInvitationId($invitationId: uuid!) {
+  Interim_Recommendation(where: {Interim_Answer: {FormSubmission: {invitationId: {_eq: $invitationId}}}}) {
+    id
+    expectedDate
+    recommendations
+    interim_answer_id
+    ReminderIntervalAfterDueDate
+  }
+}

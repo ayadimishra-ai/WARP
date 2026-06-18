@@ -1,0 +1,19 @@
+mutation bulkUpsertAnswerforAI(
+  $submissionId: uuid
+  $answerData: [Answer_insert_input!]!
+) {
+  delete_Answer(where: { _and: [{ submissionId: { _eq: $submissionId } }] }) {
+    affected_rows
+  }
+  insert_Answer(
+    objects: $answerData
+    on_conflict: { constraint: Answer_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+      submissionId
+      formFieldId
+    }
+  }
+}

@@ -1,0 +1,75 @@
+query getRenderFormDetails($invitationId: uuid!) {
+  FormInvitation(where: { _and: [{ id: { _eq: $invitationId } }] }) {
+    ParentCompanyMapping {
+      ParentCompanyId
+      UserId
+      ParentUserId
+    }
+    id
+    interimCheck
+    status
+    companyId
+    formId
+    Form {
+      id
+      name
+      formtype
+      isAIDataPointsAdded
+      isDelegateQuestion
+      Details {
+        focusArea
+      }
+    }
+    FormSubmissions(where: { _and: [{ isActive: { _eq: true } }] }) {
+      id
+      Answers {
+        id
+        questionId
+        formFieldId
+        data
+        status
+        updated_at
+        created_at
+        # Interim_Answers {
+        #   id
+        #   Interim_Recommendations(order_by: { created_at: asc }) {
+        #     created_at
+        #     updated_at
+        #     created_by
+        #     updated_by
+        #     status
+        #     recommendations
+        #     questionId
+        #     isActive
+        #     id
+        #     expectedDate
+        #     answeroption
+        #     ReminderIntervalAfterDueDate
+        #   }
+        #   Interim_Answer {
+        #     id
+        #   }
+        # }
+      }
+      IsCarryForward: Answers(
+        where: { Interim_Answers: { id: { _is_null: false } } }
+        limit: 1
+      ) {
+        Interim_Answers {
+          id
+        }
+      }
+      Interim_Answers(limit: 1) {
+        id
+      }
+    }
+  }
+  AssesseeUserMapping(
+    where: { _and: [{ InvitationId: { _eq: $invitationId } }] }
+  ) {
+    id
+    userId
+    questionId
+    InvitationId
+  }
+}

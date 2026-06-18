@@ -1,0 +1,30 @@
+query GetQuestionnaireList(
+  $limit: Int!
+  $offset: Int!
+  $where: Form_bool_exp
+  $orderBy: [Form_order_by!]
+) {
+  Form(limit: $limit, offset: $offset, where: $where, order_by: $orderBy) {
+    id
+    title
+    description
+    type
+    tags
+    created_at
+    updated_at
+    formtype
+    CompanyForms {
+      Company {
+        name
+      }
+    }
+    FormInvitations(limit: 1){
+      id
+    }
+  }
+  Form_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}

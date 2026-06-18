@@ -1,0 +1,7 @@
+mutation updateSourcesById($id: uuid!, $_set: Sources_set_input!) {
+  update_Sources_by_pk(pk_columns: { id: $id }, _set: $_set) {
+    id
+    sourceFilesId
+    updated_at
+  }
+}

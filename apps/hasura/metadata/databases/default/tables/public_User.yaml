@@ -1,0 +1,333 @@
+table:
+  name: User
+  schema: public
+object_relationships:
+  - name: Company
+    using:
+      foreign_key_constraint_on: companyId
+array_relationships:
+  - name: FormSubmissions
+    using:
+      foreign_key_constraint_on:
+        column: submittedBy
+        table:
+          name: FormSubmission
+          schema: public
+  - name: FormSubmissionsApproved
+    using:
+      foreign_key_constraint_on:
+        column: approvedBy
+        table:
+          name: FormSubmission
+          schema: public
+  - name: UserRoles
+    using:
+      foreign_key_constraint_on:
+        column: userId
+        table:
+          name: UserRole
+          schema: public
+select_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - isActive
+        - details
+        - email
+        - image
+        - name
+        - phone
+        - created_at
+        - emailVerified
+        - phoneVerified
+        - updated_at
+        - companyId
+        - created_by
+        - id
+        - updated_by
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+  - role: Approver
+    permission:
+      columns:
+        - isActive
+        - details
+        - email
+        - image
+        - name
+        - phone
+        - created_at
+        - emailVerified
+        - phoneVerified
+        - updated_at
+        - companyId
+        - created_by
+        - id
+        - updated_by
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - id:
+              _eq: x-hasura-user-id
+  - role: Creator
+    permission:
+      columns:
+        - isActive
+        - details
+        - email
+        - image
+        - name
+        - phone
+        - created_at
+        - emailVerified
+        - phoneVerified
+        - updated_at
+        - companyId
+        - created_by
+        - id
+        - updated_by
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - id:
+              _eq: x-hasura-user-id
+  - role: Invitee
+    permission:
+      columns:
+        - isActive
+        - details
+        - email
+        - image
+        - name
+        - phone
+        - created_at
+        - emailVerified
+        - phoneVerified
+        - updated_at
+        - companyId
+        - created_by
+        - id
+        - updated_by
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - id:
+              _eq: x-hasura-user-id
+  - role: Inviter
+    permission:
+      columns:
+        - isActive
+        - details
+        - email
+        - image
+        - name
+        - phone
+        - created_at
+        - emailVerified
+        - phoneVerified
+        - updated_at
+        - companyId
+        - created_by
+        - id
+        - updated_by
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - id:
+              _eq: x-hasura-user-id
+  - role: Platform
+    permission:
+      columns:
+        - isActive
+        - details
+        - email
+        - image
+        - name
+        - phone
+        - created_at
+        - emailVerified
+        - phoneVerified
+        - updated_at
+        - companyId
+        - created_by
+        - id
+        - updated_by
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+update_permissions:
+  - role: Analytics
+    permission:
+      columns:
+        - isActive
+        - details
+        - email
+        - image
+        - name
+        - phone
+        - created_at
+        - emailVerified
+        - phoneVerified
+        - updated_at
+        - companyId
+        - created_by
+        - id
+        - updated_by
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+      check: null
+  - role: Approver
+    permission:
+      columns:
+        - details
+        - image
+        - name
+        - phone
+        - updated_at
+        - updated_by
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - id:
+              _eq: x-hasura-user-id
+      check: null
+  - role: Creator
+    permission:
+      columns:
+        - details
+        - image
+        - name
+        - phone
+        - updated_at
+        - updated_by
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - id:
+              _eq: x-hasura-user-id
+      check: null
+  - role: Invitee
+    permission:
+      columns:
+        - details
+        - image
+        - name
+        - phone
+        - updated_at
+        - updated_by
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - id:
+              _eq: x-hasura-user-id
+      check: null
+  - role: Inviter
+    permission:
+      columns:
+        - details
+        - image
+        - name
+        - phone
+        - updated_at
+        - updated_by
+      filter:
+        _and:
+          - isActive:
+              _eq: true
+          - id:
+              _eq: x-hasura-user-id
+      check: null
+  - role: Platform
+    permission:
+      columns:
+        - isActive
+        - details
+        - email
+        - image
+        - name
+        - phone
+        - created_at
+        - emailVerified
+        - phoneVerified
+        - updated_at
+        - companyId
+        - created_by
+        - id
+        - updated_by
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
+      check: null
+event_triggers:
+  - name: ManageUser_Delete
+    definition:
+      delete:
+        columns: '*'
+      enable_manual: false
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook: https://alphams.snowkap.com/api/warp/webhook/user/manage
+    headers:
+      - name: Authorization
+        value: EzqUt3IXQxidMdRA
+      - name: Content-Type
+        value: application/json
+    request_transform:
+      body:
+        action: transform
+        template: '{{$body.event}}'
+      template_engine: Kriti
+      version: 2
+  - name: ManageUser_Insert
+    definition:
+      enable_manual: false
+      insert:
+        columns: '*'
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook: https://alphams.snowkap.com/api/warp/webhook/user/manage
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: EzqUt3IXQxidMdRA
+    request_transform:
+      body:
+        action: transform
+        template: '{{$body.event}}'
+      template_engine: Kriti
+      version: 2
+  - name: ManageUser_Update
+    definition:
+      enable_manual: false
+      update:
+        columns: '*'
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook: https://alphams.snowkap.com/api/warp/webhook/user/manage
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: EzqUt3IXQxidMdRA
+    request_transform:
+      body:
+        action: transform
+        template: '{{$body.event}}'
+      template_engine: Kriti
+      version: 2

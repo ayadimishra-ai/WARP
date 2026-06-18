@@ -1,0 +1,13 @@
+query getProcessingDataByInvitationId($invitationId: uuid!) {
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    Form {
+      title
+      formtype
+    }
+    Company {
+      name
+    }
+    status
+    metadata
+  }
+}

@@ -1,0 +1,9 @@
+mutation updateFormSubmissionStatus($submissionId: uuid!, $status: String!) {
+  update_FormSubmission_by_pk(
+    pk_columns: { id: $submissionId }
+    _set: { status: $status }
+  ) {
+    id
+    status
+  }
+}

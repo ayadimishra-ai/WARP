@@ -1,0 +1,5 @@
+query getinvitationSkipStatus($formInvitationId: uuid!) {
+  FormInvitation(where: { id: { _eq: $formInvitationId } }) {
+    status
+  }
+}

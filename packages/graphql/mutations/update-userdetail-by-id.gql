@@ -1,0 +1,19 @@
+mutation updateUserDetailById($input: [User_updates!]!) {
+  update_User_many(updates: $input) {
+    affected_rows
+    returning {
+      id
+      name
+      email
+      emailVerified
+      phone
+      phoneVerified
+      image
+      details
+      companyId
+      created_by
+      updated_by
+      isActive
+    }
+  }
+}

@@ -1,0 +1,2 @@
+CREATE TABLE "public"."AnswerFile" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "created_at" timestamptz NOT NULL DEFAULT now(), "name" Text NOT NULL, "type" text NOT NULL, "sizeInBytes" Text NOT NULL, "provider" Text NOT NULL, "path" Text NOT NULL, "answerId" UUID NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("answerId") REFERENCES "public"."Answer"("id") ON UPDATE restrict ON DELETE restrict);COMMENT ON TABLE "public"."AnswerFile" IS E'Answer - uploaded files';
+CREATE EXTENSION IF NOT EXISTS pgcrypto;

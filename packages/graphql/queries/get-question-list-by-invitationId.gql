@@ -1,0 +1,25 @@
+query getQuestionListByInvitationId($invitationId: uuid) {
+  FormInvitation(
+    where: {
+      _and: [{ id: { _eq: $invitationId } }, { isActive: { _eq: true } }]
+    }
+  ) {
+    Form {
+      id
+      name
+      Sections {
+        id
+        Questions {
+          id
+          content
+          FormFields {
+            id
+            questionId
+            sectionId
+            fieldOptions
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+mutation UpdateUserAllocationMetadata($id: uuid!, $metadata: jsonb!) {
+  update_AIChatUserAllocation(
+    where: {id: {_eq: $id}}, 
+    _set: {metadata: $metadata}
+  ) {
+    affected_rows
+    returning {
+      id
+      metadata
+      updatedAt
+    }
+  }
+}

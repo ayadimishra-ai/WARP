@@ -1,0 +1,2 @@
+CREATE TABLE "public"."CompanyForm" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "companyId" UUID NOT NULL, "formId" UUID NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("companyId") REFERENCES "public"."Company"("id") ON UPDATE restrict ON DELETE restrict, FOREIGN KEY ("formId") REFERENCES "public"."Form"("id") ON UPDATE restrict ON DELETE restrict, UNIQUE ("companyId", "formId"));COMMENT ON TABLE "public"."CompanyForm" IS E'Company and Form Relation';
+CREATE EXTENSION IF NOT EXISTS pgcrypto;

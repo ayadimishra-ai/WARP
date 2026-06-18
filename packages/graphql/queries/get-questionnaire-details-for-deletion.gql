@@ -1,0 +1,19 @@
+query GetQuestionnaireDetailsForDeletion($formid: uuid!) {
+  Form(where: { id: { _eq: $formid } }) {
+    Sections {
+      id
+      Questions {
+        id
+      }
+    }
+    FormFields {
+      id
+    }
+    FormInvitations {
+      id
+      FormSubmissions {
+        id
+      }
+    }
+  }
+}

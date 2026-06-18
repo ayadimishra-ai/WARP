@@ -1,0 +1,14 @@
+query getLatestAnsweredQuestionId($invitationId: uuid) {
+  FormSubmission(where: { invitationId: { _eq: $invitationId } }) {
+    id
+    invitationId
+    Answers(
+      order_by: { updated_at: desc }
+      limit: 1
+      where: { created_by: { _is_null: false } }
+    ) {
+      id
+      questionId
+    }
+  }
+}

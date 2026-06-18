@@ -1,0 +1,34 @@
+query getSuggestionByInvitationAndFormFieldDetails(
+  $invitationId: uuid!
+  $formFieldId: uuid!
+) {
+  Suggestions(
+    where: {
+      formInvitationId: { _eq: $invitationId }
+      formFieldId: { _eq: $formFieldId }
+    }
+  ) {
+    formFieldId
+    FormField {
+      interface
+    }
+    id
+    suggestion
+    isSelected
+    SuggestionSourceMappings(order_by: { Source: { type: asc } }) {
+      suggestionPageNo
+      suggestionInfoContent
+      Source {
+        id
+        type
+        url
+        SourceFile {
+          id
+          originalFileUrl
+          originalFileName
+          created_at
+        }
+      }
+    }
+  }
+}

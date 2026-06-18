@@ -1,0 +1,8 @@
+query GetQuestionnaireFiltersData {
+  FormTypes: Form(distinct_on: [type]) {
+    type
+  }
+  FormTags: Form(distinct_on: [tags], where: { tags: { _is_null: false } }) {
+    tags
+  }
+}

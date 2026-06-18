@@ -1,0 +1,9 @@
+query GetGlobalMasterByEmailOnSubmission {
+  GlobalMaster(
+    where: { type: { _eq: "SendSuccessEmailOnSubmissionFormList" } }
+  ) {
+    id
+    type
+    data
+  }
+}

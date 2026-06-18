@@ -1,0 +1,19 @@
+query GetSubscriptionById($id: uuid!) {
+  AIChatSubscription(where: {id: {_eq: $id}}) {
+    id
+    companyId
+    subscriptionName
+    hasDocumentRepo
+    hasESG
+    hasBRSR
+    textualLimit
+    graphicalLimit
+    startDate
+    endDate
+    isActive
+    note
+    metadata
+    createdAt
+    updatedAt
+  }
+}

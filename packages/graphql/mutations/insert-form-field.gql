@@ -1,0 +1,19 @@
+mutation InsertFormField($objects: [FormField_insert_input!]!) {
+  insert_FormField(objects: $objects) {
+    returning {
+      id
+      formId
+      sectionId
+      questionId
+      field
+      type
+      interface
+      seqIndex
+      dataPoint
+      subtheme
+      created_at
+      updated_at
+    }
+    affected_rows
+  }
+}

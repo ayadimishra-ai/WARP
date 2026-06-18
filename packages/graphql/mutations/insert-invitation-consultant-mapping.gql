@@ -1,0 +1,15 @@
+mutation insertInvitationConsultantMapping(
+  $object: [InvitationConsultantMapping_insert_input!]!
+) {
+  insert_InvitationConsultantMapping(
+    objects: $object
+    on_conflict: { constraint: InvitationConsultantMapping_pkey }
+  ) {
+    returning {
+      id
+      invitationId
+      consultantUserId
+      consultantCompanyId
+    }
+  }
+}

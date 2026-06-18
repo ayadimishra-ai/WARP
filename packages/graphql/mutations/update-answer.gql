@@ -1,0 +1,9 @@
+mutation updateAnswer($AnswerUpdate: [Answer_updates!]!) {
+  update_Answer_many(updates: $AnswerUpdate) {
+    returning {
+      id
+      questionId
+      submissionId
+    }
+  }
+}

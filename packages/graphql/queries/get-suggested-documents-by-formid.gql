@@ -1,0 +1,41 @@
+query GetSuggestedDocuments(
+  $formId: uuid!
+  $invitationId: uuid!
+  $type: String!
+) {
+  Form(where: { id: { _eq: $formId } }) {
+    id
+    name
+    title
+  }
+  SuggestedDocuments(
+    where: { formId: { _eq: $formId } }
+    order_by: { isOther: asc }
+  ) {
+    id
+    title
+    maxSize
+    sampleFileUrl
+    seqIndex
+    acceptedFormats
+    updated_at
+    isOther
+  }
+  Sources(
+    where: { formInvitationId: { _eq: $invitationId }, type: { _eq: $type } }
+  ) {
+    id
+    SourceFile {
+      id
+      originalFileName
+      originalFileUrl
+      totalDataPointsAdded
+      error
+    }
+    SuggestionSourceMappings_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
