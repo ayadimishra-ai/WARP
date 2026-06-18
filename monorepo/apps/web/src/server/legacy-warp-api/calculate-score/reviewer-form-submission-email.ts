@@ -47,7 +47,7 @@ export async function processFormSubmissionEmail(
 
         return {
             status: 500,
-            result: { error: error || "Internal Server Error" },
+            result: { error: error?.message || "Internal Server Error" },
         };
     }
 }
@@ -74,7 +74,7 @@ const formSubmissionEmailHandler: NextApiHandler = async (req, res) => {
             stack: error.stack,
         });
         await uploadError("exception-logs", "exception-logs", errorContent);
-        res.status(500).json({ error: error || "Internal Server Error" });
+        res.status(500).json({ error: error?.message || "Internal Server Error" });
     }
 };
 

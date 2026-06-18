@@ -165,7 +165,7 @@ class GHGActivity extends Component {
                       type: "confirm-file-delete",
                       fileId: messageData.fileId,
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
                 "No, Keep File",
@@ -191,7 +191,7 @@ class GHGActivity extends Component {
                       type: "manual-entry-confirm-cancel-response",
                       data: { confirmedDiscard: false },
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
                 "Yes, Discard",
@@ -203,7 +203,7 @@ class GHGActivity extends Component {
                       type: "manual-entry-confirm-cancel-response",
                       data: { confirmedDiscard: true },
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 }
               );
@@ -242,7 +242,7 @@ class GHGActivity extends Component {
                         selectedRowIdsToDelete: deleteSelectedRowIds,
                       },
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
                 "NO, KEEP IT",

@@ -60,7 +60,7 @@ class DataUploadLogSummary extends Component {
                 if (iFrame && iFrame.contentWindow) {
                   iFrame.contentWindow.postMessage(
                     JSON.stringify({ type: "data-log-approval-confirmed", data: rowData }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 }
               },

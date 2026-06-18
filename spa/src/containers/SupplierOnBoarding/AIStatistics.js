@@ -146,7 +146,7 @@ class AIStatistics extends Component {
                           token: localStorage.getItem("tokenId"),
                           serviceurl: getServiceUrl(),
                       }),
-                      "*"
+                      WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                   break;
             case "OPEN_YOUTUBE_VIDEO": {
@@ -222,7 +222,7 @@ class AIStatistics extends Component {
                     type: "warp-upload-document-page",
                     uploadPage: messageData.data.actionName
                 }),
-                "*"
+                WARP_Link ? new URL(WARP_Link).origin : "*"
             );
             break;
            

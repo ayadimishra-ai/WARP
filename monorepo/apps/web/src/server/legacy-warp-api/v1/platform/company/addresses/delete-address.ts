@@ -46,7 +46,7 @@ export default async function deleteaddresshandler(
       stack: error.stack,
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 }
 //export default ApiErrorGuard(ApiMethodGuard(updateaddresshandler, "Delete"));

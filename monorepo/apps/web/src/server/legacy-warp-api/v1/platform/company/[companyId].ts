@@ -52,6 +52,6 @@ export default async function handler(
       stack: error.stack
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 }

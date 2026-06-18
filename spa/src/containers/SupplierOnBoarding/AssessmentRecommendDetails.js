@@ -251,7 +251,7 @@ class AssessmentRecommendDetails extends Component {
                   //commentcount: this.state.formfieldcommentscount,
                   invitationId: this.props.match.params.warpInvitationId,
                 }),
-                "*"
+                WARP_Link ? new URL(WARP_Link).origin : "*"
               );
               var iframe = document.getElementById("listIframe1");
               iframe.src = iframe.src;
@@ -272,7 +272,7 @@ class AssessmentRecommendDetails extends Component {
                   questionId: questionId_Comment,
                   invitationId: this.props.match.params.warpInvitationId,
                 }),
-                "*"
+                WARP_Link ? new URL(WARP_Link).origin : "*"
               );
               var iframeCommentRecomm = document.getElementById("listIframe1");
               iframeCommentRecomm.src = iframeCommentRecomm.src;
@@ -501,7 +501,7 @@ class AssessmentRecommendDetails extends Component {
                       type: "snowkap-isRefreshPage",
                       questionId: params_new,
                     }),
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                 }
               }
@@ -719,7 +719,7 @@ class AssessmentRecommendDetails extends Component {
                       response: true,
                       step: step,
                     }),
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                 },
                 "I want to review",
@@ -743,7 +743,7 @@ class AssessmentRecommendDetails extends Component {
                       step: buttonName,
                       nextActivetabId: activeTab,
                     }),
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                 },
                 "Cancel",
@@ -757,7 +757,7 @@ class AssessmentRecommendDetails extends Component {
                       step: buttonName,
                       nextActivetabId: activeTab,
                     }),
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                 }
               );
@@ -770,7 +770,7 @@ class AssessmentRecommendDetails extends Component {
                   token: localStorage.getItem("tokenId"),
                   serviceurl: getServiceUrl(),
                 }),
-                "*"
+                WARP_Link ? new URL(WARP_Link).origin : "*"
               );
               break;
             case "close-main-loader":
@@ -814,7 +814,7 @@ class AssessmentRecommendDetails extends Component {
                   JSON.stringify({
                     type: "reCaptchaValidation",
                   }),
-                  "*"
+                  WARP_Link ? new URL(WARP_Link).origin : "*"
                 );
               } else {
                 alert("Captcha verification failed. Please try again.");
@@ -1662,7 +1662,7 @@ class AssessmentRecommendDetails extends Component {
                         {
                           type: "PARENT_CLICK_OUTSIDE",
                         },
-                        "*"
+                        WARP_Link ? new URL(WARP_Link).origin : "*"
                       );
                     }
                   };
