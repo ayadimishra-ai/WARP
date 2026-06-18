@@ -5,28 +5,7 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // Defensive body parsing: pages-api-handler hands us `undefined` when the
-  // request has no JSON body or fails to parse, which made the prior code
-  // crash with `JSON.parse(undefined)`.
-  let parsedBody: any = req.body;
-  if (typeof parsedBody === "string") {
-    try {
-      parsedBody = JSON.parse(parsedBody);
-    } catch {
-      parsedBody = {};
-    }
-  }
-  if (parsedBody === null || parsedBody === undefined) {
-    parsedBody = {};
-  }
+  const parsedBody: any = req.body ?? {};
 
   const formId: string = parsedBody.formId ?? "";
   const invitationId: string = parsedBody.invitationId ?? "";

@@ -34,11 +34,15 @@ const documentvalidationHandler: NextApiHandler = async (req, res) => {
         accessToken.indexOf("Bearer") === -1
           ? accessToken
           : accessToken.replaceAll("Bearer ", "").trim();
-      const decodedToken: any = jwt.decode(accessToken);
-      session = parseHasuraClaims(decodedToken, accessToken);
+      try {
+        const decodedToken: any = jwt.verify(accessToken, process.env.HASURA_GRAPHQL_JWT_SECRET!);
+        session = parseHasuraClaims(decodedToken, accessToken);
+      } catch {
+        // invalid token — session stays undefined
+      }
     }
     if (!session) {
-      return res.status(500).json({
+      return res.status(401).json({
         error: {
           message: "Unauthorized",
         },
@@ -128,7 +132,7 @@ const documentvalidationHandler: NextApiHandler = async (req, res) => {
       stack: error.stack,
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 };
 

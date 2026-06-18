@@ -1,6 +1,7 @@
 import { getSdkInstance } from "@/graphql/server/sdk";
 import { getServerEnv } from "@/lib/env/env.server";
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 
 export async function GET(
   req: NextRequest,
@@ -15,9 +16,16 @@ export async function GET(
       );
     }
     const env = await getServerEnv();
-    
-    const authHeader = req.headers.get("authorization");
-    if (authHeader !== env.AI_SERVICES_AUTHORIZATION) {
+
+    const authHeader = req.headers.get("authorization") ?? "";
+    const expected = env.AI_SERVICES_AUTHORIZATION;
+    const authBuf = Buffer.from(authHeader.padEnd(expected.length));
+    const expectedBuf = Buffer.from(expected);
+    const isAuthorized =
+      authBuf.length === expectedBuf.length &&
+      crypto.timingSafeEqual(authBuf, expectedBuf);
+
+    if (!isAuthorized) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 

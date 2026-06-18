@@ -5,6 +5,7 @@ import Spinner from "../../UI/Spinner/Spinner";
 import { withStyles } from "@material-ui/core/styles";
 import { ReCaptchaContext } from "../../google-invisible-recaptcha/RecaptchaProvider";
 import { popupAlert } from "../../UI/Popups/popup";
+const GHGEstimate_Link = GetGHGEstimationUrl();
 class WasteManualEntryActivityData extends Component {
   static contextType = ReCaptchaContext;
   constructor(props) {
@@ -71,7 +72,7 @@ class WasteManualEntryActivityData extends Component {
                         selectedRowIdsToDelete: this.state.selectedRowIdsToDelete
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
                 "NO, KEEP IT",
@@ -103,7 +104,7 @@ class WasteManualEntryActivityData extends Component {
                        confirmedDiscard: false,
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                  },
                 "Yes, Discard",
@@ -118,7 +119,7 @@ class WasteManualEntryActivityData extends Component {
                        confirmedDiscard: true,
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
               );

@@ -24,12 +24,12 @@ async function handleGET(request: NextRequest) {
         return NextResponse.json(pages);
 
     } catch (error) {
+        console.error("Error in GetMappedPagesDetail API:", error);
         return NextResponse.json(
             {
                 status: 500,
                 message: 'Failed to fetch mapped pages details',
-                success: false,
-                error: error instanceof Error ? error.message : 'Unknown error'
+                success: false
             },
             { status: 500 }
         );

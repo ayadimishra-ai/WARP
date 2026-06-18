@@ -6,18 +6,8 @@ const updateFormInvitation = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // Handle OPTIONS preflight requests
-
   try {
-    const { invitationId, invitationStatus } = JSON.parse(req.body);
+    const { invitationId, invitationStatus } = req.body ?? {};
     if (req.method === "POST") {
       // fetch existing metadata (SDK types may not include metadata — cast to any)
       const pageData =

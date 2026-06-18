@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
-    const headers = request.headers;
-    const allHeaders = Object.fromEntries(headers.entries());
-
+// Test endpoint for rate-limit verification. Header reflection removed to prevent
+// inadvertent disclosure of internal proxy headers or auth tokens to callers.
+export async function GET(_request: Request) {
     return NextResponse.json({
         message: 'Rate limit test endpoint',
-        headers: allHeaders,
         timestamp: new Date().toISOString()
     });
 }

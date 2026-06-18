@@ -530,29 +530,8 @@ const triggerOPSToIQCurationForInvitation = async (invitation: {
 
 // existing handler
 const AIprocessing: NextApiHandler = async (req, res) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // Defensive body parsing: pages-api-handler returns `req.body === undefined`
-  // when the request has no JSON body or when JSON parsing fails. Without this
-  // guard, `req.body.process` crashes the handler with "Cannot read properties
-  // of undefined". Accept JSON string, object, or null/undefined.
-  let parsedBody: any = req.body;
-  if (typeof parsedBody === "string") {
-    try {
-      parsedBody = JSON.parse(parsedBody);
-    } catch {
-      parsedBody = {};
-    }
-  }
-  if (parsedBody === null || parsedBody === undefined) {
-    parsedBody = {};
-  }
+  // Body is already parsed by pagesApiHandler — no need for JSON.parse.
+  const parsedBody: any = req.body ?? {};
 
   // Reassign so downstream `req.body.data` references keep working.
   (req as any).body = parsedBody;

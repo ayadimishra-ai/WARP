@@ -187,6 +187,8 @@ class AssessmentDetails extends Component {
   }
 
   handleMessage = async (event) => {
+    const allowedOrigins = [WARP_Link ? new URL(WARP_Link).origin : null].filter(Boolean);
+    if (allowedOrigins.length > 0 && !allowedOrigins.includes(event.origin)) return;
     event.preventDefault();
     let dataType = typeof event.data;
     if (dataType === "string") {
@@ -271,7 +273,7 @@ class AssessmentDetails extends Component {
                 commentcount: this.state.formfieldcommentscount,
                 invitationId: this.props.match.params.warpInvitationId,
               }),
-              "*"
+              WARP_Link ? new URL(WARP_Link).origin : "*"
             );
 
             var iframe = document.getElementById("listIframe1");
@@ -293,7 +295,7 @@ class AssessmentDetails extends Component {
                 questionId: questionId_Comment,
                 invitationId: this.props.match.params.warpInvitationId,
               }),
-              "*"
+              WARP_Link ? new URL(WARP_Link).origin : "*"
             );
 
             var iframeCommentRecomm = document.getElementById("listIframe1");
@@ -1037,7 +1039,7 @@ this.setState({ loading: false });
                 // Submit callback
                 const formSubmitIframe = document.getElementById("listIframe1");
                 if (formSubmitIframe && formSubmitIframe.contentWindow) {                  
-                  formSubmitIframe.contentWindow.postMessage({ isSubmitted: true }, "*");
+                  formSubmitIframe.contentWindow.postMessage({ isSubmitted: true }, WARP_Link ? new URL(WARP_Link).origin : "*");
                 }
               },
               null, // negetiveActionBtn
@@ -1940,7 +1942,7 @@ this.setState({ loading: false });
               width: window.innerWidth,
               timestamp: Date.now(),
             },
-            "*"
+            WARP_Link ? new URL(WARP_Link).origin : "*"
           );
         }
       });

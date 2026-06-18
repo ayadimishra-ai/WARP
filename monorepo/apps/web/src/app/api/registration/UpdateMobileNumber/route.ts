@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { updateCompanyMobileNumber } from '@/server/services/update-cmp-mobile-number.service';
+import { withEmailOrIpRateLimitWithProgressiveDelay } from '@/lib/progressive-delay-rate-limit';
 
-export async function POST(request: Request) {
+async function handlePOST(request: NextRequest) {
     try {
         const userData = await request.json();
-        
+
         // Validate required fields
         if (!userData.email) {
             return NextResponse.json(
@@ -25,13 +26,10 @@ export async function POST(request: Request) {
     } catch (error: unknown) {
         console.error('Mobile number update error:', error);
 
-        let errorMessage = 'Internal server error';
-        let status = 500;
-
-        if (error instanceof Error) {
-            errorMessage = error.message;
-            status = error.message.includes('already exists') ? 409 : 500;
-        }
+        const isConflict =
+            error instanceof Error && error.message.includes('already exists');
+        const status = isConflict ? 409 : 500;
+        const errorMessage = isConflict ? 'Mobile number already exists' : 'Internal server error';
 
         return NextResponse.json(
             { error: errorMessage },
@@ -39,3 +37,11 @@ export async function POST(request: Request) {
         );
     }
 }
+
+export const POST = withEmailOrIpRateLimitWithProgressiveDelay(handlePOST, {
+    limitInterval: 1,
+    maxRequestCount: 30,
+    progressiveDelay: true
+});
+
+export const dynamic = 'force-dynamic';

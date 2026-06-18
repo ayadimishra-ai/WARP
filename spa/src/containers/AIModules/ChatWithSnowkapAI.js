@@ -182,7 +182,7 @@ class ChatWithSnowkapAI extends Component {
                 iframe.contentWindow.postMessage({
                   type: 'PARENT_CLICK_OUTSIDE',
                   source: 'parent-window'
-                }, '*');
+                }, WARP_Link ? new URL(WARP_Link).origin : '*');
               } catch (e) {
                 console.log('Cannot send message to iframe:', e);
               }

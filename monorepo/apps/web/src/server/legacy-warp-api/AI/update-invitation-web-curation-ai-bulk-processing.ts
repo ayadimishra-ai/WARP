@@ -11,23 +11,13 @@ const updateInvitationWebCurationAIBulkProcessing = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
   // handle OPTIONS preflight quickly
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
   try {
-    const rawBody = req.body;
-    const parsedBody =
-      typeof rawBody === "string" ? JSON.parse(rawBody) : rawBody ?? {};
+    const parsedBody = req.body ?? {};
 
     const { formId, invitationId, AIData, companyId, userId } = parsedBody;
 

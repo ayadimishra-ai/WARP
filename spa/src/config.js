@@ -67,7 +67,7 @@ export function getDeliveryLocationElasticIndex() {
   p =
     getWebsiteGUID() +
     "_" +
-    localStorage.companyGuid.toLocaleLowerCase() +
+    (localStorage.getItem('companyGuid') || '').toLocaleLowerCase() +
     "_deliverylocation";
   q = "deliverylocationvm/_search";
   host = _elasticHost + p + "/" + q;
@@ -300,7 +300,7 @@ export function getFirestoreNotificationCount() {
 }
 
 export function googleCaptcha() {
-  return "6LdgByMeAAAAAEbrnp1F5huxdXElhlcHS83PwISr";
+  return process.env.REACT_APP_RECAPTCHA_SITE_KEY || "6LdgByMeAAAAAEbrnp1F5huxdXElhlcHS83PwISr";
 }
 
 export function getLabelText(resources, defaultMessage) {
@@ -454,7 +454,7 @@ export function getElasticSearchCredentials() {
 }
 
 export function googleInvisibleCaptchaSiteKey(){
-  return "6LeqHOUrAAAAAH8AOMu82o7ejivbiYJ98735RE2X";
+  return process.env.REACT_APP_RECAPTCHA_INVISIBLE_SITE_KEY || "6LeqHOUrAAAAAH8AOMu82o7ejivbiYJ98735RE2X";
 }
 
 export async function getopsbuyerSupplierMappings() {

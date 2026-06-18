@@ -24,12 +24,12 @@ async function handlePOST(request: NextRequest) {
         return NextResponse.json(reportDetails);
 
     } catch (error) {
+        console.error("Error in PowerBiTokenGeneration API:", error);
         return NextResponse.json(
             {
                 status: 500,
                 message: 'Failed to generate Power BI token',
-                success: false,
-                error: error instanceof Error ? error.message : 'Unknown error'
+                success: false
             },
             { status: 500 }
         );

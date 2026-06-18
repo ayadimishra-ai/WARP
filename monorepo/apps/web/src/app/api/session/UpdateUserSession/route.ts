@@ -10,7 +10,6 @@ export async function POST(request: Request) {
         const userId = request.headers.get('userId');
         const browserToken = request.headers.get('browserToken');
 
-        console.log("userId", userId)
         // Validate request data
         if (!PlatformToken) {
             return NextResponse.json({

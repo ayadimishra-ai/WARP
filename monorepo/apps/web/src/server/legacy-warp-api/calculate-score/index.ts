@@ -18,12 +18,14 @@ import { parseHasuraClaims } from "@/modules/warp/packages/shared/utils/auth-ses
 import jsonata from "jsonata";
 import jwt from "jsonwebtoken";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-let recommendationWithFormfieldData: any = [];
+// NOTE: recommendationWithFormfieldData is passed as a parameter (not module-level)
+// to prevent shared module state from corrupting concurrent requests.
 const fillrecommendationArray = async (
   eachobjectitem: any,
   question: any,
   invitedBy: any,
-  isAnswer: boolean
+  isAnswer: boolean,
+  recommendationWithFormfieldData: any[]
 ) => {
   for (let i = 0; i < eachobjectitem.length; i++) {
     let datas: any = {};
@@ -185,6 +187,8 @@ const calculateScore = async (
   const sectionScoreInput: any = {};
   const companyId = result.FormInvitation[0]?.companyId;
   const finalResult: FormResult_Insert_Input[] = [];
+  // Local per-request accumulator — must NOT be module-level (concurrent request safety)
+  const recommendationWithFormfieldData: any[] = [];
   let clonedeepInterimCheck: any = cloneDeep(
     result.FormInvitation[0]?.interimCheck
   );
@@ -315,7 +319,8 @@ const calculateScore = async (
                   toFillrecommendation,
                   question,
                   invitedBy,
-                  false
+                  false,
+                  recommendationWithFormfieldData
                 );
               }
               let eachobjectitem = Object.entries(_questionScoreInput);
@@ -324,7 +329,8 @@ const calculateScore = async (
                   eachobjectitem,
                   question,
                   invitedBy,
-                  true
+                  true,
+                  recommendationWithFormfieldData
                 );
               }
             }
@@ -574,7 +580,7 @@ const calculateScore = async (
                 await sdk.bulkInsertInterimRecommendation({
                   interinm_recommendation: interimRecommend,
                 });
-              recommendationWithFormfieldData = [];
+              recommendationWithFormfieldData.splice(0); // clear after processing
             }
           }
         }
@@ -712,7 +718,7 @@ export const processScoreCalculation = async (
 
     return {
       status: 500,
-      result: { error: error || "Internal Server Error" },
+      result: { error: error?.message || "Internal Server Error" },
     };
   }
 };
@@ -723,13 +729,18 @@ const calculateScoreHandler: NextApiHandler = async (req, res) => {
   try {
     let invitationStatus: string = FormInvitationStatus.Submitted;
 
+    let session: any = null;
     if (!!req?.headers?.authorization) {
       const accessToken = String(req.headers.authorization);
-      const decodedToken: any = jwt.decode(accessToken);
-      let session = parseHasuraClaims(decodedToken, accessToken);
-
-      // if (session?.user?.role === AppRoles.Approver)
-      //   invitationStatus = FormInvitationStatus.Approved;
+      try {
+        const decodedToken: any = jwt.verify(accessToken, process.env.HASURA_GRAPHQL_JWT_SECRET!);
+        session = parseHasuraClaims(decodedToken, accessToken);
+      } catch {
+        // invalid token — session stays null
+      }
+    }
+    if (!session) {
+      return res.status(401).json({ error: { message: "Unauthorized" } });
     }
 
     const result = await processScoreCalculation(
@@ -748,7 +759,7 @@ const calculateScoreHandler: NextApiHandler = async (req, res) => {
       stack: error.stack,
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 };
 

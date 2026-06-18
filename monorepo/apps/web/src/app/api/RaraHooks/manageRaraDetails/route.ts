@@ -12,8 +12,9 @@ export async function POST(req: NextRequest) {
         // Success: return data and status 200
         return NextResponse.json(response, { status: 200 });
     } catch (error: any) {
+        console.error("[RaraHooks/manageRaraDetails] Unhandled error:", error);
         return NextResponse.json(
-            { code: 500, message: "Internal server error 13" + error, error: error?.message || error },
+            { code: 500, message: "Internal server error" },
             { status: 500 }
         );
     }

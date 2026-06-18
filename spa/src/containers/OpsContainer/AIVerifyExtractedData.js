@@ -145,7 +145,7 @@ class AIVerifyExtractedData extends Component {
                     type: "ai-verify-discard-clicked",
                     fileId: this.state.fileId,
                   }),
-                  "*"
+                  GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                 );
               }
             };
@@ -175,7 +175,7 @@ class AIVerifyExtractedData extends Component {
                         type: "ai-verify-extracted-data-close",
                         fileId: this.state.fileId,
                       }),
-                      "*"
+                      GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                     );
                   }
                 }
@@ -208,7 +208,7 @@ class AIVerifyExtractedData extends Component {
                         type: "DeleteMeterConfirmed",
                         meterIndex: messageData.meterIndex, // Pass the meter index back
                       }),
-                      "*"
+                      GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                     );
                   }
                 },

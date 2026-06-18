@@ -785,7 +785,7 @@ class Assessments extends Component {
                   JSON.stringify({
                     type: "reCaptchaValidation",
                   }),
-                  "*"
+                  WARP_Link ? new URL(WARP_Link).origin : "*"
                 );
               } else {
                 alert("Captcha verification failed. Please try again.");
@@ -1385,7 +1385,7 @@ class Assessments extends Component {
                   JSON.stringify({
                     type: "reCaptchaValidation",
                   }),
-                  "*"
+                  WARP_Link ? new URL(WARP_Link).origin : "*"
                 );
               } else {
                 alert("Captcha verification failed. Please try again.");

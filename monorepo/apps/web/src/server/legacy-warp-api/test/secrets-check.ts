@@ -1,8 +1,22 @@
 // Test API route to verify secrets are loaded
+import crypto from "crypto";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { secretsManagerService } from "@/modules/warp/packages/secrets";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    // Guard: this route exposes secret presence metadata — require the
+    // internal shared key before responding.
+    const expectedKey = process.env["WARP_INTERNAL_SHARED_KEY"];
+    const incomingKey = req.headers["x-warp-shared-key"];
+    if (
+        !expectedKey ||
+        typeof incomingKey !== "string" ||
+        !incomingKey ||
+        !crypto.timingSafeEqual(Buffer.from(incomingKey), Buffer.from(expectedKey))
+    ) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
     try {
         // Read directly from the WARP secrets cache. The legacy `serverEnv`
         // export from `@/modules/warp/env/env` captures `_env` synchronously

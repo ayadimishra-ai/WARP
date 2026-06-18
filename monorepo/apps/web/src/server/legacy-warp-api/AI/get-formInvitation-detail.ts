@@ -13,19 +13,9 @@ const getFormInvitationDetails = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // Handle OPTIONS preflight requests
-
   try {
     const resultData: any = [];
-    const { companyId, invitationId, userId } = JSON.parse(req.body);
+    const { companyId, invitationId, userId } = req.body ?? {};
     if (req.method === "POST") {
       const parentCompanyDetail = await sdk.getParentCompanyDetailByUserId({
         userId: [userId],

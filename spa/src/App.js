@@ -930,7 +930,6 @@ const app = () => {
               {/* Handle authenticated 404s */}
               <Route
                 render={() =>
-                  localStorage.getItem("IsAuthentic") === true ||
                   localStorage.getItem("IsAuthentic") === "true" ? (
                     <NotFound />
                   ) : (

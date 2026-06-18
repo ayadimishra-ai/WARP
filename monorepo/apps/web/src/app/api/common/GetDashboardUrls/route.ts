@@ -34,7 +34,6 @@ async function handleGET(request: NextRequest) {
                 status: 500,
                 success: false,
                 message: 'Failed to fetch dashboard URLs',
-                error: error instanceof Error ? error.message : 'Unknown error',
             },
             { status: 500 }
         );

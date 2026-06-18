@@ -6,18 +6,8 @@ const updateInvitationDataPoints = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // Handle OPTIONS preflight requests
-
   try {
-    const { status, invitationId, invitationStatus } = JSON.parse(req.body);
+    const { status, invitationId, invitationStatus } = req.body ?? {};
     if (req.method === "POST") {
       const formInvitationIdData = await sdk.updateSkipStatusByInvitationId({
         formInvitationId: invitationId,

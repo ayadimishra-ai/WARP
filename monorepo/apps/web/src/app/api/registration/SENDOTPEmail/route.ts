@@ -37,7 +37,7 @@ async function handlePOST(req: NextRequest) {
                 email: result.Email,
                 roleGuid: result.RoleGuid || "00000000-0000-0000-0000-000000000000",
                 message: result.Message,
-                otp: result.OTP,
+                // OTP intentionally omitted from response — it is delivered via email/SMS only
                 isExist: result.IsExist,
                 gstNumber: result.GSTNumber,
                 isCPanelUser: result.IsCPanelUser

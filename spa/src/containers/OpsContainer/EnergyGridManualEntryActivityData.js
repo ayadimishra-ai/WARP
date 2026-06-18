@@ -5,6 +5,7 @@ import Spinner from "../../UI/Spinner/Spinner";
 import { withStyles } from "@material-ui/core/styles";
 import { ReCaptchaContext } from "../../google-invisible-recaptcha/RecaptchaProvider";
 import { popupAlert } from "../../UI/Popups/popup";
+const GHGEstimate_Link = GetGHGEstimationUrl();
 let messageData = "";
 class EnergyGridManualEntryActivityData extends Component {
   static contextType = ReCaptchaContext;
@@ -66,7 +67,7 @@ class EnergyGridManualEntryActivityData extends Component {
                         selectedRowIdsToDelete: this.state.selectedRowIdsToDelete
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
                 "NO, KEEP IT",
@@ -97,7 +98,7 @@ class EnergyGridManualEntryActivityData extends Component {
                        confirmedDiscard: false,
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                  },
                 "Yes, Discard",
@@ -112,7 +113,7 @@ class EnergyGridManualEntryActivityData extends Component {
                        confirmedDiscard: true,
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
               );

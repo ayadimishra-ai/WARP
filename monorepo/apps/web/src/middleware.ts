@@ -109,8 +109,6 @@ export async function middleware(request: NextRequest) {
         return response;
     }
 
-    console.log("pathname",{ pathname });
-
     // For API routes, check Authorization header
     if (pathname.startsWith("/api/")) {
         const authHeader = request.headers.get("authorization");

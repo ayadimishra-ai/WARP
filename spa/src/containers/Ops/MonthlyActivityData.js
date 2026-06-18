@@ -419,7 +419,7 @@ class MonthlyActivityData extends Component {
                           orgAddressIdsWithActivities={
                             this.state.orgAddressIdsWithActivities
                           }
-                          submitDataHandle={() => document.getElementById('iframeDasboard').contentWindow.postMessage('callApi', '*')}
+                          submitDataHandle={() => document.getElementById('iframeDasboard').contentWindow.postMessage('callApi', new URL(GetGHGEstimationUrl()).origin)}
                         />
                         <DownloadTemplateDropdown
                           isIcon={false}

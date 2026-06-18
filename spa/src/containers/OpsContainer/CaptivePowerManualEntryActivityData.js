@@ -7,6 +7,7 @@ import {
   ReCaptchaContext,
 } from "../../google-invisible-recaptcha/RecaptchaProvider";
 import { popupAlert } from "../../UI/Popups/popup";
+const GHGEstimate_Link = GetGHGEstimationUrl();
 class CaptivePowerManualEntryActivityData extends Component {
   static contextType = ReCaptchaContext;
   constructor(props) {
@@ -70,7 +71,7 @@ class CaptivePowerManualEntryActivityData extends Component {
                         selectedRowIdsToDelete: this.state.selectedRowIdsToDelete
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
                 "NO, KEEP IT",
@@ -101,7 +102,7 @@ class CaptivePowerManualEntryActivityData extends Component {
                         confirmedDiscard: false,
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
                 "Yes, Discard",
@@ -116,7 +117,7 @@ class CaptivePowerManualEntryActivityData extends Component {
                         confirmedDiscard: true,
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
               );

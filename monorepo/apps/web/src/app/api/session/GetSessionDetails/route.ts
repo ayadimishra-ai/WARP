@@ -35,8 +35,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
             {
                 status200OK: 500,
-                saveresult: 'An error occurred while retrieving session details',
-                error: error instanceof Error ? error.message : 'Unknown error'
+                saveresult: 'An error occurred while retrieving session details'
             },
             {
                 status: 500

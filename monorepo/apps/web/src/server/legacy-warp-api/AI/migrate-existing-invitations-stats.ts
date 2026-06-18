@@ -1,6 +1,9 @@
+import crypto from "crypto";
 import { sdk } from "@/modules/warp/packages/graphql/generated/server";
 import { calculateAndCacheAIDataStatistics } from "@/modules/warp/packages/server/services/AI/AI-dataStats-calculation";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+
+const MAX_INVITATION_IDS = 100;
 
 /**
  * Developer-only API endpoint for migrating existing invitations
@@ -11,6 +14,18 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
+  // Guard: developer-only endpoint — require the internal shared key.
+  const expectedKey = process.env["WARP_INTERNAL_SHARED_KEY"];
+  const incomingKey = req.headers["x-warp-shared-key"];
+  if (
+    !expectedKey ||
+    typeof incomingKey !== "string" ||
+    !incomingKey ||
+    !crypto.timingSafeEqual(Buffer.from(incomingKey), Buffer.from(expectedKey))
+  ) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -22,6 +37,12 @@ const handler: NextApiHandler = async (
     if (!invitationIds || !Array.isArray(invitationIds)) {
       return res.status(400).json({
         error: "invitationIds array is required",
+      });
+    }
+
+    if (invitationIds.length > MAX_INVITATION_IDS) {
+      return res.status(400).json({
+        error: `invitationIds array must not exceed ${MAX_INVITATION_IDS} items`,
       });
     }
 

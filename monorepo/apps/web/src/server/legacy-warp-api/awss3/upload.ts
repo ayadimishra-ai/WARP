@@ -1,5 +1,7 @@
 import { upload } from "@/modules/warp/packages/server/services/aws-s3.service";
+import { parseHasuraClaims } from "@/modules/warp/packages/shared/utils/auth-session.util";
 import { default as Busboy } from "busboy";
+import jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
@@ -17,6 +19,22 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Require JWT auth to prevent unauthenticated S3 uploads.
+  let session: any = null;
+  if (req?.headers?.authorization) {
+    const accessToken = String(req.headers.authorization).replace(/^Bearer\s+/i, "");
+    try {
+      const decodedToken: any = jwt.verify(accessToken, process.env.HASURA_GRAPHQL_JWT_SECRET!);
+      session = parseHasuraClaims(decodedToken, accessToken);
+    } catch {
+      // invalid token — session stays null
+    }
+  }
+  if (!session) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
   try {
     const busboy = Busboy({ headers: req.headers });
 

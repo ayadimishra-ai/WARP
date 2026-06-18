@@ -1,9 +1,7 @@
 
-import { getResetEmailDetails } from '@/server/services/get-reset-email-details';
 import { validatePasswordResetToken } from '@/util/passwordResetService';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { isValid } from 'zod';
 
 export async function GET(request: NextRequest) {
     try {
@@ -31,9 +29,9 @@ export async function GET(request: NextRequest) {
                 {
                     status200OK: 400,
                     saveresult: 'Invalid email token',
-                    error: tokenValidationResult.message,
                     isValid: false
                 },
+                { status: 400 }
             );
         }
 
@@ -53,8 +51,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
             {
                 status200OK: 500,
-                saveresult: 'An error occurred while retrieving session details',
-                error: error instanceof Error ? error.message : 'Unknown error'
+                saveresult: 'An error occurred while retrieving session details'
             },
             {
                 status: 500

@@ -174,7 +174,7 @@ export async function processProgressReportScore(
     await uploadError("exception-logs", "exception-logs", errorContent);
     return {
       status: 500,
-      result: { error: error || "Internal Server Error" },
+      result: { error: error?.message || "Internal Server Error" },
     };
   }
 }
@@ -192,15 +192,20 @@ const progressReportScoreHandler: NextApiHandler = async (req, res) => {
   try {
     let invitationStatus: string = FormInvitationStatus.Submitted;
 
-    let session: any = "";
+    let session: any = null;
 
     if (!!req?.headers?.authorization) {
       const accessToken = String(req.headers.authorization);
-      const decodedToken: any = jwt.decode(accessToken);
-      session = parseHasuraClaims(decodedToken, accessToken);
+      try {
+        const decodedToken: any = jwt.verify(accessToken, process.env.HASURA_GRAPHQL_JWT_SECRET!);
+        session = parseHasuraClaims(decodedToken, accessToken);
+      } catch {
+        // invalid token — session stays null
+      }
+    }
 
-      // if (session?.user?.role === AppRoles.Approver)
-      //   invitationStatus = FormInvitationStatus.Approved;
+    if (!session) {
+      return res.status(401).json({ error: { message: "Unauthorized" } });
     }
 
     const result = await processProgressReportScore(
@@ -221,7 +226,7 @@ const progressReportScoreHandler: NextApiHandler = async (req, res) => {
       stack: error.stack,
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 };
 

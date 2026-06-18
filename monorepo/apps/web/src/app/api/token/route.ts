@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         const tokenData = await signJwt({
             id: user.id,
             email: user.email,
-            passwordHash: user.passwordHash,
+            // passwordHash intentionally omitted — never include credential derivatives in JWTs
         });
 
         const response = NextResponse.json(tokenData, { headers: corsHeaders });

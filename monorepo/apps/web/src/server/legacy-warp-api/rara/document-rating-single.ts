@@ -7,50 +7,47 @@ import { parseHasuraClaims } from "@/modules/warp/packages/shared/utils/auth-ses
 import jwt from "jsonwebtoken";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
-const internalSharedKey = "uvmscwvFeptiTkYwdoch+51xxWo4dEKYBVX7Hj4JrIU=";
-
 const raraSingleDocumentRatingHandler: NextApiHandler = async (req, res) => {
-  // const requestAuthKey = req?.headers?.authorization;
-
-  // if (requestAuthKey !== internalSharedKey) {
-  //   return res.status(401).send({
-  //     error: {
-  //       message: "Authorization did not match with internalSharedKey",
-  //     },
-  //   });
-  // }
-
-  //   console.log(req.body);
-
   let session;
   if (!!req?.headers?.authorization) {
     const accessToken = String(req.headers.authorization);
-    const decodedToken: any = jwt.decode(accessToken);
-    session = parseHasuraClaims(decodedToken, accessToken);
+    try {
+      const decodedToken: any = jwt.verify(accessToken, process.env.HASURA_GRAPHQL_JWT_SECRET!);
+      session = parseHasuraClaims(decodedToken, accessToken);
+    } catch {
+      // invalid token — session stays undefined
+    }
   }
   if (!session) {
-    return res.status(500).json({
+    return res.status(401).json({
       error: {
         message: "Unauthorized",
       },
     });
   }
 
+  // Fetch RARA URL and auth_key from DB (GlobalMaster) — never accept them from
+  // the request body to prevent SSRF.
+  const globalMasterData = await sdk.getGlobalMasterByTypeList({ type: ["Rara_integration"] });
+  const raraData = globalMasterData?.GlobalMaster?.find(
+    (master: any) => master.type === "Rara_integration"
+  );
+  const raraCheckConfig = raraData?.data?.find((config: any) => config.name === "rara-check");
+  if (!raraCheckConfig?.url || !raraCheckConfig?.authkey) {
+    return res.status(500).json({ error: { message: "RARA service configuration error" } });
+  }
+
   const {
-    url,
-    auth_key,
     company_name,
     document_key,
     document_url,
     company_size,
     partialSaveData,
   } = req.body as {
-    url: any;
     document_url: any;
     company_name: any;
     document_key: any;
     company_size: any;
-    auth_key: any;
     partialSaveData: {
       invitationId: string;
       submissionId: string;
@@ -61,7 +58,7 @@ const raraSingleDocumentRatingHandler: NextApiHandler = async (req, res) => {
     };
   };
 
-  const raraApiResponse = await fetch(url, {
+  const raraApiResponse = await fetch(raraCheckConfig.url, {
     method: "POST",
     body: JSON.stringify({
       document_url,
@@ -71,7 +68,7 @@ const raraSingleDocumentRatingHandler: NextApiHandler = async (req, res) => {
     }),
     headers: {
       "Content-Type": "application/json",
-      Authorization: auth_key,
+      Authorization: raraCheckConfig.authkey,
       "x-ai-services-authorization":
         process.env["AI_SERVICES_AUTHORIZATION"] ?? "",
     },

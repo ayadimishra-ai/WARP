@@ -136,7 +136,7 @@ class DocumentRepositoryPage extends Component {
                       cardArray: this.state.cardArray,
                       status: this.state.status,
                     }),
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                 },
                 "No, Keep File",
@@ -174,7 +174,7 @@ class DocumentRepositoryPage extends Component {
                       docTitle: this.state.docTitle,
                       filesData: this.state.filesData,
                     },
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                 },
                 "CANCEL",
@@ -212,7 +212,7 @@ class DocumentRepositoryPage extends Component {
                       dropzoneConfig: this.state.dropzoneConfig,
                       configId: this.state.configId,
                     },
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                 },
                 "CLOSE",
@@ -332,7 +332,7 @@ class DocumentRepositoryPage extends Component {
                 iframe.contentWindow.postMessage({
                   type: 'PARENT_CLICK_OUTSIDE',
                   source: 'parent-window'
-                }, '*');
+                }, WARP_Link ? new URL(WARP_Link).origin : '*');
               } catch (e) {
                 console.log('Cannot send message to iframe:', e);
               }
@@ -487,7 +487,7 @@ class DocumentRepositoryPage extends Component {
             let sendRemoveData = document.getElementById("listIframe");
             sendRemoveData.contentWindow.postMessage(
               { type: "document-repository-expired-documents-popup-closed" },
-              "*"
+              WARP_Link ? new URL(WARP_Link).origin : "*"
             );
             this.setState({
               expiredDocumentsDialog: { isOpened: false },
@@ -548,7 +548,7 @@ class DocumentRepositoryPage extends Component {
                       expiredCount: this.state.expiredCount,
                       totalCount: this.state.totalCount,
                     },
-                    "*"
+                    WARP_Link ? new URL(WARP_Link).origin : "*"
                   );
                   this.setState({
                     expiredDocumentsDialog: { isOpened: false },

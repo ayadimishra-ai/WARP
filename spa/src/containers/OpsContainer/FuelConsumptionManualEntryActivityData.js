@@ -7,6 +7,7 @@ import {
   ReCaptchaContext,
 } from "../../google-invisible-recaptcha/RecaptchaProvider";
 import { popupAlert } from "../../UI/Popups/popup";
+const GHGEstimate_Link = GetGHGEstimationUrl();
 class FuelConsumptionManualEntryActivityData extends Component {
   static contextType = ReCaptchaContext;
   constructor(props) {
@@ -73,7 +74,7 @@ class FuelConsumptionManualEntryActivityData extends Component {
                         selectedRowIdsToDelete: this.state.selectedRowIdsToDelete
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
                 "NO, KEEP IT",
@@ -104,7 +105,7 @@ class FuelConsumptionManualEntryActivityData extends Component {
                         confirmedDiscard: false,
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
                 "Yes, Discard",
@@ -119,7 +120,7 @@ class FuelConsumptionManualEntryActivityData extends Component {
                         confirmedDiscard: true,
                       }
                     }),
-                    "*"
+                    GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
                   );
                 },
               );

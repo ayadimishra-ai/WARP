@@ -42,13 +42,10 @@ async function handlePOST(request: Request) {
   } catch (error: unknown) {
     console.error("User creation error:", error);
 
-    let errorMessage = "Internal server error";
-    let status = 500;
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-      status = error.message.includes("already exists") ? 409 : 500;
-    }
+    const isConflict =
+      error instanceof Error && error.message.includes("already exists");
+    const status = isConflict ? 409 : 500;
+    const errorMessage = isConflict ? "User already exists" : "Internal server error";
 
     return NextResponse.json({ error: errorMessage }, { status });
   }

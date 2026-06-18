@@ -17,23 +17,9 @@ const emailPasswordLoginProvider: Provider = CredentialsProvider({
     },
     password: { label: "Password", type: "password" },
   },
-  authorize: (credentials, req) => {
-    // console.log("CredentialsProvider:authorize", { credentials });
-
-    if (
-      credentials?.email === "admin@warp.com" &&
-      credentials?.password === "1234"
-    ) {
-      const user: IUser = {
-        id: "test-user-id",
-        name: credentials?.email,
-        email: credentials?.email,
-        roles: ["user"],
-      };
-
-      return user;
-    }
-
+  authorize: (_credentials, _req) => {
+    // Hardcoded admin backdoor removed — credentials-based login is not active.
+    // Authentication flows through the platform signin API (v1/platform/auth/signin).
     return null;
   },
 });

@@ -11,15 +11,6 @@ const getChatWithSnowkapAIStatusHandler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>
 ) => {
-  // Set CORS headers
-  // AITODO: remove below setHeader
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
   // Handle OPTIONS preflight requests
   if (req.method === "OPTIONS") {
     return res.status(200).end();
@@ -34,8 +25,8 @@ const getChatWithSnowkapAIStatusHandler: NextApiHandler = async (
   }
 
   try {
-    // Get userId and companyId from req.data
-    const { userId, companyId } = JSON.parse((req as any).body || {});
+    // Get userId and companyId from req.body
+    const { userId, companyId } = req.body ?? {};
 
     if (!userId || !companyId) {
       return res.status(400).json({

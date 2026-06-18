@@ -14,8 +14,7 @@ export async function POST(req: NextRequest) {
       {
         status: 500,
         success: false,
-        message: "Failed to save user data",
-        error: error instanceof Error ? error.message : "Unknown error"
+        message: "Failed to save user data"
       },
       { status: 500 }
     );

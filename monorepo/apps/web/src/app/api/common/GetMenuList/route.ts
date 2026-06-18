@@ -44,8 +44,7 @@ async function handlePOST(req: NextRequest) {
     return NextResponse.json<ErrorResponse>(
       {
         success: false,
-        error: "Internal server error",
-        details: error instanceof Error ? error.message : "Unknown error"
+        error: "Internal server error"
       },
       { status: 500 }
     );

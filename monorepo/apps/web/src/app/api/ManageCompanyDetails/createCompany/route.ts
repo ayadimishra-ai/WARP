@@ -9,8 +9,9 @@ export async function POST(req: NextRequest) {
         const response = await createCompany(body);
         return NextResponse.json(response, { status: response.message ? 400 : 200 });
     } catch (error: any) {
+        console.error("[ManageCompanyDetails/createCompany] Unhandled error:", error);
         return NextResponse.json(
-            { code: 500, message: "Internal server error", error: error?.message || error },
+            { code: 500, message: "Internal server error" },
             { status: 500 }
         );
     }

@@ -2,7 +2,6 @@
 import { checkSessionExpiration } from '@/server/services/user-session.service';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { browser } from 'process';
 
 
 export async function GET(request: NextRequest) {
@@ -42,8 +41,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
             {
                 status200OK: 500,
-                saveresult: 'An error occurred while retrieving session details',
-                error: error instanceof Error ? error.message : 'Unknown error'
+                saveresult: 'An error occurred while retrieving session details'
             },
             {
                 status: 500

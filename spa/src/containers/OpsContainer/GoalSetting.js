@@ -7,6 +7,7 @@ import { decodeOpAccessToken } from "../../utility";
 import { userRoles } from "../../userRoles.service";
 import { withRouter } from "react-router-dom";
 
+const GHGEstimate_Link = GetGHGEstimationUrl();
 let messageData = "";
 class GoalSetting extends Component {
   constructor(props) {
@@ -67,7 +68,7 @@ class GoalSetting extends Component {
           JSON.stringify({
             type: "net-zero-target-year-success-message",
           }),
-          "*"
+          GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
         );
       } catch (error) {}
     } else {
@@ -87,7 +88,7 @@ class GoalSetting extends Component {
           type: "confirm-delete-net-zero-target-year",
           data: messageData.data,
         }),
-        "*"
+        GHGEstimate_Link ? new URL(GHGEstimate_Link).origin : "*"
       );
     } catch (error) {}
   };

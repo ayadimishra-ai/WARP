@@ -9,8 +9,9 @@ export async function POST(req: NextRequest) {
         const response = await CreateUser(Managedata);
         return NextResponse.json(response, { status: response.isError ? 400 : 200 });
     } catch (error: any) {
+        console.error("[IQHooks/createUser] Unhandled error:", error);
         return NextResponse.json(
-            { code: 500, message: "Internal server error 13" + error, error: error?.message || error },
+            { code: 500, message: "Internal server error" },
             { status: 500 }
         );
     }

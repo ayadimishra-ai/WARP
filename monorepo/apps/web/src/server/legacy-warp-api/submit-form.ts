@@ -10,11 +10,15 @@ const submitFormHandler: NextApiHandler = async (req, res) => {
   let session;
   if (!!req?.headers?.authorization) {
     const accessToken = String(req.headers.authorization);
-    const decodedToken: any = jwt.decode(accessToken);
-    session = parseHasuraClaims(decodedToken, accessToken);
+    try {
+      const decodedToken: any = jwt.verify(accessToken, process.env.HASURA_GRAPHQL_JWT_SECRET!);
+      session = parseHasuraClaims(decodedToken, accessToken);
+    } catch {
+      // invalid token — session stays undefined
+    }
   }
   if (!session) {
-    return res.status(500).json({
+    return res.status(401).json({
       error: {
         message: "Unauthorized",
       },
@@ -22,7 +26,7 @@ const submitFormHandler: NextApiHandler = async (req, res) => {
   }
   const { submissionId } = req.body;
   if (!submissionId) {
-    return res.status(500).json({
+    return res.status(400).json({
       error: {
         message: "Required details are missing",
         data: req.body,

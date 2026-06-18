@@ -29,12 +29,12 @@ async function handleGET(request: NextRequest) {
         return NextResponse.json(result);
 
     } catch (error) {
+        console.error("Error in GetUserAccountDetails API:", error);
         return NextResponse.json(
             {
                 status: 500,
                 message: 'Failed to fetch user account details',
-                success: false,
-                error: error instanceof Error ? error.message : 'Unknown error'
+                success: false
             },
             { status: 500 }
         );

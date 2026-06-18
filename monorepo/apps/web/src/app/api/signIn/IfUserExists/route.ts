@@ -45,10 +45,7 @@ async function handlePOST(req: NextRequest) {
     return NextResponse.json(userData, { status: 200 });
   } catch (error) {
     console.error("Error in IfUserExists API:", error);
-    const responseData = {
-      error: error instanceof Error ? error.message : "Internal server error"
-    };
-    return NextResponse.json(responseData, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 

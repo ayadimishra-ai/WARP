@@ -132,7 +132,7 @@ class MonthlyActivityData extends Component {
     if (prevProps.refreshFlag !== this.props.refreshFlag) {
       document
         .getElementById("iframeDasboard")
-        .contentWindow.postMessage("callApi", "*");
+        .contentWindow.postMessage("callApi", new URL(GetGHGEstimationUrl()).origin);
     }
   }
   componentWillUnmount = () =>

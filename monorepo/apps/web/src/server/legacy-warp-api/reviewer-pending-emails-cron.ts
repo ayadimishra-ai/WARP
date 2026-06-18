@@ -1,12 +1,24 @@
+import crypto from "crypto";
 import { uploadError } from "@/modules/warp/packages/server/services/aws-s3.service";
 import { sendReviewerPendingEmailsCron } from "@/modules/warp/packages/server/services/notification.service";
 import { NextApiHandler } from "next";
 
 const handler: NextApiHandler = async (req, res) => {
+    // Guard: require a valid shared key using constant-time comparison to
+    // prevent String(undefined) bypass and timing attacks.
+    const expectedKey = process.env["WARP_INTERNAL_SHARED_KEY"];
+    const incomingKey = req.headers["x-warp-shared-key"];
+    if (
+        !expectedKey ||
+        typeof incomingKey !== "string" ||
+        !incomingKey ||
+        !crypto.timingSafeEqual(Buffer.from(incomingKey), Buffer.from(expectedKey))
+    ) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
     try {
-        const sharedKey = String(req.headers["x-warp-shared-key"]);
-        // Assuming sendReviewerPendingEmailsCron handles its own validation or doesn't strictly need the key for logic but for security
-        await sendReviewerPendingEmailsCron(sharedKey);
+        await sendReviewerPendingEmailsCron(incomingKey);
         res.status(200).send({ data: "Cron job executed successfully", error: null });
     } catch (error: any) {
         const currentDate = new Date();

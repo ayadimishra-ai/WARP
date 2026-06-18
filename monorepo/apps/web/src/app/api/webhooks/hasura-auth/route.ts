@@ -23,8 +23,6 @@ const POST = async (request: Request) => {
     );
   }
 
-  console.log(JSON.stringify({ session }, null, 2));
-
   return NextResponse.json({
     "x-hasura-role": "user",
     "x-hasura-user-id": session.user.id,

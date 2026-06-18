@@ -3,9 +3,8 @@ import { checkUserDataService } from "@/server/services/check-email-mobile-exist
 
 export async function POST(req: NextRequest) {
   try {
-    // const requestData = await req.json();
-    const requestData = await req?.json();
-    const response: any = await checkUserDataService(await requestData.data);
+    const requestData = await req.json();
+    const response: any = await checkUserDataService(requestData.data);
     return NextResponse.json(response, {
       status: response.isError ? 400 : 200
     });
@@ -15,8 +14,7 @@ export async function POST(req: NextRequest) {
       {
         status: 500,
         success: false,
-        message: "Failed to get user data",
-        error: error instanceof Error ? error.message : "Unknown error"
+        message: "Failed to get user data"
       },
       { status: 500 }
     );

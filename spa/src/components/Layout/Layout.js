@@ -8,7 +8,7 @@ import IdleTimer from 'react-idle-timer';
 // import { withRouter, Switch, Redirect } from "react-router-dom";
 // import history from "../../history";
 import PropTypes from "prop-types";
-import { getGlobalSettings } from "../../config";
+import { getGlobalSettings, GetWARPUrl, getOPsPUrl } from "../../config";
 import moment from "moment";
 import NewsletterUnsubscription from './NewsletterUnsubscription';
 import IsEmailUnSubscribed from './IsEmailUnSubscribed';
@@ -108,6 +108,11 @@ class layout extends React.Component {
     }
     newHandle = (type, event) => {
         if (type === "message") {
+            const allowedOrigins = [
+              typeof GetWARPUrl === 'function' ? (() => { try { return new URL(GetWARPUrl()).origin; } catch(e) { return null; } })() : null,
+              typeof getOPsPUrl === 'function' ? (() => { try { return new URL(getOPsPUrl()).origin; } catch(e) { return null; } })() : null,
+            ].filter(Boolean);
+            if (allowedOrigins.length > 0 && !allowedOrigins.includes(event.origin)) return;
             let dataType = typeof event.data;
             const URL = window.location.href;
             if (dataType === "string") {

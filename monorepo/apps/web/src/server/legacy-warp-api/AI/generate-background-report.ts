@@ -12,8 +12,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let accessToken = "";
     if (!!req?.headers?.authorization) {
         accessToken = String(req.headers.authorization);
-        const decodedToken: any = jwt.decode(accessToken);
-        session = parseHasuraClaims(decodedToken, accessToken);
+        try {
+            const decodedToken: any = jwt.verify(accessToken, process.env.HASURA_GRAPHQL_JWT_SECRET!);
+            session = parseHasuraClaims(decodedToken, accessToken);
+        } catch {
+            // invalid token — session stays undefined
+        }
     }
     if (!session) {
         return res.status(401).json({
@@ -23,17 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        // Robust handling of req.body which can be an object or a string
-        let body = req.body;
-        if (typeof body === 'string') {
-            try {
-                body = JSON.parse(body);
-            } catch (e) {
-                // Ignore parsing errors and try using the raw body
-            }
-        }
-
-        const { invitationId, questionaryName, companyId } = body || {};
+        const { invitationId, questionaryName, companyId } = req.body || {};
 
         // Validate required parameters
         if (!invitationId) {
