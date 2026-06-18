@@ -5,12 +5,15 @@ import { NextApiHandler } from "next";
 const handler: NextApiHandler = async (req, res) => {
   try {
     //if (req.body.type) {
-    const sharedKey = String(req.headers["x-warp-shared-key"]);
-    const response: any = await sendRecommenationReminderPreDueDate(sharedKey);
+    const incomingKey = req.headers["x-warp-shared-key"];
+    if (!incomingKey || String(incomingKey) !== process.env.WARP_CRON_SHARED_KEY) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const response: any = await sendRecommenationReminderPreDueDate(String(incomingKey));
     if (response === undefined) {
       res.status(200).send({ data: null, error: "Sending email" });
     } else {
-      if (response.indexOf("OK") !== -1) {
+      if (!!response && response.includes("OK")) {
         res.status(200).send({ data: response, error: null });
       } else {
         res.status(400).send({ data: null, error: "Failed to send email" });
