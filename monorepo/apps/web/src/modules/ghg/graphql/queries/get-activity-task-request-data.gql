@@ -1,0 +1,21 @@
+# Try out GraphQL queries here
+query getactivityTaskRequestData($where: ActivityTaskRequest_bool_exp!) {
+  ActivityTaskRequest(where: $where) {
+    activity_id
+    task_request_id
+    organization_address_id
+    id
+    TaskRequest {
+      id
+      organization_address_id
+      month
+      year
+    }
+    OrganizationAddress {
+      Address {
+        name
+        pincode
+      }
+    }
+  }
+}

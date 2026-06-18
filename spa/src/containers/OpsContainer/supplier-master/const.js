@@ -1,0 +1,2 @@
+export const supplierMasterExcelUploadS3LinkEnterpriseSetup = "api/v1/file-system/get-s3-upload-url/supplier-master-import";
+export const supplierMasterBulkUploadApiLinkEnterpriseSetup = "api/v1/master-data/org-supplier-master-enterprise-setup/excel"

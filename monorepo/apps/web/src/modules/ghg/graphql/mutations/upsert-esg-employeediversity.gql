@@ -1,0 +1,56 @@
+mutation upsertESGEmployeeDiversityActivity(
+  $where: ESGEmployeeDiversity_bool_exp!
+  $esgEmployeeDiversityData: [ESGEmployeeDiversity_insert_input!]!
+) {
+  delete_ESGEmployeeDiversity(where: $where) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      employment_type
+      employee_category
+      male_employees
+      female_employees
+      other_gender_employees
+      minority_group_employees
+      under_thirty_years_old
+      thirty_to_fifty_years_old
+      above_fifty_years_old
+      average_basic_salary_male
+      average_basic_salary_female
+      average_remuneration_male
+      average_remuneration_female
+      male_employees_with_disabilities
+      female_employees_with_disabilities
+      other_gender_employees_with_disabilities
+    }
+  }
+  insert_ESGEmployeeDiversity(
+    objects: $esgEmployeeDiversityData
+    on_conflict: { constraint: ESGEmployeeDiversity_pkey }
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      employment_type
+      employee_category
+      male_employees
+      female_employees
+      other_gender_employees
+      minority_group_employees
+      under_thirty_years_old
+      thirty_to_fifty_years_old
+      above_fifty_years_old
+      average_basic_salary_male
+      average_basic_salary_female
+      average_remuneration_male
+      average_remuneration_female
+      male_employees_with_disabilities
+      female_employees_with_disabilities
+      other_gender_employees_with_disabilities
+    }
+  }
+}

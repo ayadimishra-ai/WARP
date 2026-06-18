@@ -1,0 +1,8 @@
+mutation DeleteFormfieldByFormId($formid: uuid!) {
+  delete_FormField(where: { formId: { _eq: $formid } }) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+}

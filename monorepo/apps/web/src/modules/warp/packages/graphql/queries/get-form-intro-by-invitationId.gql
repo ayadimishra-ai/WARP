@@ -1,0 +1,56 @@
+query getFormIntroByInvitationId($invitationId: uuid!) {
+  FormInvitation(
+    where: {
+      _and: [{ id: { _eq: $invitationId } }, { isActive: { _eq: true } }]
+    }
+  ) {
+    id
+    interimCheck
+    formId
+    status
+    metadata
+    Company {
+      name
+      metadata
+    }
+    durationFrom
+    durationTo
+    parentcompanyId
+    Form {
+      name
+      Details {
+        id
+        formId
+        bodyTemplate
+        framework
+        focusArea
+        timeInMinutes
+        notes
+        questions
+      }
+      GroupForms {
+        groupFormId
+        formId
+      }
+      CompanyForms {
+        Company {
+          metadata
+        }
+      }
+      formtype
+      isAIDataPointsAdded
+    }
+    Sources {
+      id
+      type
+      SourceFile {
+        id
+        status
+      }
+    }
+  }
+  GlobalMaster(where: { type: { _in: ["FormIcons", "FocusArea"] } }) {
+    data
+    type
+  }
+}

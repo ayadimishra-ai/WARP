@@ -1,0 +1,31 @@
+mutation CreateAIChatUsage(
+  $subscriptionId: uuid!
+  $companyId: uuid!
+  $allocationId: uuid
+  $textualUsed: Int!
+  $graphicalUsed: Int!
+  $metadata: jsonb
+) {
+  insert_AIChatUsage_one(
+    object: {
+      subscriptionId: $subscriptionId
+      companyId: $companyId
+      allocationId: $allocationId
+      textualUsed: $textualUsed
+      graphicalUsed: $graphicalUsed
+      metadata: $metadata
+      createdAt: "now()"
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    subscriptionId
+    companyId
+    allocationId
+    textualUsed
+    graphicalUsed
+    metadata
+    createdAt
+    updatedAt
+  }
+}

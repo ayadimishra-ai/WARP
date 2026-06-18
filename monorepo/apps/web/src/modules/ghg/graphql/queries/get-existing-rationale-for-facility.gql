@@ -1,0 +1,14 @@
+query getExistingRationaleForFacility($organizationAddressId: uuid!) {
+  GHGProductShareAttribution(
+    where: {
+      organization_address_id: { _eq: $organizationAddressId }
+      is_deleted: { _eq: false }
+      Rationale_For_Percentage: { _is_null: false }
+    }
+    limit: 1
+    distinct_on: [Rationale_For_Percentage]
+  ) {
+    organization_address_id
+    Rationale_For_Percentage
+  }
+}

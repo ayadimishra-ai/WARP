@@ -1,0 +1,8 @@
+query GetGlobalMasterFormIcons {
+  GlobalMaster(where: { type: { _eq: "FormIcons" } }) {
+    id
+    platformId
+    type
+    data
+  }
+}

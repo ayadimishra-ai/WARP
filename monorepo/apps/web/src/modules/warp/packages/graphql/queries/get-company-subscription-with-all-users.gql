@@ -1,0 +1,52 @@
+query GetCompanySubscriptionWithAllUsers($companyId: uuid!) {
+  AIChatSubscription(
+    where: {
+      companyId: { _eq: $companyId }
+      isActive: { _eq: true }
+      startDate: { _lte: "now()" }
+      endDate: { _gte: "now()" }
+    }
+    order_by: { createdAt: desc }
+    limit: 1
+  ) {
+    id
+    companyId
+    subscriptionName
+    hasDocumentRepo
+    hasESG
+    hasBRSR
+    textualLimit
+    graphicalLimit
+    startDate
+    endDate
+    isActive
+    note
+    createdAt
+    updatedAt
+
+    # Fetch ALL user allocations for this company subscription (not just one user)
+    AIChatUserAllocations(
+      where: { isActive: { _eq: true } }
+    ) {
+      id
+      userId
+      textualAllocated
+      graphicalAllocated
+      isActive
+      allocatedBy
+      metadata
+      createdAt
+      updatedAt
+
+      # Fetch usage for each user allocation
+      AIChatUsages(limit: 1) {
+        id
+        textualUsed
+        graphicalUsed
+        metadata
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}

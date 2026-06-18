@@ -1,0 +1,22 @@
+query getESGEmployeeTurnoverByPeriod(
+  $fromDate: date!
+  $toDate: date!
+  $organizationId: uuid!
+) {
+  poc_view_esg_employee_turnover(
+    where: {
+      period_date: { _gte: $fromDate, _lte: $toDate }
+      organization_id: { _eq: $organizationId }
+    }
+    order_by: { period_date: asc }
+  ) {
+    organization_id
+    year
+    month
+    period_date
+    employment_type
+    total_employees
+    employees_exists
+    employees_new_hires
+  }
+}

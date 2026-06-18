@@ -1,0 +1,18 @@
+query getEmissionFactorMasterByType($type: String, $category: String) {
+  CO2EmissionFactorMaster(
+    where: {
+      _and: { sub_activity: { _ilike: $type }, category: { _eq: $category } }
+      is_deleted: { _eq: false }
+    }
+    order_by: { year: desc }
+  ) {
+    id
+    category
+    activity
+    sub_activity
+    metadata
+    factor
+    factor_uom
+    year
+  }
+}

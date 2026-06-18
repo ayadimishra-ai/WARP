@@ -1,0 +1,7 @@
+mutation createFormSubmission($invitationId: uuid!) {
+  insert_FormSubmission_one(
+    object: { invitationId: $invitationId, isActive: true }
+  ) {
+    id
+  }
+}

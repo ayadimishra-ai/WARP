@@ -1,0 +1,22 @@
+mutation deleteCaptivePowerNonRenewableFuelFormEditAction($deleteId: uuid!) {
+  delete_GHGEnergy_CaptivePower_NonRenewable(
+    where: { id: { _eq: $deleteId } }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      Type_of_Fuel_Used
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      Quality_of_fuel
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+      GHGEnergy_CaptivePower {
+        id
+        task_request_id
+      }
+    }
+  }
+}

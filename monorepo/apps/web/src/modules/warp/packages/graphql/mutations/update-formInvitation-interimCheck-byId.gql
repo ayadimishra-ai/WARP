@@ -1,0 +1,14 @@
+mutation updateFormInvitationInterimCheckById(
+  $InvitationId: uuid
+  $InterimCheck: jsonb!
+  $Completion: String
+) {
+  update_FormInvitation(
+    where: { id: { _eq: $InvitationId } }
+    _set: { interimCheck: $InterimCheck, completion: $Completion }
+  ) {
+    returning {
+      id
+    }
+  }
+}

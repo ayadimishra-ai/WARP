@@ -1,0 +1,37 @@
+mutation insertKPIProductCarbonFootprintUpstream(
+  $kpiUpstreamData: [KPIProductCarbonFootprintUpstream_insert_input!]!
+  $deleteKpiUpstreamData: KPIProductCarbonFootprintUpstream_bool_exp!
+) {
+  delete_KPIProductCarbonFootprintUpstream(where: $deleteKpiUpstreamData) {
+    affected_rows
+  }
+  insert_KPIProductCarbonFootprintUpstream(
+    objects: $kpiUpstreamData
+    on_conflict: {
+      constraint: KPIProductCarbonFootprintUpstream_pkey
+      update_columns: [
+        organization_id
+        address_id
+        region_id
+        year
+        month
+        timestamp
+        supplier_code
+        buyer_material_code
+        buyer_material_procurement_quantity
+        buyer_material_procurement_uom
+        kpi_em_upstream
+        kpi_em_pcf_per_unit
+        kpi_em_pcf_per_unit_uom
+        metadata
+        updated_at
+        updated_by
+      ]
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+}

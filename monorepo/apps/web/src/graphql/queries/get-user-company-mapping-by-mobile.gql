@@ -1,0 +1,15 @@
+query GetUserCompanyMappingsDetailsByMobile($mobile: String!) {
+  Tbl_Users(where: {MobileNumber: {_eq: $mobile}}) {
+    UserGuid
+    FirstName
+    EmailId
+    MobileNumber
+    Tbl_UserCompanyMappings{
+      CompanyGuid
+      Tbl_Company{
+        CPanelCompanyId
+      }
+    }
+  }
+}
+

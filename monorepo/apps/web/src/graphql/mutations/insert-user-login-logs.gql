@@ -1,0 +1,8 @@
+mutation InsertUserLoginLogs($object: Tbl_UserLoginLogs_insert_input!) {
+  insert_Tbl_UserLoginLogs_one(object: $object) {
+    UserLoginLogsGuid
+    UserGuid
+    LoginDate
+    ClientIP
+  }
+}

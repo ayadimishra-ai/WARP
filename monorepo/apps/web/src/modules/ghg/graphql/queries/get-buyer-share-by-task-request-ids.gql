@@ -1,0 +1,11 @@
+query getBuyerShareByTaskRequestIds($TaskRequestIds: [uuid!]) {
+  GHGBuyer_Share(where: { task_request_id: { _in: $TaskRequestIds } }) {
+    Buyer_Name
+    task_request_id
+    organization_address_id
+    TaskRequest {
+      month
+      year
+    }
+  }
+}

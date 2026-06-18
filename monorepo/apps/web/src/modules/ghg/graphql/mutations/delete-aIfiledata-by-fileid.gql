@@ -1,0 +1,8 @@
+mutation DeleteAIFileDatabyfileid($ids: [uuid!]!) {
+          delete_AIFileData(where: {file_id: {_in: $ids}}) {
+            affected_rows
+            returning {
+              id
+            }
+          }
+        }

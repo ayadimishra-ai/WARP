@@ -1,0 +1,13 @@
+query GetCompanyByCpanelId($cpanelCompanyId: String!) {
+  Tbl_Companies(where: {CPanelCompanyId: {_eq: $cpanelCompanyId}}) {
+    CompanyGuid
+    CPanelCompanyId
+    CompanyName
+    StatusGuid
+    IsActive
+    IsManufacturing
+    CPanelCompanyIndustry
+    CountryGuid
+    OPSCompanyId
+  }
+}

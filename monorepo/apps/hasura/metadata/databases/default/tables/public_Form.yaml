@@ -1,0 +1,95 @@
+table:
+  name: Form
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: FormDetail
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: FormDetails
+          schema: public
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: AssesseeUserMappings
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: AssesseeUserMapping
+          schema: public
+  - name: AssessorConsultantMappings
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: AssessorConsultantMapping
+          schema: public
+  - name: CompanyFormFundtypes
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: CompanyFormFundtype
+          schema: public
+  - name: CompanyForms
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: CompanyForm
+          schema: public
+  - name: EmailTemplates
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: EmailTemplate
+          schema: public
+  - name: FormFields
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: FormField
+          schema: public
+  - name: FormInvitations
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: FormInvitation
+          schema: public
+  - name: GroupForms
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: GroupForm
+          schema: public
+  - name: Sections
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: Section
+          schema: public
+  - name: SuggestedDocuments
+    using:
+      foreign_key_constraint_on:
+        column: formId
+        table:
+          name: SuggestedDocuments
+          schema: public
+  - name: groupFormsByGroupformid
+    using:
+      foreign_key_constraint_on:
+        column: groupFormId
+        table:
+          name: GroupForm
+          schema: public

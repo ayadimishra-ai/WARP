@@ -1,0 +1,33 @@
+query getConsultantFormWithDetails($companyId: uuid) {
+  AssessorConsultantMapping(
+    where: { consultantCompanyId: { _eq: $companyId } }
+  ) {
+    Form {
+      id
+      name
+      title
+      description
+      tags
+      formtype
+      Details {
+        id
+        formId
+        focusArea
+        timeInMinutes
+      }
+      GroupForms {
+        groupFormId
+        formId
+        Form {
+          Details {
+            industry
+          }
+        }
+      }
+    }
+    Company {
+      id
+      name
+    }
+  }
+}

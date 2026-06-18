@@ -1,0 +1,8 @@
+mutation UpdateMakerCheckerRemarks(
+  $where: MakerCheckerRemarks_bool_exp!
+  $_set: MakerCheckerRemarks_set_input!
+) {
+  update_MakerCheckerRemarks(where: $where, _set: $_set) {
+    affected_rows
+  }
+}

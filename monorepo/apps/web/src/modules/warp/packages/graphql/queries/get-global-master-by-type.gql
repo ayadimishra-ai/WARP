@@ -1,0 +1,8 @@
+query getGlobalMasterByType($type: String!) {
+  GlobalMaster(where: { type: { _eq: $type } }) {
+    id
+    platformId
+    type
+    data
+  }
+}

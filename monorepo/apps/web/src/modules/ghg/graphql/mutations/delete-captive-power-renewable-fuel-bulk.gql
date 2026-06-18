@@ -1,0 +1,14 @@
+mutation deleteCaptivePowerRenewableFuelBulk($ids: [uuid!]!) {
+  delete_GHGEnergy_CaptivePower_Renewable_Fuel(where: { id: { _in: $ids } }) {
+    affected_rows
+    returning {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      GHGEnergy_CaptivePower {
+        id
+        task_request_id
+        organization_address_id
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+mutation insertkpiMainEmissionDashboardData(
+  $kpimaindata: [KPIMain_insert_input!]!
+  $deletekpimaindata: KPIMain_bool_exp!
+) {
+  delete_KPIMain(where: $deletekpimaindata) {
+    returning {
+      id
+    }
+  }
+  insert_KPIMain(
+    objects: $kpimaindata
+    on_conflict: { constraint: KPIMain_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+}

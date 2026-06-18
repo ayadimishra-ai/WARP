@@ -1,0 +1,7 @@
+query GetGlobalMasterDataForInviterFormAutoAppover {
+  GlobalMaster(where: { type: { _eq: "InviterFormAutoAppover" } }) {
+    id
+    type
+    data
+  }
+}

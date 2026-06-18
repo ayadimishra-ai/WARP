@@ -1,0 +1,12 @@
+query getParentCompanyMappingDetailsByCompanyId($companyId: uuid) {
+  ParentCompanyMapping(
+    where: {
+      _and: [{ CompanyId: { _eq: $companyId } }, { isActive: { _eq: true } }]
+    }
+  ) {
+    Id
+    CompanyId
+    ParentCompanyId
+    isActive
+  }
+}

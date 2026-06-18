@@ -1,0 +1,12 @@
+query getCountryEmissionGeographyData {
+  EmissionFactorGeographyHierarchy {
+    Country {
+      name
+    }
+    id
+    country_id
+    geography
+    sequence
+    geography_type
+  }
+}

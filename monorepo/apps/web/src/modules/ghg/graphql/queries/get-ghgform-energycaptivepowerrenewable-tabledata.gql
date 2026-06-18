@@ -1,0 +1,29 @@
+query getGHGEnergyCaptivePowerRenewable(
+  $activityFilter: GHGEnergy_CaptivePower_Renewable_bool_exp
+  $start: Int
+  $size: Int
+  $orderBy: [GHGEnergy_CaptivePower_Renewable_order_by!]
+) {
+  GHGEnergy_CaptivePower_Renewable(
+    where: $activityFilter
+    offset: $start
+    limit: $size
+    order_by: $orderBy
+  ) {
+    id
+    GHGEnergyConsumption_CaptivePower_id 
+    Type_of_Technology_Used
+    Year_of_installation
+    Unit_of_Energy_Generated_in_Kwh
+    supporting_docs
+    kpi_em_Emission_EnergyGenerated_kwh
+    kpi_emf_Emission_EnergyGenerated_kwh
+  }
+  totalCount: GHGEnergy_CaptivePower_Renewable_aggregate(
+    where: $activityFilter
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

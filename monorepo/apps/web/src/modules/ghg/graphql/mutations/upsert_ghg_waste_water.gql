@@ -1,0 +1,42 @@
+mutation upsertGHGWasteWaterActivity(
+  $where: GHGWasteWater_bool_exp!
+  $ghgWasteWaterData: [GHGWasteWater_insert_input!]!
+) {
+  delete_GHGWasteWater(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      total_treated_effluent_reused_for_domestic_use
+      total_treated_effluent_reused_for_industrial_use
+      total_treated_effluent_reused_for_landscaping
+      total_treated_effluent_used_for_miscellaneous_uses
+      uom_treated_effluent
+    }
+  }
+  insert_GHGWasteWater(
+    objects: $ghgWasteWaterData
+    on_conflict: { constraint: GHGWasteWater_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      total_treated_effluent_reused_for_domestic_use
+      total_treated_effluent_reused_for_industrial_use
+      total_treated_effluent_reused_for_landscaping
+      total_treated_effluent_used_for_miscellaneous_uses
+      uom_treated_effluent
+    }
+  }
+}

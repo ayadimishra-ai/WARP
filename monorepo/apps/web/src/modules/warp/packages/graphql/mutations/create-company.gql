@@ -1,0 +1,18 @@
+mutation createCompany($input: [Company_insert_input!]!) {
+  insert_Company(
+    objects: $input
+    on_conflict: { constraint: Company_name_key }
+  ) {
+    returning {
+      id
+      name
+      primaryContact
+      details
+      parentCompanyId
+      platformId
+      created_by
+      updated_by
+      country
+    }
+  }
+}

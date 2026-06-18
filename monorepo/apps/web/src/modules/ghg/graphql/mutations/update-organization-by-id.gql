@@ -1,0 +1,35 @@
+mutation updateOrganizationById(
+  $id: uuid!
+  $industryType: String!
+  $hasWasteWaterTreatmentPlant: Boolean!
+  $is_review_saved: Boolean!
+  $metadata: jsonb
+  $name: String!
+  $financialYearMonth: String!
+  $baselineYear: Int!
+) {
+  update_Organization(
+    where: { id: { _eq: $id } }
+    _set: {
+      name: $name
+      industryType: $industryType
+      hasWasteWaterTreatmentPlant: $hasWasteWaterTreatmentPlant
+      is_review_saved: $is_review_saved
+      metadata: $metadata
+      FinancialYearMonth: $financialYearMonth
+      Baselineyear: $baselineYear
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      name
+      industryType
+      hasWasteWaterTreatmentPlant
+      is_review_saved
+      metadata
+      FinancialYearMonth
+      Baselineyear
+    }
+  }
+}

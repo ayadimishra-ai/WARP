@@ -1,6 +1,6 @@
-# WARP + OPS Monorepo
+# Snowkap ESG Platform — Full Repository
 
-GHG inventory and ESG reporting platform.
+Four-platform ESG stack: WARP (reporting), OPS (GHG calculator), SPA (portal shell), Monorepo (next-gen unified).
 
 > **All source code and fixes are on branch `claude/magical-rubin-dwqjhr`.**
 > The `main` branch is empty — switch branches to see the code.
@@ -10,11 +10,11 @@ GHG inventory and ESG reporting platform.
 ## Repository Structure
 
 ```
-/                        ← WARP monorepo root (Turborepo + Yarn Workspaces)
-├── apps/
+/                        ← Repository root
+├── apps/                ← WARP platform (Turborepo + Yarn Workspaces)
 │   ├── web/             ← Next.js 14 Pages Router — ESG/GHG assessment platform
 │   └── hasura/          ← Hasura metadata and migrations
-├── packages/
+├── packages/            ← WARP shared packages
 │   ├── client/          ← Browser-side hooks, rate limiter, services
 │   ├── graphql/         ← Generated GraphQL types, hooks, server SDK
 │   ├── server/          ← API guards, AWS S3 service, notification service
@@ -30,12 +30,31 @@ GHG inventory and ESG reporting platform.
 │   ├── utils/           ← OPS utilities (env, drizzle, jwt, logger)
 │   ├── docs/            ← OPS feature specs (monthly-activity-summary, etc.)
 │   └── CLAUDE.md        ← Claude Code guidance for the OPS codebase
-├── docs/                ← WARP feature documentation (original source)
-│   ├── ai-features/
-│   ├── document-repository/
-│   └── esg-post-deal-form/
+├── spa/                 ← React CRA frontend SPA — portal shell embedding WARP + OPS
+│   ├── src/             ← React 18 source (JS, Redux, Webpack)
+│   │   ├── warp/        ← WARP iframe integration (service, config, constants)
+│   │   ├── ops/         ← OPS iframe integration
+│   │   └── components/  ← UI components
+│   ├── config/          ← Webpack + CRA config overrides
+│   └── public/          ← Static assets
+├── monorepo/            ← Next-gen unified platform (pnpm workspace)
+│   ├── apps/
+│   │   ├── web/         ← Next.js 15 App Router (2300+ TS files)
+│   │   │   └── src/
+│   │   │       ├── app/             ← App Router pages + API routes
+│   │   │       ├── modules/warp/    ← Migrated WARP module (Mantine v8)
+│   │   │       ├── modules/ghg/     ← GHG module
+│   │   │       └── lib/             ← Auth, DB, Apollo, env, utils
+│   │   └── hasura/      ← Hasura metadata + migrations
+│   └── CLAUDE.md        ← Claude Code guidance for the monorepo
+├── docs/                ← All documentation
+│   ├── warp/            ← WARP QA changelogs + architecture docs
+│   ├── ops/             ← OPS QA changelogs + architecture docs
+│   ├── spa/             ← SPA QA changelogs + architecture docs
+│   ├── monorepo/        ← Monorepo QA changelogs
+│   └── INDEX.md         ← Master documentation index
 ├── workflows/           ← CI/CD workflow definitions
-└── CLAUDE.md            ← Claude Code guidance for the WARP monorepo root
+└── CLAUDE.md            ← Claude Code guidance for the repository root
 ```
 
 ---
@@ -70,6 +89,29 @@ yarn dev        # Turbopack dev server (APP_ENV=live)
 yarn build
 yarn lint
 yarn codegen    # regenerate GraphQL types
+```
+
+## SPA — Quick Start
+
+```bash
+cd spa
+npm install
+npm start       # dev server on :3000
+npm run build   # production build → build/
+```
+
+## Monorepo — Quick Start
+
+```bash
+cd monorepo
+pnpm install
+pnpm dev        # all workspaces in parallel (--turbopack)
+pnpm build
+pnpm lint
+
+# Within apps/web only:
+pnpm --filter @snowkap/web dev
+pnpm --filter @snowkap/web codegen   # regenerate GraphQL types
 ```
 
 ---

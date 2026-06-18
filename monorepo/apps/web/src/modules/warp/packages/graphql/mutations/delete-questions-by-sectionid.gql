@@ -1,0 +1,8 @@
+mutation DeleteQuestionsBySectionId($SectionId: [uuid!]) {
+  delete_Question(where: { sectionId: { _in: $SectionId } }) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+}

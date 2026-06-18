@@ -1,0 +1,5 @@
+mutation DeleteInterimFormLogsByQuestionIds($questionIds: [uuid!]!) {
+  delete_InterimFormLogs(where: { questionId: { _in: $questionIds } }) {
+    affected_rows
+  }
+}

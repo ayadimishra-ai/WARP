@@ -1,0 +1,16 @@
+table:
+  name: CompanyFormFundtype
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: invitedBy
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+  - name: Organization
+    using:
+      foreign_key_constraint_on: companyId
+  - name: organizationByVccompanyid
+    using:
+      foreign_key_constraint_on: vcCompanyId

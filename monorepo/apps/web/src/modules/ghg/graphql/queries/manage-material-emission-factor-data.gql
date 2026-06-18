@@ -1,0 +1,52 @@
+query ManageMaterialEmissionFactorData(
+  $limit: Int
+  $offset: Int
+  $orderBy: [CO2EmissionFactorMaster_Material_order_by!]
+  $where: CO2EmissionFactorMaster_Material_bool_exp
+) {
+  CO2EmissionFactorMaster_Material(
+    where: $where
+    order_by: $orderBy
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    year
+    month
+    region
+    activity
+    factor
+    factor_uom
+    metadata
+    geography
+    organization_id
+    Organization {
+      id
+      name
+    }
+  }
+  CO2EmissionFactorMaster_Material_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+  Region {
+    id
+    name
+    code
+  }
+  Organization(where: { is_deleted: { _eq: false } }) {
+    id
+    name
+  }
+  EmissionFactorGeographyHierarchy {
+    Country {
+      name
+    }
+    id
+    country_id
+    geography
+    sequence
+    geography_type
+  }
+}

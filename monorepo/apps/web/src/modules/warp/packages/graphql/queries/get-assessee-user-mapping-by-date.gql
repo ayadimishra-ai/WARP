@@ -1,0 +1,51 @@
+query getAssesseeUserMappingByDate(
+  $startDate: timestamptz
+  $endDate: timestamptz
+) {
+  AssesseeUserMapping(
+    where: {
+      created_at: { _gte: $startDate, _lte: $endDate }
+      IsActive: { _eq: true }
+    }
+    order_by: { Question: { Section: { key: asc } } }
+  ) {
+    id
+    userId
+    questionId
+    formId
+    InvitationId
+    IsActive
+    created_at
+    updated_at
+    Question {
+      id
+      content
+      FormFields {
+        id
+        field
+        fieldOptions
+        interfaceOptions
+      }
+      Section {
+        id
+        content
+        ParentSection {
+          id
+          content
+        }
+      }
+    }
+    ParentCompanyMapping {
+      Id
+      CompanyId
+      Company {
+        id
+        name
+      }
+    }
+    User {
+      id
+      name
+    }
+  }
+}

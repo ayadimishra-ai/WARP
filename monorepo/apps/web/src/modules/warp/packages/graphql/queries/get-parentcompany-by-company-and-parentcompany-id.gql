@@ -1,0 +1,13 @@
+query getParentCompanyByCompanyAndParentCompanyId(
+  $companyId: uuid!
+  $parentCompanyId: uuid!
+) {
+  ParentCompanyMapping(
+    where: {
+      CompanyId: { _eq: $companyId }
+      ParentCompanyId: { _eq: $parentCompanyId }
+    }
+  ) {
+    Id
+  }
+}

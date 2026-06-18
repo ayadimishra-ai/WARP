@@ -1,0 +1,17 @@
+# Try out GraphQL queries here
+mutation saveUserSession($object: [Tbl_UserSessions_insert_input!]!) {
+  insert_Tbl_UserSessions(objects: $object) {
+    affected_rows
+    returning {
+			id
+      UserId
+      PlatformToken
+      WarpToken
+      OpsToken
+      BrowserToken
+      Status
+      Metadata
+      StatusMetadata
+    }
+  }
+}

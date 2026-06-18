@@ -1,0 +1,21 @@
+table:
+  name: SourceFiles
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: SuggestedDocument
+    using:
+      foreign_key_constraint_on: suggestedDocumentId
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: Sources
+    using:
+      foreign_key_constraint_on:
+        column: sourceFilesId
+        table:
+          name: Sources
+          schema: public

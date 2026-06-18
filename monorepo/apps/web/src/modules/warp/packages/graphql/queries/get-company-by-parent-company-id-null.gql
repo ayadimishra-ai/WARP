@@ -1,0 +1,35 @@
+query GetCompanyByParentCompanyIdNull(
+  $parentCompanyId: uuid
+  $platformId: uuid
+  $allConsultantCompanyIds: [uuid!]
+) {
+  Company(
+    where: {
+      _and: [
+        { isActive: { _eq: true } }
+        { platformId: { _eq: $platformId } }
+        { id: { _neq: $parentCompanyId } }
+      ]
+      ParentCompanyMappings: {
+        _or: [
+          { ParentCompanyId: { _is_null: true } }
+          { ParentCompanyId: { _neq: $parentCompanyId } }
+        ]
+        _and: [{ isActive: { _eq: true } }]
+      }
+      id: { _nin: $allConsultantCompanyIds }
+    }
+  ) {
+    id
+    name
+    country
+    primaryContact
+    isActive
+    parentCompanyId
+    ParentCompanyMappings {
+      ParentCompanyId
+      isActive
+    }
+    IsManufacturing
+  }
+}

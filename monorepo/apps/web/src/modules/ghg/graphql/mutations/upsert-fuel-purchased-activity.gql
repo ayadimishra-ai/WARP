@@ -1,0 +1,140 @@
+mutation upsertFuelPurchasedActivity(
+  $GHGEnergyConsumption_FuelPurchased_General_id: [uuid!]!
+  $GHGEnergyConsumption_FuelPurchased_Auxiliary_id: [uuid!]!
+  $GHGEnergyConsumption_FuelPurchased_HeatingWater__id: [uuid!]!
+  $Auxdata: [GHGEnergyConsumption_FuelPurchased_Auxiliary_insert_input!]!
+  $Generaldata: [GHGEnergyConsumption_FuelPurchased_General_insert_input!]!
+  $HeatingWaterdata: [GHGEnergyConsumption_FuelPurchased_HeatingWater_insert_input!]!
+) {
+  delete_GHGEnergyConsumption_FuelPurchased_General(
+    where: {
+      GHGEnergyConsumption_FuelPurchased_id: {
+        _in: $GHGEnergyConsumption_FuelPurchased_General_id
+      }
+    }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Type_of_Fuel_Purchased
+      Quantity_of_fuel_Consumed
+      Quantity_of_fuel_Consumed_uom
+      Quality_of_fuel
+      Point_of_Consumption
+      supporting_docs
+      kpi_em_Emission_QuantityOfFuelConsumed
+      kpi_emf_Emission_QuantityOfFuelConsumed
+      GHGEnergyConsumption_FuelPurchased {
+        task_request_id
+      }
+    }
+  }
+  delete_GHGEnergyConsumption_FuelPurchased_HeatingWater(
+    where: {
+      GHGEnergyConsumption_FuelPurchased_id: {
+        _in: $GHGEnergyConsumption_FuelPurchased_HeatingWater__id
+      }
+    }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Type_of_Fuel_Purchased
+      Quality_of_fuel
+      Used_for_Which_SKUs
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      supporting_docs
+      kpi_em_Emission_QuantityOfFuelConsumed
+      kpi_emf_Emission_QuantityOfFuelConsumed
+      GHGEnergyConsumption_FuelPurchased {
+        task_request_id
+      }
+    }
+  }
+  delete_GHGEnergyConsumption_FuelPurchased_Auxiliary(
+    where: {
+      GHGEnergyConsumption_FuelPurchased_id: {
+        _in: $GHGEnergyConsumption_FuelPurchased_Auxiliary_id
+      }
+    }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Type_of_Auxiliary_Fuel_Purchased
+      Used_for_Which_SKUs
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      supporting_docs
+      kpi_em_Emission_QuantityOfFuelConsumed
+      kpi_emf_Emission_QuantityOfFuelConsumed
+      GHGEnergyConsumption_FuelPurchased {
+        task_request_id
+      }
+    }
+  }
+  insert_GHGEnergyConsumption_FuelPurchased_Auxiliary(
+    objects: $Auxdata
+    on_conflict: {
+      constraint: GHGEnergyConsumption_FuelPurchased_Auxiliary_pkey
+    }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Type_of_Auxiliary_Fuel_Purchased
+      Used_for_Which_SKUs
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      supporting_docs
+      kpi_em_Emission_QuantityOfFuelConsumed
+      kpi_emf_Emission_QuantityOfFuelConsumed
+      GHGEnergyConsumption_FuelPurchased {
+        task_request_id
+      }
+    }
+  }
+  insert_GHGEnergyConsumption_FuelPurchased_General(
+    objects: $Generaldata
+    on_conflict: { constraint: GHGEnergyConsumption_FuelPurchased_General_pkey }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Type_of_Fuel_Purchased
+      Quantity_of_fuel_Consumed
+      Quantity_of_fuel_Consumed_uom
+      Quality_of_fuel
+      Point_of_Consumption
+      supporting_docs
+      kpi_em_Emission_QuantityOfFuelConsumed
+      kpi_emf_Emission_QuantityOfFuelConsumed
+      GHGEnergyConsumption_FuelPurchased {
+        task_request_id
+      }
+    }
+  }
+  insert_GHGEnergyConsumption_FuelPurchased_HeatingWater(
+    objects: $HeatingWaterdata
+    on_conflict: {
+      constraint: GHGEnergyConsumption_FuelPurchased_HeatingWater_pkey
+    }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Type_of_Fuel_Purchased
+      Quality_of_fuel
+      Used_for_Which_SKUs
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      supporting_docs
+      kpi_em_Emission_QuantityOfFuelConsumed
+      kpi_emf_Emission_QuantityOfFuelConsumed
+      GHGEnergyConsumption_FuelPurchased {
+        task_request_id
+      }
+    }
+  }
+}

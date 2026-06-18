@@ -1,0 +1,22 @@
+table:
+  name: KPIMain
+  schema: public
+object_relationships:
+  - name: OrganizationAddress
+    using:
+      manual_configuration:
+        column_mapping:
+          address_id: id
+        insertion_order: null
+        remote_table:
+          name: OrganizationAddress
+          schema: public
+  - name: Region
+    using:
+      manual_configuration:
+        column_mapping:
+          region_id: id
+        insertion_order: null
+        remote_table:
+          name: Region
+          schema: public

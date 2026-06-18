@@ -1,0 +1,19 @@
+query GetActiveSessions($userId: uuid!) {
+  Tbl_UserSessions(
+    where: { UserId: { _eq: $userId }, Status: { _eq: "Active" } }
+  ) {
+    id
+    UserId
+    PlatformToken
+    OpsToken
+    WarpToken
+    BrowserToken
+    Status
+    Metadata
+    StatusMetadata
+    CreatedBy
+    CreatedDate
+    ModifiedBy
+    ModifiedDate
+  }
+}

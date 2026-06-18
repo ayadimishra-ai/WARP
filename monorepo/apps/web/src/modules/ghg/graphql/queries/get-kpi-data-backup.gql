@@ -1,0 +1,1164 @@
+query GetKPIDataBackup(
+  $organization_id: uuid!
+  $address_id: [uuid!]!
+  $region_id: [uuid!]!
+  $from_year: numeric!
+  $to_year: numeric!
+  $from_month: numeric!
+  $to_month: numeric!
+  $previous_from_year: numeric!
+  $previous_to_year: numeric!
+  $previous_from_month: numeric!
+  $previous_to_month: numeric!
+  $baseline_from_year: numeric!
+  $baseline_to_year: numeric!
+  $baseline_from_month: numeric!
+  $baseline_to_month: numeric!
+  $baseline_from_year_current: numeric!
+  $baseline_to_year_current: numeric!
+  $baseline_from_month_current: numeric!
+  $baseline_to_month_current: numeric!
+) {
+  currentYearKPIMain: KPIMain(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    Region {
+      name
+    }
+    OrganizationAddress {
+      Address {
+        name
+        latitude
+        longitude
+        full_address
+        City {
+          name
+        }
+      }
+    }
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_uom
+    kpi_em_Total_Emission
+    kpi_em_Total_Emission_Scope1
+    kpi_em_Total_Emission_Scope2
+    kpi_em_Total_Emission_Scope3
+    kpi_em_TopEmission_Category
+    kpi_em_TopEmission_Product
+    kpi_em_CurrentEmissionIntensity_PerTonProduction
+    kpi_em_CurrentEmissionIntensity_PerEmployee
+    kpi_em_CurrentEmissionIntensity_PerProduct
+    kpi_em_Cont_TotalEmission_StreamOfWork_Upstream
+    kpi_em_Cont_TotalEmission_StreamOfWork_Operations
+    kpi_em_Cont_TotalEmission_StreamOfWork_Downstream
+    kpi_em_Cont_TotalEmission_Categories_Energy
+    kpi_em_Cont_TotalEmission_Categories_Waste
+    kpi_em_Cont_TotalEmission_Categories_Transport
+    kpi_em_Cont_TotalEmission_Categories_Material
+    timestamp
+  }
+  previousYearKPIMain: KPIMain(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    Region {
+      name
+    }
+    OrganizationAddress {
+      Address {
+        name
+        latitude
+        longitude
+        full_address
+      }
+    }
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_uom
+    kpi_em_Total_Emission
+    kpi_em_Total_Emission_Scope1
+    kpi_em_Total_Emission_Scope2
+    kpi_em_Total_Emission_Scope3
+    kpi_em_TopEmission_Category
+    kpi_em_TopEmission_Product
+    kpi_em_CurrentEmissionIntensity_PerTonProduction
+    kpi_em_CurrentEmissionIntensity_PerEmployee
+    kpi_em_CurrentEmissionIntensity_PerProduct
+    kpi_em_Cont_TotalEmission_StreamOfWork_Upstream
+    kpi_em_Cont_TotalEmission_StreamOfWork_Operations
+    kpi_em_Cont_TotalEmission_StreamOfWork_Downstream
+    kpi_em_Cont_TotalEmission_Categories_Energy
+    kpi_em_Cont_TotalEmission_Categories_Waste
+    kpi_em_Cont_TotalEmission_Categories_Transport
+    kpi_em_Cont_TotalEmission_Categories_Material
+  }
+  baselineYearKPIMain: KPIMain(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $baseline_from_year } }
+                { month: { _gte: $baseline_from_month } }
+              ]
+            }
+            { year: { _gt: $baseline_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $baseline_to_year } }
+                { month: { _lte: $baseline_to_month } }
+              ]
+            }
+            { year: { _lt: $baseline_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    Region {
+      name
+    }
+    OrganizationAddress {
+      Address {
+        name
+        latitude
+        longitude
+        full_address
+        City {
+          name
+        }
+      }
+    }
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_uom
+    kpi_em_Total_Emission
+    kpi_em_Total_Emission_Scope1
+    kpi_em_Total_Emission_Scope2
+    kpi_em_Total_Emission_Scope3
+    kpi_em_TopEmission_Category
+    kpi_em_TopEmission_Product
+    kpi_em_CurrentEmissionIntensity_PerTonProduction
+    kpi_em_CurrentEmissionIntensity_PerEmployee
+    kpi_em_CurrentEmissionIntensity_PerProduct
+    kpi_em_Cont_TotalEmission_StreamOfWork_Upstream
+    kpi_em_Cont_TotalEmission_StreamOfWork_Operations
+    kpi_em_Cont_TotalEmission_StreamOfWork_Downstream
+    kpi_em_Cont_TotalEmission_Categories_Energy
+    kpi_em_Cont_TotalEmission_Categories_Waste
+    kpi_em_Cont_TotalEmission_Categories_Transport
+    kpi_em_Cont_TotalEmission_Categories_Material
+    timestamp
+  }
+  baselineCurrentYearKPIMain: KPIMain(
+    where: {
+      organization_id: { _eq: $organization_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $baseline_from_year_current } }
+                { month: { _gte: $baseline_from_month_current } }
+              ]
+            }
+            { year: { _gt: $baseline_from_year_current } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $baseline_to_year_current } }
+                { month: { _lte: $baseline_to_month_current } }
+              ]
+            }
+            { year: { _lt: $baseline_to_year_current } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    Region {
+      name
+    }
+    OrganizationAddress {
+      Address {
+        name
+        latitude
+        longitude
+        full_address
+        City {
+          name
+        }
+      }
+    }
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_uom
+    kpi_em_Total_Emission
+    kpi_em_Total_Emission_Scope1
+    kpi_em_Total_Emission_Scope2
+    kpi_em_Total_Emission_Scope3
+    kpi_em_TopEmission_Category
+    kpi_em_TopEmission_Product
+    kpi_em_CurrentEmissionIntensity_PerTonProduction
+    kpi_em_CurrentEmissionIntensity_PerEmployee
+    kpi_em_CurrentEmissionIntensity_PerProduct
+    kpi_em_Cont_TotalEmission_StreamOfWork_Upstream
+    kpi_em_Cont_TotalEmission_StreamOfWork_Operations
+    kpi_em_Cont_TotalEmission_StreamOfWork_Downstream
+    kpi_em_Cont_TotalEmission_Categories_Energy
+    kpi_em_Cont_TotalEmission_Categories_Waste
+    kpi_em_Cont_TotalEmission_Categories_Transport
+    kpi_em_Cont_TotalEmission_Categories_Material
+    timestamp
+  }
+  organizationLevelKPIMain: KPIMain(
+    where: {
+      organization_id: { _eq: $organization_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    Region {
+      name
+    }
+    OrganizationAddress {
+      Address {
+        name
+        latitude
+        longitude
+        full_address
+        City {
+          name
+        }
+      }
+    }
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_uom
+    kpi_em_Total_Emission
+    kpi_em_Total_Emission_Scope1
+    kpi_em_Total_Emission_Scope2
+    kpi_em_Total_Emission_Scope3
+    kpi_em_TopEmission_Category
+    kpi_em_TopEmission_Product
+    kpi_em_CurrentEmissionIntensity_PerTonProduction
+    kpi_em_CurrentEmissionIntensity_PerEmployee
+    kpi_em_CurrentEmissionIntensity_PerProduct
+    kpi_em_Cont_TotalEmission_StreamOfWork_Upstream
+    kpi_em_Cont_TotalEmission_StreamOfWork_Operations
+    kpi_em_Cont_TotalEmission_StreamOfWork_Downstream
+    kpi_em_Cont_TotalEmission_Categories_Energy
+    kpi_em_Cont_TotalEmission_Categories_Waste
+    kpi_em_Cont_TotalEmission_Categories_Transport
+    kpi_em_Cont_TotalEmission_Categories_Material
+  }
+  previousYearOrganisationLevelKPIMain: KPIMain(
+    where: {
+      organization_id: { _eq: $organization_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    Region {
+      name
+    }
+    OrganizationAddress {
+      Address {
+        name
+        latitude
+        longitude
+        full_address
+        City {
+          name
+        }
+      }
+    }
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_uom
+    kpi_em_Total_Emission
+    kpi_em_Total_Emission_Scope1
+    kpi_em_Total_Emission_Scope2
+    kpi_em_Total_Emission_Scope3
+    kpi_em_TopEmission_Category
+    kpi_em_TopEmission_Product
+    kpi_em_CurrentEmissionIntensity_PerTonProduction
+    kpi_em_CurrentEmissionIntensity_PerEmployee
+    kpi_em_CurrentEmissionIntensity_PerProduct
+    kpi_em_Cont_TotalEmission_StreamOfWork_Upstream
+    kpi_em_Cont_TotalEmission_StreamOfWork_Operations
+    kpi_em_Cont_TotalEmission_StreamOfWork_Downstream
+    kpi_em_Cont_TotalEmission_Categories_Energy
+    kpi_em_Cont_TotalEmission_Categories_Waste
+    kpi_em_Cont_TotalEmission_Categories_Transport
+    kpi_em_Cont_TotalEmission_Categories_Material
+  }
+  currentYearKPIEmissionByPowerConsumption: KPIEmissionByPowerConsumption(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_PowerPurchased_RenewableSources
+    kpi_em_PowerPurchased_NonRenewableSources
+    kpi_em_TotalPowerPurchased
+    kpi_em_Emission_PowerPurchased_PPA_Renewable
+    kpi_em_PowerPurchased_PPA_NonRenewable
+    kpi_em_Emission_PowerPurchased_REC
+    kpi_em_Renewable_CaptivePower
+    kpi_em_NonRenewable_CaptivePower
+    kpi_em_CaptivePower
+    kpi_em_PowerConsumption_Scope2
+    kpi_em_PowerConsumption_Scope1
+    kpi_CaptivePower_GeneratedUnits
+    kpi_TotalPowerPurchased_GeneratedUnits
+  }
+  previousYearKPIEmissionByPowerConsumption: KPIEmissionByPowerConsumption(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_PowerPurchased_RenewableSources
+    kpi_em_PowerPurchased_NonRenewableSources
+    kpi_em_TotalPowerPurchased
+    kpi_em_Emission_PowerPurchased_PPA_Renewable
+    kpi_em_PowerPurchased_PPA_NonRenewable
+    kpi_em_Emission_PowerPurchased_REC
+    kpi_em_Renewable_CaptivePower
+    kpi_em_NonRenewable_CaptivePower
+    kpi_em_CaptivePower
+    kpi_em_PowerConsumption_Scope2
+    kpi_em_PowerConsumption_Scope1
+    kpi_CaptivePower_GeneratedUnits
+    kpi_TotalPowerPurchased_GeneratedUnits
+  }
+  currentYearKPIEmissionByFuelConsumption: KPIEmissionByFuelConsumption(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_Diesel_Consumption
+    kpi_em_Gasoline_Consumption
+    kpi_em_Biodiesel_Consumption
+    kpi_em_Ethanol_Consumption
+    kpi_em_LPG_Consumption
+    kpi_em_CNG_Consumption
+    kpi_em_GaseousNitrogen_Consumption
+    kpi_em_GaseousOxygen_Consumption
+    kpi_em_LiquidNitrogen_Consumption
+    kpi_em_CompressedAir_Consumption
+    kpi_em_Electric_Consumption
+    kpi_em_JetFuel_Consumption
+    kpi_em_SAF_Consumption
+    kpi_em_TotalEmission_FuelConsumption
+    kpi_em_FuelConsumption_Scope1
+  }
+  previousYearKPIEmissionByFuelConsumption: KPIEmissionByFuelConsumption(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_Diesel_Consumption
+    kpi_em_Gasoline_Consumption
+    kpi_em_Biodiesel_Consumption
+    kpi_em_Ethanol_Consumption
+    kpi_em_LPG_Consumption
+    kpi_em_CNG_Consumption
+    kpi_em_GaseousNitrogen_Consumption
+    kpi_em_GaseousOxygen_Consumption
+    kpi_em_LiquidNitrogen_Consumption
+    kpi_em_CompressedAir_Consumption
+    kpi_em_Electric_Consumption
+    kpi_em_JetFuel_Consumption
+    kpi_em_SAF_Consumption
+    kpi_em_TotalEmission_FuelConsumption
+    kpi_em_FuelConsumption_Scope1
+  }
+  currentYearKPIEmissionByTransportation: KPIEmissionByTransportation(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_UpstreamTransport
+    kpi_em_UpstreamTransport_Scope1
+    kpi_em_UpstreamTransport_Scope3
+    kpi_em_DownstreamTransport_Scope1
+    kpi_em_DownstreamTransport_Scope3
+    kpi_em_DownstreamTransport
+    kpi_em_EmployeeTravel
+    kpi_em_EmployeeTravel_Scope1
+    kpi_em_EmployeeTravel_Scope3
+    kpi_em_BusinessTravel
+    kpi_em_BusinessTravel_Scope3
+    kpi_em_Transport_WasteManagement
+    kpi_em_Transport_WasteManagement_Scope1
+    kpi_em_Transport_WasteManagement_Scope3
+    kpi_em_TotalEmission_Transport
+    kpi_em_Transport_Scope1
+    kpi_em_Transport_Scope3
+  }
+  previousYearKPIEmissionByTransportation: KPIEmissionByTransportation(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_UpstreamTransport
+    kpi_em_UpstreamTransport_Scope1
+    kpi_em_UpstreamTransport_Scope3
+    kpi_em_DownstreamTransport
+    kpi_em_DownstreamTransport_Scope1
+    kpi_em_DownstreamTransport_Scope3
+    kpi_em_EmployeeTravel
+    kpi_em_EmployeeTravel_Scope1
+    kpi_em_EmployeeTravel_Scope3
+    kpi_em_BusinessTravel
+    kpi_em_BusinessTravel_Scope3
+    kpi_em_Transport_WasteManagement
+    kpi_em_Transport_WasteManagement_Scope1
+    kpi_em_Transport_WasteManagement_Scope3
+    kpi_em_TotalEmission_Transport
+    kpi_em_Transport_Scope1
+    kpi_em_Transport_Scope3
+  }
+  currentYearKPIEmissionByMaterialConsumption: KPIEmissionByMaterialConsumption(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_TotalEmission_MaterialProcurement
+    kpi_em_MaterialProcurement_Scope1
+    kpi_em_MaterialProcurement_Scope3
+  }
+  previousYearKPIEmissionByMaterialConsumption: KPIEmissionByMaterialConsumption(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_TotalEmission_MaterialProcurement
+    kpi_em_MaterialProcurement_Scope1
+    kpi_em_MaterialProcurement_Scope3
+  }
+  currentYearKPIEmissionByWasteGeneration: KPIEmissionByWasteGeneration(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    WasteDisposal_ManagedBy_ThirdParty_Name
+    kpi_em_TotalEmission_WasteGeneration
+    kpi_em_WasteGeneration_Scope1
+    kpi_em_WasteGeneration_Scope3
+  }
+  previousYearKPIEmissionByWasteGeneration: KPIEmissionByWasteGeneration(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    WasteDisposal_ManagedBy_ThirdParty_Name
+    kpi_em_TotalEmission_WasteGeneration
+    kpi_em_WasteGeneration_Scope1
+    kpi_em_WasteGeneration_Scope3
+  }
+  currentYearKPIEmissionByMaterialConsumptionSuppliers: KPIEmissionByMaterialConsumption_Suppliers(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    year
+    month
+    supplier_id
+    supplier_name
+    supplier_category
+    kpi_em_MaterialProcurement_Scope3
+  }
+  previousYearKPIEmissionByMaterialConsumptionSuppliers: KPIEmissionByMaterialConsumption_Suppliers(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    year
+    month
+    supplier_id
+    supplier_name
+    supplier_category
+    kpi_em_MaterialProcurement_Scope3
+  }
+  currentYearKPIEmissionByPowerConsumption_Vendors: KPIEmissionByPowerConsumption_Vendors(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    year
+    month
+    kpi_em_Emission_PowerPurchased_PPA_Renewable_vendor
+    kpi_em_PowerPurchased_PPA_NonRenewable_vendor
+    kpi_em_PowerPurchased_NonRenewableSources_vendor
+    kpi_em_Emission_PowerPurchased_REC_vendor
+    kpi_em_Emission_PowerPurchased_PPA_Renewable
+    kpi_em_PowerPurchased_PPA_NonRenewable
+    kpi_em_PowerPurchased_NonRenewableSources
+    kpi_em_Emission_PowerPurchased_REC
+  }
+  previousYearKPIEmissionByPowerConsumption_Vendors: KPIEmissionByPowerConsumption_Vendors(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    year
+    month
+    kpi_em_Emission_PowerPurchased_PPA_Renewable_vendor
+    kpi_em_PowerPurchased_PPA_NonRenewable_vendor
+    kpi_em_PowerPurchased_NonRenewableSources_vendor
+    kpi_em_Emission_PowerPurchased_REC_vendor
+    kpi_em_Emission_PowerPurchased_PPA_Renewable
+    kpi_em_PowerPurchased_PPA_NonRenewable
+    kpi_em_PowerPurchased_NonRenewableSources
+    kpi_em_Emission_PowerPurchased_REC
+  }
+  currentYearKPIEmissionByProducts: KPIEmissionByProducts(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $from_year } }
+                { month: { _gte: $from_month } }
+              ]
+            }
+            { year: { _gt: $from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $to_year } }
+                { month: { _lte: $to_month } }
+              ]
+            }
+            { year: { _lt: $to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    year
+    month
+    product_id
+    product_name
+    brand_id
+    brand_name
+    kpi_em_Total_Emission
+  }
+  previousYearKPIEmissionByProducts: KPIEmissionByProducts(
+    where: {
+      organization_id: { _eq: $organization_id }
+      address_id: { _in: $address_id }
+      region_id: { _in: $region_id }
+      _and: [
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_from_year } }
+                { month: { _gte: $previous_from_month } }
+              ]
+            }
+            { year: { _gt: $previous_from_year } }
+          ]
+        }
+        {
+          _or: [
+            {
+              _and: [
+                { year: { _eq: $previous_to_year } }
+                { month: { _lte: $previous_to_month } }
+              ]
+            }
+            { year: { _lt: $previous_to_year } }
+          ]
+        }
+      ]
+    }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    year
+    month
+    product_id
+    product_name
+    brand_id
+    brand_name
+    kpi_em_Total_Emission
+  }
+}

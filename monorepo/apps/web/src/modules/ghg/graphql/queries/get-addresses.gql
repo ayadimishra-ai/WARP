@@ -1,0 +1,15 @@
+query getAddresses($organisationAddressId: uuid!) {
+  OrganizationAddress(
+    where: { organization_id: { _eq: $organisationAddressId } }
+  ) {
+    id
+    Address {
+      id
+      name
+      code
+      pincode
+      type
+      ownership_type
+    }
+  }
+}

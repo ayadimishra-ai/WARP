@@ -1,0 +1,22 @@
+mutation insertKPIProductCarbonFootprintMaterialProcurement(
+  $kpiMaterialProcurementData: [KPIProductCarbonFootprintMaterialProcurement_insert_input!]!
+  $deleteKpiMaterialProcurementData: KPIProductCarbonFootprintMaterialProcurement_bool_exp!
+) {
+  delete_KPIProductCarbonFootprintMaterialProcurement(
+    where: $deleteKpiMaterialProcurementData
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIProductCarbonFootprintMaterialProcurement(
+    objects: $kpiMaterialProcurementData
+    on_conflict: {
+      constraint: KPIProductCarbonFootprintMaterialProcurement_pkey
+    }
+  ) {
+    returning {
+      id
+    }
+  }
+}

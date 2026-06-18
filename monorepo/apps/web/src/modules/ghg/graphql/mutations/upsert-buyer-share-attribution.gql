@@ -1,0 +1,52 @@
+mutation upsertBuyerShareAttribution(
+  $where: GHGBuyer_Share_bool_exp!
+  $buyerShareData: [GHGBuyer_Share_insert_input!]!
+) {
+  delete_GHGBuyer_Share(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Buyer_Name
+      Location_Code
+      method
+      by_mass_Mass_of_Products_Purchased
+      by_mass_Total_Mass_of_Products_Produced
+      by_mass_Mass_of_Products_Produced_UoM
+      by_volume_Volume_of_Products_Purchased
+      by_volume_Total_Volume_of_Products_Purchased
+      by_volume_Volume_of_Products_Purchased_UoM
+      by_revenue_Market_Value_of_Products_Purchased
+      by_revenue_Total_Market_Value_of_Products_Produced
+      by_revenue_Market_Value_of_Products_Purchased_UoM
+      by_number_of_units_Number_of_Units_Purchased
+      by_number_of_units_Total_Number_of_Units_Produced
+    }
+  }
+  insert_GHGBuyer_Share(
+    objects: $buyerShareData
+    on_conflict: { constraint: GHGBuyer_Share_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Buyer_Name
+      Location_Code
+      method
+      by_mass_Mass_of_Products_Purchased
+      by_mass_Total_Mass_of_Products_Produced
+      by_mass_Mass_of_Products_Produced_UoM
+      by_volume_Volume_of_Products_Purchased
+      by_volume_Total_Volume_of_Products_Purchased
+      by_volume_Volume_of_Products_Purchased_UoM
+      by_revenue_Market_Value_of_Products_Purchased
+      by_revenue_Total_Market_Value_of_Products_Produced
+      by_revenue_Market_Value_of_Products_Purchased_UoM
+      by_number_of_units_Number_of_Units_Purchased
+      by_number_of_units_Total_Number_of_Units_Produced
+    }
+  }
+}

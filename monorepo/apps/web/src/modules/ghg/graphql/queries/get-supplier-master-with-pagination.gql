@@ -1,0 +1,30 @@
+query getsupplierMasterWithPagination(
+  $where: OrgSupplierMaster_bool_exp!
+  $limit: Int!
+  $offset: Int!
+  $order_by: [OrgSupplierMaster_order_by!]
+) {
+  OrgSupplierMaster(
+    where: $where
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    id
+    code
+    name
+    category
+    client_master_id
+    organization_id
+    supplier_gst_or_license_number
+    supplier_admin_email_id
+    supplier_admin_name
+    updated_at
+    is_deleted
+  }
+  totalSuppliersCount: OrgSupplierMaster_aggregate(where: $where) {
+    aggregate {
+      totalRows: count
+    }
+  }
+}

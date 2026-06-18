@@ -1,0 +1,13 @@
+query GetOrganizationByGSTNo($gstNo: String!) {
+  Organization(
+    where: {
+      metadata: {
+        _contains: [{ cin_pan_gst: $gstNo }]
+      }
+    }
+  ) {
+    id
+    name
+    metadata
+  }
+}

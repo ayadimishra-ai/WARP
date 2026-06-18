@@ -1,0 +1,30 @@
+query getOrganizationAddressByUserIdOrgId(
+  $organizationId: uuid
+  $userId: uuid
+) {
+  UserOrganizationAddressMapping(
+    where: {
+      organization_id: { _eq: $organizationId }
+      user_id: { _eq: $userId }
+    }
+  ) {
+    OrganizationAddress {
+      id
+      organization_id
+      address_id
+      Address {
+        id
+        name
+        code
+        ownership_type
+        type
+        pincode
+      }
+      Organization{
+        name
+        Baselineyear
+        FinancialYearMonth
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+query checkFuelPurchasedHasChildren($parentIds: [uuid!]!) {
+  GHGEnergyConsumption_FuelPurchased(where: { id: { _in: $parentIds } }) {
+    id
+    GHGEnergyConsumption_FuelPurchased_Generals_aggregate {
+      aggregate {
+        count
+      }
+    }
+    GHGEnergyConsumption_FuelPurchased_Auxiliaries_aggregate {
+      aggregate {
+        count
+      }
+    }
+    GHGEnergyConsumption_FuelPurchased_HeatingWaters_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}

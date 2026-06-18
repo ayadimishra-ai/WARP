@@ -1,0 +1,7 @@
+query getRegionData {
+  Region {
+    id
+    name
+    code
+  }
+}

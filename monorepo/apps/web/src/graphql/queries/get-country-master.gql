@@ -1,0 +1,12 @@
+query GetCountryMaster {
+  Tbl_CountryMaster(where: {StatusForSupplier: {_eq: true}}) {
+    CountryGuid
+    CountryName
+    CountryCode
+    Image
+    MobileCode
+    RegionGuid
+    IsActive
+    StatusForSupplier
+  }
+}

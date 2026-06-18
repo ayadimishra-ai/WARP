@@ -1,0 +1,75 @@
+query getActivityDataEnergyCaptivePowerNonRenewableFuelPaginated(
+  $organization_address_ids: [uuid!]!
+  $limit: Int
+  $offset: Int
+  $order_by: [GHGEnergy_CaptivePower_NonRenewable_order_by!]
+  $activityFilter: GHGEnergy_CaptivePower_NonRenewable_bool_exp = {}
+) {
+  GHGEnergy_CaptivePower_NonRenewable(
+    where: {
+      GHGEnergy_CaptivePower: {
+        TaskRequest: {
+          organization_address_id: { _in: $organization_address_ids }
+        }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter]
+    }
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    id
+    type_of_fuel_used: Type_of_Fuel_Used
+    quantity_of_fuel_consumed: Quantity_of_fuel_consumed
+    quantity_of_fuel_consumed_uom: Quantity_of_fuel_consumed_uom
+    quality_of_fuel: Quality_of_fuel
+    unit_of_energy_generated_in_kwh: Unit_of_Energy_Generated_in_Kwh
+    GHGEnergyConsumption_CaptivePower_id
+    created_by
+    updated_at
+    CreatedByUser: AppUser {
+      id
+      name
+      email
+    }
+    UpdatedByUser: appUserByUpdatedBy {
+      id
+      name
+      email
+    }
+    GHGEnergy_CaptivePower {
+      id
+      Type_of_Captive_Power
+      task_request_id
+      status
+      TaskRequest {
+        id
+        month
+        year
+        organization_address_id
+        OrganizationAddress {
+          Address {
+            name
+          }
+        }
+      }
+    }
+  }
+
+  totalCount: GHGEnergy_CaptivePower_NonRenewable_aggregate(
+    where: {
+      GHGEnergy_CaptivePower: {
+        TaskRequest: {
+          organization_address_id: { _in: $organization_address_ids }
+        }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

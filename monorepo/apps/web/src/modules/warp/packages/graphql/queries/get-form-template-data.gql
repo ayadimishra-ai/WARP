@@ -1,0 +1,58 @@
+query GetFormTemplateData($formId: uuid!) {
+  Form(where: { id: { _eq: $formId } }) {
+    id
+    title
+    description
+    name
+    formtype
+    tags
+    Sections(order_by: { key: asc }) {
+      id
+      key
+      content
+      tags
+      sectionId
+      ParentSection {
+        id
+        key
+        content
+      }
+      Questions(order_by: { key: asc }) {
+        id
+        key
+        content
+        tags
+        parentQuestionId
+        sectionId
+      }
+    }
+    FormFields(order_by: { seqIndex: asc }) {
+      id
+      field
+      type
+      interface
+      interfaceOptions
+      fieldOptions
+      displayOptions
+      displayRules
+      validationRules
+      autoCalculatedCalculation
+      seqIndex
+      groupField
+      tags
+      dataPoint
+      sectionId
+      questionId
+      Section {
+        id
+        key
+        content
+      }
+      Question {
+        id
+        key
+        content
+      }
+    }
+  }
+}

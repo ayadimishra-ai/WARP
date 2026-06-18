@@ -1,0 +1,7 @@
+mutation deleteAppUser($where: AppUser_bool_exp!) {
+  delete_AppUser(where: $where) {
+    returning {
+      id
+    }
+  }
+}

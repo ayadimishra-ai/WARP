@@ -1,0 +1,9 @@
+query getMyOrganizationDetails($organizationId: uuid!) @cached(ttl: 5) {
+  Organization(where: { id: { _eq: $organizationId } }) {
+    name
+    industryType
+    hasWasteWaterTreatmentPlant
+    is_review_saved
+    metadata
+  }
+}

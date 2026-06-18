@@ -1,0 +1,9 @@
+query getOrgProductMasterByCodesInsensitive($where: OrgProductMaster_bool_exp) {
+  OrgProductMaster(where: $where) {
+    id
+    client_master_id
+    name
+    code
+    organization_id
+  }
+}

@@ -1,0 +1,40 @@
+mutation upsertESGEmployeeTurnoverActivity(
+  $where: ESGEmployeeTurnover_bool_exp!
+  $esgEmployeeTurnoverData: [ESGEmployeeTurnover_insert_input!]!
+) {
+  delete_ESGEmployeeTurnover(where: $where) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      employment_type
+      employee_category
+      total_employees
+      new_hires
+      exits
+      number_of_voluntary_exits
+      number_of_non_voluntary_exits
+      average_tenure_of_exiting_employees
+    }
+  }
+  insert_ESGEmployeeTurnover(
+    objects: $esgEmployeeTurnoverData
+    on_conflict: { constraint: ESGEmployeeTurnover_pkey }
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      employment_type
+      employee_category
+      total_employees
+      new_hires
+      exits
+      number_of_voluntary_exits
+      number_of_non_voluntary_exits
+      average_tenure_of_exiting_employees
+    }
+  }
+}

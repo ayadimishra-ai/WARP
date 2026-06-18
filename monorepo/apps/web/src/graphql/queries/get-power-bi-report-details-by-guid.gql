@@ -1,0 +1,10 @@
+query GetPowerBiReportDetailsByGuid($guid: uuid!) {
+  Tbl_PowerBIReportDetails(where: {PowerBIGuid: {_eq: $guid}}) {
+    PowerBIGuid
+    PowerBIReportTokenDetails
+    TokenExpirationTime
+    DashboardHeight
+    isBorder
+    isPowerBiReport
+  }
+}

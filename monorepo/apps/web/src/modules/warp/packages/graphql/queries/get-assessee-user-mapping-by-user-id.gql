@@ -1,0 +1,9 @@
+query getAssesseeUserMappingByUserId($userId: uuid) {
+  AssesseeUserMapping(
+    where: { _and: { userId: { _eq: $userId }, Status: { _neq: "Responded" } } }
+  ) {
+    id
+    userId
+    Status
+  }
+}

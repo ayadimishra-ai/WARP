@@ -1,0 +1,60 @@
+mutation upsertESGHealthAndSafetyActivity(
+  $where: ESGHealthAndSafety_bool_exp!
+  $esgHealthAndSafetyData: [ESGHealthAndSafety_insert_input!]!
+) {
+  delete_ESGHealthAndSafety(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      workforce_category
+      total_workforce_covered
+      total_hours_worked
+      fatalities_reported
+      high_consequence_work_related_injuries_reported
+      total_recordable_injuries
+      lost_time_injuries
+      near_misses_reported
+      lost_workdays_due_to_injury
+      created_at
+      updated_at
+      created_by
+      updated_by
+      workforce_type
+      number_of_first_aid_incidents
+      medical_treatment_incidents
+      number_of_people_benefitted_from_regular_health_checkups
+      total_man_hours_worked
+    }
+  }
+  insert_ESGHealthAndSafety(
+    objects: $esgHealthAndSafetyData
+    on_conflict: { constraint: ESGHealthAndSafety_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      workforce_category
+      total_workforce_covered
+      total_hours_worked
+      fatalities_reported
+      high_consequence_work_related_injuries_reported
+      total_recordable_injuries
+      lost_time_injuries
+      near_misses_reported
+      lost_workdays_due_to_injury
+      created_at
+      updated_at
+      created_by
+      updated_by
+      workforce_type
+      number_of_first_aid_incidents
+      medical_treatment_incidents
+      number_of_people_benefitted_from_regular_health_checkups
+      total_man_hours_worked
+    }
+  }
+}

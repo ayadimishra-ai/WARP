@@ -1,0 +1,11 @@
+# Get all organization address IDs for an organization
+query getOrganizationAddressIds($organization_id: uuid!) {
+  OrganizationAddress(
+    where: {
+      organization_id: { _eq: $organization_id }
+      is_deleted: { _eq: false }
+    }
+  ) {
+    id
+  }
+}

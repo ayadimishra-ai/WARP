@@ -1,0 +1,14 @@
+query getEmissionGeographyByRegions(
+  $where: EmissionFactorGeographyHierarchy_bool_exp!
+) {
+  EmissionFactorGeographyHierarchy(where: $where) {
+    id
+    country_id
+    geography
+    sequence
+    geography_type
+    Country {
+      name
+    }
+  }
+}

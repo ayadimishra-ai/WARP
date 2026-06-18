@@ -1,0 +1,13 @@
+query GetCompanyDetailsByDynamicColumns($where: Tbl_Companies_bool_exp!) {
+  Tbl_Companies(where: $where) {
+    CompanyGuid
+    CPanelCompanyId
+    OPSCompanyId
+    CompanyName
+    StatusGuid
+    IsActive
+    IsManufacturing
+    CPanelCompanyIndustry
+    CountryGuid
+  }
+}

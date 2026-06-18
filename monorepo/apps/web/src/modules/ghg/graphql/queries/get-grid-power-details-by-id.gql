@@ -1,0 +1,40 @@
+query getGridPowerDetailsById($id: uuid!) {
+  GHGEnergyConsumption_GridPower(where: { id: { _eq: $id } }) {
+    id
+    organization_address_id
+    task_request_id
+    activity_task_request_id
+    Name_of_Distribution_Company
+    PowerConsumed_through_Grid_Kwh
+    
+    PowerPurchased_through_PPA_Kwh_Renewable
+    NameOfCompany_PPA_Renewable
+    PowerPurchased_through_PPA_Kwh_NonRenewable
+    NameOfCompany_PPA_NonRenewable
+    PowerPurchased_through_REC_Kwh
+    Name_of_company_for_REC
+    supporting_docs
+    kpi_em_Emission_PowerPurchased_PPA_Renewable
+    kpi_emf_Emission_PowerPurchased_PPA_Renewable
+    kpi_em_Emission_PowerPurchased_REC
+    kpi_emf_Emission_PowerPurchased_REC
+    kpi_em_Emission_PowerPurchased_RenewableSources
+    kpi_emf_Emission_PowerPurchased_RenewableSources
+    kpi_em_Emission_PowerPurchased_NonRenewableSources
+    kpi_emf_Emission_PowerPurchased_NonRenewableSources
+    kpi_em_Emission_TotalPowerPurchased
+    kpi_em_Emission_PowerPurchased_PPA_NonRenewable
+    kpi_emf_Emission_PowerPurchased_PPA_NonRenewable
+    metadata
+    created_at
+    updated_at
+    created_by
+    updated_by
+    TaskRequest {
+      id
+      year
+      month
+      organization_address_id
+    }
+  }
+}

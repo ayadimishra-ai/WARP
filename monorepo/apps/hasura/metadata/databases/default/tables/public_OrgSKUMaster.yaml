@@ -1,0 +1,24 @@
+table:
+  name: OrgSKUMaster
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: OrgProductMaster
+    using:
+      foreign_key_constraint_on: org_product_master_id
+  - name: Organization
+    using:
+      foreign_key_constraint_on: organization_id
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: OrgSkuBomMasters
+    using:
+      foreign_key_constraint_on:
+        column: org_sku_master_id
+        table:
+          name: OrgSkuBomMaster
+          schema: public

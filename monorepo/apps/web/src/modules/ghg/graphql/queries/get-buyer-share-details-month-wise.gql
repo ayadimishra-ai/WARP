@@ -1,0 +1,30 @@
+query getbuyerShareDetails(
+  $organizationId: uuid
+  $organizationAddressId: uuid
+  $month: String
+  $year: Int
+  $Buyer_Name: String
+) {
+  Organization(where: { id: { _eq: $organizationId } }) {
+    metadata
+  }
+  TaskRequest(
+    where: {
+      organization_address_id: { _eq: $organizationAddressId }
+      month: { _eq: $month }
+      year: { _eq: $year }
+    }
+  ) {
+    GHGBuyer_Shares(where: { Buyer_Name: { _ilike: $Buyer_Name } }) {
+      method
+      by_mass_Mass_of_Products_Purchased
+      by_mass_Total_Mass_of_Products_Produced
+      by_volume_Volume_of_Products_Purchased
+      by_volume_Total_Volume_of_Products_Purchased
+      by_revenue_Market_Value_of_Products_Purchased
+      by_revenue_Total_Market_Value_of_Products_Produced
+      by_number_of_units_Number_of_Units_Purchased
+      by_number_of_units_Total_Number_of_Units_Produced
+    }
+  }
+}

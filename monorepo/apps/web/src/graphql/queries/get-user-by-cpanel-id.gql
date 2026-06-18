@@ -1,0 +1,31 @@
+query GetUserByCpanelId($cpanelUserId: String!) {
+  Tbl_Users(where: { CpanelUserId: { _eq: $cpanelUserId } }) {
+    UserGuid
+    FirstName
+    MobileNumber
+    EmailId
+    CpanelUserId
+    LastName
+    CreatedBy
+    OPSUserId
+    SetPasswordToken
+    Tbl_Roles {
+      RoleGuid
+      RoleName
+    }
+    Tbl_UserCompanyMappings {
+      CompanyGuid
+      Tbl_Company {
+        CompanyName
+        CPanelCompanyId
+        Tbl_CompanyRoleMappings {
+          RoleGuid
+          Tbl_Role {
+            RoleGuid
+            RoleName
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+query GetBusinessTypeMasterByGuid($businessTypeGuid: uuid!) {
+  Tbl_BusinessTypeMaster(where: {BusinessTypeGuid: {_eq: $businessTypeGuid}}) {
+    BusinessTypeGuid
+    BusinessTypeName
+  }
+}

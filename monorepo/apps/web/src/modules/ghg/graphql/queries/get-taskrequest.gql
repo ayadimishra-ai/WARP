@@ -1,0 +1,17 @@
+query GetTaskRequests($orgAddressList: [uuid!], $month: String, $year: Int) {
+  TaskRequest(
+    where: {
+      is_deleted: { _eq: false }
+      organization_address_id: { _in: $orgAddressList }
+      _or: [
+        { year: { _gt: $year } }
+        { year: { _eq: $year }, month: { _gte: $month } }
+      ]
+    }
+  ) {
+    id
+    organization_address_id
+    month
+    year
+  }
+}

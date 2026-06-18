@@ -1,0 +1,22 @@
+query getGHGTransportBusinessTravelDetails(
+  $activityFilter: GHGTransport_BusinessTravel_bool_exp
+  $start: Int
+  $size: Int
+  $orderBy: [GHGTransport_BusinessTravel_order_by!]
+) {
+  GHGTransport_BusinessTravel(
+    where: $activityFilter
+    offset: $start
+    limit: $size
+    order_by: $orderBy
+  ) {
+    Mode_of_Transport
+    Vehicle_Type_Used_for_Road_Transport
+    Fuel_Used
+  }
+  totalCount: GHGTransport_BusinessTravel_aggregate(where: $activityFilter) {
+    aggregate {
+      count
+    }
+  }
+}

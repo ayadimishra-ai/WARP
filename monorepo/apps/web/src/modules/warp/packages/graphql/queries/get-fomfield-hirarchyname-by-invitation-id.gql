@@ -1,0 +1,14 @@
+query getFomfieldHirarchyNameByInvitationid($invitationId: uuid) {
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    Form {
+      id
+      FormFields(
+        where: { interface: { _eq: "group-wizard" } }
+        order_by: { field: asc }
+      ) {
+        interfaceOptions
+        interface
+      }
+    }
+  }
+}

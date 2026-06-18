@@ -1,0 +1,189 @@
+.customImpactDashboardKPI,
+.chirataeReportRespHeight,
+.chirataeESGInvesteeCSS,
+.PCDashboardCSS,
+.ESGReportPostDeal,
+.ESGReportPreDeal{
+    min-width: 100%;
+    min-height: 900px;
+}
+@media (min-width:1300px) and (max-width:1399px){
+    .customImpactDashboardKPI{
+        border: 0px;
+        min-height: 4700px !important;
+        min-width: 100% !important;
+        width: 100%;
+        height: 100%;
+    }
+    .chirataeReportRespHeight{
+      border: 0px;
+      min-height: 1000px;
+      min-width: 100%;
+      width: 100%;
+      height: 100%;
+  }
+    .chirataeESGInvesteeCSS
+    {
+      border: 0px;
+        min-height: 5065px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .PCDashboardCSS{
+      border: 0px;
+        min-height: 1350px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPostDeal{
+      border: 0px;
+        min-height: 1660px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPreDeal{
+      border: 0px;
+        min-height: 5880px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+  }
+  }
+  @media (min-width:1400px) and (max-width:1499px){
+    .customImpactDashboardKPI{
+        border: 0px;
+        min-height: 4970px !important;
+        min-width: 100% !important;
+        width: 100%;
+        height: 100%;
+    }
+    .chirataeReportRespHeight{
+      border: 0px;
+      min-height: 940px;
+      min-width: 100%;
+      width: 100%;
+      height: 100%;
+  }
+    .chirataeESGInvesteeCSS
+    {
+      border: 0px;
+        min-height: 5380px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .PCDashboardCSS{
+      border: 0px;
+        min-height: 1470px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPostDeal{
+      border: 0px;
+        min-height: 1770px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPreDeal{
+      border: 0px;
+        min-height: 6180px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+  }
+  }
+@media (min-width:1500px) and (max-width:1600px){
+    .customImpactDashboardKPI{
+        border: 0px;
+        min-height: 4700px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .chirataeReportRespHeight{
+      border: 0px;
+      min-height: 960px;
+      min-width: 100%;
+      width: 100%;
+      height: 100%;
+  }
+    .chirataeESGInvesteeCSS
+    {
+      border: 0px;
+        min-height: 5810px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .PCDashboardCSS{
+      border: 0px;
+        min-height: 1530px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPostDeal{
+      border: 0px;
+        min-height: 1880px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPreDeal{
+      border: 0px;
+        min-height: 6700px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+  }
+  }
+  @media (min-width:1900px) and (max-width:1980px){
+    .customImpactDashboardKPI{
+        border: 0px;
+        min-height: 5980px  !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .chirataeReportRespHeight{
+      border: 0px;
+      min-height: 1220px;
+      min-width: 100%;
+      width: 100%;
+      height: 100%;
+  }
+    .chirataeESGInvesteeCSS
+    {
+      border: 0px;
+        min-height: 7420px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .PCDashboardCSS{
+      border: 0px;
+        min-height: 2000px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPostDeal{
+      border: 0px;
+        min-height: 2380px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPreDeal{
+      border: 0px;
+        min-height: 8635px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+  }
+  }

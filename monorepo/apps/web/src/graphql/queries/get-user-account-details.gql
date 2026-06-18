@@ -1,0 +1,69 @@
+query GetUserAccountDetails($userGuid: uuid!, $languageGuid: uuid!) {
+
+  userRoles: Tbl_UserRoleMapping(
+    where: { UserGuid: { _eq: $userGuid } }
+  ) {
+    Tbl_Role {
+      RoleName
+    }
+  }
+
+
+  userAccount: Tbl_Users(
+    where: {
+      UserGuid: { _eq: $userGuid }
+      LanguageGuid: { _eq: $languageGuid }
+    }
+    limit: 1
+  ) {
+    UserGuid
+    EmailId
+    FirstName
+    LastName
+    CompanyName
+    UserProfileImage
+  }
+
+
+  userRoleMapping: Tbl_UserRoleMapping(
+    where: { UserGuid: { _eq: $userGuid } }
+  ) {
+    RoleGuid
+    Tbl_Role {
+      RoleName
+    }
+  }
+
+
+  userCompanyMapping: Tbl_UserCompanyMapping(
+    where: { UserGuid: { _eq: $userGuid } }
+  ) {
+    CompanyGuid
+    Tbl_Company {
+      CompanyName
+      Tbl_CompanyCountries {
+        Tbl_CountryMaster {
+          CountryGuid
+          CountryName
+        }
+      }
+    }
+  }
+
+
+  emailTemplates: Tbl_EmailTemplateNotificationDetails(
+    where: {
+      UserGuid: { _eq: $userGuid }
+      Tbl_EmailTemplate: { IsActive: { _eq: true } }
+    }
+  ) {
+    UserEmailTemplateNotificationGuid
+    IsActive
+    Tbl_EmailTemplate {
+      EmailTemplateGUID
+      EmailTemplateName
+      Description
+    }
+  }
+
+}

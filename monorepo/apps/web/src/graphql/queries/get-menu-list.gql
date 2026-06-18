@@ -1,0 +1,33 @@
+query GetMenuList($userGuid: uuid!, $roleGuid: uuid!) {
+  Tbl_Permissions(
+    where: {
+      Tbl_UserPermissions: {
+        UserGuid: { _eq: $userGuid }
+        Rights: { _eq: "W" }
+      }
+      Tbl_Page: { IsActive: { _eq: true }, PageKey: { _neq: "POs" } }
+      Tbl_LanguageResource: { IsActive: { _eq: true } }
+      ResourceKey: { _is_null: false }
+      IsActive: { _eq: true }
+    }
+    order_by: { MenuDisplayOrder: asc }
+  ) {
+    PageGuid
+    MenuType
+    MenuDisplayOrder
+    IconName
+    ResourceKey
+    Tbl_Page {
+      PageKey
+      URL
+      ParentPageGuid
+    }
+    Tbl_LanguageResource {
+      ResourceValue
+    }
+  }
+  Tbl_Roles(where: { RoleGuid: { _eq: $roleGuid }, IsActive: { _eq: true } }) {
+    Priority
+    RoleName
+  }
+}

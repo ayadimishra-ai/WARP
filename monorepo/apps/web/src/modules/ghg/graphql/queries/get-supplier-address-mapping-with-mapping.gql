@@ -1,0 +1,12 @@
+query GetSupplierAddressMappingWithSupplierCode(
+  $supplierCode: String!
+  $pincode: String!
+) {
+  OrgSupplierMaster(where: { client_master_id: { _eq: $supplierCode } }) {
+    SupplierAddressMappings(
+      where: { Address: { pincode: { _eq: $pincode } } }
+    ) {
+      id
+    }
+  }
+}

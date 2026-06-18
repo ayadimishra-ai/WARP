@@ -1,0 +1,8 @@
+query getMaterialMasterData($masterId: [String!]!) {
+  OrgMaterialMaster(where: { client_master_id: { _in: $masterId } }) {
+    id
+    client_master_id
+    type
+    name
+  }
+}

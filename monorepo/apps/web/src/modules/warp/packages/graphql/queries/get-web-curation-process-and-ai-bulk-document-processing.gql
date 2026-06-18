@@ -1,0 +1,21 @@
+query getWebCurationProcessAndAIBulkDocumentProcessing(
+  $invitationIds: [uuid!]!
+) {
+  WebCuration(where: { formInvitationId: { _in: $invitationIds } }) {
+    id
+    formInvitationId
+    status
+  }
+  OPSToIQCuration(where: { formInvitationId: { _in: $invitationIds } }) {
+    id
+    formInvitationId
+    status
+  }
+  AIBulkDocumentProcessing(
+    where: { formInvitationId: { _in: $invitationIds } }
+  ) {
+    id
+    formInvitationId
+    requestStatus
+  }
+}

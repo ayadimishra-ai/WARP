@@ -1,0 +1,143 @@
+.powerBiContainer {
+  position: relative;
+}
+
+.powerBiTrialNoteHide {
+  display: none;
+  background: #fff;
+  width: 99.89%;
+  height: 41px;
+  position: absolute;
+  top: 1px;
+  left: 0.05%;
+}
+
+.powerBiPaginationContainer {
+  position: relative;
+}
+
+/* .powerBiPaginationHide {
+  display: block;
+  background: #fff;
+  width: 99.89%;
+  height: 66px;
+  position: absolute;
+  bottom: 5.5px;
+  left: 0.05%;
+} */
+
+.powerBiPaginationHide {
+  display: block;
+  background: #F7F9FB;
+  width: 100%;
+  height: 66px;
+  position: absolute;
+  bottom: 4.5px;
+  left: 0;
+}
+
+.power-bi-ather-report-class {
+  width: 100%;
+  height: 100%;
+}
+
+.power-bi-ather-report-class iframe {
+  height: 2652px !important;
+  border-color: #848181;
+  border-width: 1px 2px 1px 1px;
+  border-style: solid;
+  margin-bottom: 20px;
+}
+.healthnSafety iframe{
+  border-color: #fff !important;
+  height: 3850px !important;
+  margin-bottom: 0px;
+}
+
+@media screen and (min-width: 1349px) and (max-width: 1366px) and (min-height: 607px) and (max-height: 768px) {
+  .power-bi-ather-report-class iframe {
+    height: 2290px !important;
+  }
+}
+
+.power-bi-ops-report-class ,
+.power-bi-ops-general-energy-transport-class,
+.power-bi-ops-waste-class {
+  width: 100%;
+  height: 100%;
+}
+
+.power-bi-ops-report-class iframe {
+  height: 2300px !important;
+  /* border-color: #F7F9FB;
+  border-width: 1px 2px 1px 1px;
+  border-style: solid; */
+  border: none !important;
+  margin-bottom: 0px;
+}
+.power-bi-ops-general-energy-transport-class iframe{
+  height: 1200px !important;
+  /* border-color: #F7F9FB;
+  border-width: 1px 2px 1px 1px;
+  border-style: solid; */
+  border: none !important;
+  margin-bottom: 0px;
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+.power-bi-ops-waste-class iframe{
+  height: 1200px;
+  /* border-color: #F7F9FB;
+  border-width: 1px 2px 1px 1px;
+  border-style: solid; */
+  border: none !important;
+  margin-bottom: 0px;
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+@media (min-width:1300px) and (max-width:1399px){
+  .power-bi-ops-report-class iframe {
+    height: 2060px !important;
+  }
+  .power-bi-ops-general-energy-transport-class iframe{
+    height: 1000px !important;
+  }
+  /* .power-bi-ops-waste-class iframe{
+    height: 1501px !important;
+  } */
+}
+@media (min-width:1400px) and (max-width:1499px){
+  .power-bi-ops-report-class iframe {
+    height: 2140px !important;
+  }
+  .power-bi-ops-general-energy-transport-class iframe{
+    height: 1080px !important;
+  }
+  /* .power-bi-ops-waste-class iframe{
+    height: 1601px !important;
+  } */
+}
+@media (min-width:1500px) and (max-width:1600px){
+  .power-bi-ops-report-class iframe {
+    height: 2310px !important;
+  }
+  .power-bi-ops-general-energy-transport-class iframe{
+    height: 1155px !important;
+  }
+  /* .power-bi-ops-waste-class iframe{
+    height: 1701px !important;
+  } */
+}
+@media (min-width:1900px) and (max-width:1980px){
+  .power-bi-ops-report-class iframe {
+    height: 3000px !important;
+  }
+  .power-bi-ops-general-energy-transport-class iframe{
+    height: 1500px !important;
+  }
+  /* .power-bi-ops-waste-class iframe{
+    height: 2101px !important;
+  } */
+}

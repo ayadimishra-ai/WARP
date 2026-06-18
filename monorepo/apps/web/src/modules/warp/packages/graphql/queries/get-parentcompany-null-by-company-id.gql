@@ -1,0 +1,25 @@
+query GetParentCompanyByCompanyIdNull($companyId: uuid, $platformId: uuid) {
+  Company(
+    where: {
+      _and: [
+        { isActive: { _eq: true } }
+        { platformId: { _eq: $platformId } }
+        { id: { _eq: $companyId } }
+      ]
+      ParentCompanyMappings: {
+        _or: [{ ParentCompanyId: { _is_null: true } }]
+        _and: { isActive: { _eq: true } }
+      }
+    }
+  ) {
+    id
+    name
+    country
+    primaryContact
+    isActive
+    parentCompanyId
+    ParentCompanyMappings {
+      ParentCompanyId
+    }
+  }
+}

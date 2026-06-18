@@ -1,0 +1,55 @@
+/* .Details{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    z-index: -1;
+    border: 1px solid gray;
+    background: #fff;
+    margin: 20px;
+    padding: 5px;
+    box-shadow: 0px 0px 1px grey;
+    margin-top: 93px;
+    margin-bottom: 60px;
+} */
+.perimeter {
+    max-width: 1024px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .image {
+    flex: 0 0 100%;
+    z-index: 1;
+  }
+  
+  .copy {
+    padding: 20px;
+    font-family: sans-serif;
+  }
+  
+  @media (min-width: 415px) {
+    .perimeter {
+      flex-direction: row;
+    }
+    
+    .image {
+      flex: 0 0 20%;
+    }
+  }
+  
+  @media (min-width: 800px) {
+    .image {
+      flex: 0 0 33.5%;
+    }
+  }
+  .Thumbnail{
+    display: inline-flex;
+    position: absolute;
+    top: 68%;
+    left: 0%;
+  }
+  

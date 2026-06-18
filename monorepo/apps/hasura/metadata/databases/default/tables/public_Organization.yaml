@@ -1,0 +1,185 @@
+table:
+  name: Organization
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: Organization
+    using:
+      foreign_key_constraint_on: parentCompanyId
+  - name: Platform
+    using:
+      foreign_key_constraint_on: platformId
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: AppUsers
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: AppUser
+          schema: public
+  - name: AssessorConsultantMappings
+    using:
+      foreign_key_constraint_on:
+        column: assessorCompanyId
+        table:
+          name: AssessorConsultantMapping
+          schema: public
+  - name: CompanyFormFundtypes
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: CompanyFormFundtype
+          schema: public
+  - name: CompanyForms
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: CompanyForm
+          schema: public
+  - name: EmailTemplates
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: EmailTemplate
+          schema: public
+  - name: FormInvitations
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: FormInvitation
+          schema: public
+  - name: InvitationComments
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: InvitationComment
+          schema: public
+  - name: InvitationConsultantMappings
+    using:
+      foreign_key_constraint_on:
+        column: consultantCompanyId
+        table:
+          name: InvitationConsultantMapping
+          schema: public
+  - name: OrgBrandMasters
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: OrgBrandMaster
+          schema: public
+  - name: OrgMaterialMasters
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: OrgMaterialMaster
+          schema: public
+  - name: OrgProductMasters
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: OrgProductMaster
+          schema: public
+  - name: OrgSKUMasters
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: OrgSKUMaster
+          schema: public
+  - name: OrgSkuBomMasters
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: OrgSkuBomMaster
+          schema: public
+  - name: OrgSupplierMasters
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: OrgSupplierMaster
+          schema: public
+  - name: OrganizationActivityMappings
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: OrganizationActivityMapping
+          schema: public
+  - name: OrganizationAddresses
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: OrganizationAddress
+          schema: public
+  - name: Organizations
+    using:
+      foreign_key_constraint_on:
+        column: parentCompanyId
+        table:
+          name: Organization
+          schema: public
+  - name: ParentCompanyMappings
+    using:
+      foreign_key_constraint_on:
+        column: CompanyId
+        table:
+          name: ParentCompanyMapping
+          schema: public
+  - name: UserOrganizationAddressMappings
+    using:
+      foreign_key_constraint_on:
+        column: organization_id
+        table:
+          name: UserOrganizationAddressMapping
+          schema: public
+  - name: Users
+    using:
+      foreign_key_constraint_on:
+        column: companyId
+        table:
+          name: User
+          schema: public
+  - name: assessorConsultantMappingsByConsultantcompanyid
+    using:
+      foreign_key_constraint_on:
+        column: consultantCompanyId
+        table:
+          name: AssessorConsultantMapping
+          schema: public
+  - name: companyFormFundtypesByVccompanyid
+    using:
+      foreign_key_constraint_on:
+        column: vcCompanyId
+        table:
+          name: CompanyFormFundtype
+          schema: public
+  - name: formInvitationsByParentcompanyid
+    using:
+      foreign_key_constraint_on:
+        column: parentcompanyId
+        table:
+          name: FormInvitation
+          schema: public
+  - name: parentCompanyMappingsByParentcompanyid
+    using:
+      foreign_key_constraint_on:
+        column: ParentCompanyId
+        table:
+          name: ParentCompanyMapping
+          schema: public

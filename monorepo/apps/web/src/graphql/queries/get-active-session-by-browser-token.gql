@@ -1,0 +1,23 @@
+query GetActiveSessionsByBrowserToken($userId: uuid!, $browserToken: String!) {
+  Tbl_UserSessions(
+    where: {
+      UserId: { _eq: $userId }
+      Status: { _eq: "Active" }
+      BrowserToken: { _eq: $browserToken }
+    }
+  ) {
+    id
+    UserId
+    PlatformToken
+    OpsToken
+    WarpToken
+    BrowserToken
+    Status
+    Metadata
+    StatusMetadata
+    CreatedBy
+    CreatedDate
+    ModifiedBy
+    ModifiedDate
+  }
+}

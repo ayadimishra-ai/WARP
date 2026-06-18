@@ -1,0 +1,16 @@
+mutation UpdateAIFileData(
+  $where: AIFileData_bool_exp!
+  $set: AIFileData_set_input!
+) {
+  update_AIFileData(where: $where, _set: $set) {
+    affected_rows
+    returning {
+      id
+      file_id
+      previous_reading_date
+      present_reading_date
+      extracted_values
+      edited_values
+    }
+  }
+}

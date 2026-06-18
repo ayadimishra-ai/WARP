@@ -1,0 +1,17 @@
+query getCO2EmissionFactorsData {
+  CO2EmissionFactorMaster {
+    year
+    category
+    activity
+    sub_activity
+    type
+    sub_type
+    fuel_type
+    factor
+    factor_uom
+    metadata
+    Region {
+      name
+    }
+  }
+}

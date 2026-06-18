@@ -1,0 +1,24 @@
+mutation updateAppUser(
+  $Id: uuid!
+  $orgId: uuid!
+  $setInput: AppUser_set_input!
+) {
+  update_AppUser_many(
+    updates: {
+      where: { _and: [{ id: { _eq: $Id }, organization_id: { _eq: $orgId } }] }
+      _set: $setInput
+    }
+  ) {
+    returning {
+      id
+      name
+      email
+      organization_id
+      role
+      metadata
+      Organization {
+        name
+      }
+    }
+  }
+}

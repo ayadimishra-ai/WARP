@@ -1,0 +1,8 @@
+query GetBusinessTypeByName($businessTypeName: String!) {
+  Tbl_BusinessTypeMaster(where: {BusinessTypeName: {_eq: $businessTypeName}}) {
+    BusinessTypeGuid
+    BusinessTypeName
+    Image
+    DisplayOrder
+  }
+}

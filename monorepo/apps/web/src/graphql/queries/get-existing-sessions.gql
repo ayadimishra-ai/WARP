@@ -1,0 +1,21 @@
+query GetExistingSessions($userId: uuid!, $browserToken: String) {
+  Tbl_UserSessions(
+    where: { UserId: { _eq: $userId }, BrowserToken: { _eq: $browserToken } }
+    order_by: { ModifiedDate: desc }
+    limit: 1
+  ) {
+    id
+    UserId
+    PlatformToken
+    OpsToken
+    WarpToken
+    BrowserToken
+    Status
+    Metadata
+    StatusMetadata
+    CreatedBy
+    CreatedDate
+    ModifiedBy
+    ModifiedDate
+  }
+}

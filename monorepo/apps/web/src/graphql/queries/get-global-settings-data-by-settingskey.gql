@@ -1,0 +1,7 @@
+query GetGlobalSettingsDataBySettingsKey($SettingsKey: [String!]) {
+  Tbl_GlobalSettings(where: { SettingsKey: {_in: $SettingsKey}}) {
+    GlobalSettingsGuid
+    SettingsKey
+    SettingsValue
+  }
+}

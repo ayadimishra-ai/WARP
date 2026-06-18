@@ -1,0 +1,9 @@
+query getUserActivityLocationMappingExist(
+  $where: UserOrganizationAddressMapping_bool_exp!
+) {
+  UserOrganizationAddressMapping(where: $where) {
+    id
+    user_id
+    organization_address_id
+  }
+}

@@ -1,0 +1,9 @@
+mutation updateCompany($input: [Tbl_Companies_updates!]!) {
+  update_Tbl_Companies_many(updates: $input) {
+    affected_rows
+    returning {
+			CompanyGuid
+      CompanyName
+    }
+  }
+}

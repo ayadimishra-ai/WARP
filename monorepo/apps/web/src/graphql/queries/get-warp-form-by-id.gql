@@ -1,0 +1,10 @@
+query GetWarpFormById($formId: uuid!) {
+  Tbl_WarpForms(where: { FormId: { _eq: $formId } }) {
+    WarpFormsGuid
+    FormId
+    FormName
+    PageGuid
+    PageKey
+    formtype
+  }
+}

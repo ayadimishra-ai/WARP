@@ -1,0 +1,11 @@
+query getOrganizationAddressById($organizationAddressId: uuid!) {
+  OrganizationAddress(where: { id: { _eq: $organizationAddressId } }) {
+    id
+    address_id
+    Address {
+      Country {
+        region_code
+      }
+    }
+  }
+}

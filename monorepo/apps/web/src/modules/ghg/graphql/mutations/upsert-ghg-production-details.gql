@@ -1,0 +1,44 @@
+mutation upsertGHGProductionDetails(
+  $where: GHGProductionDetails_bool_exp!
+  $input: [GHGProductionDetails_insert_input!]!
+) {
+  delete_GHGProductionDetails(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Products_Manufactured_This_Month
+      Product_ID
+      SKUs_Manufactured
+      SKU_ID
+      Units_Of_SKU_Manufactured
+      Total_Weight
+      Perc_of_Total_Prod_Represents_Prod_Of_Org_SKU
+      supporting_docs
+      Processes_Employed
+      manufactured_product_code
+      manufactured_sku_code
+    }
+  }
+  insert_GHGProductionDetails(objects: $input) {
+    affected_rows
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Products_Manufactured_This_Month
+      Product_ID
+      SKUs_Manufactured
+      SKU_ID
+      Units_Of_SKU_Manufactured
+      Total_Weight
+      Perc_of_Total_Prod_Represents_Prod_Of_Org_SKU
+      supporting_docs
+      Processes_Employed
+      manufactured_product_code
+      manufactured_sku_code
+    }
+  }
+}

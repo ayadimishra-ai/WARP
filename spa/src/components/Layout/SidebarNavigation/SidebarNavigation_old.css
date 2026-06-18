@@ -1,0 +1,179 @@
+.new_sidebar {
+  height: 100%;
+  position: fixed;
+  z-index: 11;
+  left: 0;
+  background: #fff;
+}
+.new_sidebar ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.new_sidebar ul li:first-child > div:hover {
+  background: transparent !important;
+  color: #122F47 !important;
+  position: relative;
+  min-height: 41px;
+}
+.new_sidebar ul li:first-child > div:hover span {
+  color: #122F47 !important;
+}
+.new_sidebar ul li > div {
+  display: flex;
+  align-items: center;
+  color: rgb(18, 47, 71);
+  cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 3px;
+  justify-content: flex-start;
+}
+.new_sidebar ul li > div .menu_list {
+  display: flex;
+}
+.new_sidebar ul li > div span {
+  justify-content: unset;
+}
+.new_sidebar ul .slidebarclose li div button:hover {
+  background: rgb(0, 92, 129);
+  background: linear-gradient(91.49deg, #005c81 6.27%, #122f47 93.39%);
+  border-radius: 6px;
+}
+.new_sidebar button {
+  border-radius: 0;
+  padding: 8px;
+}
+.new_sidebar button:hover {
+  background-color: transparent;
+}
+
+.new_sidebar_closed {
+  transition: width 0.3s ease-out;
+  box-shadow: 4px 0px 16px 0px rgba(0, 0, 0, 0.08);
+}
+.new_sidebar_closed .logo {
+  text-align: center;
+  padding-top: 17px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.new_sidebar_closed .slidebarclose {
+  padding-top: 22.5px;
+}
+.new_sidebar_closed .slidebarclose li {
+  margin: 0 20px;
+  width: 40px;
+  height: 40px;
+}
+.new_sidebar_closed .slidebarclose li .menu_Text {
+  display: none;
+}
+.new_sidebar_closed .slidebarclose li div button:hover {
+  background: linear-gradient(184.76deg, #005C81 2.97%, #122F47 97.4%);
+  border-radius: 4px;
+}
+.new_sidebar_closed .slidebarclose li .activeMenu {
+  background: linear-gradient(184.76deg, #005C81 2.97%, #122F47 97.4%);
+  border-radius: 6px;
+}
+
+.new_sidebar_opened {
+  width: 270px;
+  box-shadow: 4px 0px 16px 0px rgba(0, 0, 0, 0.08);
+  padding-left: 18px;
+  padding-top: 13px;
+}
+.new_sidebar_opened .logo {
+  text-align: left;
+  padding-left: 12px;
+}
+.new_sidebar_opened .logo img {
+  height: 47px;
+  width: auto;
+}
+.new_sidebar_opened .slidebaropen {
+  width: 100%;
+  padding-top: 18.5px;
+}
+.new_sidebar_opened .slidebaropen li {
+  padding-right: 30px;
+  padding-left: 12px;
+}
+.new_sidebar_opened .slidebaropen li > div:hover {
+  background: linear-gradient(91.49deg, #005c81 6.27%, #122f47 93.39%);
+  color: #fff;
+  border-radius: 4px;
+}
+.new_sidebar_opened .slidebaropen li > div:hover svg {
+  transform: rotate(90deg);
+}
+.new_sidebar_opened .slidebaropen li > div:hover span {
+  color: #fff;
+}
+.new_sidebar_opened .slidebaropen li .activeMenu {
+  background: linear-gradient(91.49deg, #005C81 6.27%, #122F47 93.39%);
+  border-radius: 4px;
+}
+.new_sidebar_opened .slidebaropen li .activeMenu span {
+  color: #fff;
+}
+.new_sidebar_opened .slidebaropen li:hover .child_menu {
+  opacity: 1;
+  visibility: visible;
+  height: 100%;
+}
+.new_sidebar_opened .slidebaropen li .menu_Text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.childMenuParent {
+  width: 100%;
+}
+.childMenuParent .child_menu {
+  width: 265px;
+  background: #fff;
+  position: absolute;
+  top: 0;
+  padding-left: 7px;
+  padding-top: 17px;
+  padding-right: 5px;
+  left: 97.5%;
+  box-shadow: inset -2px 0px 16px 0px rgba(0, 0, 0, 0.08);
+  -webkit-box-shadow: inset -2px 0px 16px 0px rgba(0, 0, 0, 0.08);
+  -moz-box-shadow: inset -2px 0px 16px 0px rgba(0, 0, 0, 0.08);
+  /* display: none; */
+  opacity: 0;
+  visibility: hidden;
+}
+.childMenuParent .child_menu a {
+  padding: 16px 8px;
+  display: block;
+  font-family: Euclid Circular B;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.15em;
+  text-align: left;
+  text-underline-position: from-font;
+  -webkit-text-decoration-skip-ink: none;
+          text-decoration-skip-ink: none;
+  color: #122f47;
+  margin-bottom: 10px;
+  padding-left: 13px;
+  min-height: 52px;
+}
+.childMenuParent .child_menu a:hover {
+  background: #f0f8fc;
+  color: #005c81;
+  border-radius: 4px;
+}
+.childMenuParent .child_menu .childActiveMenu {
+  background: #f0f8fc;
+  color: #005c81;
+  border-radius: 4px;
+}/*# sourceMappingURL=SidebarNavigation_old.css.map */

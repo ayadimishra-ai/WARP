@@ -1,0 +1,16 @@
+query gettbluserrolemappingsdata($userguid: uuid) {
+  Tbl_UserRoleMapping(where: {UserGuid: {_eq: $userguid }}) {
+    RoleGuid
+    Tbl_Role {
+      RoleGuid
+      RoleName
+      IsActive
+      CreatedDateUtc
+      Priority
+    }
+    Tbl_UserStatusMaster {
+      StatusGuid
+      Status
+    }
+  }
+}

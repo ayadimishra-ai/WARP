@@ -1,0 +1,16 @@
+mutation insertGHGEnergyConsumptionFuelPurchased(
+  $insertData: [GHGEnergyConsumption_FuelPurchased_insert_input!]!
+) {
+  insert_GHGEnergyConsumption_FuelPurchased(
+    objects: $insertData
+    on_conflict: { constraint: GHGEnergyConsumption_FuelPurchased_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+    }
+  }
+}

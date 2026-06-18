@@ -1,0 +1,75 @@
+query getSubmittedFormToDownloadAsPDF(
+  $invitationId: uuid!
+  $submissionId: uuid
+) {
+  FormSubmission(
+    where: {
+      _and: [
+        { invitationId: { _eq: $invitationId } }
+        { id: { _eq: $submissionId } }
+        { isActive: { _eq: true } }
+        { FormInvitation: { isActive: { _eq: true } } }
+      ]
+    }
+  ) {
+    FormInvitation {
+      id
+      ParentCompanyMapping {
+        User {
+          name
+        }
+        userByParentuserid {
+          name
+        }
+      }
+      Company {
+        id
+        name
+      }
+      Form {
+        name
+        Sections(order_by: { key: asc }) {
+          id
+          content
+          weightage
+          ParentSection {
+            id
+            content
+          }
+          FormResults(where: { submissionId: { _eq: $submissionId } }) {
+            sectionId
+            questionId
+            score
+          }
+          Questions(order_by: { created_at: asc }) {
+            content
+            weightage
+            calc
+            FormResults(where: { submissionId: { _eq: $submissionId } }) {
+              sectionId
+              questionId
+              score
+            }
+            FormFields(order_by: { seqIndex: asc }) {
+              type
+              interface
+              interfaceOptions
+              id
+              fieldOptions
+              field
+              groupField
+              seqIndex
+              displayRules
+              autoCalculatedCalculation
+            }
+            Answers(where: { submissionId: { _eq: $submissionId } }) {
+              id
+              data
+              formFieldId
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+query getinterimwarninglogsbyInvitationId($invitationId: [uuid!]!) {
+  ValidationWarningLogs(
+    where: {
+      InvitationId: { _in: $invitationId }
+      IsActive: { _eq: true }
+      Logtype: { _eq: "recommendation" }
+    }
+    order_by: { created_at: desc }
+  ) {
+    Id
+    OldValue
+    NewValue
+    Ratio
+    formFieldId
+    QuestionId
+    InvitationId
+    values
+    Logtype
+    created_by
+    updated_by
+  }
+}

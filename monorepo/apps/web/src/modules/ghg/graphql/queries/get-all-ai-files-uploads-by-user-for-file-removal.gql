@@ -1,0 +1,17 @@
+query GetAIFileUploadsByUserForFileremoval($where: AIFileUploads_bool_exp!) {
+  AIFileUploads(where: $where) {
+    id
+    file_name
+    file_url
+    status
+    is_deleted
+    AIFileData{
+      present_reading_date
+      previous_reading_date
+    }
+    AppUser {
+      name
+      email
+    }
+  }
+}

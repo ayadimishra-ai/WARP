@@ -1,0 +1,22 @@
+query getCountIfMultipleLocationsAreMappedOrHaveDataUploaded(
+  $address_ids: [uuid!]!
+) {
+  Addresses(where: { id: { _in: $address_ids } }) {
+    id
+    OrganizationAddresses {
+      id
+      UserOrganizationAddressMappings_aggregate(
+        where: { AppUser: { role: { _eq: "LocationExecutive" } } }
+      ) {
+        aggregate {
+          count
+        }
+      }
+      TaskRequests_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+}

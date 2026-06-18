@@ -1,0 +1,12 @@
+query GetProcessingAndUploadingFilesWithCount {
+  AIFileUploads_aggregate(
+    where: {
+      status: { _in: ["Processing", "Uploading"] }
+      is_deleted: { _eq: false }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

@@ -1,0 +1,3 @@
+table:
+  name: KPIEmissionByFuelConsumption
+  schema: public

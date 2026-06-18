@@ -1,0 +1,22 @@
+mutation updateFormInvitationByCompanyIdAndFormId(
+  $invitationId: [uuid!]
+  $companyid: [uuid!]
+  $formId: uuid!
+) {
+  update_FormInvitation_many(
+    updates: {
+      where: { id: { _in: $invitationId } }
+      _set: { formId: $formId }
+    }
+  ) {
+    affected_rows
+  }
+  update_CompanyFormFundtype_many(
+    updates: {
+      where: { companyId: { _in: $companyid } }
+      _set: { formId: $formId }
+    }
+  ) {
+    affected_rows
+  }
+}

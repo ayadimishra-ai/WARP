@@ -1,0 +1,11 @@
+query GetExistingCompaniesNameWithUsersEmail(
+  $companyArray: [String!]
+  $usersEmailArray: [String!]
+) {
+  Company(where: { name: { _in: $companyArray } }) {
+    name
+  }
+  User(where: { email: { _in: $usersEmailArray } }) {
+    email
+  }
+}

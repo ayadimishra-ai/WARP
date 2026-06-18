@@ -1,0 +1,11 @@
+query GetLanguageResourcesData($pageKey: [String!]) {
+  Tbl_LanguageResources(where: {IsActive: {_eq: true}, PageKey: {_in: $pageKey}}) {
+    LanguageResourceGuid
+    PageKey
+    ResourceKey
+    ResourceValue
+    LanguageGuid
+    IsActive
+    CreatedDate
+  }
+}

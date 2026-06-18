@@ -1,0 +1,7 @@
+query GetCompanyByName($companyName: String!) {
+  Tbl_Companies(where: { CompanyName: { _eq: $companyName } }) {
+   	CompanyGuid
+    CompanyName
+    CPanelCompanyId
+  }
+}

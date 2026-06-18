@@ -1,0 +1,14 @@
+query getDeclinedQuestionsCount($invitationId: uuid!) {
+  ReviewerDetailsMapping_aggregate(
+    where: {
+      _and: [
+        { FormInvitationId: { _eq: $invitationId } }
+        { currentStatus: { _eq: "Declined" } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

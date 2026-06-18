@@ -1,0 +1,11 @@
+query getFormDetailsByIndustry($where: FormDetails_bool_exp) {
+  Form(where: { Details: $where }) {
+    id
+    name
+    title
+    Details {
+      focusArea
+      industry
+    }
+  }
+}

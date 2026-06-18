@@ -1,0 +1,17 @@
+{
+  "name": "@snowkap/hasura",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "hasura:dev": "hasura --envfile ./../../.env.local",
+    "hasura:alpha": "hasura --envfile ./../../.env.alpha"
+  },
+  "packageManager": "pnpm@10.11.0",
+  "files": [
+    "dist",
+    "hasura"
+  ],
+  "dependencies": {
+    "cross-env": "^7.0.3"
+  }
+}

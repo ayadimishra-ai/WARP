@@ -1,0 +1,20 @@
+mutation upsertUserRoleMapping(
+  $userguid: [uuid!]!
+  $object: [Tbl_UserRoleMapping_insert_input!]!
+) {
+  delete_Tbl_UserRoleMapping(where: { UserGuid: { _in: $userguid } }) {
+    returning {
+      UserRoleMappingGuid
+      UserGuid
+      RoleGuid
+    }
+  }
+  insert_Tbl_UserRoleMapping(objects: $object) {
+    affected_rows
+    returning {
+      UserRoleMappingGuid
+      UserGuid
+      RoleGuid
+    }
+  }
+}

@@ -1,0 +1,31 @@
+table:
+  name: AssesseeUserMapping
+  schema: public
+object_relationships:
+  - name: AppRole
+    using:
+      foreign_key_constraint_on: roleId
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: parentUserId
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+  - name: FormField
+    using:
+      foreign_key_constraint_on: formFieldId
+  - name: FormInvitation
+    using:
+      foreign_key_constraint_on: InvitationId
+  - name: ParentCompanyMapping
+    using:
+      foreign_key_constraint_on: parentCompanyMappingId
+  - name: Question
+    using:
+      foreign_key_constraint_on: questionId
+  - name: appUserByRevieweruserid
+    using:
+      foreign_key_constraint_on: reviewerUserId
+  - name: appUserByUserid
+    using:
+      foreign_key_constraint_on: userId

@@ -1,0 +1,40 @@
+table:
+  name: GHGSludgeDisposal
+  schema: public
+object_relationships:
+  - name: ActivityTaskRequest
+    using:
+      manual_configuration:
+        column_mapping:
+          activity_task_request_id: id
+        insertion_order: null
+        remote_table:
+          name: ActivityTaskRequest
+          schema: public
+  - name: AppUser
+    using:
+      manual_configuration:
+        column_mapping:
+          created_by: id
+        insertion_order: null
+        remote_table:
+          name: AppUser
+          schema: public
+  - name: OrganizationAddress
+    using:
+      manual_configuration:
+        column_mapping:
+          organization_address_id: id
+        insertion_order: null
+        remote_table:
+          name: OrganizationAddress
+          schema: public
+  - name: TaskRequest
+    using:
+      manual_configuration:
+        column_mapping:
+          task_request_id: id
+        insertion_order: null
+        remote_table:
+          name: TaskRequest
+          schema: public

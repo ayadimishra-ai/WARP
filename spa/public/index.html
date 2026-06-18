@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.png" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+  <!-- <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"> -->
+  <link rel="stylesheet" type="text/css" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/slick-theme.min.css" />
+  <link rel="stylesheet" href="%PUBLIC_URL%/css/custom.css">
+  <link rel="stylesheet" href="/css/print.css">
+  <link rel="stylesheet" href="%PUBLIC_URL%/css/custom_v2.css">
+  <link rel="stylesheet" href="%PUBLIC_URL%/powerbi.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="stylesheet" href="/css/react-scroll-tabs.css">
+  <link rel="stylesheet" href="%PUBLIC_URL%/css/layout.css">
+  <link rel="stylesheet" href="/css/font-awesome.min.css">
+  <title>SNOWKAP</title>
+  <script>
+    console.log(navigator.userAgent);
+    var stylesheet = "";
+    if (navigator.userAgent.indexOf("Edg") != -1) {
+    stylesheet = "css/ForEdge.css";
+    } else if (navigator.userAgent.indexOf("Chrome") != -1) {
+    stylesheet = "css/ForChrome.css";
+    }
+    else if (navigator.userAgent.indexOf("Firefox") != -1) {
+    stylesheet = "css/ForFirefox.css";
+    }
+    var new_row = document.createElement("link");
+    new_row.rel = "stylesheet"
+    new_row.href = stylesheet;
+    document.head.appendChild(new_row);
+  </script>
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+
+  <script>
+
+// function isIE() {
+//     var ua = window.navigator.userAgent; //Check the userAgent property of the window.navigator object
+//     var msie = ua.indexOf('MSIE '); // IE 10 or older
+//     var trident = ua.indexOf('Trident/'); //IE 11
+
+//     return (msie > 0 || trident > 0);
+// }
+
+
+//function to show alert if it's IE
+// function ShowIEAlert(){
+//     if(isIE()){
+//        alert("You're using a browser that isn't supported. Please use IE version more than 11");
+//     }
+// }
+//window.onload = ShowIEAlert;
+  </script>
+  <!-- <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script> -->
+</body>
+
+</html>

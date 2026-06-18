@@ -1,0 +1,11 @@
+query getGHGEnergyCaptivePowerData($where: GHGEnergy_CaptivePower_bool_exp!) {
+  GHGEnergy_CaptivePower(where: $where) {
+    organization_address_id
+    task_request_id
+    activity_task_request_id
+    Do_You_Generate_Captive_Power_for_Own_Use
+    Type_of_Captive_Power
+    supporting_docs
+    id
+  }
+}

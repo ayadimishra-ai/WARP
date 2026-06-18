@@ -1,0 +1,14 @@
+query GetCompanyUserStatusMasterByName($status: String!, $CompanyRoleGuid: uuid!) {
+  Tbl_CompanyStatusMaster(where: {_and:[{CompanyStatusName: {_ilike: $status}}, 
+                                        {RoleGuid: {_eq: $CompanyRoleGuid}}
+  																		]}
+  ) {
+    CompanyStatusGuid
+    CompanyStatusName
+    RoleGuid
+  }
+  Tbl_UserStatusMaster(where: {Status: {_ilike: $status}}) {
+    StatusGuid
+    Status
+  }
+}

@@ -1,0 +1,11 @@
+mutation updateIsEmailSubscribed(
+  $emailId: String
+  $isEmailSubscribed: Boolean
+) {
+  update_User(
+    where: { email: { _eq: $emailId } }
+    _set: { isEmailSubscribed: $isEmailSubscribed }
+  ) {
+    affected_rows
+  }
+}

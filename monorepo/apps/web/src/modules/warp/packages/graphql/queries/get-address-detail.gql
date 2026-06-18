@@ -1,0 +1,45 @@
+query getAddressDetail(
+  $addressLine1: String
+  $addressLine2: String
+  $addressLine3: String
+  $poBoxNumber: String
+  $city: uuid
+  $country: uuid
+  $state: uuid
+  $zipcode: String
+  $phoneNo: String
+  $landMark: String
+  $isDefault: Boolean
+  $gstNumber: String
+  $companyId: uuid
+  $ownershipType: String
+  $addresstype: jsonb
+  $addressLable: String
+) {
+  Addresses(
+    where: {
+      addressLine1: { _eq: $addressLine1 }
+      addressLine2: { _eq: $addressLine2 }
+      addressLine3: { _eq: $addressLine3 }
+      addressType: { _eq: $addresstype }
+      city: { _eq: $city }
+      companyId: { _eq: $companyId }
+      country: { _eq: $country }
+      gstNumber: { _eq: $gstNumber }
+      isDefault: { _eq: $isDefault }
+      landMark: { _eq: $landMark }
+      ownershipType: { _eq: $ownershipType }
+      phoneNo: { _eq: $phoneNo }
+      poBoxNumber: { _eq: $poBoxNumber }
+      state: { _eq: $state }
+      zipcode: { _eq: $zipcode }
+      addressLable: { _eq: $addressLable }
+    }
+  ) {
+    id
+    addressLine1
+    addressLine2
+    addressLine3
+    IsActive
+  }
+}

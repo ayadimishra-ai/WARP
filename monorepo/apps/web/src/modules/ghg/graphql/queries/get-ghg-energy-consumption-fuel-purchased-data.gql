@@ -1,0 +1,30 @@
+query getGHGEnergyConsumptionFuelPurchasedData(
+  $where: GHGEnergyConsumption_FuelPurchased_bool_exp!
+) {
+  GHGEnergyConsumption_FuelPurchased(where: $where) {
+    task_request_id
+    organization_address_id
+    id
+    activity_task_request_id
+    TaskRequest {
+      id
+      month
+      year
+    }
+    GHGEnergyConsumption_FuelPurchased_Generals_aggregate {
+      aggregate {
+        count
+      }
+    }
+    GHGEnergyConsumption_FuelPurchased_Auxiliaries_aggregate {
+      aggregate {
+        count
+      }
+    }
+    GHGEnergyConsumption_FuelPurchased_HeatingWaters_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}

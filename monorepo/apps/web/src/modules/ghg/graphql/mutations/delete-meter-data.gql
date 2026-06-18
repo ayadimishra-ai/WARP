@@ -1,0 +1,9 @@
+mutation DeleteMeterData($ids: [uuid!]!) {
+  delete_MeterData(where: { id: { _in: $ids } }) {
+    affected_rows
+    returning {
+      id
+      meter_number
+    }
+  }
+}

@@ -1,0 +1,11 @@
+query getFormResultBySubmissionId($submissionId: uuid) {
+  FormResult(where: { submissionId: { _eq: $submissionId } }) {
+    id
+    score
+    questionId
+    sectionId
+    submissionId
+    recommendations
+    isActive
+  }
+}

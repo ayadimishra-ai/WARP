@@ -1,18 +1,20 @@
 # Snowkap — Documentation Index
 
-> Two platforms. One ESG stack.
+> Four platforms. One ESG stack.
 > Last updated: 2026-06-18
 
 ---
 
 ## Platform Overview
 
-| Platform | Role | Stack |
-|---|---|---|
-| **OPs** | GHG emissions calculator — data collection, emission calculation, KPI dashboards | Next.js 15, TypeScript, Hasura (GraphQL), Drizzle ORM, PostgreSQL, ClickHouse, Redis |
-| **WARP** | ESG reporting platform — form builder, submission workflow, scoring, audit | Next.js (Pages Router), TypeScript, Hasura (GraphQL), PostgreSQL, Turborepo monorepo |
+| Platform | Path | Role | Stack |
+|---|---|---|---|
+| **OPs** | `ops/` | GHG emissions calculator — data collection, emission calculation, KPI dashboards | Next.js 15, TypeScript, Hasura (GraphQL), Drizzle ORM, PostgreSQL, ClickHouse, Redis |
+| **WARP** | `apps/` + `packages/` | ESG reporting platform — form builder, submission workflow, scoring, audit | Next.js 14 Pages Router, TypeScript, Hasura (GraphQL), PostgreSQL, Turborepo + Yarn |
+| **SPA** | `spa/` | Client portal shell — procurement/ESG parent app that embeds WARP + OPS iframes | React 18 CRA, JavaScript, Redux, Webpack |
+| **Monorepo** | `monorepo/` | Next-gen unified platform — Next.js 15 App Router merging WARP + GHG into one app | Next.js 15 App Router, TypeScript, Better-Auth, Mantine v8, Drizzle ORM, pnpm |
 
-Both platforms are embedded inside client portals via iframe and share the same Hasura/PostgreSQL infrastructure pattern. Data flows from OPs (GHG calculations) into WARP (ESG disclosures) via the `POST /api/v1/webhook/data-flow` endpoint on OPs.
+All four applications are part of the Snowkap ESG stack. The SPA is the parent portal shell embedding WARP and OPS as iframes. The Monorepo is the next-generation unified platform migrating WARP + GHG into a single Next.js 15 App Router codebase.
 
 ---
 
@@ -206,12 +208,62 @@ Issues flagged across both platforms during documentation. All marked `[QA]` in 
 
 ---
 
+## SPA Documentation
+
+> Source: `spa/`
+
+| Document | What it covers |
+|---|---|
+| [`docs/spa/ARCHITECTURE.md`](spa/ARCHITECTURE.md) | SPA purpose, tech stack, directory layout, iframe communication with WARP + OPS, auth flow, build process |
+| [`docs/spa/CHANGELOG.md`](spa/CHANGELOG.md) | Per-file bug/fix/severity log from QA pass |
+
+### SPA Quick Reference
+
+- **Framework:** Create React App (React 18, JavaScript — no TypeScript)
+- **State:** Redux
+- **Build:** Webpack (custom config in `config/`)
+- **Package manager:** npm
+- **WARP integration:** `src/warp/` — iframe embed services + config
+- **OPS integration:** `src/ops/` — iframe embed services + auth token handling
+- **Parent origin:** `process.env.REACT_APP_PARENT_ORIGIN` (postMessage target)
+- **Start:** `npm start` | **Build:** `npm run build`
+
+---
+
+## Monorepo Documentation
+
+> Source: `monorepo/` — pnpm workspace: `apps/web` (Next.js 15 App Router) + `apps/hasura`
+
+| Document | What it covers |
+|---|---|
+| [`docs/monorepo/CHANGELOG.md`](monorepo/CHANGELOG.md) | Non-WARP API routes — per-file bug/fix/severity log |
+| [`docs/monorepo/WARP-routes-CHANGELOG.md`](monorepo/WARP-routes-CHANGELOG.md) | WARP App Router routes — per-file bug/fix/severity log |
+
+### Monorepo Quick Reference
+
+- **Framework:** Next.js 15 App Router, React 19, TypeScript strict mode
+- **Package manager:** pnpm 10.11.0 | Node: 20.10.0 (Volta)
+- **Auth:** Better-Auth 1.2.7 (Drizzle adapter) — **not** NextAuth
+- **JWT:** jose library, 1-hour expiry
+- **UI:** Mantine v8, Tailwind 4, Emotion
+- **Primary DB:** Hasura GraphQL (Apollo Client browser, graphql-request server)
+- **Secondary DB:** Drizzle ORM (direct PostgreSQL, two schemas: app + auth)
+- **Analytics:** ClickHouse
+- **Cache:** Upstash Redis + Valkey (iovalkey)
+- **Secrets:** AWS Secrets Manager (`snowkap-monorepo-live`, `ap-south-1`)
+- **WARP module:** `src/modules/warp/` + App Router routes at `src/app/warp/` and `src/app/api/warp/`
+- **GHG module:** `src/modules/ghg/`
+- **Env pattern:** `getServerEnv()` from `src/lib/env/env.server.ts`
+- **Dev:** `pnpm dev` | **Build:** `pnpm build` | **Codegen:** `pnpm codegen` (from `apps/web/`)
+
+---
+
 ## Development Setup
 
 ### OPs
 
 ```bash
-cd uigw-snowkap_op_nextjs
+cd ops
 yarn install
 yarn pre:secrets        # loads AWS Secrets Manager → process.env
 yarn dev                # starts Next.js dev server (APP_ENV=live)
@@ -232,10 +284,25 @@ cd ../..
 yarn dev:web            # Next.js on :3000
 yarn dev:hasura         # Hasura console on :9695
 yarn codegen            # regenerate GraphQL types
+```
 
-# Standard schema change workflow:
-# 1. yarn dev:hasura  → make changes in Hasura console
-# 2. Migrations auto-created in apps/hasura/migrations/
-# 3. yarn codegen  → update TypeScript types
-# 4. Update frontend code
+### SPA
+
+```bash
+cd spa
+npm install
+npm start               # dev server
+npm run build           # production build
+```
+
+### Monorepo
+
+```bash
+cd monorepo
+pnpm install
+pnpm dev                # all workspaces in parallel (Next.js uses --turbopack)
+# Within apps/web:
+pnpm --filter @snowkap/web dev
+pnpm codegen            # regenerate GraphQL types (run from apps/web)
+pnpm build
 ```

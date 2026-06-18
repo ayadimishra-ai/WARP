@@ -1,0 +1,23 @@
+query checkCaptivePowerChildRecords($captivePowerId: uuid!) {
+  renewable: GHGEnergy_CaptivePower_Renewable_aggregate(
+    where: { GHGEnergyConsumption_CaptivePower_id: { _eq: $captivePowerId } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  nonRenewable: GHGEnergy_CaptivePower_NonRenewable_aggregate(
+    where: { GHGEnergyConsumption_CaptivePower_id: { _eq: $captivePowerId } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  renewableFuel: GHGEnergy_CaptivePower_Renewable_Fuel_aggregate(
+    where: { GHGEnergyConsumption_CaptivePower_id: { _eq: $captivePowerId } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

@@ -1,0 +1,14 @@
+mutation createUser($object: [Tbl_Users_insert_input!]!) {
+  insert_Tbl_Users(objects: $object) {
+    affected_rows
+    returning {
+      UserGuid
+      FirstName
+      CreatedBy
+      OPSUserId
+      MobileNumber
+      EmailId
+      SetPasswordToken
+    }
+  }
+}

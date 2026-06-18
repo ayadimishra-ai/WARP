@@ -1,0 +1,22 @@
+mutation upsertFormResult(
+  $invitationId: uuid!
+  $invitationStatus: String!
+  $input: [FormResult_insert_input!]!
+  $interimCheck: jsonb!
+) {
+  insert_FormResult(
+    objects: $input
+    on_conflict: {
+      constraint: FormResult_pkey
+      update_columns: [score, recommendations]
+    }
+  ) {
+    affected_rows
+  }
+  update_FormInvitation(
+    _set: { status: $invitationStatus, interimCheck: $interimCheck }
+    where: { id: { _eq: $invitationId } }
+  ) {
+    affected_rows
+  }
+}

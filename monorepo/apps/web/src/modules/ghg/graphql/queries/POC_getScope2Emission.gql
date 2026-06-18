@@ -1,0 +1,19 @@
+query getESGScope2Emission(
+  $fromDate: date!
+  $toDate: date!
+  $organizationId: uuid!
+) {
+  poc_view_emission_by_scope(
+    where: {
+      period_date: { _gte: $fromDate, _lte: $toDate }
+      organization_id: { _eq: $organizationId }
+    }
+    order_by: { period_date: asc }
+  ) {
+    organization_id
+    year
+    month
+    period_date
+    em_scope2
+  }
+}

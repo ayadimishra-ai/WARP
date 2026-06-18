@@ -1,0 +1,8 @@
+query getMaterialMasterByTypes($organizationId: uuid!, $types: [String!]!) {
+  OrgMaterialMaster(
+    where: { organization_id: { _eq: $organizationId }, type: { _in: $types } }
+  ) {
+    code
+    type
+  }
+}

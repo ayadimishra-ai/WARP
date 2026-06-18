@@ -1,0 +1,7 @@
+query GetCompanyStatusMaster($companyStatusGuid: uuid!) {
+  Tbl_CompanyStatusMaster(where: {CompanyStatusGuid: {_eq: $companyStatusGuid}}) {
+    CompanyStatusGuid
+    CompanyStatusName
+    RoleGuid
+  }
+}

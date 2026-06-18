@@ -1,0 +1,13 @@
+table:
+  name: GHGEnergy_CaptivePower_Renewable
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: GHGEnergy_CaptivePower
+    using:
+      foreign_key_constraint_on: GHGEnergyConsumption_CaptivePower_id
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by

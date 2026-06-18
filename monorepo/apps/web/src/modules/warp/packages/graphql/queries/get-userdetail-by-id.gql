@@ -1,0 +1,15 @@
+query getUserDetailById($id: uuid) {
+  User(where: { id: { _eq: $id }, isActive: { _eq: true } }) {
+    id
+    name
+    email
+    emailVerified
+    phone
+    phoneVerified
+    image
+    details
+    companyId
+    created_by
+    updated_by
+  }
+}

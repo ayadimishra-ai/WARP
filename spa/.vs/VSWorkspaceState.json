@@ -1,0 +1,20 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\components",
+<<<<<<< HEAD
+    "\\src\\components\\UploadSideBar"
+  ],
+  "SelectedNode": "\\src\\components\\UploadSideBar\\UploadInvoice.js",
+=======
+    "\\src\\components\\Basket",
+    "\\src\\components\\ProductDetails",
+    "\\src\\containers",
+    "\\src\\containers\\BasketListing",
+    "\\src\\containers\\OrderDetails"
+  ],
+  "SelectedNode": "\\src\\components\\Basket\\CommonBasket.js",
+>>>>>>> release-addtocart
+  "PreviewInSolutionExplorer": false
+}

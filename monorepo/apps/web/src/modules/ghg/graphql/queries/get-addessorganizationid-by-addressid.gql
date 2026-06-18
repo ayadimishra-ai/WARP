@@ -1,0 +1,21 @@
+query GetOrganizationAddressIdByAddressId(
+  $organizationId: uuid!
+  $addressId: uuid!
+) {
+  OrganizationAddress(
+    where: {
+      organization_id: { _eq: $organizationId }
+      address_id: { _eq: $addressId }
+    }
+  ) {
+    is_deleted
+    metadata
+    created_at
+    updated_at
+    address_id
+    created_by
+    id
+    organization_id
+    updated_by
+  }
+}

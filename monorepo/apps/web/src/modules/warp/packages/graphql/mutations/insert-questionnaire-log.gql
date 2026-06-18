@@ -1,0 +1,37 @@
+mutation InsertQuestionnaireLog(
+  $formid: uuid!
+  $form_title: String
+  $form_description: String
+  $number_of_questions: String
+  $time_in_minutes: String
+  $form_type: String
+  $file_url: String
+  $created_by: uuid!
+  $event_type: String!
+) {
+  insert_newformslogs_one(
+    object: {
+      formid: $formid
+      form_title: $form_title
+      form_description: $form_description
+      number_of_questions: $number_of_questions
+      time_in_minutes: $time_in_minutes
+      form_type: $form_type
+      file_url: $file_url
+      created_by: $created_by
+      event_type: $event_type
+    }
+  ) {
+    id
+    formid
+    form_title
+    form_description
+    number_of_questions
+    time_in_minutes
+    form_type
+    file_url
+    created_by
+    created_at
+    event_type
+  }
+}

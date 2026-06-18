@@ -1,0 +1,5 @@
+query GetUserCompanyMapping($userGuid: uuid!) {
+  Tbl_UserCompanyMapping(where: {UserGuid: {_eq: $userGuid}}) {
+    CompanyGuid
+  }
+}

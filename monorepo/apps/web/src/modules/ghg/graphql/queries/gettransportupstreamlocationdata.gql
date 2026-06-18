@@ -1,0 +1,59 @@
+query gettransportupstreamlocationdata(
+  $materialmasterid: [String!]!
+  $procuredlocationmasterid: [String!]!
+  $activitylocationmasterid: [String!]!
+) {
+  procuredlocationaddress: Addresses(
+    where: { client_master_id: { _in: $procuredlocationmasterid } }
+  ) {
+    id
+    client_master_id
+    name
+    pincode
+    latitude
+    longitude
+    OrganizationAddresses {
+      id
+    }
+  }
+  activitylocationaddress: Addresses(
+    where: { client_master_id: { _in: $activitylocationmasterid } }
+  ) {
+    id
+    client_master_id
+    name
+    pincode
+    latitude
+    longitude
+    OrganizationAddresses {
+      id
+    }
+  }
+
+  OrgMaterialMaster(
+    where: {
+      _and: {
+        client_master_id: { _in: $materialmasterid }
+        is_deleted: { _eq: false }
+      }
+    }
+  ) {
+    id
+    name
+    code
+    client_master_id
+    type
+  }
+  VehicleTypeMaster {
+    category
+    name
+    code
+    configuration_value
+  }
+  UomConversionMaster {
+    from_key
+    to_key
+    factor
+    metadata
+  }
+}

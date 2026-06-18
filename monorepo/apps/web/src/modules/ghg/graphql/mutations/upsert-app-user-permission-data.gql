@@ -1,0 +1,34 @@
+mutation upsertAppUserActivityPermission(
+  $deleteUserOrganizationAddressMapping: UserOrganizationAddressMapping_bool_exp!
+  $userOrgAddressMappingData: [UserOrganizationAddressMapping_insert_input!]!
+) {
+  delete_UserOrganizationAddressMapping(
+    where: $deleteUserOrganizationAddressMapping
+  ) {
+    returning {
+      id
+      organization_address_id
+      user_id
+      activities
+    }
+  }
+  insert_UserOrganizationAddressMapping(
+    objects: $userOrgAddressMappingData
+    on_conflict: { constraint: UserOrganizationAddressMapping_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      user_id
+      activities
+      AppUser {
+        name
+        email
+        isRegistered
+      }
+      Organization {
+        name
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+query getGHGTransportUpstreamTransportDetails(
+  $activityFilter: GHGTransport_Upstream_bool_exp, $start: Int, $size: Int, $orderBy: [GHGTransport_Upstream_order_by
+!]) {
+  GHGTransport_Upstream(where: $activityFilter, offset: $start, limit: $size, order_by: $orderBy) {
+    Material_Procured
+    Third_Party_Suppliers_of_Material
+    Locations_Procured_From
+    Transport_Managed_by
+    Mode_of_Transport
+    Vehicle_Type_Used_for_Road_Transport
+    Fuel_Used
+    Quantity_of_Fuel_Consumed
+  }
+  totalCount: GHGTransport_Upstream_aggregate(where: $activityFilter) {
+    aggregate {
+      count
+    }
+  }
+}

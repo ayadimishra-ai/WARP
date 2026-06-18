@@ -1,0 +1,14 @@
+query getFormIntroByFormId($formId: uuid!) {
+  FormDetails(where: { formId: { _eq: $formId } }) {
+    id
+    formId
+    bodyTemplate
+    framework
+    focusArea
+    timeInMinutes
+    notes
+  }
+  GlobalMaster(where: { type: { _eq: "FormIcons" } }) {
+    data
+  }
+}

@@ -1,0 +1,12 @@
+mutation InsertAIFileData($input: [AIFileData_insert_input!]!) {
+  insert_AIFileData(objects: $input) {
+    returning {
+      id
+      file_id
+      previous_reading_date
+      present_reading_date
+      extracted_values
+      edited_values
+    }
+  }
+}

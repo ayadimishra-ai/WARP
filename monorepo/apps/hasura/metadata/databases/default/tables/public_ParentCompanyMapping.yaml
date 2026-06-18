@@ -1,0 +1,34 @@
+table:
+  name: ParentCompanyMapping
+  schema: public
+object_relationships:
+  - name: Address
+    using:
+      foreign_key_constraint_on: AddressId
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: ParentUserId
+  - name: Organization
+    using:
+      foreign_key_constraint_on: CompanyId
+  - name: appUserByUserid
+    using:
+      foreign_key_constraint_on: UserId
+  - name: organizationByParentcompanyid
+    using:
+      foreign_key_constraint_on: ParentCompanyId
+array_relationships:
+  - name: AssesseeUserMappings
+    using:
+      foreign_key_constraint_on:
+        column: parentCompanyMappingId
+        table:
+          name: AssesseeUserMapping
+          schema: public
+  - name: FormInvitations
+    using:
+      foreign_key_constraint_on:
+        column: ParentCompanyMappingId
+        table:
+          name: FormInvitation
+          schema: public

@@ -1,0 +1,12 @@
+query getCompanyDetailByBulkId($companyIds: [uuid!]) {
+  Company(where: { id: { _in: $companyIds }, isActive: { _eq: true } }) {
+    id
+    name
+    primaryContact
+    details
+    platformId
+    ParentCompanyMappings(where: { isActive: { _eq: true } }) {
+      ParentCompanyId
+    }
+  }
+}

@@ -1,0 +1,16 @@
+query getNullDistanceBusinessTravelData {
+  GHGTransport_BusinessTravel(
+    where: {
+      Trip_Distance: { _is_null: true }
+    }
+    limit: 3800
+  ) {
+    id
+    task_request_id
+    Trip_From_Country
+    Trip_To_Country
+    Trip_From_Pincode
+    Trip_To_Pincode
+    Mode_of_Transport
+  }
+}

@@ -1,0 +1,15 @@
+mutation bulkInsertSuggestionSourceMapping(
+  $objects: [SuggestionSourceMapping_insert_input!]!
+) {
+  insert_SuggestionSourceMapping(objects: $objects) {
+    affected_rows
+    returning {
+      id
+      suggestionId
+      sourceId
+      suggestionPageNo
+      suggestionInfoContent
+      created_at
+    }
+  }
+}

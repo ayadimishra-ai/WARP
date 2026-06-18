@@ -1,0 +1,25 @@
+query getAddressDetailByAddresssId($organizationId: uuid!, $AddressId: uuid!) {
+  Addresses(
+    where: {
+      id: { _eq: $AddressId }
+      OrganizationAddresses: { organization_id: { _eq: $organizationId } }
+    }
+  ) {
+    id
+    name
+    code
+    full_address
+    pincode
+    country_id
+    state_id
+    city_id
+    type
+    metadata
+    ownership_type
+    facility_type
+    updated_at
+    updated_by
+    is_deleted
+    is_wwtp
+  }
+}

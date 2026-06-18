@@ -1,0 +1,42 @@
+table:
+  name: Activity
+  schema: public
+object_relationships:
+  - name: Activity
+    using:
+      foreign_key_constraint_on: parent_code
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: Activities
+    using:
+      foreign_key_constraint_on:
+        column: parent_code
+        table:
+          name: Activity
+          schema: public
+  - name: ActivityTaskRequests
+    using:
+      foreign_key_constraint_on:
+        column: activity_id
+        table:
+          name: ActivityTaskRequest
+          schema: public
+  - name: DataImportHistories
+    using:
+      foreign_key_constraint_on:
+        column: activity_code
+        table:
+          name: DataImportHistory
+          schema: public
+  - name: OrganizationActivityMappings
+    using:
+      foreign_key_constraint_on:
+        column: activity_id
+        table:
+          name: OrganizationActivityMapping
+          schema: public

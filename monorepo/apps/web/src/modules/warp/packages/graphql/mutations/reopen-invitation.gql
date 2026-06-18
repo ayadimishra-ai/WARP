@@ -1,0 +1,15 @@
+mutation reopen_invitation(
+  $companyId: uuid
+  $invitationId: uuid
+  $userId: uuid
+  $status: String
+) {
+  update_FormInvitation(
+    where: { companyId: { _eq: $companyId }, id: { _eq: $invitationId } }
+    _set: { status: $status, updated_by: $userId, updated_at: "now()" }
+  ) {
+    returning {
+      id
+    }
+  }
+}

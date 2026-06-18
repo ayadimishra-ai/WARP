@@ -1,0 +1,31 @@
+query GetFileForVerificationOrEdit($where: AIFileUploads_bool_exp!) {
+  AIFileUploads(where: $where) {
+    id
+    activity_code
+    file_name
+    file_url
+    status
+    created_by
+    identifier
+    AIFileData {
+      id
+      file_id
+      previous_reading_date
+      present_reading_date
+      extracted_values
+      edited_values
+      verified_at
+      verified_by
+      created_at
+      created_by
+      MeterData {
+        id
+        meter_number
+        average_units_consumed
+        organization_address_id
+        created_by
+        updated_by
+      }
+    }
+  }
+}

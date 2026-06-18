@@ -1,0 +1,5 @@
+query getUserDetailByPhone($phone: [String!]) {
+  User(where: { phone: { _in: $phone }, isActive: { _eq: true } }) {
+    phone
+  }
+}

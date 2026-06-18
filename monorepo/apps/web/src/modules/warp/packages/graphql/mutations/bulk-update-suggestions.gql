@@ -1,0 +1,9 @@
+mutation bulkUpdateSuggestions($suggestionData: [Suggestions_updates!]!) {
+  update_Suggestions_many(updates: $suggestionData) {
+    returning {
+      id
+      formInvitationId
+      formFieldId
+    }
+  }
+}

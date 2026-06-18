@@ -1,0 +1,7 @@
+query getFormSubmissionByInvitations($where: [FormSubmission_bool_exp!]!) {
+  FormSubmission(where: { _or: $where }) {
+    id
+    invitationId
+    isActive
+  }
+}

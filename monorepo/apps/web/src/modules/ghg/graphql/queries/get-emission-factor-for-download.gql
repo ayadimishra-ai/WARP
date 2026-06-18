@@ -1,0 +1,42 @@
+query getEmissionFactorsForDownload(
+  $where: CO2EmissionFactorMaster_bool_exp!
+  $whereMaterial: CO2EmissionFactorMaster_Material_bool_exp!
+) {
+  CO2EmissionFactorMaster(where: $where) {
+    region
+    year
+    month
+    category
+    activity
+    sub_activity
+    type
+    sub_type
+    fuel_type
+    factor
+    factor_uom
+    geography
+    metadata
+    Region {
+      name
+    }
+  }
+
+  CO2EmissionFactorMaster_Material(where: $whereMaterial) {
+    region
+    year
+    month
+    category
+    activity
+    sub_activity
+    type
+    sub_type
+    fuel_type
+    factor
+    factor_uom
+    geography
+    metadata
+    Region {
+      name
+    }
+  }
+}

@@ -1,0 +1,28 @@
+query GetUserDetailsByEmailId($EmailId: String!) {
+  Tbl_Users(where: { EmailId: { _eq: $EmailId } }) {
+    UserGuid
+    FirstName
+    CpanelUserId
+    OPSUserId
+    Tbl_UserRoleMappings:Tbl_UserRoleMappings_userGuid  {
+      RoleGuid
+      Tbl_Role {
+        RoleGuid
+        RoleName
+      }
+    }
+    Tbl_UserCompanyMappings {
+      UserGuid
+      CompanyGuid
+      Tbl_Company {
+        CompanyGuid
+        CompanyName
+        CPanelCompanyId
+        OPSCompanyId
+        Tbl_CompanyGeneralDetails {
+          PANCardNumber
+        }
+      }
+    }
+  }
+}

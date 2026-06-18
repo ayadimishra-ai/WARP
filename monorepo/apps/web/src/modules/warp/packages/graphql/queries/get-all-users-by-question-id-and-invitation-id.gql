@@ -1,0 +1,144 @@
+query getAllUsersByQuestionIdAndInvitationId(
+  $questionId: [uuid!]
+  $invitationId: uuid
+) {
+  Question(where: { _and: { id: { _in: $questionId } } }) {
+    id
+    key
+    content
+    AssesseeUserMappings(where: { InvitationId: { _eq: $invitationId } }) {
+      id
+      parentCompanyMappingId
+      ParentCompanyMapping {
+        Id
+        ParentCompanyId
+        companyByParentcompanyid {
+          id
+          name
+          isActive
+          Users {
+            id
+            name
+            email
+            isActive
+            isEmailSubscribed
+            UserRoles {
+              userId
+              roleName
+            }
+          }
+          AssessorConsultantMappings {
+            id
+            formId
+            companyByConsultantcompanyid {
+              id
+              name
+              isActive
+              Users {
+                id
+                name
+                email
+                isActive
+                isEmailSubscribed
+                UserRoles {
+                  userId
+                  roleName
+                }
+              }
+            }
+          }
+        }
+      }
+      User {
+        id
+        name
+        email
+        isActive
+        isEmailSubscribed
+        UserRoles {
+          userId
+          roleName
+        }
+      }
+      userByUserid {
+        id
+        name
+        email
+        isActive
+        isEmailSubscribed
+        UserRoles {
+          userId
+          roleName
+        }
+      }
+    }
+    FormFields {
+      InvitationComments(where: { invitationId: { _eq: $invitationId } }) {
+        User {
+          id
+          name
+          email
+          isActive
+          isEmailSubscribed
+          UserRoles {
+            userId
+            roleName
+          }
+        }
+        Company {
+          Users {
+            id
+            name
+            email
+            isActive
+            isEmailSubscribed
+            UserRoles {
+              userId
+              roleName
+            }
+          }
+          ParentCompanyMappings {
+            Id
+            ParentCompanyId
+            companyByParentcompanyid {
+              id
+              name
+              isActive
+              Users {
+                id
+                name
+                email
+                isActive
+                isEmailSubscribed
+                UserRoles {
+                  userId
+                  roleName
+                }
+              }
+              AssessorConsultantMappings {
+                id
+                formId
+                companyByConsultantcompanyid {
+                  id
+                  name
+                  isActive
+                  Users {
+                    id
+                    name
+                    email
+                    isActive
+                    isEmailSubscribed
+                    UserRoles {
+                      userId
+                      roleName
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

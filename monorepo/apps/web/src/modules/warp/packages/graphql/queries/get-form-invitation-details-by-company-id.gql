@@ -1,0 +1,60 @@
+query getFormInvitationDetailsByCompanyId(
+  $companyId: [uuid!]
+  $sourceType: String!
+) {
+  FormInvitation(where: { companyId: { _in: $companyId } }) {
+    status
+    created_by
+    ParentUser {
+      Company {
+        name
+      }
+      UserRoles {
+        roleName
+      }
+    }
+    ParentCompanyMapping {
+      Id
+      ParentCompanyId
+      UserId
+    }
+    id
+    durationTo
+    durationFrom
+    companyId
+    Company {
+      id
+      name
+      IsManufacturing
+      metadata
+    }
+    completion
+    Form {
+      id
+      name
+      title
+      isAIDataPointsAdded
+      formtype
+    }
+    AIBulkDocumentProcessings {
+      id
+      requestStatus
+    }
+    Sources(where: { type: { _eq: $sourceType } }) {
+      SourceFile {
+        id
+        status
+      }
+    }
+    AIBulkDocumentProcessings {
+      id
+      requestStatus
+    }
+    Sources(where: { type: { _eq: $sourceType } }) {
+      SourceFile {
+        id
+        status
+      }
+    }
+  }
+}

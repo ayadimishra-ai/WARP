@@ -1,0 +1,15 @@
+query GetPlatformFeatureFlags($organizationId: uuid!, $type: String!) {
+  PlatformFeatureFlags(
+    where: {
+      organization_id: { _eq: $organizationId }
+      type: { _eq: $type }
+      is_deleted: { _eq: false }
+    }
+  ) {
+    id
+    organization_id
+    type
+    feat_prepopulate_activity_form
+    metadata
+  }
+}

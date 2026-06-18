@@ -1,0 +1,17 @@
+mutation updateOPSUserId($userGuid: uuid!, $opsUserId: String!) {
+  update_Tbl_Users(
+    where: { UserGuid: { _eq: $userGuid } }
+    _set: { OPSUserId: $opsUserId }
+  ) {
+    affected_rows
+    returning {
+      UserGuid
+      FirstName
+      LastName
+      EmailId
+      MobileNumber
+      OPSUserId
+      SetPasswordToken
+    }
+  }
+}

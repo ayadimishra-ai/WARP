@@ -1,0 +1,9 @@
+mutation UpdateUserLoginDateTime($userGuid: uuid!, $loginDateTime: timestamp!) {
+  update_Tbl_Users_by_pk(
+    pk_columns: { UserGuid: $userGuid }
+    _set: { LastLoginAttemptTime: $loginDateTime }
+  ) {
+    UserGuid
+    LastLoginAttemptTime
+  }
+}

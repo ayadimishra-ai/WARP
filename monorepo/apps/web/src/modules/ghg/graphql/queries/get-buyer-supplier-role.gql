@@ -1,0 +1,28 @@
+query getBuyerSupplierRole($organizationId: uuid) {
+  supplierOrgList: BuyerSupplierAddressMappings(
+    where: { buyerOrgid: { _eq: $organizationId } }
+  ) {
+    id
+    supplierOrgid
+    supplierOrgAddresId
+    BuyerSupplierAddresId
+    status
+    metadata
+    organizationBySupplierorgid {
+      name
+    }
+  }
+  buyerOrgList: BuyerSupplierAddressMappings(
+    where: { supplierOrgid: { _eq: $organizationId } }
+  ) {
+    id
+    buyerOrgid
+    supplierOrgAddresId
+    BuyerSupplierAddresId
+    status
+    metadata
+    Organization {
+      name
+    }
+  }
+}

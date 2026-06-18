@@ -1,0 +1,47 @@
+table:
+  name: Interim_Answer
+  schema: public
+object_relationships:
+  - name: Answer
+    using:
+      foreign_key_constraint_on: answerId
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: FormField
+    using:
+      foreign_key_constraint_on: formFieldId
+  - name: FormSubmission
+    using:
+      foreign_key_constraint_on: submissionId
+  - name: Interim_Answer
+    using:
+      foreign_key_constraint_on: interim_answer_id
+  - name: Question
+    using:
+      foreign_key_constraint_on: questionId
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: InterimFormLogs
+    using:
+      foreign_key_constraint_on:
+        column: interimAnswerId
+        table:
+          name: InterimFormLogs
+          schema: public
+  - name: Interim_Answers
+    using:
+      foreign_key_constraint_on:
+        column: interim_answer_id
+        table:
+          name: Interim_Answer
+          schema: public
+  - name: Interim_Recommendations
+    using:
+      foreign_key_constraint_on:
+        column: interim_answer_id
+        table:
+          name: Interim_Recommendation
+          schema: public

@@ -1,0 +1,34 @@
+mutation upsertGHGMaterialProcurementActivity(
+  $where: GHGMaterialProcurement_bool_exp!
+  $materialProcurementData: [GHGMaterialProcurement_insert_input!]!
+) {
+  delete_GHGMaterialProcurement(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Material_Code
+      Supplier_Code
+      Material_Quantity_Procured
+      Material_Quantity_Procured_uom
+      supporting_docs
+    }
+  }
+  insert_GHGMaterialProcurement(
+    objects: $materialProcurementData
+    on_conflict: { constraint: GHGMaterialProcurement_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Material_Code
+      Supplier_Code
+      Material_Quantity_Procured
+      Material_Quantity_Procured_uom
+      supporting_docs
+    }
+  }
+}

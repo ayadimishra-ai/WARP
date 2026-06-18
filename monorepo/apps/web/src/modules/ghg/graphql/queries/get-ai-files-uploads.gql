@@ -1,0 +1,62 @@
+query GetUploadedFiles(
+  $limit: Int!
+  $offset: Int!
+  $order_by: [AIFileUploadListingView_order_by!]
+  $where: AIFileUploadListingView_bool_exp
+  $fileProcessingWhere: AIFileUploadListingView_bool_exp
+  $pendingEmailSendWhere: AIFileUploadListingView_bool_exp
+  $allResultWhere: AIFileUploadListingView_bool_exp
+  $allLocationsWhere: AIFileUploadListingView_bool_exp
+) {
+  AIFileUploadListingView(
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+    where: $where
+  ) {
+    file_id
+    activity_code
+    file_name
+    file_url
+    location_names
+    status
+    errors
+    created_at
+    verified_at
+    uploaded_by_name
+    verified_by_name
+  }
+  AIFileUploadListingView_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+  AIFileUploadListingView_FileProcessingCount: AIFileUploadListingView_aggregate(
+    where: $fileProcessingWhere
+  ) {
+    aggregate {
+      count
+    }
+  }
+  AIFileUploadListingView_PendingEmailSendCount: AIFileUploadListingView_aggregate(
+    where: $pendingEmailSendWhere
+  ) {
+    aggregate {
+      count
+    }
+  }
+  AIFileUploadListingView_AllResultCount: AIFileUploadListingView_aggregate(
+    where: $allResultWhere
+  ) {
+    aggregate {
+      count
+    }
+  }
+  AIFileUploadListingView_AllLocations: AIFileUploadListingView(
+    where: $allLocationsWhere
+    distinct_on: location_names
+    limit: 10000
+  ) {
+    location_names
+  }
+}

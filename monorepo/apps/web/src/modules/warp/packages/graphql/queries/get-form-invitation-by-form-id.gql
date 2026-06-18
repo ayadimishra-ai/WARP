@@ -1,0 +1,19 @@
+query getFormInvitationByFormId($formId: uuid, $companyId: [uuid!]!) {
+  FormInvitation(
+    where: {
+      formId: { _eq: $formId }
+      companyId: { _in: $companyId }
+      status: { _neq: "Submitted" }
+      isActive: { _eq: true }
+    }
+  ) {
+    id
+    formId
+    companyId
+    email
+    durationFrom
+    durationTo
+    isActive
+    status
+  }
+}

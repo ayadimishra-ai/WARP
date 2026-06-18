@@ -1,0 +1,20 @@
+mutation bulkUpsertValidationWarningLogs(
+  $ValidationWarningLogs: [ValidationWarningLogs_insert_input!]!
+  $ValidationWarningLogsupdate: [ValidationWarningLogs_updates!]!
+) {
+  insert_ValidationWarningLogs(
+    objects: $ValidationWarningLogs
+    on_conflict: { constraint: ValidationWarningLogs_pkey }
+  ) {
+    affected_rows
+    returning {
+      Id
+    }
+  }
+
+  update_ValidationWarningLogs_many(updates: $ValidationWarningLogsupdate) {
+    returning {
+      Id
+    }
+  }
+}

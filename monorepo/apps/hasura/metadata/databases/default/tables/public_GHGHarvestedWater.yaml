@@ -1,0 +1,13 @@
+table:
+  name: GHGHarvestedWater
+  schema: public
+object_relationships:
+  - name: ActivityTaskRequest
+    using:
+      foreign_key_constraint_on: activity_task_request_id
+  - name: OrganizationAddress
+    using:
+      foreign_key_constraint_on: organization_address_id
+  - name: TaskRequest
+    using:
+      foreign_key_constraint_on: task_request_id

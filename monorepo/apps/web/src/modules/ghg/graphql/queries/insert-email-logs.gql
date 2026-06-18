@@ -1,0 +1,9 @@
+mutation InsertEmailLog($object: [EmailLogs_insert_input!]!) {
+  insert_EmailLogs(objects: $object) {
+    returning {
+      id
+      status
+      created_at
+    }
+  }
+}

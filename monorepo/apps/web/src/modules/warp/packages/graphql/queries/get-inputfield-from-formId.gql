@@ -1,0 +1,20 @@
+query getInputFieldFromFormId(
+  $formId: uuid!
+  $invitationId: uuid!
+  $inputFields: [String!]!
+) {
+  FormField(
+    where: {
+      type: { _in: $inputFields }
+      questionId: { _is_null: false }
+      formId: { _eq: $formId }
+    }
+  ) {
+    id
+    fieldOptions
+    dataPoint
+    Suggestions(where: { formInvitationId: { _eq: $invitationId } }) {
+      id
+    }
+  }
+}

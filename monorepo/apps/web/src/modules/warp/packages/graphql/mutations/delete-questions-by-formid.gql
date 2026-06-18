@@ -1,0 +1,11 @@
+mutation DeleteQuestionsByFormId($formId: uuid!) {
+  update_Question(
+    where: { Section: { formId: { _eq: $formId } } }
+    _set: { parentQuestionId: null }
+  ) {
+    affected_rows
+  }
+  delete_Question(where: { Section: { formId: { _eq: $formId } } }) {
+    affected_rows
+  }
+}

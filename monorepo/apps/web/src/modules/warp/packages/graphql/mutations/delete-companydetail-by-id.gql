@@ -1,0 +1,17 @@
+mutation deleteCompanyDetailsById($id: uuid) {
+  update_Company(where: { id: { _eq: $id } }, _set: { isActive: false }) {
+    affected_rows
+    returning {
+      id
+      name
+      primaryContact
+      details
+      parentCompanyId
+      platformId
+      created_by
+      updated_by
+      country
+      isActive
+    }
+  }
+}

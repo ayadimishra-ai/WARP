@@ -1,0 +1,49 @@
+query GetUserAutoLoginDetails($email: String, $password: String) {
+  Tbl_Users(where: {_and: [{EmailId: {_eq: $email}}, {Password: {_eq: $password}}]}) {
+    UserGuid
+    EmailId
+    MobileNumber
+    FirstName
+    LastName
+    ShowGradeLevel
+    LanguageGuid
+    IsNewsLetterSubscribed
+    Tbl_UserRoleMappings: Tbl_UserRoleMappings_userGuid{
+      RoleGuid
+      Tbl_Role {
+      RoleGuid
+      RoleName
+      IsActive
+      CreatedDateUtc
+      Priority
+    }
+    Tbl_UserStatusMaster {
+      StatusGuid
+      Status
+    }
+    }
+    Tbl_UserCompanyMappings{
+      UserCompanyMappingGuid
+      Tbl_Company{
+        CompanyGuid
+        Tbl_CompanyCountries{
+          Tbl_CountryMaster{
+            CountryGuid
+            CountryName
+          }
+        }
+      }
+    }
+    Tbl_UserPermissions{
+      Tbl_Permission{
+        PageGuid
+        ResourceKey
+        MenuType
+        Tbl_Page{
+          PageKey
+          PlatformType
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+mutation RegisterCompanyAndMappings(
+  $companyRoleMappingInput: [Tbl_CompanyRoleMapping_insert_input!]!
+  $companyStatusLogInput: [Tbl_CompanyStatusLog_insert_input!]!
+  $userCompanyMappingInput: [Tbl_UserCompanyMapping_insert_input!]!
+  $companyCountryInput: [Tbl_CompanyCountry_insert_input!]!
+) {
+  companyRoleMapping: insert_Tbl_CompanyRoleMapping(
+    objects: $companyRoleMappingInput
+  ) {
+    affected_rows
+    returning{
+      CompanyRoleMappingGuid
+      CompanyGuid
+    }
+  }
+  
+  companyStatusLog: insert_Tbl_CompanyStatusLog(
+    objects: $companyStatusLogInput
+  ) {
+    affected_rows
+    returning{
+      CompanyStatusLogGuid
+      CompanyGuid
+    }
+  }
+  
+  userCompanyMapping: insert_Tbl_UserCompanyMapping(
+    objects: $userCompanyMappingInput
+  ) {
+    affected_rows
+    returning{
+      UserCompanyMappingGuid
+      UserGuid
+    }
+  }
+  
+  companyCountry: insert_Tbl_CompanyCountry(
+    objects: $companyCountryInput
+  ) {
+    affected_rows
+    returning{
+      CompanyCountryGuid
+      CompanyGuid
+    }
+  }
+}

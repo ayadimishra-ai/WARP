@@ -1,0 +1,15 @@
+query getAppUserData($where: AppUser_bool_exp!, $limit: Int, $offset: Int, $order_by: [AppUser_order_by!]) {
+  AppUser(where: $where, order_by: $order_by, limit: $limit, offset: $offset) {
+    id
+    name
+    email
+    organization_id
+    role
+    metadata
+    created_by
+    updated_by
+    is_deleted
+    created_at
+    isRegistered
+  }
+}

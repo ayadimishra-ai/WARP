@@ -1,0 +1,34 @@
+query getUserDetailByParentCompanyId($companyId: uuid, $userId: uuid) {
+  ParentCompanyMapping(
+    where: {
+      ParentCompanyId: { _eq: $companyId }
+      User: { id: { _is_null: false } }
+    }
+  ) {
+    Id
+    CompanyId
+    ParentCompanyId
+    UserId
+    ParentUserId
+    AddressId
+    User {
+      email
+      id
+      name
+      UserRoles {
+        userId
+        roleName
+      }
+    }
+  }
+  User(where: { id: { _eq: $userId } }) {
+    email
+    id
+    name
+    companyId
+    UserRoles {
+      userId
+      roleName
+    }
+  }
+}

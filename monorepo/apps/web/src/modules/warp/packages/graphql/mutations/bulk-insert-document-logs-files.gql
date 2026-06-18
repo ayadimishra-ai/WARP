@@ -1,0 +1,16 @@
+mutation bulk_insert_document_logFiles($data: [DocumentLogs_insert_input!]!) {
+  insert_DocumentLogs(
+    objects: $data
+    on_conflict: { constraint: DocumentLogs_pkey }
+  ) {
+    returning {
+      id
+      error
+      fileName
+      originalFileName
+      fileUrl
+      expiryDate
+      raraResponse
+    }
+  }
+}

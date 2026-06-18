@@ -1,0 +1,26 @@
+query getActivitiesByOrganization($OrgId: uuid) {
+  OrganizationActivityMapping(
+    where: {
+      organization_id: { _eq: $OrgId }
+      # Activity: { _or: [{ code: { _neq: "sng" } }] }
+    }
+    order_by: { created_at: desc }
+  ) {
+    Organization {
+      metadata
+      hasWasteWaterTreatmentPlant
+    }
+    Activity {
+      code
+      name
+      metadata
+      parent_code
+      Activities {
+        code
+        name
+        metadata
+        is_AI_enabled
+      }
+    }
+  }
+}

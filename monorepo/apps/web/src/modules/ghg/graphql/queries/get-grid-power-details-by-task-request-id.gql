@@ -1,0 +1,45 @@
+query getGridPowerDetailsByTaskRequestId($taskRequestIds: [uuid!]!) {
+  GHGEnergyConsumption_GridPower(
+    where: { task_request_id: { _in: $taskRequestIds } }
+  ) {
+    id
+    PowerConsumed_through_Grid_Kwh
+    PowerPurchased_through_PPA_Kwh_NonRenewable
+    PowerPurchased_through_PPA_Kwh_Renewable
+    PowerPurchased_through_REC_Kwh
+    NameOfCompany_PPA_NonRenewable
+    NameOfCompany_PPA_Renewable
+    Name_of_Distribution_Company
+    Name_of_company_for_REC
+    kpi_em_Emission_PowerPurchased_NonRenewableSources
+    kpi_em_Emission_PowerPurchased_PPA_NonRenewable
+    kpi_em_Emission_PowerPurchased_PPA_Renewable
+    kpi_em_Emission_PowerPurchased_REC
+    kpi_em_Emission_PowerPurchased_RenewableSources
+    kpi_em_Emission_TotalPowerPurchased
+    kpi_emf_Emission_PowerPurchased_NonRenewableSources
+    kpi_emf_Emission_PowerPurchased_PPA_NonRenewable
+    kpi_emf_Emission_PowerPurchased_PPA_Renewable
+    kpi_emf_Emission_PowerPurchased_REC
+    kpi_emf_Emission_PowerPurchased_RenewableSources
+    metadata
+    organization_address_id
+    supporting_docs
+    task_request_id
+    updated_at
+    updated_by
+    created_at
+    created_by
+    activity_task_request_id
+    appUserByCreatedBy: AppUser {
+      id
+      name
+      email
+    }
+    appUserByUpdatedBy {
+      id
+      name
+      email
+    }
+  }
+}

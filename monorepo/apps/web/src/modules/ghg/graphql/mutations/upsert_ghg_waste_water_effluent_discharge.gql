@@ -1,0 +1,39 @@
+mutation upsertGHGEffluentDischarge(
+  $where: GHGEffluentDischarge_bool_exp!
+  $ghgEffluentDischargeData: [GHGEffluentDischarge_insert_input!]!
+) {
+  delete_GHGEffluentDischarge(where: $where) {
+    returning {
+      updated_by
+      updated_at
+      uom_effluent
+      total_effluent_disposed_off
+      task_request_id
+      point_of_discharge
+      organization_address_id
+      id
+      created_by
+      created_at
+      activity_task_request_id
+    }
+  }
+
+  insert_GHGEffluentDischarge(
+    objects: $ghgEffluentDischargeData
+    on_conflict: { constraint: GHGEffluentDischarge_pkey }
+  ) {
+    returning {
+      total_effluent_disposed_off
+      point_of_discharge
+      uom_effluent
+      created_at
+      updated_at
+      activity_task_request_id
+      created_by
+      id
+      organization_address_id
+      task_request_id
+      updated_by
+    }
+  }
+}

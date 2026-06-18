@@ -1,0 +1,12 @@
+query GetAIFileUploadsByUser($where: AIFileUploads_bool_exp!) {
+  AIFileUploads(where: $where) {
+    id
+    file_name
+    file_url
+    status
+    AppUser {
+      name
+      email
+    }
+  }
+}

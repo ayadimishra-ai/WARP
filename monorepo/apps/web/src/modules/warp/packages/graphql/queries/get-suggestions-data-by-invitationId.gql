@@ -1,0 +1,16 @@
+query getSuggestionsDataByInvitationId($invitationId: uuid) {
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    id
+    Suggestions {
+      id
+      selectedByUserId
+      isSelected
+      formFieldId
+      suggestion
+      FormField {
+        id
+        questionId
+      }
+    }
+  }
+}

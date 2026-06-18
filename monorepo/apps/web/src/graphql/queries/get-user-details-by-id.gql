@@ -1,0 +1,17 @@
+query GetUserByGuid($userGuid: uuid!) {
+  Tbl_Users(where: { UserGuid: { _eq: $userGuid } }) {
+    UserGuid
+    EmailId
+    MobileNumber
+    FirstName
+    LastName
+    IsActive
+    UserProfileImage
+    CompanyName
+    CpanelUserId
+    Password
+    CreatedDate
+    OPSUserId
+    SetPasswordToken
+  }
+}

@@ -1,0 +1,16 @@
+query GetUser($email: String) {
+    Tbl_Users(where: { EmailId: { _eq: $email } }) {
+      UserGuid
+      EmailId
+      MobileNumber
+      FirstName
+      CpanelUserId
+      OPSUserId
+      Tbl_Roles {
+        RoleGuid
+        RoleName
+        IsActive
+        CreatedDateUtc
+      }
+    }
+  }

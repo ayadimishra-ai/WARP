@@ -1,0 +1,14 @@
+mutation updateFugitiveRefridgeAndACSystemsData(
+  $GHGRefrigerantAndACSystemsUpdation: [GHGRefrigerantAndACSystems_updates!]!
+) {
+  update_GHGRefrigerantAndACSystems_many(
+    updates: $GHGRefrigerantAndACSystemsUpdation
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+    }
+  }
+}

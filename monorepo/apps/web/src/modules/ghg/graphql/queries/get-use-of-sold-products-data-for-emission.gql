@@ -1,0 +1,70 @@
+query getUseOfSoldProductsDataForEmission($taskRequestId: [uuid!]!) {
+  GHGUseOfSoldProducts_Fuel(
+    where: { task_request_id: { _in: $taskRequestId } }
+  ) {
+    id
+    task_request_id
+    organization_address_id
+    TaskRequest {
+      year
+      month
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+    Type_of_Fuel_Consumed
+    Product_Code
+    Quantity_of_Fuel_Consumed
+    UoM_of_Fuel_Consumed
+  }
+  GHGUseOfSoldProducts_Electricity(
+    where: { task_request_id: { _in: $taskRequestId } }
+  ) {
+    id
+    task_request_id
+    organization_address_id
+    TaskRequest {
+      year
+      month
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+    Product_Code
+    Region
+    Units_of_Electricity_consumed_in_kWh
+  }
+  GHGUseOfSoldProducts_Refrigerant(
+    where: { task_request_id: { _in: $taskRequestId } }
+  ) {
+    id
+    task_request_id
+    organization_address_id
+    TaskRequest {
+      year
+      month
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+    Product_Code
+    Refrigerant_type_used_in_sold_product
+    Quantity_of_Refrigerant_consumed
+    UoM_of_Refrigerant_consumed
+  }
+}

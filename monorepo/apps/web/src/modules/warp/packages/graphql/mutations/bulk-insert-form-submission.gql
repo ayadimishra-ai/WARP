@@ -1,0 +1,12 @@
+mutation bulkInsertFormSubmission(
+  $formSubmissionInput: [FormSubmission_insert_input!]!
+) {
+  insert_FormSubmission(
+    objects: $formSubmissionInput
+    on_conflict: { constraint: FormSubmission_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+}

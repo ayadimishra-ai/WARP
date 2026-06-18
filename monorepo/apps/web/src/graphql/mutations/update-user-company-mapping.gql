@@ -1,0 +1,8 @@
+mutation updateUserCompanyMapping($input: [Tbl_UserCompanyMapping_updates!]!) {
+  update_Tbl_UserCompanyMapping_many(updates: $input) {
+    affected_rows
+    returning {
+			UserGuid
+    }
+  }
+}

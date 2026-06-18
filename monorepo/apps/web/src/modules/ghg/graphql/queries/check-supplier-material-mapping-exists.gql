@@ -1,0 +1,26 @@
+query checkSupplierMaterialMappingExists(
+  $organizationId: uuid!
+  $supplierAddressMappingId: uuid!
+  $orgMaterialMasterId: uuid!
+  $fromYear: numeric!
+  $fromMonth: String!
+  $toYear: numeric!
+  $toMonth: String!
+  $excludeId: uuid = "00000000-0000-0000-0000-000000000000"
+) {
+  SupplierMaterialMapping(
+    where: {
+      organization_id: { _eq: $organizationId }
+      supplier_address_mapping_id: { _eq: $supplierAddressMappingId }
+      org_material_master_id: { _eq: $orgMaterialMasterId }
+      From_Year: { _eq: $fromYear }
+      From_Month: { _eq: $fromMonth }
+      To_Year: { _eq: $toYear }
+      To_Month: { _eq: $toMonth }
+      is_deleted: { _eq: false }
+      id: { _neq: $excludeId }
+    }
+  ) {
+    id
+  }
+}

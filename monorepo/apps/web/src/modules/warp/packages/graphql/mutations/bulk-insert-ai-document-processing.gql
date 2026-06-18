@@ -1,0 +1,13 @@
+mutation bulk_insert_AIBulkDocumentProcessing(
+  $data: [AIBulkDocumentProcessing_insert_input!]!
+) {
+  insert_AIBulkDocumentProcessing(
+    objects: $data
+    on_conflict: { constraint: AIBulkDocumentProcessing_pkey }
+  ) {
+    returning {
+      id
+      formInvitationId
+    }
+  }
+}

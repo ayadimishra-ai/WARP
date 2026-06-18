@@ -1,0 +1,11698 @@
+import Drawer from "@material-ui/core/Drawer";
+import IconButton from "@material-ui/core/IconButton";
+import { withStyles } from "@material-ui/core/styles";
+import Tooltip from '@material-ui/core/Tooltip';
+import Close from "@material-ui/icons/Close";
+import FilterList from "@material-ui/icons/FilterList";
+import Info from "@material-ui/icons/Info";
+import Loop from "@material-ui/icons/Loop";
+import QueryBuilder from '@material-ui/icons/QueryBuilder';
+import RemoveCircle from "@material-ui/icons/RemoveCircle";
+import axios from "axios";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { Redirect } from "react-router";
+// import { Link } from "react-router-dom";          
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { HashLink as Link } from 'react-router-hash-link';
+import { getBasketDetails, getWishListDetails } from '../../components/Basket/CommonBasket';
+import BuyingWindowStatus from '../../components/BuyingWindow/BuyingWindowStatus.js';
+import { CalculateSaving } from '../../components/BuyingWindow/CommonBuyingWindow';
+import SLISearch from '../../components/DashBoard/slisearch';
+import Accordion from "../../components/Material/Accordion/Accordion.jsx";
+import GridContainer from "../../components/Material/Grid/GridContainer";
+import GridItem from "../../components/Material/Grid/GridItem.jsx";
+import ExploreMoreProducts from '../../components/Pagination/ExploreMoreProducts';
+import AddToCart from "../../components/ProductDetails/AddToCart";
+import AddtoWishlist from "../../components/ProductDetails/AddtoWishlist";
+import AvailableSupplier from "../../components/ProductDetails/AvailableSupplier";
+import LikelyToBuyLink from "../../components/ProductDetails/LikelyToBuyLink";
+import ProductDetailTab from "../../components/ProductDetails/ProductDetailTab";
+import ProductMoq from "../../components/ProductDetails/ProductMoq";
+import ProductName from '../../components/ProductDetails/ProductName';
+import ProductPrice from "../../components/ProductDetails/ProductPrice";
+import ProductRateCardTab from '../../components/ProductDetails/ProductRatecardTab';
+import ProductSKU from '../../components/ProductDetails/ProductSKU';
+import ProductSpecsTab from "../../components/ProductDetails/ProductSpecsTab";
+import RecentlyBought from "../../components/ProductDetails/RecentlyBought";
+import RemoveFromCart from '../../components/ProductDetails/RemoveFromCart';
+import RemoveFromWishList from '../../components/ProductDetails/RemoveFromWishList';
+import SupplierName from "../../components/ProductDetails/SupplierName";
+import StatusFilter from "../../components/Searchkit/StatusFilter";
+import {
+    getElasticIndexNew, getFeaturesElasticIndex, getFirestoreCollectionName, getGlobalSettings, getLabelText, getLanguageResourceElasticIndex, getServiceUrl,
+    getUserPermision, getWebsiteGUID, getWebsiteLanguageGuid, getWebsiteUrl
+} from "../../config";
+import firebase from '../../config/fbconfig';
+import * as FeatureCodes from '../../featurecodes';
+import Aux from "../../hoc/Auxx";
+import * as PageKeys from "../../pagekeys";
+import * as RoleCode from "../../rolecodes";
+import * as RoleCodes from "../../rolecodes";
+import * as actionCreators from '../../store/actions/index';
+import Button from "../../UI/Button/MaterialButton";
+import Input from '../../UI/Input/MaterialInput';
+import Spinner from "../../UI/Spinner/Spinner";
+import { BreadCrumb, getElasticData, getPageResource } from "../../utility";
+import ProductCard from "../ProductCard/ProductCard";
+
+let decimalValue = 2;
+let exploreProductCount = 5;
+let basketDetails = null;
+let wishListDetails = null;
+let wishlistLanguageResources = null;
+//let cartdetailLanguageResources = null;
+let greenproperties = null;
+let supplierAccreditations = null;
+let productcertificates = null, updatecount = 0, buyerPreferencesJSONData = "";
+let priceRangeMinData = "", priceRangeMaxData = "";
+let CheckUncheckFilter = []
+let rfqProductDetails = []
+let updatedFormlistingpage = []
+
+const awsUrl = getWebsiteUrl();
+const ErrorComponent = () => {
+    return <div id="no_prod_listing_page" className="no-products-found">
+        <img alt=" " src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iNTAwcHgiIGhlaWdodD0iNTAwcHgiIHZpZXdCb3g9IjAgMCA1MDAgNTAwIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MDAgNTAwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxsaW5lYXJHcmFkaWVudCBpZD0iU1ZHSURfMV8iIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iLTEwMDMuMTE5NCIgeTE9IjMxNjUuMzEwNSIgeDI9Ii01OTMuNzg2NCIgeTI9IjMxNjUuMzEwNSIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAtMSAxMDQ4Ljg1NSAzNDA5LjMzMDEpIj4NCgk8c3RvcCAgb2Zmc2V0PSIwIiBzdHlsZT0ic3RvcC1jb2xvcjojRTdFOUZGIi8+DQoJPHN0b3AgIG9mZnNldD0iMSIgc3R5bGU9InN0b3AtY29sb3I6I0QzRkRGNyIvPg0KPC9saW5lYXJHcmFkaWVudD4NCjxwYXRoIGZpbGw9InVybCgjU1ZHSURfMV8pIiBkPSJNNDUuNzM2LDMxOS4yNGMwLDE1Ljc5OSw0LjM1NSwyNC44MTMsOC45NjYsMzEuNzdjMTIuMDM5LDE4LjE3NiwyOC40NDksMjYuMjA5LDQ4LjY1OSwyNA0KCWM1LjE2LTAuNTYzLDEwLjE1LTIuNjA0LDE1LjQxNS00LjAyYzExLjM5NiwxOC4wNDksMjcuMDE3LDI5LjE0OSw0Ny4xMywzMS43NDRjMjAuMjMsMi42MDgsMzcuNDUxLTQuNTgsNTEuOTIxLTE5LjM3OQ0KCWMzMy43NzEsMzkuNTczLDg3LjMwMSw0OC40NjUsMTI4LjkwNSwxOS42MDRjMjUuOTMtMTcuOTg0LDQzLjIxNS00OS40NjksNDQuNDItODUuMDY4YzAuOTc2LTAuODE5LDIuNjI1LTEuMzMsMy43Ni0xLjE2Ng0KCWMyMi43OTYsMy4zNCw0NS4yMy05LjI4NSw1NC45MDQtMzEuNTYxYzIuNDUxLTUuNjM1LDYuODQtMTkuNTg0LDQuNjY2LTMzLjU3Yy0zLjQ5Ni0yMi40NTktMTYuMjQtMzcuMzY5LTM2LjQ0LTQ0LjYxNA0KCWMtMy40NjYtMS4yNC03LjE0LTEuODMtMTAuODgtMi40MmMtMi41MjQtMTMuODgtOC43MjUtMjcuMDQ1LTE4LjI2LTM3LjQ3NWMtNi40OTYtNy4xMDUtMTMuNzM1LTEyLjUwNS0yMS42NDktMTYuMTY1DQoJYy0xNy40NDUtMTAuMTk1LTM1Ljk1NS0xMS4wMTUtNTQuOTQ5LTQuMjg1QzI5Ni41NCw5NC40MywyNDkuMTc3LDYxLjU4NSwxOTcuNDcxLDY5LjIxYy00NS4xNzUsNi42NjUtODUuMTc1LDQ1LjcxLTg5LjcwNSwxMDIuNjMNCgljLTQxLjkyLDExLjIzNS02MS44Myw1Ny43NzUtNDguNjY1LDk2LjYyNWMxLjE0OSwzLjM5NSwyLjQ3OSw2LjYzNSwzLjk3OSw5LjcxNUM1Mi4xOTYsMjg4LjEyOSw0NS43MzEsMzAyLjk2NSw0NS43MzYsMzE5LjI0eiIvPg0KPHBhdGggZmlsbD0iI0ZERkNFRiIgZD0iTTE5MC4zNDYsMjI0LjQ1NWMtMC40OS03LjI2LTcuMzAxLTEyLjcyNS0xNS4yMS0xMi4yMDVjLTEuMDY1LDAuMDctMi4wOTYsMC4yNS0zLjA4LDAuNTINCgljLTAuNjgxLTQuODc1LTUuMzY1LTguNDU1LTEwLjc5LTguMWMtMi45NjUsMC4xOTUtNS41NDUsMS41My03LjI5LDMuNWMwLjE0OS0wLjk4NSwwLjE5NC0yLDAuMTI1LTMuMDMNCgljLTAuNTU2LTguMjk1LTguMzQtMTQuNTQtMTcuMzgtMTMuOTQzIi8+DQo8cGF0aCBmaWxsPSIjNDcyQjI5IiBkPSJNMTg5LjA5NiwyMjQuNTNjLTAuNDQtNi41NjItNi42NzUtMTEuNDk1LTEzLjg3NS0xMS4wNDVjLTAuOTUsMC4wNjktMS45LDAuMjI5LTIuODM1LDAuNDg0DQoJYy0wLjM1MSwwLjEwMi0wLjcxNiwwLjA0LTEuMDIxLTAuMTZjLTAuMy0wLjItMC41LTAuNTItMC41NS0wLjg3NWMtMC41OTUtNC4yNC00LjgtNy4yNC05LjQ3LTcuMDINCgljLTIuNTQ1LDAuMTctNC44MywxLjI2NS02LjQ0LDMuMDg1Yy0wLjM2OSwwLjQxNS0wLjk3LDAuNTQtMS40NjUsMC4zMDVjLTAuNS0wLjIzMy0wLjc5LTAuNzgtMC43MDUtMS4zMjUNCgljMC4xNDEtMC45MSwwLjE4Mi0xLjgzNSwwLjExNS0yLjc2Yy0wLjUxLTcuNi03Ljc2NS0xMy4zMzUtMTYuMDUtMTIuNzg1Yy0wLjcxLDAuMTE1LTEuMjg1LTAuNDctMS4zMy0xLjE2czAuNDc1LTEuMjg1LDEuMTY1LTEuMzMNCgljOS43OC0wLjcwNSwxOC4xMDksNi4xMzUsMTguNzEsMTUuMTA0YzAuMDA1LDAuMSwwLjAxLDAuMTksMC4wMTUsMC4yODVjMS42OTUtMS4xMSwzLjY5LTEuNzc1LDUuODE1LTEuOTENCgljNS41OC0wLjQzNSwxMC40NjUsMi45OTUsMTEuODMsNy44MzVjMC42OC0wLjEzNSwxLjM1OC0wLjIyLDIuMDQ1LTAuMjY1YzguNTc0LTAuNTcsMTYuMDEsNS40MzUsMTYuNTQsMTMuMzcNCgljMC4wNDUsMC42ODgtMC40NzcsMS4yODUtMS4xNjUsMS4zM2MtMC4wMjUsMC4wMDUtMC4wNTYsMC4wMDUtMC4wODUsMC4wMDVDMTg5LjY4NiwyMjUuNywxODkuMTQxLDIyNS4xOTUsMTg5LjA5NiwyMjQuNTN6Ii8+DQo8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMTQ2LjM2NSwxMDQuNDc1YzAtMS4zOCwxLjEyLTIuNSwyLjUtMi41aDUwLjE1YzEuMzgsMCwyLjUwMSwxLjEyLDIuNTAxLDIuNWMwLDEuMzgtMS4xMjEsMi41LTIuNTAxLDIuNQ0KCWgtNTAuMTVDMTQ3LjQ4NiwxMDYuOTc1LDE0Ni4zNjUsMTA1Ljg1NSwxNDYuMzY1LDEwNC40NzV6IE0xMzEuOTYxLDEwNC40NzVjMC0xLjM4LDEuMTE5LTIuNSwyLjUtMi41aDcuMjI5DQoJYzEuMzgsMCwyLjUsMS4xMiwyLjUsMi41YzAsMS4zOC0xLjEyLDIuNS0yLjUsMi41aC03LjIyOUMxMzMuMDc0LDEwNi45NzUsMTMxLjk2MSwxMDUuODU1LDEzMS45NjEsMTA0LjQ3NXogTTExMS42ODYsMTA0LjQ3NQ0KCWMwLTEuMzgsMS4xMi0yLjUsMi41LTIuNWgxMi43MjZjMS4zODEsMCwyLjUsMS4xMiwyLjUsMi41YzAsMS4zOC0xLjExOSwyLjUtMi41LDIuNWgtMTIuNzI2DQoJQzExMi44MDYsMTA2Ljk3NSwxMTEuNjg2LDEwNS44NTUsMTExLjY4NiwxMDQuNDc1eiBNMTIxLjgxNiw4NS44M2MwLTEuMzgsMS4xMi0yLjUsMi41LTIuNWg0OC4wODVjMS4zOCwwLDIuNSwxLjEyLDIuNSwyLjUNCglzLTEuMTIsMi41LTIuNSwyLjVoLTQ4LjA4NUMxMjIuOTMxLDg4LjMzLDEyMS44MTYsODcuMjEsMTIxLjgxNiw4NS44M3ogTTE3OC41NTYsODUuODNjMC0xLjM4LDEuMTItMi41LDIuNS0yLjVoMi44OTkNCgljMS4zODEsMCwyLjUsMS4xMiwyLjUsMi41cy0xLjExOSwyLjUtMi41LDIuNWgtMi44OTlDMTc5LjY3Niw4OC4zMywxNzguNTU2LDg3LjIxLDE3OC41NTYsODUuODN6IE0xOTAuNDQxLDg1LjgzDQoJYzAtMS4zOCwxLjEyLTIuNSwyLjUtMi41aDcuMjhjMS4zOCwwLDIuNTAxLDEuMTIsMi41MDEsMi41cy0xLjEyMSwyLjUtMi41MDEsMi41aC03LjI4QzE5MS41NTYsODguMzMsMTkwLjQ0MSw4Ny4yMSwxOTAuNDQxLDg1Ljgzeg0KCSBNMTM0LjYzMSw5NS4xNWMwLTEuMzgsMS4xMTktMi41LDIuNS0yLjVoMjUuMTM1YzEuMzgsMCwyLjUsMS4xMiwyLjUsMi41YzAsMS4zOC0xLjEyLDIuNS0yLjUsMi41aC0yNS4xMzUNCglDMTM1Ljc1LDk3LjY1LDEzNC42MzEsOTYuNTMsMTM0LjYzMSw5NS4xNXoiLz4NCjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xMzQuNjMxLDg1LjgzYzAtMS4zOCwxLjExOS0yLjUsMi41LTIuNWg2LjI4NWMxLjM4LDAsMi41LDEuMTIsMi41LDIuNXMtMS4xMiwyLjUtMi41LDIuNWgtNi4yODUNCglDMTM1Ljc1LDg4LjMzLDEzNC42MzEsODcuMjEsMTM0LjYzMSw4NS44M3ogTTE2Ny4wNDYsOTUuMTVjMC0xLjM4LDEuMTItMi41LDIuNS0yLjVoOC43OTVjMS4zOCwwLDIuNSwxLjEyLDIuNSwyLjUNCgljMCwxLjM4LTEuMTIsMi41LTIuNSwyLjVoLTguNzk1QzE2OC4xNiw5Ny42NSwxNjcuMDQ2LDk2LjUzLDE2Ny4wNDYsOTUuMTV6Ii8+DQo8cGF0aCBmaWxsPSIjMDJBRkY3IiBkPSJNMTM4LjI5MSwzMjguNzg5VjE4MC4yMjVjMC0xOC44MywxNS40MDMtMzQuMjM1LDM0LjIzMy0zNC4yMzVIMzIxLjA5YzE4LjgzLDAsMzQuMjMzLDE1LjQwNSwzNC4yMzMsMzQuMjM1DQoJdjE0OC41NjRjMCwxOC44My0xNS40MDMsMzQuMjM2LTM0LjIzMywzNC4yMzZIMTcyLjUyNkMxNTMuNjk2LDM2My4wMjUsMTM4LjI4NSwzNDcuNjE5LDEzOC4yOTEsMzI4Ljc4OXoiLz4NCjxwYXRoIGZpbGw9IiMzQjNCM0IiIGQ9Ik0xMzQuNzg1LDMyOC43OTVWMTgwLjIzYzAtMjAuODEsMTYuOTMxLTM3Ljc0LDM3LjczOS0zNy43NEgzMjEuMDljMjAuODA1LDAsMzcuNzMzLDE2LjkzLDM3LjczMywzNy43NA0KCXYxNDguNTU5YzAsMjAuODA1LTE2LjkyNCwzNy43MzYtMzcuNzMzLDM3LjczNkgxNzIuNTI2QzE1MS43MTYsMzY2LjUyNSwxMzQuNzg1LDM0OS42LDEzNC43ODUsMzI4Ljc5NXogTTMyMS4wOTEsMTQ5LjQ5NUgxNzIuNTI2DQoJYy0xNi45NDQsMC0zMC43MzMsMTMuNzg1LTMwLjczMywzMC43MzV2MTQ4LjU1OWMwLDE2Ljk0NSwxMy43ODQsMzAuNzMsMzAuNzMzLDMwLjczaDE0OC41NjVjMTYuOTQ4LDAsMzAuNzMzLTEzLjc3OSwzMC43MzMtMzAuNzMNCglWMTgwLjIyNWMwLTE2Ljk0NS0xMy43ODUtMzAuNzM1LTMwLjczMy0zMC43MzVWMTQ5LjQ5NXoiLz4NCjxwYXRoIGZpbGw9IiNGREZDRUUiIGQ9Ik0xNTMuNzg1LDMxOS43NzlWMTg5LjIzNWMwLTE1LjI2LDEyLjQ4NC0yNy43NDUsMjcuNzQ0LTI3Ljc0NWgxMzAuNTQ1YzE1LjI2LDAsMjcuNzQ2LDEyLjQ4NSwyNy43NDYsMjcuNzQ1DQoJdjEzMC41NDRjMCwxNS4yNi0xMi40ODYsMjcuNzQ2LTI3Ljc0NiwyNy43NDZIMTgxLjUzNUMxNjYuMjc2LDM0Ny41MjUsMTUzLjc5MSwzMzUuMDM5LDE1My43ODUsMzE5Ljc3OXoiLz4NCjxwYXRoIGZpbGw9IiMzQjNCM0IiIGQ9Ik0xNTIuMDQxLDMxOS4yNTRWMjQ3LjYyYzAtMC45NywwLjc4My0xLjc1LDEuNzUtMS43NWMwLjk2NSwwLDEuNzUsMC43ODUsMS43NSwxLjc1djcxLjY0DQoJYzAsMTQuNjE5LDExLjg5NSwyNi41MjEsMjYuNTIsMjYuNTIxaDEyOS40OTFjMTQuNjI1LDAsMjYuNTItMTEuOSwyNi41Mi0yNi41MjFWMTg5Ljc3YzAtMTQuNjI1LTExLjg5OS0yNi41MjUtMjYuNTItMjYuNTI1DQoJSDE4OC4yMzZjLTAuOTY1LDAtMS43NS0wLjc4LTEuNzUtMS43NWMwLTAuOTcsMC43ODUtMS43NSwxLjc1LTEuNzVoMTIzLjMxNmMxNi41NTUsMCwzMC4wMiwxMy40NjUsMzAuMDIsMzAuMDJ2MTI5LjQ4OQ0KCWMwLDE2LjU1Ny0xMy40NjUsMzAuMDE2LTMwLjAyLDMwLjAxNkgxODIuMDYxQzE2NS41MTEsMzQ5LjI3LDE1Mi4wNDEsMzM1LjgxMSwxNTIuMDQxLDMxOS4yNTR6IE0xNTIuMDQxLDIzNy4yOFYyMjMuNQ0KCWMwLTAuOTcsMC43ODMtMS43NSwxLjc1LTEuNzVjMC45NjUsMCwxLjc1LDAuNzg1LDEuNzUsMS43NXYxMy43OGMwLDAuOTctMC43ODUsMS43NS0xLjc1LDEuNzUNCglDMTUyLjgyMSwyMzkuMDMsMTUyLjA0MSwyMzguMjUsMTUyLjA0MSwyMzcuMjh6IE0xNTIuMDQxLDIxNi42MTV2LTYuODljMC0wLjk3LDAuNzgzLTEuNzUsMS43NS0xLjc1YzAuOTY1LDAsMS43NSwwLjc4NSwxLjc1LDEuNzUNCgl2Ni44OWMwLDAuOTctMC43ODUsMS43NS0xLjc1LDEuNzVDMTUyLjgyMSwyMTguMzY1LDE1Mi4wNDEsMjE3LjU4LDE1Mi4wNDEsMjE2LjYxNXoiLz4NCjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik00MTAuOTMxLDI1MC44OTVjMC0xLjM4LDEuMTIxLTIuNSwyLjUtMi41aDUwLjE0OWMxLjM3OSwwLDIuNSwxLjExOSwyLjUsMi41cy0xLjEyMSwyLjUtMi41LDIuNWgtNTAuMTQ5DQoJQzQxMi4wNTIsMjUzLjM5NSw0MTAuOTMxLDI1Mi4yNzUsNDEwLjkzMSwyNTAuODk1eiBNMzk2LjUyNywyNTAuODk1YzAtMS4zOCwxLjExOS0yLjUsMi41LTIuNWg3LjIyOWMxLjM4MSwwLDIuNSwxLjExOSwyLjUsMi41DQoJcy0xLjExOSwyLjUtMi41LDIuNWgtNy4yMjlDMzk3LjY0MiwyNTMuMzk1LDM5Ni41MjcsMjUyLjI3NSwzOTYuNTI3LDI1MC44OTV6IE0zNzYuMjUsMjUwLjg5NWMwLTEuMzgsMS4xMTktMi41LDIuNS0yLjVoMTIuNzMNCgljMS4zNzksMCwyLjUsMS4xMTksMi41LDIuNXMtMS4xMjEsMi41LTIuNSwyLjVoLTEyLjczQzM3Ny4zNjksMjUzLjM5NSwzNzYuMjUsMjUyLjI3NSwzNzYuMjUsMjUwLjg5NXogTTM3Ni4yNSwyNjAuMjI1DQoJYzAtMS4zODEsMS4xMTktMi41LDIuNS0yLjVoNDguMDhjMS4zNzksMCwyLjUsMS4xMTksMi41LDIuNXMtMS4xMjEsMi41LTIuNSwyLjVoLTQ4LjA4DQoJQzM3Ny4zNjksMjYyLjcyNSwzNzYuMjUsMjYxLjYwNSwzNzYuMjUsMjYwLjIyNXogTTQzMi45OSwyNjAuMjI1YzAtMS4zODEsMS4xMTktMi41LDIuNS0yLjVoMi45YzEuMzc5LDAsMi41LDEuMTE5LDIuNSwyLjUNCglzLTEuMTIxLDIuNS0yLjUsMi41aC0yLjlDNDM0LjExMSwyNjIuNzI1LDQzMi45OSwyNjEuNjA1LDQzMi45OSwyNjAuMjI1eiBNNDQ0Ljg3NSwyNjAuMjI1YzAtMS4zODEsMS4xMTktMi41LDIuNS0yLjVoNy4yNzkNCgljMS4zODEsMCwyLjUsMS4xMTksMi41LDIuNXMtMS4xMTksMi41LTIuNSwyLjVoLTcuMjc5QzQ0NS45OSwyNjIuNzI1LDQ0NC44NzUsMjYxLjYwNSw0NDQuODc1LDI2MC4yMjV6IE0zOTkuMTk3LDI0MS41NzUNCgljMC0xLjM3OSwxLjExOS0yLjUsMi41LTIuNWgyNS4xMzZjMS4zNzksMCwyLjUsMS4xMiwyLjUsMi41YzAsMS4zODEtMS4xMjEsMi41LTIuNSwyLjVoLTI1LjEzNg0KCUM0MDAuMzEyLDI0NC4wNzUsMzk5LjE5NywyNDIuOTU2LDM5OS4xOTcsMjQxLjU3NXogTTM5OS4xOTcsMjMyLjI1YzAtMS4zOCwxLjExOS0yLjUsMi41LTIuNWg2LjI4NWMxLjM3OSwwLDIuNSwxLjEyLDIuNSwyLjUNCglzLTEuMTIxLDIuNS0yLjUsMi41aC02LjI4NUM0MDAuMzEyLDIzNC43NSwzOTkuMTk3LDIzMy42MywzOTkuMTk3LDIzMi4yNXogTTQxNS41MzksMjY5LjU0NWMwLTEuMzgxLDEuMTIxLTIuNSwyLjUtMi41aDguNzkxDQoJYzEuMzc5LDAsMi41LDEuMTE5LDIuNSwyLjVjMCwxLjM3OS0xLjEyMSwyLjUtMi41LDIuNWgtOC43OTFDNDE2LjY1NiwyNzIuMDQ1LDQxNS41MzksMjcwLjkyNCw0MTUuNTM5LDI2OS41NDV6Ii8+DQo8Zz4NCgk8cGF0aCBmaWxsPSIjM0IzQjNCIiBkPSJNMjcxLjE2NSwyODAuMDQxbC0xMS42NTgtMTEuNjY0Yy0xLjIwMy0xLjIwMS0xLjIwMy0zLjE1NiwwLTQuMzYxYzEuMjAzLTEuMjAxLDMuMTU4LTEuMjAxLDQuMzYxLDANCgkJbDExLjY1NywxMS42NjRjMS4yMDEsMS4yMDMsMS4yMDEsMy4xNTgsMCw0LjM2MWMtMC42MDQsMC41OTgtMS4zOTYsMC45LTIuMTg2LDAuOQ0KCQlDMjcyLjU1NCwyODAuOTQxLDI3MS43NjMsMjgwLjYzOSwyNzEuMTY1LDI4MC4wNDF6Ii8+DQoJPHBhdGggZmlsbD0iI0Q4OEYxMyIgZD0iTTMwNi42NTQsMzI3LjgyMmwtMzMuMzEzLTMzLjMxMmMtNC41ODItNC41ODQtNC41ODItMTIuMDc3LDAtMTYuNjU5bDAsMGM0LjU4NC00LjU4NCwxMi4wNzgtNC41ODQsMTYuNjYsMA0KCQlsMzMuMzEzLDMzLjMxM2M0LjU4Miw0LjU4Miw0LjU4MiwxMi4wNzYsMCwxNi42NThsMCwwQzMxOC43MywzMzIuNCwzMTEuMjM2LDMzMi40LDMwNi42NTQsMzI3LjgyMnoiLz4NCgk8cGF0aCBmaWxsPSIjM0IzQjNCIiBkPSJNMzA0LjkxNCwzMjkuNTY4bC0zMy4zMTMtMzMuMzEzYy0yLjY4NC0yLjY4OC00LjE1OC02LjI2OC00LjE1OC0xMC4wNzhjMC0zLjgxMywxLjQ3Ni03LjM4OSw0LjE1OC0xMC4wNzENCgkJYzUuMzY3LTUuMzU5LDE0Ljc4NS01LjM1OSwyMC4xNDYsMGwzMy4zMTEsMzMuMzA3YzUuNTUzLDUuNTYzLDUuNTUzLDE0LjU5OCwwLDIwLjE1NmwwLDBjLTIuNzc1LDIuNzc0LTYuNDI2LDQuMTY0LTEwLjA3LDQuMTY0DQoJCUMzMTEuMzM0LDMzMy43MzIsMzA3LjY5MSwzMzIuMzQ0LDMwNC45MTQsMzI5LjU2OHogTTMyMS41NjgsMzI2LjA3OGMzLjYyNy0zLjYzNSwzLjYyNy05LjU0MywwLTEzLjE2MmwtMzMuMzEzLTMzLjMwNw0KCQljLTMuNDk2LTMuNTEtOS42NjQtMy41MS0xMy4xNjgsMGMtMS43NTIsMS43NDQtMi43MTMsNC4wODItMi43MTMsNi41NzRjMCwyLjQ5MSwwLjk2MSw0LjgzNiwyLjcxMyw2LjU3OWwzMy4zMTMsMzMuMzE0DQoJCUMzMTIuMDMxLDMyOS43MTUsMzE3LjkzNSwzMjkuNzE1LDMyMS41NjgsMzI2LjA3OEwzMjEuNTY4LDMyNi4wNzh6Ii8+DQoJPHBhdGggZmlsbD0iIzAyQUZGNyIgZD0iTTI3NC4wMjEsMjkyLjU0M2wwLjY0OCwwLjY0OGwxMi42NDctMTIuNjVsMS40MDYtMS40MDhsLTAuNjQ2LTAuNjQ2Yy0zLjU2Mi0zLjU2LTkuNjMtMy4zMDYtMTMuNDk2LDAuNTYzDQoJCUMyNzAuNzE0LDI4Mi45MDgsMjcwLjQ2MiwyODguOTg0LDI3NC4wMjEsMjkyLjU0M3oiLz4NCgk8cGF0aCBmaWxsPSIjM0IzQjNCIiBkPSJNMjczLjAwOSwyOTYuNTE2Yy0wLjktMC44OTktMC45LTIuMzc1LDAtMy4yNzRsMTQuOTg4LTE0Ljk4OGMwLjg5OS0wLjkxMiwyLjM2Ni0wLjkwNiwzLjI3LTAuMDA2DQoJCWMwLjg5OCwwLjg5OSwwLjg5OCwyLjM2NywwLDMuMjcxbC0xNC45ODgsMTVjLTAuNDUsMC40NDItMS4wNDMsMC42NzItMS42MzUsMC42NzINCgkJQzI3NC4wNDYsMjk3LjE4OCwyNzMuNDU4LDI5Ni45NjUsMjczLjAwOSwyOTYuNTE2eiIvPg0KCTxwYXRoIGZpbGw9IiNFMUUwRDgiIGQ9Ik0xODguNCwyNjYuMTg4YzIwLjIzNiwyMC4yMzYsNTMuMDQ5LDIwLjIzNiw3My4yODUsMGMyMC4yMzYtMjAuMjM1LDIwLjIzNi01My4wNDksMC03My4yODQNCgkJYy0yMC4yMzYtMjAuMjM3LTUzLjA0OS0yMC4yMzctNzMuMjg1LDBDMTY4LjE1NiwyMTMuMTQ1LDE2OC4xNTYsMjQ1Ljk1OCwxODguNCwyNjYuMTg4eiIvPg0KCTxwYXRoIGZpbGw9IiMzQjNCM0IiIGQ9Ik0xODYuNjU0LDI2Ny45MzljLTIxLjE2OC0yMS4xNjctMjEuMTY4LTU1LjYwOCwwLTc2Ljc4MmMyMS4xNjItMjEuMTY4LDU1LjYwOS0yMS4xNjIsNzYuNzc3LDANCgkJYzIxLjE2OCwyMS4xNjcsMjEuMTY4LDU1LjYwOSwwLDc2Ljc4MmMtMTAuNTg0LDEwLjU4NC0yNC40ODYsMTUuODY5LTM4LjM4OSwxNS44NjkNCgkJQzIxMS4xMzksMjgzLjgwOSwxOTcuMjM4LDI3OC41MjMsMTg2LjY1NCwyNjcuOTM5eiBNMTkwLjEzOCwxOTQuNjU0Yy0xOS4yNDMsMTkuMjQyLTE5LjI0Myw1MC41NTEsMCw2OS43OTUNCgkJYzE5LjIzOCwxOS4yNDgsNTAuNTUzLDE5LjI1Niw2OS44MDEsMGMxOS4yNDQtMTkuMjQ0LDE5LjI0NC01MC41NTMsMC02OS43OTVjLTkuNjIxLTkuNjI4LTIyLjI2LTE0LjQzOS0zNC44OTYtMTQuNDM5DQoJCUMyMTIuNDA0LDE4MC4yMTUsMTk5Ljc2NywxODUuMDI2LDE5MC4xMzgsMTk0LjY1NHogTTMxNy4zNTUsMzMxLjgzOGMtMC40MDYtMC4xMjktMC42MjktMC41NjYtMC40OTgtMC45NjlsNS43NjctMTcuOTE4DQoJCWMwLjEyOS0wLjQsMC41NjctMC42MjksMC45NjktMC40OThjMC40MDgsMC4xMjksMC42MjksMC41NjYsMC41LDAuOTY5bC01Ljc2OSwxNy45MTZjLTAuMTA0LDAuMzI2LTAuNDA1LDAuNTM3LTAuNzMzLDAuNTM3DQoJCUMzMTcuNTA5LDMzMS44NzUsMzE3LjQzNSwzMzEuODYxLDMxNy4zNTUsMzMxLjgzOHogTTMxMy43MjQsMzMwLjU5OGMtMC40MDgtMC4xMTUtMC42NDQtMC41NTUtMC41MjEtMC45NjFsNi41MzktMjEuOTU3DQoJCWMwLjExNS0wLjQwMSwwLjU0MS0wLjYxLDAuOTU1LTAuNTJjMC40MDYsMC4xMTcsMC42NDIsMC41NTcsMC41MTksMC45NjNsLTYuNTM3LDIxLjk1N2MtMC4xMDEsMC4zMzItMC40MDgsMC41NDktMC43NCwwLjU0OQ0KCQlDMzEzLjg2NSwzMzAuNjI5LDMxMy43ODksMzMwLjYxNywzMTMuNzI0LDMzMC41OTh6IE0zMTEuNTIxLDMyMi44ODNjLTAuNDA2LTAuMTE3LTAuNjQ0LTAuNTU1LTAuNTE5LTAuOTYzbDUuNDcyLTE4LjM3NQ0KCQljMC4xMTUtMC4zOTgsMC41NDMtMC42MDksMC45NTUtMC41MThjMC40MDcsMC4xMTksMC42NDEsMC41NTcsMC41MiwwLjk2M2wtNS40NzMsMTguMzc1Yy0wLjA5OSwwLjMzMi0wLjQwNiwwLjU0Ny0wLjc0LDAuNTQ3DQoJCUMzMTEuNjYyLDMyMi45MTIsMzExLjU4OSwzMjIuOSwzMTEuNTIxLDMyMi44ODN6IE0zMDkuMjg3LDMxNC44MzRjLTAuNDA3LTAuMTIzLTAuNjQzLTAuNTU3LTAuNTItMC45NjNsMy44NTUtMTIuOTU5DQoJCWMwLjExNi0wLjM5NSwwLjU0OS0wLjYxNywwLjk1Ny0wLjUxOGMwLjQwNSwwLjExNiwwLjY0MSwwLjU1NSwwLjUxOCwwLjk2M2wtMy44NTUsMTIuOTU3Yy0wLjA5OCwwLjMzNC0wLjQwNSwwLjU1MS0wLjczNywwLjU1MQ0KCQlDMzA5LjQzNSwzMTQuODY1LDMwOS4zNjMsMzE0Ljg1MiwzMDkuMjg3LDMxNC44MzR6Ii8+DQoJPHBhdGggZmlsbD0iI0YwNTc0MyIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgZD0iTTE5NS45MDIsMjAwLjQwNw0KCQljLTE2LjA5OCwxNi4wOTYtMTYuMSw0Mi4xOTUtMC4wMDIsNTguMjkyYzE2LjA5OSwxNi4wOTYsNDIuMTk1LDE2LjA5OCw1OC4yOTMsMGMxNi4wOTktMTYuMDk1LDE2LjA5OS00Mi4xOTUsMC01OC4yOTINCgkJQzIzOC4wOTcsMTg0LjMxLDIxMS45OTcsMTg0LjMwOSwxOTUuOTAyLDIwMC40MDd6Ii8+DQoJPHBhdGggZmlsbD0iIzNCM0IzQiIgZD0iTTE5NC40NzUsMjYwLjEwNUwxOTQuNDc1LDI2MC4xMDVMMTk0LjQ3NSwyNjAuMTA1Yy04LjE2Ny04LjE1OC0xMi42NjMtMTkuMDE2LTEyLjY2My0zMC41NjINCgkJczQuNDk2LTIyLjQwMSwxMi42NjMtMzAuNTYxYzguMTY1LTguMTczLDE5LjAyMi0xMi42NjksMzAuNTY3LTEyLjY2OWMxMS41NTMsMCwyMi4zOTksNC41MDIsMzAuNTY3LDEyLjY2OQ0KCQljOC4xNiw4LjE2LDEyLjY1NCwxOS4wMTUsMTIuNjU0LDMwLjU2MXMtNC40OTQsMjIuNDAyLTEyLjY1NCwzMC41NjJjLTguMTY4LDguMTc0LTE5LjAxNiwxMi42Ny0zMC41NjcsMTIuNjcNCgkJQzIxMy40OTcsMjcyLjc3NSwyMDIuNjQsMjY4LjI3OSwxOTQuNDc1LDI2MC4xMDV6IE0xOTcuMzEyLDIwMS44MTVjLTcuNDA3LDcuNDA4LTExLjQ5MSwxNy4yNTctMTEuNDkxLDI3LjczDQoJCWMwLDEwLjQ3Myw0LjA4NCwyMC4zMjMsMTEuNDkxLDI3LjczbDAsMGM3LjQwOCw3LjQwOCwxNy4yNTgsMTEuNDgzLDI3LjczLDExLjQ4M2MxMC40NzksMCwyMC4zMjEtNC4wNzUsMjcuNzI5LTExLjQ4Mw0KCQlzMTEuNDg0LTE3LjI1OCwxMS40ODQtMjcuNzNjMC0xMC40NzItNC4wNzYtMjAuMzIyLTExLjQ4NC0yNy43M3MtMTcuMjUyLTExLjQ4NS0yNy43MjktMTEuNDg1DQoJCUMyMTQuNTYyLDE5MC4zMywyMDQuNzIsMTk0LjQwNywxOTcuMzEyLDIwMS44MTV6Ii8+DQo8L2c+DQo8Zz4NCgk8cGF0aCBmaWxsPSIjRkZGRkZGIiBzdHJva2U9IiMzQjNCM0IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBkPSJNMjMyLjMxLDIwMC43MjRsLTIuOTIyLDQ0LjQ0NQ0KCQljMCwxLjYwNS0xLjMxMSwyLjkxMi0yLjkyLDIuOTEyYy0xLjYwNywwLTIuOTEyLTEuMzA3LTIuOTEyLTIuOTEybC0yLjkyOC00NC40NDVjMC0yLjkxOCw0LjIzMS0yLjkxOCw1LjgzOC0yLjkxOA0KCQlDMjI4LjA3MiwxOTcuODA2LDIzMi4zMSwxOTcuODEsMjMyLjMxLDIwMC43MjR6Ii8+DQoJPHBhdGggZmlsbD0iI0ZGRkZGRiIgc3Ryb2tlPSIjM0IzQjNCIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgZD0iTTIzMS4xMzgsMjU1Ljc5MXYxLjk5DQoJCWMwLDEuODg5LTMuMzEzLDMuNDMtNC42NjYsMy40M2MtMS4zNSwwLTQuNjY0LTEuNTQxLTQuNjY0LTMuNDN2LTEuOTljMC0xLjg5MywzLjMxNC0zLjQyOCw0LjY2NC0zLjQyOA0KCQlDMjI3LjgyNCwyNTIuMzYzLDIzMS4xMzgsMjUzLjg5OCwyMzEuMTM4LDI1NS43OTF6Ii8+DQo8L2c+DQo8L3N2Zz4NCg==                
+"/>
+        <h5>Oops! there are no search results.</h5>
+        <p>Oh! need help to find your desired product?
+            It's simple, search in the top bar directly, if you know the product or
+            Go back to Shop and select new filters to find your desired product.
+        </p>
+        {/* <Button orangeSubmit><Link to="listing-page">SHOP</Link></Button> */}
+    </div>;
+};
+const listBasketDetails = userId => {
+    getBasketDetails(userId, localStorage.companyGuid, localStorage.languageId)
+        .then(json => {
+            basketDetails = json.data;
+        })
+        .catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    return basketDetails;
+};
+const listWishListDetails = userId => {
+    getWishListDetails(userId, localStorage.companyGuid, localStorage.languageId)
+        .then(json => {
+            wishListDetails = json.data.table1;
+        })
+        .catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    return wishListDetails;
+};
+const decimalPrecision = () => {
+    getGlobalSettings("DECIMALPRECISION").then(function (result) {
+        if (result !== undefined) {
+            decimalValue = result.data.hits.hits[0]._source.settingsValue;
+        }
+    });
+};
+const getExploreProductCount = () => {
+    getGlobalSettings("LISTINGPAGE-EXPLOREPRODUCTCOUNT").then(function (result) {
+        if (result !== undefined) {
+            exploreProductCount = parseInt(result.data.hits.hits[0]._source.settingsValue);
+        }
+    });
+};
+const getWishListLanguageResource = () => {
+    getPageResource(getLanguageResourceElasticIndex(getWebsiteLanguageGuid(), 'wishlist') + '&size=10000')
+        .then(json => {
+            wishlistLanguageResources = json;
+        }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    return wishlistLanguageResources;
+};
+// const getCartDetailLanguageResource = () => {
+//     getPageResource(getLanguageResourceElasticIndex(getWebsiteLanguageGuid(), 'cartdetail') + '&size=10000')
+//         .then(json => {
+//             cartdetailLanguageResources = json;
+//         }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+//     return cartdetailLanguageResources;
+// };
+
+const ProductsGridItem = props => {
+    const { result: { _source: source }, openDrawer } = props;
+    let countriesGuid = [];
+    let boolProductExpired = false;
+    let virtualSampleData = [];
+    if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+        JSON.parse(localStorage.userCountries).map(item => {
+            countriesGuid.push(item.countryGuid);
+        })
+    }
+    if (JSON.parse(localStorage.userType).includes(RoleCodes.BUYER)) {
+        if (source.listProductCountryVM !== null && source.listProductCountryVM !== undefined) {
+            if (source.listProductCountryVM.filter(t => t.countryGuid === countriesGuid[0])[0] !== undefined) {
+                if (source.listProductCountryVM.filter(t => t.countryGuid === countriesGuid[0])[0].isProductExpired === "Yes") {
+                    boolProductExpired = true
+                }
+            }
+        }
+        if (localStorage.virtualSampleData !== null && localStorage.virtualSampleData !== "" && localStorage.virtualSampleData !== undefined && localStorage.virtualSampleData !== 'undefined') {
+            JSON.parse(localStorage.virtualSampleData).map(item => {
+                virtualSampleData.push(item.supplierCompanyGuid);
+            })
+        }
+    }
+    else if (JSON.parse(localStorage.userType) === RoleCodes.APPROVER) {
+        if (source.listProductCountryVM !== null && source.listProductCountryVM !== undefined) {
+            if (source.listProductCountryVM.filter(t => t.countryGuid === countriesGuid[0])[0] !== undefined) {
+                if (source.listProductCountryVM.filter(t => t.countryGuid === countriesGuid[0])[0].isProductExpired === "Yes") {
+                    boolProductExpired = true
+                }
+            }
+        }
+    }
+    else if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER || JSON.parse(localStorage.userType) === RoleCodes.ADMIN) {
+        if (source.isProductExpired === "Yes") {
+            boolProductExpired = true
+        }
+    }
+    else if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERSUPPORTPERSON) {
+        if (source.listRateCardVM.length > 0) {
+            var productexpdate = new Date(source.listRateCardVM[0].expirationDate);
+            var currentdate = new Date();
+            if (productexpdate.getTime() < currentdate.getTime()) {
+                boolProductExpired = true;
+            }
+        }
+    }
+
+    currencysymbol = source.currencySymbol;
+    //let productImage = source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName
+    let productImage = "";
+    let productMinPrice = "";
+    if (source.listRateCardVM.length > 0) {
+        // productImage = JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER || JSON.parse(localStorage.userType) === RoleCodes.ADMIN
+        //     || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERSUPPORTPERSON ?
+        //     source.listRateCardVM.filter(t => t.isDefault === true)[0].imageName :
+        //     source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0] !== undefined ?
+        //         source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName : ""
+        productImage = JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER || JSON.parse(localStorage.userType) === RoleCodes.ADMIN
+            || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERSUPPORTPERSON ?
+            source.listProductMediaVM !== undefined && source.listProductMediaVM.filter(t => t.isMediaGroupDisplayImage === true && t.mediaTypeName === 'Image' && t.skuGuid === source.listRateCardVM.filter(t => t.isDefault === true)[0].skuGuid).length > 0 ?
+                source.listProductMediaVM.filter(t => t.isMediaGroupDisplayImage === true && t.mediaTypeName === 'Image' && t.skuGuid === source.listRateCardVM.filter(t => t.isDefault === true)[0].skuGuid)[0].mediaValue :
+                source.listRateCardVM.filter(t => t.isDefault === true)[0].imageName
+            : source.listProductMediaVM !== undefined && source.listProductMediaVM.filter(t => t.isMediaGroupDisplayImage === true && t.mediaTypeName === 'Image' && t.skuGuid === source.listRateCardVM.filter(t => t.isDefault === true)[0].skuGuid).length > 0 ?
+                source.listProductMediaVM.filter(t => t.isMediaGroupDisplayImage === true && t.mediaTypeName === 'Image' && t.skuGuid === source.listRateCardVM.filter(t => t.isDefault === true)[0].skuGuid)[0].mediaValue :
+                source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0] !== undefined ?
+                    source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName : ""
+
+        productMinPrice = source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0] !== undefined ?
+            source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].minPrice : ""
+    }
+    if (source.listRateCardVM !== null && source.listRateCardVM !== undefined) {
+        if (source.listRateCardVM.filter(x => x.countryGuid === countriesGuid[0]).length > 0) {
+            let skuCount = source.listRateCardVM.filter(t => t.productGuid === source.productGuid && t.countryGuid === countriesGuid[0]).length;
+            let skuCountExpired = source.listRateCardVM.filter(t => t.productGuid === source.productGuid && t.countryGuid === countriesGuid[0] && t.isPriceExpired === true).length;
+            if (skuCount === skuCountExpired) {
+                boolProductExpired = true;
+            }
+        }
+    }
+    let QuantityUnit = source.quantityUom;
+    return (
+        <ProductCard
+            openDrawer={openDrawer}
+            ProductName={source.productName}
+            ProductGuid={source.productGuid}
+            Key={source.productGuid}
+            ProductStatus={source.status}
+            DecimalPrecision={decimalValue}
+            IsActive={source.isActive}
+            Image={productImage}
+            ProductCode={source.productCode}
+            MinPrice={source.minPrice}
+            //MinPrice={productMinPrice}
+            Ratings={source.ratings}
+            CurrencySymbol={source.currencySymbol}
+            SupplierGuid={source.supplierGuid}
+            Type="grid"
+            ListBucketDetails={basketDetails}
+            WishListDetails={wishListDetails}
+            CompanyName={source.companyName}
+            BuyingWindowStatus={source["buyingwindowstatus.raw"]}
+            NewArrival={source["newarrival_raw.raw"]}
+            wishlistLanguageResources={wishlistLanguageResources}
+            //cartdetailLanguageResources={cartdetailLanguageResources}
+            ProductExpiry={boolProductExpired}
+            ProductGreenProperties={getGreenPropertiesIconName(source["listproductgreenproperties.raw"])}
+            SupplierAccreditations={getSupplierAccreditations(source["listsupplieraccreditation.raw"])}
+            ProductCertifications={getCertificateIconName(source["listproductcertifications.raw"])}
+            IsSupplierActive={source.isSupplierActive}
+            Uom={(QuantityUnit)}
+            carbonemission={source.carbonEmission}
+            carbonEmissionUnit={source.carbonEmissionUnit}
+            ProductAlias={source.productAlias}
+            Category={source.productCategories}
+            RFQProductDetails={rfqProductDetails}
+            url="/listing-page"
+            supplierCompanyGuid={source.supplierCompanyGuid}
+            virtualSampleData={virtualSampleData}
+        />
+    );
+};
+const ProductsListItem = props => {
+    const { result } = props;
+    const source = result._source;
+    let countriesGuid = [];
+    if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+        JSON.parse(localStorage.userCountries).map(item => {
+            countriesGuid.push(item.countryGuid);
+        })
+
+    }
+    //let productImage = source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName
+
+    // let productImage = JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER || JSON.parse(localStorage.userType) === RoleCodes.ADMIN
+    //     || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERSUPPORTPERSON ?
+    //     source.listRateCardVM.filter(t => t.isDefault === true)[0].imageName : source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName
+    let productImage = JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER || JSON.parse(localStorage.userType) === RoleCodes.ADMIN
+        || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERSUPPORTPERSON ?
+        source.listProductMediaVM !== undefined && source.listProductMediaVM.filter(t => t.isMediaGroupDisplayImage === true && t.mediaTypeName === 'Image' && t.skuGuid === source.listRateCardVM.filter(t => t.isDefault === true)[0].skuGuid).length > 0 ?
+            source.listProductMediaVM.filter(t => t.isMediaGroupDisplayImage === true && t.mediaTypeName === 'Image' && t.skuGuid === source.listRateCardVM.filter(t => t.isDefault === true)[0].skuGuid)[0].mediaValue :
+            source.listRateCardVM.filter(t => t.isDefault === true)[0].imageName
+        : source.listProductMediaVM !== undefined && source.listProductMediaVM.filter(t => t.isMediaGroupDisplayImage === true && t.mediaTypeName === 'Image' && t.skuGuid === source.listRateCardVM.filter(t => t.isDefault === true)[0].skuGuid).length > 0 ?
+            source.listProductMediaVM.filter(t => t.isMediaGroupDisplayImage === true && t.mediaTypeName === 'Image' && t.skuGuid === source.listRateCardVM.filter(t => t.isDefault === true)[0].skuGuid)[0].mediaValue :
+            source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0] !== undefined ?
+                source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName : ""
+
+
+    let minPriceArr = [];
+    if (source.listRateCardVM.filter(t => t.isDefault === true).length > 0) {
+        let priceArr = source.listRateCardVM.filter(t => t.isDefault === true);
+        for (let i = 0; i < priceArr.length; i++) {
+            if (priceArr[i].price1 !== null && priceArr[i].price1 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price1 })
+            }
+            if (priceArr[i].price2 !== null && priceArr[i].price2 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price2 })
+            }
+            if (priceArr[i].price3 !== null && priceArr[i].price3 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price3 })
+            }
+            if (priceArr[i].price4 !== null && priceArr[i].price4 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price4 })
+            }
+            if (priceArr[i].price5 !== null && priceArr[i].price5 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price5 })
+            }
+            if (priceArr[i].price6 !== null && priceArr[i].price6 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price6 })
+            }
+            if (priceArr[i].price7 !== null && priceArr[i].price7 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price7 })
+            }
+            if (priceArr[i].price8 !== null && priceArr[i].price8 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price8 })
+            }
+            if (priceArr[i].price9 !== null && priceArr[i].price9 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price9 })
+            }
+            if (priceArr[i].price10 !== null && priceArr[i].price10 !== 0) {
+                minPriceArr.push({ price: priceArr[i].price10 })
+            }
+        }
+        if (minPriceArr.length > 0) {
+            minPriceArr = minPriceArr.sort((a, b) => {
+                return parseFloat(a.price) - parseInt(b.price);
+            });
+        }
+    }
+    let productMinPrice = JSON.parse(localStorage.userType) === RoleCodes.BUYER || JSON.parse(localStorage.userType) === RoleCodes.APPROVER ?
+        this.state.result.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === this.state.userCountry)[0].minPrice !== undefined ?
+            this.state.result.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === this.state.userCountry)[0].minPrice
+            : minPriceArr[0].price : minPriceArr[0].price
+    let QuantityUnit = this.state.result.quantityUom;
+    let virtualSampleData=[];
+    if (localStorage.virtualSampleData !== null && localStorage.virtualSampleData !== "" && localStorage.virtualSampleData !== undefined && localStorage.virtualSampleData !== 'undefined') {
+        JSON.parse(localStorage.virtualSampleData).map(item => {
+            virtualSampleData.push(item.supplierCompanyGuid);
+        })
+    }
+    return (
+        <ProductCard
+            ProductName={source.productName}
+            ProductGuid={source.productGuid}
+            Key={source.productGuid}
+            ProductStatus={source.status}
+            IsActive={source.isActive}
+            DecimalPrecision={decimalValue}
+            //Image={source.imageName}
+            Image={productImage}
+            ProductCode={source.productCode}
+            MinPrice={source.minPrice}
+            //MinPrice={productMinPrice}
+            Ratings={source.ratings}
+            CurrencySymbol={source.currencySymbol}
+            SupplierGuid={source.supplierGuid}
+            Type="list"
+            ListBucketDetails={basketDetails}
+            WishListDetails={wishListDetails}
+            CompanyName={source.companyName}
+            BuyingWindowStatus={source["buyingwindowstatus.raw"]}
+            NewArrival={source["newarrival_raw.raw"]}
+            wishlistLanguageResources={wishlistLanguageResources}
+            // cartdetailLanguageResources={cartdetailLanguageResources}
+            ProductExpiry={source.listProductCountryVM}
+            ProductGreenProperties={getGreenPropertiesIconName(source["listproductgreenproperties.raw"])}
+            SupplierAccreditations={getSupplierAccreditations(source["listsupplieraccreditation.raw"])}
+            ProductCertifications={getCertificateIconName(source["listproductcertifications.raw"])}
+            IsSupplierActive={source.isSupplierActive}
+            Uom={(QuantityUnit)}
+            carbonemission={source.carbonEmission}
+            carbonEmissionUnit={source.carbonEmissionUnit}
+            ProductAlias={source.productAlias}
+            Category={source.productCategories}
+            RFQProductDetails={rfqProductDetails}
+            supplierCompanyGuid={source.supplierCompanyGuid}
+            virtualSampleData={virtualSampleData}
+        />
+    );
+};
+
+const getGreenPropertiesIconName = listproductgreenproperties => {
+    let result = '';
+    if (greenproperties !== null && listproductgreenproperties !== undefined) {
+        result = greenproperties.filter(role => listproductgreenproperties.includes(role.greenPropertyName));
+    }
+    return result;
+}
+
+const getSupplierAccreditations = listsupplierAccreditations => {
+    let result = '';
+    if (supplierAccreditations !== null && listsupplierAccreditations !== undefined) {
+        result = supplierAccreditations.filter(role => listsupplierAccreditations.includes(role.supplierAccreditationName));
+    }
+    return result;
+}
+const getCertificateIconName = listproductcertifications => {
+
+    let result = '';
+    if (productcertificates !== null && listproductcertifications !== undefined) {
+        result = productcertificates.filter(role => listproductcertifications.includes(role.productCertificateName));
+    }
+    return result;
+}
+// const InitialLoaderComponent = props => (
+//   <div className="data-loading-div">
+//     <img
+//       alt="loader"
+//       src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif"
+//     />
+//     loading please wait...
+//   </div>
+// );
+const drawerWidth = 320;
+const styles = theme => ({
+    root: {
+        display: "flex"
+    },
+    hide: {
+        display: "none"
+    },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
+    drawerPaper: {
+        width: drawerWidth,
+        top: '80px',
+        zIndex: '999'
+    },
+    drawerHeader: {
+        display: "flex",
+        alignItems: "center",
+        padding: "0 8px",
+        ...theme.mixins.toolbar,
+        justifyContent: "flex-end"
+    },
+    content: {
+        flexGrow: 1,
+        padding: '0',
+        transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen
+        }),
+        marginRight: -drawerWidth
+    },
+    contentShift: {
+        transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen
+        }),
+        marginLeft: -375,
+        marginRight: 0
+    }
+});
+// const HierarchicalOptions = props => (
+//   <div
+//     className={props.bemBlocks
+//       .option()
+//       .state({ selected: props.selected })
+//       .mix(props.bemBlocks.container("item"))}
+//     onClick={props.onClick}
+//   >
+//     <div className={props.bemBlocks.option("text")}>{props.label}</div>
+//     <div className={props.bemBlocks.option("count")}>{props.count}</div>
+//   </div>
+// );
+const initialState = {
+    ProductVariantType: {
+        attributes: {
+            elementType: 'select',
+            elementConfig: {
+                options: [],
+                label: ' Variant Type :'
+            },
+            value: '',
+            validation: {},
+            valid: true,
+            label: 'Variant Type',
+        },
+    },
+}
+
+let handleClearAll = 0;
+let IsSearchSpecification = 0;
+let specificationList = [];
+
+let selectedExpiryFilterList = [];
+let IsSearchExpiry = 0;
+
+let IsSearchAttribute = 0;
+let AttributeList = [];
+let searchkit;
+
+let ProductSpecificationArray = [];
+let ProductAttributeArray = [];
+let ProductExpiryArray = [];
+let currencysymbol = "";
+let selectedSort = "";
+if (selectedSort === '' || selectedSort === undefined) {
+    if (localStorage.userType !== null && localStorage.userType !== undefined) {
+        if (localStorage.userType !== 'null') {
+            if (JSON.parse(localStorage.userType).includes(RoleCodes.BUYER) === true) {
+                // selectedSort = 'Preferred Certificates'
+                selectedSort = 'Product Name ASC'
+            } else {
+                selectedSort = 'Product Name ASC'
+            }
+        } else {
+            selectedSort = 'Product Name ASC'
+        }
+    } else {
+        selectedSort = 'Product Name ASC'
+    }
+}
+let esHeaderQuery = '', esElasticQuery = [], appliedFilterListAll = [], totalProductCount = 0, currentPageNumber = null, isBackButtonClick = false,
+    isAccordionOpenBackClick = 0, openAccordianBackClick = false, isAccordionOpenProductTypeBackClick = 0, openAccordianProductTypeBackClick = false, pageLoadCount = 0, categoryListAllData = [];
+
+let SelectioSortelement = [
+    //  { 'Value': 'Preferred Certificates', 'Id': 'Preferred Certificates' },
+    { 'Value': 'Product Name ASC', 'Id': 'Product Name ASC' },
+    { 'Value': 'Product Name DESC', 'Id': 'Product Name DESC' },
+    { 'Value': 'Price Low to High', 'Id': 'Price Low to High' },
+    { 'Value': 'Price High to Low', 'Id': 'Price High to Low' },
+]
+
+let SLISearchproductGuids = [];
+let SLISearchFilters = [];
+
+const capitalizeFirst = str => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+class ProductListingPage extends Component {
+    constructor(props) {
+        ProductSpecificationArray = [];
+        ProductAttributeArray = [];
+        super(props);
+
+        this.myRef = React.createRef()
+
+        this.state = {
+            ...initialState,
+            resources: [],
+            isFeatureAvailable: false,
+            decimalPrecesion: "",
+            filterList: [],
+            productBucketList: [],
+            open: false,
+            rating: 1,
+            companyGuid: null,
+            showMobileFilter: false,
+            jsonData: null,
+            ImageURL: null,
+            ProductIsInCart: false,
+            ProductIsInWishList: false,
+            wishListData: [],
+            BasketData: [],
+            likelyToBuyUsers: [],
+            recentlyBoughtProducts: [],
+            showBWStatus: false,
+            bwCommitmentQtyCount: 0,
+            bwEndDate: null,
+            buyingWindowGuid: '',
+            QuantityRange: null,
+            QuantityRangeArray: [],
+            bwPrice: 0.0,
+            bwLeadTime: 0,
+            bwQtyRange: '',
+            collapse: 0,
+            spinner: false,
+            comparableProductList: [],
+            NewListRateCard: [],
+            SkuGuid: null,
+            RateCard: null,
+            Totalcommitment: 0,
+            screenSize: 0,
+            searchkitData: '',
+            clickLI: false,
+            searchSpecification: false,
+            ProductSpecificationHeaderAll: '',
+            ProductSpecificationHeaderTop5: '',
+            ProductSpecificationHeader: null,
+            ProductSpecificationChild: '',
+            IndexData: '',
+            filterURLData: '',
+            filterCategory: '',
+            openSpec: true,
+            innerOpenSpec: false,
+            innerOpenSpecId: null,
+            filterView: false,
+            specificationListonClick: '',
+            specificationLoader: true,
+            specFilterViewAll: false,
+            specClearAllHide: true,
+            ProductAttributeHeaderTop5: '',
+            ProductAttributeHeaderAll: '',
+            ProductAttributeHeader: '',
+            ProductAttributeChild: '',
+            AttributeClearAllHide: true,
+            clickLIAttribute: false,
+            searchAttribute: false,
+            AttributeListonClick: '',
+            attributeFilterViewAll: false,
+            openAttribute: true,
+            filterViewAttribute: false,
+            attributeFilterViewAllHeader: '',
+            innerOpenAttribute: false,
+            variantAttributeList: [],
+            variantattributesAvailable: false,
+            wishlistLanguageResources: [],
+            ProductExpiryFilterData: '',
+            selectedProductExpiryFilterData: [],
+            expiredProductCount: 0,
+            availableProductCount: 0,
+            selectedExpiryFilterVal: '',
+            expiryClearAllHide: true,
+            productExpired: false,
+            currencySymbol: '',
+            productMinPrice: '',
+            openAccordian: false,
+            //shoplanguageresource: [],
+            allProducts: [], currentProducts: [], currentPage: null, totalPages: null,
+            priceFilterMinPrice: '', priceFilterMaxPrice: '',
+            currentPageFilter: null, totalPagesFilter: null, pageLimitFilter: null, totalRecordsFilter: null,
+            appliedFilterList: [], commodityList: [], categoryList: [], categoryListAll: [], brandList: [], materialList: [], supplierList: [], countryList: [], supplierAccreditationList: [], greenPropertyList: [], carbonEmissionList: [], productExpiryList: [], activeProductList: [], moqList: [],
+            commodityFilterList: [], categoryFilterList: [], brandFilterList: [], materialFilterList: [], supplierFilterList: [], countryFilterList: [], supplierAccreditationFilterList: [], greenPropertyFilterList: [], carbonEmissionFilterList: [], productExpiryFilterList: [], activeProductFilterList: [], gradeLevelList: [],
+            moqFilterList: [], buyingwindowCount: 0, newarrivalCount: 0, specificationFilterList: [], attributeFilterList: [], gradeLevelFilterList: [], productWithoutPriceList: [], productWithPriceList: [], ProductWithoutPriceCount: 0, ProductWithPriceCount: 0,
+            headerQuery: '', elasticQuery: '', searchFilterText: '', priceFilterText: '', buyingwindowFilterText: '', newarrivalFilterText: '',
+            isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false,
+            isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductWithoutPrice: false, isProductWithPrice: false,
+            FilterDataList: [], isAccordionOpen: null,
+            greenproperties: [], productTypeList: [], productTypeFilterList: [], productCertificationFilterList: [],//isProductTypeClick: false
+            openAccordianProductType: false, isAccordionOpenProductType: null,
+            isCommodityViewAllClick: false, isCategoryViewAllClick: false, isBrandViewAllClick: false, isMaterialViewAllClick: false, isSupplierlViewAllClick: false,
+            isCountryofOriginViewAllClick: false, isMOQViewAllClick: false, isGreenPropertiesViewAllClick: false, isSupplierAccreditationViewAllClick: false, isCarbonEmissionViewAllClick: false, isGradeLevelViewAllClick: false,
+            productStatusList: [], isProductStatusClick: false, productStatusFilterList: [], sustainabilityCertificateList: [], isSustainabilityCertificateViewAllClick: false, sustainabilityCertificateFilterList: [],
+            buyerPreferencesJSONDataState: "", productCertificationList: [],
+            focusAreaList: [], defaultMinPrice: '', defaultMaxPrice: '',
+            openFilter: '',
+            commodityDisplayOrder: [],
+            loadingPage: true,
+            commodityProductsCount: [],
+            SLISearchFilters: [],
+            IsSLISeach: false,
+            SLIsearchphrese: "",
+            facetfilterName: "",
+            defaultCategoryListAll: [],
+            isproductindustriesClick: false,
+            isproductindustriesViewAllClick: false,
+            productindustries: [],
+            productindustriesFilterList: [],
+            productindustriesTop5: [], sortbyfiltervalue: 'Product Name ASC',
+            isSliSearchEnabled: false,
+        };
+        this.handleClick = this.handleClick.bind(this);
+        this.innerOpenSpec = this.innerOpenSpec.bind(this);
+        this.handleAttributeClick = this.handleAttributeClick.bind(this)
+        this.handleExpiryClick = this.handleExpiryClick.bind(this)
+        //this.check = this.check.bind(this);    
+    }
+
+    getFilterURLDataOLD = (urlData) => {
+        this.setState({ specificationLoader: true })
+        let PArr = [];
+        let decodedUrl = decodeURIComponent(urlData);
+        let data1 = [];
+        let dataAttribute = [], expiredCount = 0, availableCount = 0;
+
+        let countriesGuid = [];
+        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+            JSON.parse(localStorage.userCountries).map(item => {
+                countriesGuid.push(item.countryGuid);
+            })
+        }
+
+        let ur = decodedUrl.split('?');
+
+        if (decodedUrl.includes('?')) {
+            this.setState({ specClearAllHide: true })
+            this.setState({ AttributeClearAllHide: true })
+            this.setState({ expiryClearAllHide: true })
+        }
+
+        if (ur.length > 0) {
+            ur.map(x => {
+                if (x.includes('&')) {
+                    x.split('&').map(y => {
+                        if (y.includes('=')) {
+                            PArr.push(y)
+                        }
+                        else {
+                            let Lastobj = PArr.slice(-1)[0]
+                            PArr.pop();
+                            PArr.push(Lastobj + '&' + y)
+                        }
+                    })
+                }
+                else if (x.includes('[0]')) {
+                    PArr.push(x)
+                }
+                else if (!x.includes('listing-page')) {
+                    PArr.push(x)
+                }
+            })
+            let commodityArray = [];
+            let categoryArray = '';
+            let gradeLevelArray = [];
+            let brandArray = [];
+            let supplierArray = [];
+            let manufacturingCountryArray = [];
+            let isBuyingWindow = '';
+            let isNewArrival = '';
+            let priceRangeMin = '';
+            let priceRangeMax = '';
+            let searchFilter = '';
+            let materialArray = [];
+            let moqArray = [];
+            let greenPropertiesArray = [];
+            let supplierAccreditationArray = [];
+            let productIndustryArray = [];
+
+            for (let i = 0; i < PArr.length; i++) {
+                let check = PArr[i];
+
+                if (check.includes('commodity')) {
+                    if (PArr.length > 0) {
+                        commodityArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('categories')) {
+                    if (PArr.length > 1) {
+                        categoryArray = categoryArray + PArr[i].split('=').pop() + '~'
+                    }
+                    else {
+                        categoryArray = PArr[i].split('=').pop()
+                    }
+                }
+                if (check.includes('gradelevel')) {
+                    if (PArr.length > 0) {
+                        gradeLevelArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('brand')) {
+                    if (PArr.length > 0) {
+                        brandArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('supplier')) {
+                    if (PArr.length > 0) {
+                        supplierArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('manufacturingcountry')) {
+                    if (PArr.length > 0) {
+                        manufacturingCountryArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('industry')) {
+                    if (PArr.length > 0) {
+                        productIndustryArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('minprice')) {
+                    if (i === 0) {
+                        priceRangeMin = (PArr[i].split('=').pop())
+                    }
+                    if (i === 1) {
+                        priceRangeMax = (PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('buyingwindowstatus')) {
+                    isBuyingWindow = 'Buying Window'
+                }
+                if (check.includes('newarrival')) {
+                    isNewArrival = 'New Arrival'
+                }
+                if (check.includes('products')) {
+                    searchFilter = (PArr[i].split('=').pop())
+                }
+
+                if (check.includes('material')) {
+                    if (PArr.length > 0) {
+                        materialArray.push(PArr[i].split('=').pop())
+                    }
+                }
+
+                if (check.includes('moq')) {
+                    if (PArr.length > 0) {
+                        moqArray.push(parseInt(PArr[i].split('=').pop()))
+                    }
+                }
+
+                if (check.includes('greenproperties')) {
+                    if (PArr.length > 0) {
+                        greenPropertiesArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('accreditation')) {
+                    if (PArr.length > 0) {
+                        supplierAccreditationArray.push(PArr[i].split('=').pop())
+                    }
+                }
+            }
+            if (PArr.length > 1) {
+                categoryArray = categoryArray.slice(0, -1);
+            }
+            let Arr1 = this.state.IndexData;
+
+            if (Arr1 !== '') {
+                if (commodityArray.length > 0) {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => commodityArray.includes(x._source["commodity.raw.keyword"]));
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+                        if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                            data._source.listProductAttributeVM.map(item1 => {
+                                dataAttribute.push(data._source);
+                            })
+                        }
+                    });
+                }
+                if (categoryArray !== '') {
+                    data1 = [];
+                    dataAttribute = [];
+                    if (categoryArray.includes('~') === true) {
+                        Arr1 = Arr1.filter(x => x._source.productCategories === categoryArray);
+                        Arr1.filter(function (data) {
+                            data1.push(data._source);
+                            if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                                data._source.listProductAttributeVM.map(item1 => {
+                                    dataAttribute.push(data._source);
+                                })
+                            }
+                        });
+                    }
+                    else {
+                        Arr1.map(x => {
+                            x._source.listProductSubCategoryLowercase.map(item1 => {
+                                if (item1["categoryname.raw"] === categoryArray) {
+                                    data1.push(x._source);
+                                }
+                            })
+
+                            x._source.listProductSubCategoryLowercase.map(item1 => {
+                                if (item1["categoryname.raw"] === categoryArray) {
+                                    dataAttribute.push(x._source);
+                                }
+                            })
+                        })
+                    }
+                }
+                if (gradeLevelArray.length > 0) {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => x._source["listproductgradelevel.raw"].some(r => gradeLevelArray.includes(r)));
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+
+                        if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                            data._source.listProductAttributeVM.map(item1 => {
+                                dataAttribute.push(data._source);
+                            })
+                        }
+                    });
+                }
+                if (brandArray.length > 0) {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => brandArray.includes(x._source["productbrand.raw"]));
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+
+                        if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                            data._source.listProductAttributeVM.map(item1 => {
+                                dataAttribute.push(data._source);
+                            })
+                        }
+                    });
+                }
+                if (supplierArray.length > 0) {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => supplierArray.includes(x._source["companyname_raw.raw"]));
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+                        if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                            data._source.listProductAttributeVM.map(item1 => {
+                                dataAttribute.push(data._source);
+                            })
+                        }
+                    });
+                }
+                if (manufacturingCountryArray.length > 0) {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => manufacturingCountryArray.includes(x._source["manufacturingcountry.raw"]));
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+
+                        if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                            data._source.listProductAttributeVM.map(item1 => {
+                                dataAttribute.push(data._source);
+                            })
+                        }
+                    });
+                }
+                if (productIndustryArray.length > 0) {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => productIndustryArray.includes(x._source["productIndustries"]));
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+
+                        if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                            data._source.listProductAttributeVM.map(item1 => {
+                                dataAttribute.push(data._source);
+                            })
+                        }
+                    });
+                }
+                if (priceRangeMin !== '' && priceRangeMax !== '') {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => x._source.minPrice >= priceRangeMin && x._source.minPrice <= priceRangeMax);
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+                        if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                            data._source.listProductAttributeVM.map(item1 => {
+                                dataAttribute.push(data._source);
+                            })
+                        }
+                    });
+                }
+                if (isBuyingWindow !== '') {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => x._source["buyingwindowstatus.raw"] === isBuyingWindow);
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+                        if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                            data._source.listProductAttributeVM.map(item1 => {
+                                dataAttribute.push(data._source);
+                            })
+                        }
+                    });
+                }
+                if (isNewArrival !== '') {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => x._source["newarrival_raw.raw"] === isNewArrival);
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+                        if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                            data._source.listProductAttributeVM.map(item1 => {
+                                dataAttribute.push(data._source);
+                            })
+                        }
+                    });
+                }
+                if (searchFilter !== '') {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => x._source.productName.toLowerCase().includes(searchFilter.toLowerCase()));
+                    Arr1.map(x => {
+                        data1.push(x._source);
+                        dataAttribute.push(x._source);
+                    })
+                    Arr1 = Arr1.filter(x => x._source.tagAttributes.toLowerCase().includes(searchFilter.toLowerCase()));
+                    Arr1.map(x => {
+                        let a = data1.filter(y => y === x._source);
+                        if (a.length === 0) {
+                            data1.push(x._source);
+                            dataAttribute.push(x._source);
+                        }
+                    })
+                    Arr1 = Arr1.filter(x => x._source.productCode.toLowerCase().includes(searchFilter.toLowerCase()));
+                    Arr1.map(x => {
+                        let a = data1.filter(y => y === x._source);
+                        if (a.length === 0) {
+                            data1.push(x._source);
+                            dataAttribute.push(x._source);
+                        }
+                    })
+                }
+
+                if (materialArray.length > 0) {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => materialArray.includes(x._source["productmaterial.raw.keyword"]));
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+                        data._source.listProductAttributeVM.map(item1 => {
+                            dataAttribute.push(data._source);
+                        })
+                    });
+                }
+
+                if (moqArray.length > 0) {
+                    data1 = [];
+                    dataAttribute = [];
+                    Arr1 = Arr1.filter(x => moqArray.includes(x._source.mOQ));
+                    Arr1.filter(function (data) {
+                        data1.push(data._source);
+                        data._source.listProductAttributeVM.map(item1 => {
+                            dataAttribute.push(data._source);
+                        })
+                    });
+                }
+
+                // greenPropertiesArray=["Refillable"]
+                if (greenPropertiesArray.length > 0) {
+                    let greenPropertiesIDs = '';
+                    for (let i = 0; i < greenPropertiesArray.length; i++) {
+                        if (greenPropertiesArray.length === 1) {
+                            greenPropertiesIDs = greenPropertiesIDs + greenPropertiesArray[i] + ','
+                        }
+                        else if (i === 0) {
+                            greenPropertiesIDs = greenPropertiesIDs + greenPropertiesArray[i] + ','
+                        }
+                        else if (i === greenPropertiesArray.length - 1) {
+                            greenPropertiesIDs = greenPropertiesIDs + '' + greenPropertiesArray[i] + ','
+                        }
+                        else {
+                            greenPropertiesIDs = greenPropertiesIDs + '' + greenPropertiesArray[i] + ','
+                        }
+                    }
+                    greenPropertiesIDs = greenPropertiesIDs.slice(0, -1)
+                    let listGreenPrpertiesIDs = greenPropertiesIDs.split(',');
+                    data1 = [];
+                    //Arr1 = Arr1.filter(x=> greenPropertiesIDs.includes(x._source["listproductgreenproperties.raw"]));	
+                    //Arr1 = Arr1.filter(x=> x._source["listproductgreenproperties.raw"].includes(listGreenPrpertiesIDs));	
+                    // Arr1 = Arr1.filter(function(item) {
+                    //   return !listGreenPrpertiesIDs.includes(item._source["listproductgreenproperties.raw"]); 
+                    // })
+
+                    Arr1 = Arr1.filter(x => x._source["listproductgreenproperties.raw"].find(y => listGreenPrpertiesIDs.includes(y)));
+
+                    Arr1.filter(function (hero) {
+                        hero._source.listProductSpecificationVM.map(item1 => {
+                            data1.push(hero._source);
+                        })
+                    });
+                }
+
+                if (supplierAccreditationArray.length > 0) {
+                    let supplierAccreditationIDs = '';
+                    for (let i = 0; i < supplierAccreditationArray.length; i++) {
+                        if (supplierAccreditationArray.length === 1) {
+                            supplierAccreditationIDs = supplierAccreditationIDs + supplierAccreditationArray[i] + ','
+                        }
+                        else if (i === 0) {
+                            supplierAccreditationIDs = supplierAccreditationIDs + supplierAccreditationArray[i] + ','
+                        }
+                        else if (i === supplierAccreditationArray.length - 1) {
+                            supplierAccreditationIDs = supplierAccreditationIDs + '' + supplierAccreditationArray[i] + ','
+                        }
+                        else {
+                            supplierAccreditationIDs = supplierAccreditationIDs + '' + supplierAccreditationArray[i] + ','
+                        }
+                    }
+                    supplierAccreditationIDs = supplierAccreditationIDs.slice(0, -1)
+                    let listsupplierAccreditationIDs = supplierAccreditationIDs.split(',');
+                    data1 = [];
+                    //Arr1 = Arr1.filter(x=> supplierAccreditationIDs.includes(x._source["listproductgreenproperties.raw"]));	
+                    //Arr1 = Arr1.filter(x=> x._source["listsupplieraccreditation.raw"].includes(supplierAccreditationIDs));	
+                    Arr1 = Arr1.filter(x => x._source["listsupplieraccreditation.raw"].find(y => listsupplierAccreditationIDs.includes(y)));
+                    Arr1.filter(function (hero) {
+                        hero._source.listProductSpecificationVM.map(item1 => {
+                            data1.push(hero._source);
+                        })
+                    });
+                }
+
+            }
+        }
+
+        if (decodedUrl.includes('?')) {
+            ProductSpecificationArray = [];
+            if (data1.length === 0) {
+                ProductExpiryArray = [];
+            }
+            for (let i = 0; i < data1.length; i++) {
+                if ((this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER)) && data1[i].listProductCountryVM.length > 0) {
+                    let CountryWiseData = data1[i].listProductCountryVM.filter(x => x["countryguid_raw.raw"] === countriesGuid[0])
+                    if (CountryWiseData.length > 0) {
+                        let filterdata = CountryWiseData[0]["isproductexpired_raw.raw"];
+                        if (filterdata === "Yes") {
+                            expiredCount = expiredCount + 1;
+                        }
+                        else {
+                            availableCount = availableCount + 1;
+                        }
+                        ProductExpiryArray.push(filterdata)
+                    }
+                }
+
+                if (data1[i]['listProductSpecificationVM'].length > 0) {
+
+                    for (let j = 0; j < data1[i]['listProductSpecificationVM'].length; j++) {
+                        let Arr = { Groupkey: data1[i]['listProductSpecificationVM'][j]["groupkey.raw"], Value: data1[i]['listProductSpecificationVM'][j]["value.raw"] }
+                        ProductSpecificationArray.push(Arr)
+                    }
+                }
+            }
+
+            ProductAttributeArray = [];
+            for (let i = 0; i < dataAttribute.length; i++) {
+                if (dataAttribute[i]['listProductAttributeVM'] !== undefined && dataAttribute[i]['listProductAttributeVM'] !== 'undefined') {
+                    if (dataAttribute[i]['listProductAttributeVM'].length > 0) {
+
+                        for (let j = 0; j < dataAttribute[i]['listProductAttributeVM'].length; j++) {
+                            let Arr = { Attributekey: dataAttribute[i]['listProductAttributeVM'][j]["attributekey.raw"], Value: dataAttribute[i]['listProductAttributeVM'][j]["attributevalue.raw"] }
+                            ProductAttributeArray.push(Arr)
+                        }
+                    }
+                }
+            }
+
+            let uniqueProductExpiryData = ProductExpiryArray.map(ar => JSON.stringify(ar))
+                .filter((item, index, arr) => arr.indexOf(item) === index)
+                .map(str => JSON.parse(str));
+
+            let uniqueData = ProductSpecificationArray.map(ar => JSON.stringify(ar))
+                .filter((item, index, arr) => arr.indexOf(item) === index)
+                .map(str => JSON.parse(str));
+
+            let filteredArray = [...new Set(uniqueData.map(x => x.Groupkey))]
+            filteredArray.sort();
+            if (uniqueData !== '' && filteredArray !== '') {
+                let filteredArrayTop5 = filteredArray.slice(0, 5);
+                this.setState({ ProductSpecificationHeaderTop5: filteredArrayTop5, ProductSpecificationHeaderAll: filteredArray, ProductSpecificationHeader: filteredArrayTop5, ProductSpecificationChild: uniqueData })
+
+                if (data1.length > 0) {
+                    this.setState({ specificationLoader: false }, function () {
+
+                    })
+                }
+                //this.setState({ProductSpecificationHeader:filteredArray,ProductSpecificationChild:uniqueData})
+            }
+            //Attribute Filter
+            let uniqueDataAttribute = ProductAttributeArray.map(ar => JSON.stringify(ar))
+                .filter((item, index, arr) => arr.indexOf(item) === index)
+                .map(str => JSON.parse(str));
+            let filteredArrayAttribute = [...new Set(uniqueDataAttribute.map(x => x.Attributekey))]
+            filteredArrayAttribute.sort();
+            if (uniqueDataAttribute !== '' && filteredArrayAttribute !== '') {
+                if (dataAttribute.length > 0) {
+                    this.setState({ specificationLoader: false }, function () {
+
+                    })
+                }
+                let filteredArrayAttributeTop5 = filteredArrayAttribute.slice(0, 5);
+                this.setState({ ProductAttributeHeaderTop5: filteredArrayAttributeTop5, ProductAttributeHeaderAll: filteredArrayAttribute, ProductAttributeHeader: filteredArrayAttributeTop5, ProductAttributeChild: uniqueDataAttribute })
+                //this.setState({ProductAttributeHeader:filteredArrayAttribute,      ProductAttributeChild:uniqueDataAttribute                })
+            }
+
+            this.setState({ ProductExpiryFilterData: uniqueProductExpiryData, expiredProductCount: expiredCount, availableProductCount: availableCount })
+            if (uniqueData.length === 0 || uniqueDataAttribute.length === 0) {
+                this.setState({ specificationLoader: false }, function () { })
+            }
+        }
+        else {
+            if (this.state.specificationListonClick.length > 0) {
+                if (this.state.IndexData.length > 0) {
+
+                    let Arr1 = this.state.IndexData;
+
+                    let data1 = [];
+                    Arr1.map((data) => {
+                        let present = true;
+                        this.state.specificationListonClick.map(item => {
+                            let a = data._source.listProductSpecificationVM.filter(x => x["groupkey.raw"] === item.Groupkey && x["value.raw"] === item.Value);
+                            if (a.length > 0) {
+                                present = present && true;
+                            }
+                            else {
+                                present = false;
+                            }
+                        })
+                        if (present === true)
+                            data1.push(data._source);
+                    });
+
+                    ProductSpecificationArray = []
+                    for (let i = 0; i < data1.length; i++) {
+                        if (data1[i]['listProductSpecificationVM'].length !== undefined && data1[i]['listProductSpecificationVM'].length !== "undefined") {
+                            if (data1[i]['listProductSpecificationVM'].length > 0) {
+                                for (let j = 0; j < data1[i]['listProductSpecificationVM'].length; j++) {
+                                    let Arr = { Groupkey: data1[i]['listProductSpecificationVM'][j]["groupkey.raw"], Value: data1[i]['listProductSpecificationVM'][j]["value.raw"] }
+                                    ProductSpecificationArray.push(Arr)
+                                }
+                            }
+                        }
+                    }
+                    let uniqueData = ProductSpecificationArray.map(ar => JSON.stringify(ar))
+                        .filter((item, index, arr) => arr.indexOf(item) === index)
+                        .map(str => JSON.parse(str));
+                    let filteredArray = [...new Set(uniqueData.map(x => x.Groupkey))]
+                    filteredArray.sort();
+                    let filteredArrayTop5 = filteredArray.slice(0, 5);
+                    this.setState({ ProductSpecificationHeaderTop5: filteredArrayTop5, ProductSpecificationHeaderAll: filteredArray, ProductSpecificationHeader: filteredArrayTop5, ProductSpecificationChild: uniqueData })
+
+                    if (this.state.IndexData.length > 0) {
+                        this.setState({ specificationLoader: false }, function () {
+
+                        })
+                    }
+                }
+            }
+            else if (this.state.specificationListonClick.length === 0) {
+                let data = this.state.IndexData;
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i]._source.listProductSpecificationVM.length !== undefined && data[i]._source.listProductSpecificationVM.length !== "undefined") {
+                        if (data[i]._source.listProductSpecificationVM.length > 0) {
+                            for (let j = 0; j < data[i]._source.listProductSpecificationVM.length; j++) {
+                                let Arr = { Groupkey: data[i]._source.listProductSpecificationVM[j]["groupkey.raw"], Value: data[i]._source.listProductSpecificationVM[j]["value.raw"] }
+                                ProductSpecificationArray.push(Arr)
+                            }
+                        }
+                    }
+                }
+                let uniqueData = ProductSpecificationArray.map(ar => JSON.stringify(ar))
+                    .filter((item, index, arr) => arr.indexOf(item) === index)
+                    .map(str => JSON.parse(str));
+
+                let filteredArray = [...new Set(uniqueData.map(x => x.Groupkey))]
+                filteredArray.sort();
+
+                let filteredArrayTop5 = filteredArray.slice(0, 5);
+                this.setState({ ProductSpecificationHeaderTop5: filteredArrayTop5, ProductSpecificationHeaderAll: filteredArray, ProductSpecificationHeader: filteredArrayTop5, ProductSpecificationChild: uniqueData })
+
+                if (this.state.IndexData.length > 0) {
+                    this.setState({ specificationLoader: false }, function () {
+
+                    })
+                }
+            }
+
+            //Attribute Filter
+            if (this.state.AttributeListonClick.length > 0) {
+                if (this.state.IndexData.length > 0) {
+
+                    let Arr1 = this.state.IndexData;
+
+                    let data1 = [];
+                    Arr1.map((data) => {
+                        let present = true;
+                        this.state.AttributeListonClick.map(item => {
+                            let a = data._source.listProductAttributeVM.filter(x => x["attributekey.raw"] === item.Attributekey && x["attributevalue.raw"] === item.Value);
+                            if (a.length > 0) {
+                                present = present && true;
+                            }
+                            else {
+                                present = false;
+                            }
+                        })
+                        if (present === true)
+                            data1.push(data._source);
+                    });
+
+                    ProductAttributeArray = []
+                    for (let i = 0; i < data1.length; i++) {
+                        if (data1[i]['listProductAttributeVM'].length > 0) {
+
+                            for (let j = 0; j < data1[i]['listProductAttributeVM'].length; j++) {
+                                let Arr = { Attributekey: data1[i]['listProductAttributeVM'][j]["attributekey.raw"], Value: data1[i]['listProductAttributeVM'][j]["attributevalue.raw"] }
+                                ProductAttributeArray.push(Arr)
+                            }
+                        }
+                    }
+                    let uniqueDataAttribute = ProductAttributeArray.map(ar => JSON.stringify(ar))
+                        .filter((item, index, arr) => arr.indexOf(item) === index)
+                        .map(str => JSON.parse(str));
+                    let filteredArrayAttribute = [...new Set(uniqueDataAttribute.map(x => x.Groupkey))]
+                    filteredArrayAttribute.sort();
+                    let filteredArrayAttributeTop5 = filteredArrayAttribute.slice(0, 5);
+                    //this.setState({ProductAttributeHeader:filteredArrayAttribute,    ProductAttributeChild:uniqueDataAttribute                })
+                    this.setState({ ProductAttributeHeaderTop5: filteredArrayAttributeTop5, ProductAttributeHeaderAll: filteredArrayAttribute, ProductAttributeHeader: filteredArrayAttributeTop5, ProductAttributeChild: uniqueDataAttribute })
+
+                    if (this.state.IndexData.length > 0) {
+                        this.setState({ specificationLoader: false }, function () {
+
+                        })
+                    }
+                }
+            }
+            else if (this.state.AttributeListonClick.length === 0) {
+                let data = this.state.IndexData;
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i]._source.listProductAttributeVM !== undefined && data[i]._source.listProductAttributeVM !== 'undefined') {
+                        if (data[i]._source.listProductAttributeVM.length > 0) {
+                            for (let j = 0; j < data[i]._source.listProductAttributeVM.length; j++) {
+                                let Arr = { Attributekey: data[i]._source.listProductAttributeVM[j]["attributekey.raw"], Value: data[i]._source.listProductAttributeVM[j]["attributevalue.raw"] }
+                                ProductAttributeArray.push(Arr)
+                            }
+                        }
+                    }
+                }
+                let uniqueDataAttribute = ProductAttributeArray.map(ar => JSON.stringify(ar))
+                    .filter((item, index, arr) => arr.indexOf(item) === index)
+                    .map(str => JSON.parse(str));
+
+                let filteredArrayAttribute = [...new Set(uniqueDataAttribute.map(x => x.Attributekey))]
+                filteredArrayAttribute.sort();
+                let filteredArrayAttributeTop5 = filteredArrayAttribute.slice(0, 5);
+                this.setState({ ProductAttributeHeaderTop5: filteredArrayAttributeTop5, ProductAttributeHeaderAll: filteredArrayAttribute, ProductAttributeHeader: filteredArrayAttributeTop5, ProductAttributeChild: uniqueDataAttribute })
+
+                //this.setState({ProductAttributeHeader:filteredArrayAttribute,      ProductAttributeChild:uniqueDataAttribute                })
+
+                if (this.state.IndexData.length > 0) {
+                    this.setState({ specificationLoader: false }, function () {
+
+                    })
+                }
+            }
+            if (this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER)) {
+                if (this.state.selectedProductExpiryFilterData.length === 0) {
+                    let data = this.state.IndexData;
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i]._source.listProductCountryVM.length > 0) {
+                            let CountryWiseData = data[i]._source.listProductCountryVM.filter(x => x["countryguid_raw.raw"] === countriesGuid[0])
+                            if (CountryWiseData.length > 0) {
+                                let filterdata = CountryWiseData[0]["isproductexpired_raw.raw"];
+                                if (filterdata === "Yes") {
+                                    expiredCount = expiredCount + 1;
+                                }
+                                else {
+                                    availableCount = availableCount + 1;
+                                }
+                                ProductExpiryArray.push(filterdata)
+                            }
+                        }
+                    }
+
+                    let uniqueProductExpiryData = ProductExpiryArray.map(ar => JSON.stringify(ar))
+                        .filter((item, index, arr) => arr.indexOf(item) === index)
+                        .map(str => JSON.parse(str));
+
+                    this.setState({ ProductExpiryFilterData: uniqueProductExpiryData, expiredProductCount: expiredCount, availableProductCount: availableCount })
+
+                    //this.setState({ProductAttributeHeader:filteredArrayAttribute,    ProductAttributeChild:uniqueDataAttribute                })
+
+                    if (this.state.IndexData.length > 0) {
+                        this.setState({ specificationLoader: false }, function () {
+
+                        })
+                    }
+                }
+            }
+        }
+    }
+    handleDrawerOpen = (event) => {
+
+        this.setState({ spinner: true });
+        let countriesGuid = [];
+        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+            JSON.parse(localStorage.userCountries).map(item => {
+                countriesGuid.push(item.countryGuid);
+            })
+        }
+
+        if (this.props.userType.includes(RoleCodes.BUYER)) {
+
+            let ParentGuid = localStorage.parentUserId !== undefined ? localStorage.parentUserId === '00000000-0000-0000-0000-000000000000' ? localStorage.userId : localStorage.parentUserId : localStorage.userId
+
+            let index = "";
+            let search = "";
+            let commonquery = "";
+            if(localStorage.companyGuid === "8c2d2513-51fa-4024-a442-4bd8a6121a87"){
+                index = "f80e3994-6030-49ca-9877-6f1d4c90c1a9_8c2d2513-51fa-4024-a442-4bd8a6121a87_approverbuyerproductlisting_temp";
+            }else{
+                let url = getElasticIndexNew(localStorage.userType, ParentGuid, localStorage.languageId, localStorage.companyGuid);
+
+                let splitURL = url.replace("https://", "").replace("http://").split("/");
+                let urlNew = "";
+               // let index = "";
+               // let search = "";
+               // let commonquery = "";
+
+                if (splitURL.length === 3) {
+                    urlNew = splitURL[0];
+                    index = splitURL[1];
+                    search = splitURL[2];
+                } else {
+                    for (let i = 0; i < splitURL.length; i++) {
+                        if (i === 0) {
+                            urlNew = splitURL[i];
+                        }
+
+                        if (i === 1) {
+                            index = splitURL[i];
+                        }
+                        if (i === (splitURL.length - 1)) {
+                            search = splitURL[i];
+                        }
+                    }
+                }
+            }
+            commonquery = JSON.stringify({
+                "query": {
+                    "bool": {
+                        "filter": [
+                            {
+                                "match": {
+                                    "productGuid": "" + event.currentTarget.id + ""
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+
+            getElasticData(index, commonquery, 0, 0, "").then(json => {
+                let ParentGuid = localStorage.parentUserId !== undefined ? localStorage.parentUserId === '00000000-0000-0000-0000-000000000000' ? localStorage.userId : localStorage.parentUserId : localStorage.userId
+                if (json !== null) {
+                    let countriesGuid = [];
+                    if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+                        JSON.parse(localStorage.userCountries).map(item => {
+                            countriesGuid.push(item.countryGuid);
+                        })
+
+                    }
+                    this.ChangeRateCardOnSKUChange(json.hits.hits[0]._source.skuGuid, json.hits.hits[0]._source.listRateCardVM)
+                    //this.setState({ jsonData: json.data._source, SkuGuid: json.data._source.skuGuid, RateCard: json.data._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.data._source.supplierGuid.toUpperCase() + "/Medium/" + json.data._source.imageName }, function () {
+                    //this.setState({ jsonData: json.data._source, SkuGuid: json.data._source.skuGuid, RateCard: json.data._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.data._source.supplierGuid.toUpperCase() + "/Medium/" + json.data._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName }, 
+                    let productMinPrice = json.hits.hits[0]._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0] !== undefined ?
+                        json.hits.hits[0]._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].minPrice : ""
+
+                    if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER || JSON.parse(localStorage.userType) === RoleCodes.ADMIN)
+                        this.setState({ jsonData: json.hits.hits[0]._source, SkuGuid: json.hits.hits[0]._source.skuGuid, RateCard: json.hits.hits[0]._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.hits.hits[0]._source.supplierGuid.toUpperCase() + "/Medium/" + json.hits.hits[0]._source.listRateCardVM.filter(t => t.isDefault === true)[0].imageName, productMinPrice: productMinPrice },
+                            function () {
+                            });
+                    else
+                        this.setState({ jsonData: json.hits.hits[0]._source, SkuGuid: json.hits.hits[0]._source.skuGuid, RateCard: json.hits.hits[0]._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.hits.hits[0]._source.supplierGuid.toUpperCase() + "/Medium/" + json.hits.hits[0]._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName, productMinPrice: productMinPrice },
+                            function () {
+                            });
+
+                    this.setState({ jsonData: json.hits.hits[0]._source, SkuGuid: json.hits.hits[0]._source.skuGuid, RateCard: json.hits.hits[0]._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.data._source.supplierGuid.toUpperCase() + "/Medium/" + json.data._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName, productMinPrice: productMinPrice }, function () {
+                    });
+                    let RateCardVM = json.hits.hits[0]._source.listRateCardVM.filter(t => t.countryGuid === countriesGuid[0] && t.skuGuid === json.hits.hits[0]._source.skuGuid);
+                    this.getVariantTypeList(json.hits.hits[0]._source.productGuid, RateCardVM, json.hits.hits[0]._source.listProductVariantsVM)
+                    this.getActiveBuyingWindowId(json.hits.hits[0]._source.productGuid, RateCardVM)
+                    this.getBuyingWindowStatus(json.hits.hits[0]._source.productGuid);
+                    // this.getLikelyToBuyUsers();
+                    // this.getRecentlyBoughtProducts();
+                    this.getComparableProductList();
+                    this.saveUsersProductQuickViewedLog(json.hits.hits[0]._source.productGuid);
+
+                    if (json.hits.hits[0]._source.listProductCountryVM !== null && json.hits.hits[0]._source.listProductCountryVM !== undefined) {
+                        if (json.hits.hits[0]._source.listProductCountryVM.filter(t => t.countryGuid === countriesGuid[0])[0] !== undefined) {
+                            this.setState({
+                                productExpired:
+                                    json.hits.hits[0]._source.listProductCountryVM.filter(t => t.countryGuid === countriesGuid[0])[0].isProductExpired === "Yes" ? true : false
+                            });
+                        }
+                    }
+                    this.setState({ SkuGuid: json.hits.hits[0]._source.skuGuid });
+                }
+            }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+
+            let indexName = "";
+            if(localStorage.companyGuid === "8c2d2513-51fa-4024-a442-4bd8a6121a87"){
+                indexName = "f80e3994-6030-49ca-9877-6f1d4c90c1a9_8c2d2513-51fa-4024-a442-4bd8a6121a87_approverbuyerproductlisting_temp";
+            }else{
+                indexName =  getElasticIndexNew(
+                    localStorage.userType,
+                    ParentGuid,
+                    localStorage.languageId,
+                    localStorage.companyGuid
+                );
+            }
+            // axios.get(
+            //     getElasticIndexNew(
+            //         localStorage.userType,
+            //         ParentGuid,
+            //         localStorage.languageId,
+            //         localStorage.companyGuid
+            //     ) + event.currentTarget.id)
+            axios.get( indexName + event.currentTarget.id)
+                .then(json => {
+                    if (json.status === 200) {
+                        let countriesGuid = [];
+                        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+                            JSON.parse(localStorage.userCountries).map(item => {
+                                countriesGuid.push(item.countryGuid);
+                            })
+
+                        }
+                        this.ChangeRateCardOnSKUChange(json.data._source.skuGuid, json.data._source.listRateCardVM)
+                        //this.setState({ jsonData: json.data._source, SkuGuid: json.data._source.skuGuid, RateCard: json.data._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.data._source.supplierGuid.toUpperCase() + "/Medium/" + json.data._source.imageName }, function () {
+                        //this.setState({ jsonData: json.data._source, SkuGuid: json.data._source.skuGuid, RateCard: json.data._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.data._source.supplierGuid.toUpperCase() + "/Medium/" + json.data._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName }, 
+                        let productMinPrice = json.data._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0] !== undefined ?
+                            json.data._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].minPrice : ""
+
+                        if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER || JSON.parse(localStorage.userType) === RoleCodes.ADMIN)
+                            this.setState({ jsonData: json.data._source, SkuGuid: json.data._source.skuGuid, RateCard: json.data._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.data._source.supplierGuid.toUpperCase() + "/Medium/" + json.data._source.listRateCardVM.filter(t => t.isDefault === true)[0].imageName, productMinPrice: productMinPrice },
+                                function () {
+                                });
+                        else
+                            this.setState({ jsonData: json.data._source, SkuGuid: json.data._source.skuGuid, RateCard: json.data._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.data._source.supplierGuid.toUpperCase() + "/Medium/" + json.data._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName, productMinPrice: productMinPrice },
+                                function () {
+                                });
+                        this.setState({ jsonData: json.data._source, SkuGuid: json.data._source.skuGuid, RateCard: json.data._source.listRateCardVM, ImageURL: awsUrl + "ProductImages/" + json.data._source.supplierGuid.toUpperCase() + "/Medium/" + json.data._source.listRateCardVM.filter(t => t.isDefault === true && t.countryGuid === countriesGuid[0])[0].imageName, productMinPrice: productMinPrice }, function () {
+                        });
+                        let RateCardVM = json.data._source.listRateCardVM.filter(t => t.countryGuid === countriesGuid[0] && t.skuGuid === json.data._source.skuGuid);
+                        this.getVariantTypeList(json.data._source.productGuid, RateCardVM, json.data._source.listProductVariantsVM)
+                        this.getActiveBuyingWindowId(json.data._source.productGuid, RateCardVM)
+                        this.getBuyingWindowStatus(json.data._source.productGuid);
+                        // this.getLikelyToBuyUsers();
+                        // this.getRecentlyBoughtProducts();
+                        this.getComparableProductList();
+                        this.saveUsersProductQuickViewedLog(json.data._source.productGuid);
+
+                        if (json.data._source.listProductCountryVM !== null && json.data._source.listProductCountryVM !== undefined) {
+                            if (json.data._source.listProductCountryVM.filter(t => t.countryGuid === countriesGuid[0])[0] !== undefined) {
+                                this.setState({
+                                    productExpired:
+                                        json.data._source.listProductCountryVM.filter(t => t.countryGuid === countriesGuid[0])[0].isProductExpired === "Yes" ? true : false
+                                });
+                            }
+                        }
+                        this.setState({ SkuGuid: json.data._source.skuGuid });
+
+                    }
+                })
+                .catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+            this.setState({ open: true });
+            this.setState({ collapse: 1 });
+            this.setState({ spinner: false });
+        }
+    };
+
+    getVariantTypeList(ProductGuid, ProductRateCard, VariantNameVM) {
+        let variantName = VariantNameVM.filter(x => x.skuGuid === ProductRateCard[0].skuGuid)[0].variantName;
+        var config = {
+            headers: {
+                "Authorization": "Bearer " + localStorage.tokenId,
+                'Content-Type': 'application/json',
+                'productGuid': ProductGuid,
+                'variantName': '',
+                'UserGuid': localStorage.userId
+            },
+        };
+        axios.get(getServiceUrl() + 'Product/GetVariantAttributes', config)
+            .then((response) => {
+                if (response.data.length > 0) {
+                    this.setState({ variantAttributeList: response.data, variantattributesAvailable: true });
+                    this.getSkuWiseAttributeList(variantName, ProductRateCard[0].skuGuid, VariantNameVM);
+                }
+                else {
+                    this.setState({ variantAttributeList: [], variantattributesAvailable: false });
+                }
+            }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    }
+
+    getSkuWiseAttributeList(VariantName, SKUGuid, VariantNameVM) {
+        let VariantArray = VariantNameVM.filter(x => x.variantName === VariantName);
+        let attributeArray = [];
+        if (this.state.variantAttributeList.length > 0) {
+            VariantArray.forEach((item) => {
+                var variantType = this.state.variantAttributeList.filter(x => x.skuGuid === item.skuGuid)[0];
+                if (variantType !== undefined) {
+                    attributeArray.push(this.state.variantAttributeList.filter(x => x.skuGuid === item.skuGuid)[0])
+                }
+            });
+            attributeArray = [...new Set(attributeArray)];
+            var newJson = attributeArray.map(item => ({
+                Id: item.skuGuid,
+                Value: item.attributeValue
+            }));
+            let updatedProductVariantType = JSON.parse(JSON.stringify(this.state.ProductVariantType))
+            updatedProductVariantType.attributes.elementConfig.options = newJson;
+            updatedProductVariantType.attributes.value = SKUGuid;
+            this.setState({ ProductVariantType: updatedProductVariantType });
+        }
+        this.ProductDetailSkuChange(SKUGuid, this.props.BasketGuid);
+    }
+    callFireStore(BuyingWindowGuid, RateCard, BuyingWindowEndDate) {
+        firebase.firestore().collection(getFirestoreCollectionName())
+            .where('BuyingWindowGuid', '==', BuyingWindowGuid.toLowerCase())
+            .onSnapshot((snapshot) => {
+                var TotalCommitmentQty = 0;
+                if (snapshot.docs.length > 0) {
+                    snapshot.docs.map(doc => {
+                        TotalCommitmentQty = doc.data().Quantity
+                    })
+
+                }
+                else {
+                    TotalCommitmentQty = this.state.bwCommitmentQtyCount
+                }
+                this.setState({
+                    Totalcommitment: TotalCommitmentQty
+                })
+                this.getBWPriceDetail(RateCard, TotalCommitmentQty, BuyingWindowEndDate, BuyingWindowGuid)
+            })
+    }
+    onStarClick(nextValue, prevValue, name) {
+        this.setState({ rating: nextValue });
+    }
+    handleDrawerClose = () => {
+        this.setState({ open: false });
+        this.setState({ collapse: 0 });
+    };
+    getActiveBuyingWindowId(ProductGuid, listRateCardVM) {
+        var config = {
+            headers: {
+                "Authorization": "Bearer " + localStorage.tokenId,
+                'Content-Type': 'application/json',
+                'productGuid': ProductGuid,
+                'userGuid': this.props.userId,
+            },
+        };
+        axios.get(getServiceUrl() + 'BuyingWindow/getBuyingWindowIdByProductId', config)
+            .then((response) => {
+                //this.setState({ buyingWindowGuid: response.data })          
+                let bwGuid = response.data;
+                var config = {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.tokenId,
+                        'Content-Type': 'application/json',
+                        'BuyingWindowGuid': response.data
+                    },
+                };
+                axios.get(getServiceUrl() + 'BuyingWindow/GetCommitmentQuantityCount', config)
+                    .then((response) => {
+                        if (response.data.lstbuyingWindowData !== null) {
+                            this.getBWPriceDetail(listRateCardVM, response.data.lstbuyingWindowData[0], response.data.lstbuyingWindowData[1], bwGuid)
+                            this.callFireStore(bwGuid, listRateCardVM, response.data.lstbuyingWindowData[1]);
+                            this.setState({ buyingWindowGuid: bwGuid })
+                        }
+                        else {
+                        }
+                    }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+            })
+    }
+    getBuyingWindowStatus(ProductGuid) {
+        var config = {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.tokenId,
+                'Content-Type': 'application/json',
+                'UserGuid': this.props.userId,
+                'CompanyGuid': localStorage.companyGuid,
+                'LanguageGuid': localStorage.languageId,
+                'ProductGuid': ProductGuid
+            }
+        };
+        axios.get(getServiceUrl() + 'BuyingWindow/GetBuyingWindowStatus', config)
+            .then((response) => {
+
+                if (response.data !== null) {
+                    if (response.data.table1 !== undefined)
+                        this.setState({
+                            showBWStatus: response.data.table1[0].status,
+                            BuyingWindowGuid: response.data.table1[0].buyingWindowGuid,
+                            BuyingWindowTotalQuantity: response.data.table1[0].totalQuantity
+                        })
+                }
+                this.setState({ spinner: true });
+            }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    }
+    getRemaindays() {
+        const date1 = new Date();
+        const date2 = new Date(this.state.bwEndDate);
+        const diffTime = Math.abs(date2.getTime() - date1.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        let days = 0;
+        if (isNaN(diffDays)) {
+            days = 0;
+        }
+        else {
+            days = diffDays;
+        }
+        return days;
+    }
+    // getLikelyToBuyUsers() {
+    //     var config = {
+    //         headers: {
+    //             "Authorization": "Bearer " + localStorage.tokenId,
+    //             'Content-Type': 'application/json',
+    //             'UserGuid': this.props.userId,
+    //             'CompanyGuid': localStorage.companyGuid,
+    //             'LanguageGuid': localStorage.languageId,
+    //             'ProductGuid': this.state.jsonData.productGuid
+    //         },
+    //     };
+    //     axios.get(getServiceUrl() + 'Product/ShowLikelyToBuyUsers', config)
+    //         .then((json) => {
+    //             if (json.status === 200) {
+    //                 this.setState({
+    //                     likelyToBuyUsers: json.data.table1
+    //                 })
+    //             }
+    //         }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    // }
+    // getRecentlyBoughtProducts() {
+    //     var config = {
+    //         headers: {
+    //             "Authorization": "Bearer " + localStorage.tokenId,
+    //             'Content-Type': 'application/json',
+    //             'UserGuid': this.props.userId,
+    //             'CompanyGuid': localStorage.companyGuid,
+    //             'LanguageGuid': localStorage.languageId,
+    //             'ProductGuid': this.state.jsonData.productGuid
+    //         },
+    //     };
+    //     axios.get(getServiceUrl() + 'RecentlyBought/GetRecentlyBoughtProducts', config)
+    //         .then((json) => {
+    //             if (json.status === 200) {
+    //                 this.setState({
+    //                     recentlyBoughtProducts: json.data.table1
+    //                 })
+    //             }
+    //         }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    // }
+    getComparableProductList() {
+        var config = {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.tokenId,
+                'Content-Type': 'application/json',
+                ProductGuid: this.state.jsonData.productGuid,
+                CompanyGuid: localStorage.companyGuid
+            },
+        };
+        axios.get(getServiceUrl() + 'Product/GetCompareProductList', config)
+            .then((response) => {
+                this.setState({ comparableProductList: response.data.table1 })
+            }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    }
+
+    /// <summary>
+    /// Author  :   ShriGanesh Singh
+    /// Date    :   18th Jan 2021 
+    /// </summary>
+    saveUsersProductQuickViewedLog(ProductGuid) {
+        var config = {
+            headers: {
+                "Authorization": "Bearer " + localStorage.tokenId,
+                'Content-Type': 'application/json',
+                'UserGuid': this.props.userId,
+                'ProductGuid': ProductGuid,
+                'PageName': 'ProductQuickView'
+            },
+        };
+        axios.get(getServiceUrl() + 'Product/saveUsersProductViewedLog', config)
+            .then((json) => {
+                if (json.status === 200) {
+                }
+            }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    }
+
+    onBackButtonEvent = (e) => {
+        e.preventDefault();
+        if (localStorage.previousPath !== "" && localStorage.previousPath !== undefined && (localStorage.previousPath === 'product-details' || localStorage.previousPath.includes('rfqlisting') || localStorage.previousPath === 'create-rfq')) {
+            isBackButtonClick = true;
+            pageLoadCount = 0;
+        }
+    }
+
+    componentDidUpdate() {
+        if (buyerPreferencesJSONData !== undefined && buyerPreferencesJSONData !== "" && updatecount === 0) {
+            updatecount = 1;
+            this.getIndexData();
+            if (appliedFilterListAll.length === 0 || window.location.href.includes('?')) {
+                this.getFilterListWithData('didMount', esElasticQuery);
+            }
+            else {
+                this.getFilterListWithData('filter', esElasticQuery);
+            }
+        }
+    }
+
+
+    async componentDidMount() {
+        getExploreProductCount();
+        //this.getShoplanguageresource();
+        pageLoadCount = 1;
+        await this.getCommodityDisplayOrder();
+        this.getUnitList();
+        await this.getFilterList();
+        specificationList = [];
+        IsSearchSpecification = 0;
+        if (this.props.userType.includes(RoleCodes.BUYER)) {
+            buyerPreferencesJSONData = '';
+            updatecount = 0;
+            if (localStorage.IsSLISeach !== undefined && localStorage.IsSLISeach === "true") {
+                await this.getData();
+
+                if (localStorage.searchphrese !== undefined && localStorage.searchphrese !== "") {
+                    if (localStorage.facetfilterName !== undefined && localStorage.facetfilterName !== "") {
+                        SLISearchFilters.push(localStorage.searchphrese + " in " + capitalizeFirst(localStorage.facetfilterName));
+                    } else {
+                        SLISearchFilters.push(localStorage.searchphrese);
+                    }
+                } else if (localStorage.facetfilterName !== undefined && localStorage.facetfilterName !== "") {
+                    SLISearchFilters.push(capitalizeFirst(localStorage.facetfilterName));
+                }
+                this.setState({ SLISearchFilters: SLISearchFilters, IsSLISeach: true, SLIsearchphrese: localStorage.searchphrese, facetfilterName: localStorage.facetfilterName });
+                localStorage.setItem("IsSLISeach", "false");
+                localStorage.setItem("searchphrese", "");
+                localStorage.setItem("facetfilterName", "");
+            } else if (this.state.IsSLISeach === true) {
+                this.getData();
+                if (this.state.SLIsearchphrese !== undefined && this.state.SLIsearchphrese !== "") {
+                    if (this.state.facetfilterName !== undefined && this.state.facetfilterName !== "") {
+                        SLISearchFilters.push(this.state.SLIsearchphrese + " in " + capitalizeFirst(this.state.facetfilterName));
+                    } else {
+                        SLISearchFilters.push(this.state.SLIsearchphrese);
+                    }
+                } else if (this.state.facetfilterName !== undefined && this.state.facetfilterName !== "") {
+                    SLISearchFilters.push(capitalizeFirst(this.state.facetfilterName));
+                }
+            }
+            await this.getBuyerPreferences();
+            //this.props.onGetCartCounter(this.props.userId, this.props.languageId);
+            this.props.onGetWishlistCounter(this.props.userId, this.props.languageId);
+            //this.props.onGetBuyingWindowCounter(this.props.userId, this.props.languageId);
+        } else {
+            this.getIndexData();
+        }
+        window.addEventListener('popstate', this.onBackButtonEvent);
+        if (localStorage.previousPath === 'view-more' || localStorage.previousPath === '') {
+            appliedFilterListAll = [];
+            esElasticQuery = [];
+            selectedSort = JSON.parse(localStorage.userType).includes(RoleCodes.BUYER) == true ? 'Product Name ASC' : 'Product Name ASC';
+            esHeaderQuery = '';
+            isAccordionOpenBackClick = 0;
+            openAccordianBackClick = false;
+            isAccordionOpenProductTypeBackClick = 0;
+            openAccordianProductTypeBackClick = false;
+            localStorage.setItem('previousPage', 'chatbot');
+        }
+        else if (localStorage.previousPath === 'product-details' || localStorage.previousPath.includes('rfqlisting') || localStorage.previousPath === 'create-rfq') {
+            let exploredClicked = false, updatedForm = [];
+            if (localStorage.updatedFormlistingpage !== undefined) {
+                exploredClicked = true;
+                updatedForm = localStorage.updatedFormlistingpage;
+                localStorage.removeItem('updatedFormlistingpage')
+            }
+            this.setState({
+                SLISearchFilters: SLISearchFilters, isAccordionOpen: isAccordionOpenBackClick, openAccordian: openAccordianBackClick, isAccordionOpenProductType: isAccordionOpenProductTypeBackClick, openAccordianProductType: openAccordianProductTypeBackClick,
+                exploredClicked: exploredClicked, currentProducts: updatedForm
+            });
+        }
+        //this.getIndexData();
+
+        if (window.location.href.includes('?')) {
+            this.getFilterURLData(window.location.href);
+        } else {
+            if (appliedFilterListAll.length === 0) {
+                this.getFilterListWithData('didMount', esElasticQuery);
+            } else {
+                this.getDataAfterFilter("", "didMount", "", true, 0);
+            }
+        }
+        var vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        this.setState({ screenSize: vw })
+        if (localStorage.companyGuid !== undefined) {
+            this.setState({
+                companyGuid: localStorage.companyGuid.toLocaleLowerCase()
+            });
+        }
+        decimalPrecision();
+        listBasketDetails(this.props.userId);
+        // this.getData();          
+        listWishListDetails(this.props.userId);
+
+        this.getCurrencySymbol();
+        getWishListLanguageResource();
+        //getCartDetailLanguageResource();
+        this.getGreenProperties();
+        this.GetSupplierAccreditation();
+        this.GetProductCertificates();
+        this.getRFQ();
+        getPageResource(
+            getLanguageResourceElasticIndex(
+                this.props.languageId,
+                PageKeys.productlisting
+            )
+        )
+            .then(json => {
+                this.setState({ resources: json }, () => {
+                    setTimeout(() => {
+                        if (this.state.resources.length === 0) {
+                        }
+                    }, 3000);
+                });
+            })
+            .catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+        this.getFeatureList();
+        this.onPageChanged();
+        this.getBreadCrumb();
+    }
+
+    getGreenProperties() {
+        var config = {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.tokenId,
+                'Content-Type': 'application/json'
+            },
+        };
+        axios.get(getServiceUrl() + 'MasterData/getGreenProperties', config)
+            .then((response) => {
+                greenproperties = response.data.table1;
+            }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/' : '' : '');
+    }
+
+    GetSupplierAccreditation() {
+        var config = {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.tokenId,
+                'Content-Type': 'application/json'
+            },
+        };
+        axios.get(getServiceUrl() + 'MasterData/GetSupplierAccreditation', config)
+            .then((response) => {
+                supplierAccreditations = response.data.table1;
+            }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/' : '' : '');
+    }
+    GetProductCertificates() {
+        var config = {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.tokenId,
+                'Content-Type': 'application/json'
+            },
+        };
+        axios.get(getServiceUrl() + 'MasterData/GetProductCertificates', config)
+            .then((response) => {
+                productcertificates = response.data.table1;
+            }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/' : '' : '');
+    }
+    getFeatureList() {
+        // var config = {
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     'Authorization': 'Basic ' + btoa(getElasticSearchCredentials())
+        //   },
+        // };
+
+
+        let url = getFeaturesElasticIndex();
+        let splitURL = [];
+        splitURL = url.replace("https://", "").replace("http://").split("/");
+        let urlNew = "";
+        let index = "";
+        let search = "";
+        let commonquery = "";
+
+        if (splitURL.length === 3) {
+            urlNew = splitURL[0];
+            index = splitURL[1];
+            search = splitURL[2];
+        } else {
+            for (let i = 0; i < splitURL.length; i++) {
+                if (i === 0) {
+                    urlNew = splitURL[i];
+                }
+
+                if (i === 1) {
+                    index = splitURL[i];
+                }
+                if (i === (splitURL.length - 1)) {
+                    search = splitURL[i];
+                }
+            }
+        }
+
+        if (search.indexOf('q=') > -1) {
+            let splitdata = search.replace("_search", "").replace("?", "").replace("&", "");
+            if (splitdata.indexOf("q=") > -1) {
+                splitdata = splitdata.split("q=");
+                commonquery = '"query": {"bool": {"must": [';
+
+                for (let j = 0; j < splitdata.length; j++) {
+                    if (splitdata[j].indexOf(":") > -1) {
+                        let data = splitdata[j].split(":");
+                        commonquery = commonquery + '{"match": {"' + data[0] + '": "' + data[1] + '"}}';
+                    }
+                }
+                commonquery = commonquery + ']}}';
+            }
+        }
+        if (commonquery !== "") {
+            commonquery = JSON.parse("{" + commonquery + "}");
+        } else {
+            commonquery = "";
+        }
+
+        getElasticData(index, commonquery, 0, 0, "").then(response => {
+            if (response !== null) {
+                let array = [];
+                for (var count = 0; count < response.hits.hits.length; count++) {
+                    array.push(response.hits.hits.filter((x) => { return x.featureName !== null })[count]._source)
+                }
+                this.setState({ features: array });
+                var FeatureArray = array.filter((e) => e.featureName === FeatureCodes.PRODUCTAPPROVALREQUIRED)
+                var FeatureArraySli = array.filter((e) => e.featureName === FeatureCodes.SLISEARCHENABLED)
+                this.setState({ isFeatureAvailable: FeatureArray[0].isActive, isSliSearchEnabled: FeatureArraySli[0].isActive })
+            }
+        }).catch(err => console.error(err));
+    }
+    async getCommodityDisplayOrder() {
+        var config = {
+            headers: {
+                Authorization: "Bearer " + localStorage.tokenId,
+                "Content-Type": "application/json"
+            }
+        };
+        await axios
+            .get(getServiceUrl() + "Commodity/GetAllCommodityList", config)
+            .then(json => {
+                this.setState({ commodityDisplayOrder: json.data.table1.sort((a, b) => (a.displayOrder > b.displayOrder ? 1 : -1)) })
+            })
+            .catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    }
+    async getFilterList() {
+        var config = {
+            headers: {
+                Authorization: "Bearer " + localStorage.tokenId,
+                "Content-Type": "application/json",
+                'userguid': this.props.userId,
+                'languageguid': localStorage.languageId,
+            }
+        };
+        await axios
+            .get(getServiceUrl() + "MasterData/GetRefinementListFilter", config)
+            .then(json => {
+                let filterListUserRoleWise = json.data.table1;
+                if (!this.props.userType === RoleCode.SUPPLIER && !this.props.userType.includes(RoleCode.ADMIN) && this.props.userType !== RoleCode.SUPPLIERSUPPORTPERSON) {
+                    //filterListUserRoleWise = filterListUserRoleWise.filter(x => x.filterId !== "active" && x.filterId !== "productexpired");
+                    filterListUserRoleWise = filterListUserRoleWise.filter(x => x.filterId !== "active" && x.filterId !== "Product Expired");
+                }
+                else if (this.props.userType === RoleCode.SUPPLIER) {
+                    filterListUserRoleWise = filterListUserRoleWise.filter(x => x.filterId !== "suppliername" && x.filterId !== "buyingwindowstatus" && x.filterId !== "BuyerProductExpiry" && x.filterId !== "gradelevel" && x.filterId !== "active" && x.filterId !== "PriceRange");
+                }
+                if (!this.props.userType.includes(RoleCode.BUYER)) {
+                    filterListUserRoleWise = filterListUserRoleWise.filter(x => x.filterId !== "moq");
+                }
+                if (this.props.userType.includes(RoleCode.ADMIN)) {
+                    filterListUserRoleWise = filterListUserRoleWise.filter(x => x.filterId !== "buyingwindowstatus" && x.filterId !== "BuyerProductExpiry" && x.filterId !== "gradelevel");
+                }
+                if (this.props.userType.includes(RoleCode.BUYER) && localStorage.showGradeLevel === 'false') {
+                    filterListUserRoleWise = filterListUserRoleWise.filter(x => x.filterId !== "gradelevel" && x.filterId !== "active");
+                }
+                if (this.props.userType.includes(RoleCode.APPROVER)) {
+                    filterListUserRoleWise = filterListUserRoleWise.filter(x => x.filterId !== "gradelevel");
+                }
+                if (this.props.userType === RoleCode.SUPPLIERRELATIONSHIPMANAGER) {
+                    filterListUserRoleWise = filterListUserRoleWise.filter(x => x.filterId !== "gradelevel" && x.filterId !== "PriceRange");
+                }
+                if (this.props.userType === RoleCode.SUPPLIERSUPPORTPERSON) {
+                    filterListUserRoleWise = filterListUserRoleWise.filter(x => x.filterId !== "buyingwindowstatus" && x.filterId !== "BuyerProductExpiry" && x.filterId !== "gradelevel" && x.filterId !== "PriceRange");
+                }
+                let filterListSort = filterListUserRoleWise.sort((a, b) => (a.displayOrder - b.displayOrder));
+                this.setState({ filterList: filterListSort });
+            })
+            .catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    }
+    getCurrencySymbol() {
+        var config = {
+            headers: {
+                Authorization: "Bearer " + localStorage.tokenId,
+                "Content-Type": "application/json",
+                'UserGuid': this.props.userId,
+                'CompanyGuid': localStorage.companyGuid,
+            }
+        };
+        axios
+            .get(getServiceUrl() + "MasterData/GetCurrencySymbol", config)
+            .then(json => {
+
+                if (json.status === 200) {
+                    this.setState({
+                        currencySymbol: json.data
+                    })
+                }
+            })
+            .catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    }
+    showMobileFilter = () => {
+        this.setState({ showMobileFilter: true })
+        document.body.style.overflow = "hidden"
+    }
+    hideMobileFilter = () => {
+        this.setState({ showMobileFilter: false })
+        document.body.style.overflow = "auto"
+    }
+    handleUserInputChange = (event, attributesAvailable) => {
+        if (event.currentTarget.src !== 'undefined' && event.currentTarget.src !== undefined && event.currentTarget.src !== '') {
+            this.setState({
+                ImageURL: event.currentTarget.src.replace("Thumbnail", "Medium")
+            })
+        }
+        if (!attributesAvailable) {
+            this.setState({ SkuGuid: event.currentTarget.id })
+        }
+    };
+    ProductDetailSkuChange = (SelectedSkuGuid) => {
+        this.setState({ SkuGuid: SelectedSkuGuid })
+        this.ChangeRateCardOnSKUChange(SelectedSkuGuid, this.state.RateCard);
+    }
+    ChangeRateCardOnSKUChange = (skuGuid, RateCard) => {
+        let RateCardArray = [];
+        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+            JSON.parse(localStorage.userCountries).map(data => {
+                if (RateCard.filter(t => t.countryGuid === data.countryGuid && t.skuGuid === skuGuid)) {
+                    RateCardArray.push(RateCard.filter(t => t.countryGuid === data.countryGuid && t.skuGuid === skuGuid)[0]);
+                }
+            })
+        }
+        this.setState({
+            NewListRateCard: RateCardArray
+        })
+    }
+    addCartIcon = (productIsInCart, productguid) => {
+        if (basketDetails.filter(x => x.productGuid !== productguid)) {
+            this.setState({ ProductIsInCart: productIsInCart });
+        }
+        if (productIsInCart === true) {
+            localStorage.setItem('prodIncart', productIsInCart)
+            localStorage.setItem('prodguidIncart', productguid)
+        }
+    }
+    removeCartIcon = (productIsInCart, basketguid, productguid) => {
+        if (basketDetails.filter(x => x.productGuid !== productguid)) {
+            basketDetails = basketDetails.filter(x => x.productGuid !== productguid);
+            this.setState({ ProductIsInCart: productIsInCart });
+        }
+        if (productIsInCart === true) {
+            localStorage.setItem('prodIncart', productIsInCart)
+            localStorage.setItem('prodguidIncart', productguid)
+        }
+    }
+    addWishListIcon = (productIsInWishList, productguid) => {
+        if (wishListDetails.filter(x => x.productGuid !== productguid)) {
+            this.setState({ ProductIsInWishList: productIsInWishList });
+        }
+        if (productIsInWishList === true) {
+            localStorage.setItem('prodInwishlist', productIsInWishList)
+        }
+    }
+    removeWishListIcon = (productIsInWishList, productguid) => {
+        if (wishListDetails.filter(x => x.productGuid !== productguid)) {
+            wishListDetails = wishListDetails.filter(x => x.productGuid !== productguid);
+            this.setState({ ProductIsInWishList: productIsInWishList });
+        }
+        if (productIsInWishList === true) {
+            localStorage.setItem('prodInwishlist', productIsInWishList)
+        }
+    }
+    getBWPriceDetail(priceDetailsList, quantity, bwEndDate, bwGuid) {
+        let priceDetails = priceDetailsList[0]
+
+        let price = 0.00, quantityRange = '', LeadTime = 0;
+        if ((priceDetails.quantity1 != null && quantity <= priceDetails.quantity1) && (priceDetails.quantity2 === null || quantity < priceDetails.quantity2)) {
+            price = priceDetails.price1;
+            quantityRange = priceDetails.quantity1 + '' + (priceDetails.quantity2 !== null ? '-' + (parseInt(priceDetails.quantity2) - 1) : '');
+            LeadTime = priceDetails.leadTime1InDays;
+        }
+        else if ((priceDetails.quantity1 != null && quantity >= priceDetails.quantity1) && (priceDetails.quantity2 === null || quantity < priceDetails.quantity2)) {
+            price = priceDetails.price1;
+            quantityRange = priceDetails.quantity1 + '' + (priceDetails.quantity2 !== null ? '-' + (parseInt(priceDetails.quantity2) - 1) : '');
+            LeadTime = priceDetails.leadTime1InDays;
+        }
+        else if ((priceDetails.quantity2 != null && quantity >= priceDetails.quantity2) && (priceDetails.quantity3 === null || quantity < priceDetails.quantity3)) {
+            price = priceDetails.price2;
+            quantityRange = priceDetails.quantity2 + '' + (priceDetails.quantity3 !== null ? '-' + (parseInt(priceDetails.quantity3) - 1) : '');
+            LeadTime = priceDetails.leadTime2InDays;
+        }
+        else if ((priceDetails.quantity3 != null && quantity >= priceDetails.quantity3) && (priceDetails.quantity4 === null || quantity < priceDetails.quantity4)) {
+            price = priceDetails.price3
+            quantityRange = priceDetails.quantity3 + (priceDetails.quantity4 !== null ? '-' + (parseInt(priceDetails.quantity4) - 1) : '');
+            LeadTime = priceDetails.leadTime3InDays;
+        }
+        else if ((priceDetails.quantity4 != null && quantity >= priceDetails.quantity4) && (priceDetails.quantity5 === null || quantity < priceDetails.quantity5)) {
+            price = priceDetails.price4;
+            quantityRange = priceDetails.quantity4 + (priceDetails.quantity5 !== null ? '-' + (parseInt(priceDetails.quantity5) - 1) : '');
+            LeadTime = priceDetails.leadTime4InDays;
+        }
+        else if ((priceDetails.quantity5 != null && quantity >= priceDetails.quantity5) && (priceDetails.quantity6 === null || quantity < priceDetails.quantity6)) {
+            price = priceDetails.price5;
+            quantityRange = priceDetails.quantity5 + (priceDetails.quantity6 !== null ? '-' + (parseInt(priceDetails.quantity6) - 1) : '');
+            LeadTime = priceDetails.leadTime5InDays;
+        }
+        else if ((priceDetails.quantity6 != null && quantity >= priceDetails.quantity6) && (priceDetails.quantity7 === null || quantity < priceDetails.quantity7)) {
+            price = priceDetails.price6;
+            quantityRange = priceDetails.quantity6 + (priceDetails.quantity7 !== null ? '-' + (parseInt(priceDetails.quantity7) - 1) : '');
+            LeadTime = priceDetails.leadTime6InDays;
+        }
+        else if ((priceDetails.quantity7 != null && quantity >= priceDetails.quantity7) && (priceDetails.quantity8 === null || quantity < priceDetails.quantity8)) {
+            price = priceDetails.price7;
+            quantityRange = priceDetails.quantity7 + (priceDetails.quantity8 !== null ? '-' + (parseInt(priceDetails.quantity8) - 1) : '');
+            LeadTime = priceDetails.leadTime7InDays;
+        }
+        else if ((priceDetails.quantity8 != null && quantity >= priceDetails.quantity8) && (priceDetails.quantity9 === null || quantity < priceDetails.quantity9)) {
+            price = priceDetails.price8;
+            quantityRange = priceDetails.quantity8 + (priceDetails.quantity9 !== null ? '-' + (parseInt(priceDetails.quantity9) - 1) : '');
+            LeadTime = priceDetails.leadTime8InDays;
+        }
+        else if ((priceDetails.quantity9 != null && quantity >= priceDetails.quantity9) && (priceDetails.quantity10 === null || quantity < priceDetails.quantity10)) {
+            price = priceDetails.price9;
+            quantityRange = priceDetails.quantity9 + (priceDetails.quantity10 !== null ? '-' + (parseInt(priceDetails.quantity10) - 1) : '');
+            LeadTime = priceDetails.leadTime9InDays;
+        }
+        else if (priceDetails.quantity10 != null && quantity >= priceDetails.quantity10) {
+            price = priceDetails.price10;
+            quantityRange = '>=' + parseInt(priceDetails.quantity10);
+            LeadTime = priceDetails.leadTime10InDays;
+        }
+        this.setState({ buyingWindowGuid: bwGuid, bwCommitmentQtyCount: quantity, bwEndDate: bwEndDate, bwPrice: price, bwLeadTime: LeadTime, bwQtyRange: quantityRange })
+        this.setState({ spinner: false })
+    }
+    handleClick = (event, headerText) => {
+        if (window.location.href.includes('?')) {
+            this.setState({ specClearAllHide: true })
+        }
+        else if (selectedExpiryFilterList.length > 0) {
+            this.setState({ AttributeClearAllHide: true, specClearAllHide: true, expiryClearAllHide: false })
+        }
+        else if (AttributeList.length > 0) {
+            this.setState({ AttributeClearAllHide: false, specClearAllHide: true, expiryClearAllHide: true })
+        }
+        else {
+            this.setState({ specClearAllHide: false, expiryClearAllHide: true, AttributeClearAllHide: true })
+        }
+
+        let countriesGuid = [];
+        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+            JSON.parse(localStorage.userCountries).map(item => {
+                countriesGuid.push(item.countryGuid);
+            })
+        }
+
+        this.setState({ clickLI: true, searchSpecification: true })
+        IsSearchSpecification = 1;
+        let arr = { Groupkey: headerText, Value: event.target.innerText }
+        let checkArray = [], expiredCount = 0, availableCount = 0;
+        checkArray = specificationList.filter(x => x.Groupkey === headerText && x.Value === event.target.innerText)
+        if (checkArray.length === 0) {
+            specificationList.push(arr)
+        }
+        this.setState({ specificationListonClick: specificationList })
+
+        searchkit.reloadSearch();
+        if (this.state.IndexData.length > 0) {
+
+            let Arr1 = this.state.IndexData;
+
+            let data1 = [];
+            Arr1.map((data) => {
+                let present = true;
+                specificationList.map(item => {
+                    let a = data._source.listProductSpecificationVM.filter(x => x["groupkey.raw"] === item.Groupkey && x["value.raw"] === item.Value);
+                    if (a.length > 0) {
+                        present = present && true;
+                    }
+                    else {
+                        present = false;
+                    }
+                })
+                if (present === true)
+                    data1.push(data._source);
+            });
+            ProductSpecificationArray = []
+            ProductAttributeArray = [];
+            ProductExpiryArray = []
+
+            for (let i = 0; i < data1.length; i++) {
+                if (data1[i]['listProductSpecificationVM'].length > 0) {
+                    for (let j = 0; j < data1[i]['listProductSpecificationVM'].length; j++) {
+                        let Arr = { Groupkey: data1[i]['listProductSpecificationVM'][j]["groupkey.raw"], Value: data1[i]['listProductSpecificationVM'][j]["value.raw"] }
+                        ProductSpecificationArray.push(Arr)
+                    }
+                }
+                if (data1[i].listProductAttributeVM.length > 0) {
+                    for (let j = 0; j < data1[i].listProductAttributeVM.length; j++) {
+                        let Arr = { Attributekey: data1[i].listProductAttributeVM[j]["attributekey.raw"], Value: data1[i].listProductAttributeVM[j]["attributevalue.raw"] }
+                        ProductAttributeArray.push(Arr)
+                    }
+                }
+                if (data1[i].listProductCountryVM !== 'undefined' && data1[i].listProductCountryVM !== undefined) {
+                    let CountryWiseData = data1[i].listProductCountryVM.filter(x => x["countryguid_raw.raw"] === countriesGuid[0])
+                    if (CountryWiseData.length > 0) {
+                        let filterdata = CountryWiseData[0]["isproductexpired_raw.raw"];
+                        if (filterdata === "Yes") {
+                            expiredCount = expiredCount + 1;
+                        }
+                        else {
+                            availableCount = availableCount + 1;
+                        }
+                        ProductExpiryArray.push(filterdata)
+                    }
+                }
+            }
+        }
+        let uniqueData = ProductSpecificationArray.map(ar => JSON.stringify(ar))
+            .filter((item, index, arr) => arr.indexOf(item) === index)
+            .map(str => JSON.parse(str));
+        let filteredArray = [...new Set(uniqueData.map(x => x.Groupkey))]
+        filteredArray.sort();
+        let filteredArrayTop5 = filteredArray.slice(0, 5);
+        this.setState({ ProductSpecificationHeaderTop5: filteredArrayTop5, ProductSpecificationHeaderAll: filteredArray, ProductSpecificationHeader: filteredArrayTop5, ProductSpecificationChild: uniqueData })
+        //this.setState({ProductSpecificationHeader:filteredArray,ProductSpecificationChild:uniqueData})      
+
+        //Attribute Filter
+        let uniqueDataAttribute = ProductAttributeArray.map(ar => JSON.stringify(ar))
+            .filter((item, index, arr) => arr.indexOf(item) === index)
+            .map(str => JSON.parse(str));
+        let filteredArrayAttribute = [...new Set(uniqueDataAttribute.map(x => x.Attributekey))]
+        filteredArrayAttribute.sort();
+        let filteredArrayAttributeTop5 = filteredArrayAttribute.slice(0, 5);
+        this.setState({ ProductAttributeHeaderTop5: filteredArrayAttributeTop5, ProductAttributeHeaderAll: filteredArrayAttribute, ProductAttributeHeader: filteredArrayAttributeTop5, ProductAttributeChild: uniqueDataAttribute })
+
+        //Expiry Filter
+        let uniqueProductExpiryData = ProductExpiryArray.map(ar => JSON.stringify(ar))
+            .filter((item, index, arr) => arr.indexOf(item) === index)
+            .map(str => JSON.parse(str));
+        this.setState({ ProductExpiryFilterData: uniqueProductExpiryData, expiredProductCount: expiredCount, availableProductCount: availableCount })
+    }
+
+    handleAttributeClick = (event, headerText) => {
+        if (window.location.href.includes('?')) {
+            this.setState({ AttributeClearAllHide: true })
+        }
+        else if (selectedExpiryFilterList.length > 0) {
+            this.setState({ AttributeClearAllHide: true, specClearAllHide: true, expiryClearAllHide: false })
+        }
+        else {
+            this.setState({ AttributeClearAllHide: false, specClearAllHide: true, expiryClearAllHide: true })
+        }
+
+        let countriesGuid = [];
+        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+            JSON.parse(localStorage.userCountries).map(item => {
+                countriesGuid.push(item.countryGuid);
+            })
+        }
+
+        this.setState({ clickLIAttribute: true, searchAttribute: true })
+        IsSearchAttribute = 1;
+        let arr = { Attributekey: headerText, Value: event.target.innerText }
+        let checkArray = [], expiredCount = 0, availableCount = 0;
+        checkArray = AttributeList.filter(x => x.Attributekey === headerText && x.Value === event.target.innerText)
+        if (checkArray.length === 0) {
+            AttributeList.push(arr)
+        }
+        this.setState({ AttributeListonClick: AttributeList })
+
+        searchkit.reloadSearch();
+        if (this.state.IndexData.length > 0) {
+
+            let Arr1 = this.state.IndexData;
+
+            let data1 = [];
+            Arr1.map((data) => {
+                let present = true;
+                AttributeList.map(item => {
+                    if (data._source.listProductAttributeVM !== undefined && data._source.listProductAttributeVM !== 'undefined') {
+                        let a = data._source.listProductAttributeVM.filter(x => x["attributekey.raw"] === item.Attributekey && x["attributevalue.raw"] === item.Value);
+                        if (a.length > 0) {
+                            present = present && true;
+                        }
+                        else {
+                            present = false;
+                        }
+                    }
+                })
+                if (present === true)
+                    data1.push(data._source);
+            });
+            ProductAttributeArray = [];
+            ProductSpecificationArray = [];
+            ProductExpiryArray = [];
+            for (let i = 0; i < data1.length; i++) {
+                if (data1[i]['listProductAttributeVM'] !== undefined && data1[i]['listProductAttributeVM'] !== 'undefined') {
+                    if (data1[i]['listProductAttributeVM'].length > 0) {
+                        for (let j = 0; j < data1[i]['listProductAttributeVM'].length; j++) {
+                            let Arr = { Attributekey: data1[i]['listProductAttributeVM'][j]["attributekey.raw"], Value: data1[i]['listProductAttributeVM'][j]["attributevalue.raw"] }
+                            ProductAttributeArray.push(Arr)
+                        }
+                    }
+                }
+                if (data1[i]['listProductSpecificationVM'].length > 0) {
+                    for (let j = 0; j < data1[i]['listProductSpecificationVM'].length; j++) {
+                        let Arr = { Groupkey: data1[i]['listProductSpecificationVM'][j]["groupkey.raw"], Value: data1[i]['listProductSpecificationVM'][j]["value.raw"] }
+                        ProductSpecificationArray.push(Arr)
+                    }
+                }
+                if (data1[i].listProductCountryVM !== 'undefined' && data1[i].listProductCountryVM !== undefined) {
+                    let CountryWiseData = data1[i].listProductCountryVM.filter(x => x["countryguid_raw.raw"] === countriesGuid[0])
+                    if (CountryWiseData.length > 0) {
+                        let filterdata = CountryWiseData[0]["isproductexpired_raw.raw"];
+                        if (filterdata === "Yes") {
+                            expiredCount = expiredCount + 1;
+                        }
+                        else {
+                            availableCount = availableCount + 1;
+                        }
+                        ProductExpiryArray.push(filterdata)
+                    }
+                }
+            }
+        }
+
+        let uniqueDataAttribute = ProductAttributeArray.map(ar => JSON.stringify(ar))
+            .filter((item, index, arr) => arr.indexOf(item) === index)
+            .map(str => JSON.parse(str));
+        let filteredArrayAttribute = [...new Set(uniqueDataAttribute.map(x => x.Attributekey))]
+        filteredArrayAttribute.sort();
+        //this.setState({ProductAttributeHeader:filteredArrayAttribute,          ProductAttributeChild:uniqueDataAttribute                })
+        let filteredArrayAttributeTop5 = filteredArrayAttribute.slice(0, 5);
+        this.setState({ ProductAttributeHeaderTop5: filteredArrayAttributeTop5, ProductAttributeHeaderAll: filteredArrayAttribute, ProductAttributeHeader: filteredArrayAttributeTop5, ProductAttributeChild: uniqueDataAttribute })
+
+        let uniqueData = ProductSpecificationArray.map(ar => JSON.stringify(ar))
+            .filter((item, index, arr) => arr.indexOf(item) === index)
+            .map(str => JSON.parse(str));
+        let filteredArray = [...new Set(uniqueData.map(x => x.Groupkey))]
+        filteredArray.sort();
+        let filteredArrayTop5 = filteredArray.slice(0, 5);
+        this.setState({ ProductSpecificationHeaderTop5: filteredArrayTop5, ProductSpecificationHeaderAll: filteredArray, ProductSpecificationHeader: filteredArrayTop5, ProductSpecificationChild: uniqueData })
+
+        //Expiry Filter
+        let uniqueProductExpiryData = ProductExpiryArray.map(ar => JSON.stringify(ar))
+            .filter((item, index, arr) => arr.indexOf(item) === index)
+            .map(str => JSON.parse(str));
+        this.setState({ ProductExpiryFilterData: uniqueProductExpiryData, expiredProductCount: expiredCount, availableProductCount: availableCount })
+    }
+
+    handleExpiryClick = (event, headerText) => {
+        IsSearchExpiry = 1;
+        if (window.location.href.includes('?')) {
+            this.setState({ expiryClearAllHide: true })
+        }
+        else {
+            this.setState({ expiryClearAllHide: false, specClearAllHide: true, AttributeClearAllHide: true })
+        }
+
+        let countriesGuid = [], checkArray = [], expiredCount = 0, availableCount = 0;
+        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+            JSON.parse(localStorage.userCountries).map(item => {
+                countriesGuid.push(item.countryGuid);
+            })
+        }
+
+        checkArray = selectedExpiryFilterList.filter(x => x === headerText)
+        if (checkArray.length === 0) {
+            selectedExpiryFilterList.push(headerText)
+        }
+
+        this.setState({ selectedProductExpiryFilterData: selectedExpiryFilterList })
+        searchkit.reloadSearch();
+
+        if (this.state.IndexData.length > 0) {
+
+            let Arr1 = this.state.IndexData;
+
+            let data1 = [];
+            Arr1.map((data) => {
+                let present = true;
+                selectedExpiryFilterList.map(item => {
+                    if (data._source.listProductCountryVM !== undefined && data._source.listProductCountryVM !== 'undefined') {
+                        let a = data._source.listProductCountryVM.filter(x => x["countryguid_raw.raw"] === countriesGuid[0] && x["isproductexpired_raw.raw"] === item);
+                        if (a.length > 0) {
+                            present = present && true;
+                        }
+                        else {
+                            present = false;
+                        }
+                    }
+                })
+                if (present === true)
+                    data1.push(data._source);
+            });
+
+            ProductSpecificationArray = []
+            ProductAttributeArray = [];
+            for (let i = 0; i < data1.length; i++) {
+                if (data1[i]['listProductSpecificationVM'].length > 0) {
+                    for (let j = 0; j < data1[i]['listProductSpecificationVM'].length; j++) {
+                        let Arr = { Groupkey: data1[i]['listProductSpecificationVM'][j]["groupkey.raw"], Value: data1[i]['listProductSpecificationVM'][j]["value.raw"] }
+                        ProductSpecificationArray.push(Arr)
+                    }
+                }
+                if (data1[i].listProductAttributeVM.length > 0) {
+                    for (let j = 0; j < data1[i].listProductAttributeVM.length; j++) {
+                        let Arr = { Attributekey: data1[i].listProductAttributeVM[j]["attributekey.raw"], Value: data1[i].listProductAttributeVM[j]["attributevalue.raw"] }
+                        ProductAttributeArray.push(Arr)
+                    }
+                }
+                if (data1[i].listProductCountryVM.length > 0) {
+                    let CountryWiseData = data1[i].listProductCountryVM.filter(x => x["countryguid_raw.raw"] === countriesGuid[0])
+                    if (CountryWiseData.length > 0) {
+                        let filterdata = CountryWiseData[0]["isproductexpired_raw.raw"];
+                        if (filterdata === "Yes") {
+                            expiredCount = expiredCount + 1;
+                        }
+                        else {
+                            availableCount = availableCount + 1;
+                        }
+                        ProductExpiryArray.push(filterdata)
+                    }
+                }
+            }
+        }
+
+        let uniqueData = ProductSpecificationArray.map(ar => JSON.stringify(ar))
+            .filter((item, index, arr) => arr.indexOf(item) === index)
+            .map(str => JSON.parse(str));
+        let filteredArray = [...new Set(uniqueData.map(x => x.Groupkey))]
+        filteredArray.sort();
+        let filteredArrayTop5 = filteredArray.slice(0, 5);
+        this.setState({ ProductSpecificationHeaderTop5: filteredArrayTop5, ProductSpecificationHeaderAll: filteredArray, ProductSpecificationHeader: filteredArrayTop5, ProductSpecificationChild: uniqueData })
+        //this.setState({ProductSpecificationHeader:filteredArray,ProductSpecificationChild:uniqueData})      
+
+        //Attribute Filter
+        let uniqueDataAttribute = ProductAttributeArray.map(ar => JSON.stringify(ar))
+            .filter((item, index, arr) => arr.indexOf(item) === index)
+            .map(str => JSON.parse(str));
+        let filteredArrayAttribute = [...new Set(uniqueDataAttribute.map(x => x.Attributekey))]
+        filteredArrayAttribute.sort();
+        let filteredArrayAttributeTop5 = filteredArrayAttribute.slice(0, 5);
+        this.setState({ ProductAttributeHeaderTop5: filteredArrayAttributeTop5, ProductAttributeHeaderAll: filteredArrayAttribute, ProductAttributeHeader: filteredArrayAttributeTop5, ProductAttributeChild: uniqueDataAttribute })
+    }
+
+    openSpec = () => {
+        this.setState(prevState => ({
+            openSpec: !prevState.openSpec
+        }));
+    }
+    openAttribute = (filterHeader) => {
+        this.setState(prevState => ({
+            openAttribute: !prevState.openAttribute
+        }));
+        this.setState({ attributeFilterViewAllHeader: filterHeader })
+    }
+
+    innerOpenSpec = (id) => {
+        var isRemoveTheFilter = CheckUncheckFilter.filter(item => item.filterName === 'Product Specification' && item.filterValue == id).length > 0 ? true : false;
+        if (isRemoveTheFilter === false) {
+            CheckUncheckFilter.push({
+                filterName: 'Product Specification',
+                filterValue: id
+            });
+
+        } else {
+            var filterIndexdata = CheckUncheckFilter.findIndex(x => x.filterName === 'Product Specification' && x.filterValue === id);
+            if (CheckUncheckFilter.findIndex(x => x.filterName === 'Product Specification' && x.filterValue === id) !== -1) {
+                CheckUncheckFilter.splice(filterIndexdata, 1);
+            }
+        }
+
+        this.setState({ innerOpenSpecId: id })
+        if (this.state.innerOpenSpecId === id) {
+            this.setState({ innerOpenSpecId: null })
+        }
+        this.setState(prevState => ({
+            innerOpenSpec: !prevState.innerOpenSpec
+        }));
+    }
+    innerOpenAttribute = (id) => {
+        this.setState({ innerOpenAttributeId: id })
+        if (this.state.innerOpenAttributeId === id) {
+            this.setState({ innerOpenAttributeId: null })
+        }
+        this.setState(prevState => ({
+            innerOpenAttribute: !prevState.innerOpenAttribute
+        }));
+    }
+    filterView = () => {
+        if (this.state.specFilterViewAll === false) {
+            let FilterList = this.state.ProductSpecificationHeaderAll;
+            this.setState({ ProductSpecificationHeader: FilterList, specFilterViewAll: true })
+        }
+        else {
+            let FilterList = this.state.ProductSpecificationHeaderTop5;
+            this.setState({ ProductSpecificationHeader: FilterList, specFilterViewAll: false })
+        }
+        this.setState(prevState => ({
+            filterView: !prevState.filterView
+        }));
+    }
+
+    filterViewAttribute = (event, filterHeader) => {
+        this.setState({ attributeFilterViewAllHeader: filterHeader })
+        if (this.state.attributeFilterViewAll === false) {
+            this.setState({ attributeFilterViewAll: true })
+        }
+        else {
+            this.setState({ attributeFilterViewAll: false })
+        }
+        this.setState(prevState => ({
+            filterViewAttribute: !prevState.filterViewAttribute
+        }));
+    }
+
+    convertdecimalMinprice(event, inputIdentifier) {
+
+        var a;
+        if (this.state.priceFilterMinPrice !== '') {
+            a = parseFloat(this.state.priceFilterMinPrice).toFixed(2);
+            this.setState({ priceFilterMinPrice: a })
+        }
+        else {
+            this.setState({ priceFilterMinPrice: this.state.defaultMinPrice })
+        }
+    }
+
+    convertdecimalMaxprice(event, inputIdentifier) {
+
+        var b;
+        if (this.state.priceFilterMaxPrice !== '') {
+            b = parseFloat(this.state.priceFilterMaxPrice).toFixed(2);
+            this.setState({ priceFilterMaxPrice: b })
+        }
+        else {
+            this.setState({ priceFilterMaxPrice: this.state.defaultMaxPrice })
+        }
+
+    }
+
+
+    inputChangedHandler = (event, inputIdentifier) => {
+
+        const updatedProductVariantType = {
+            ...this.state.ProductVariantType
+        };
+        updatedProductVariantType[inputIdentifier].value = event.target.value;
+        this.setState({ ProductVariantType: updatedProductVariantType });
+        this.ProductDetailSkuChange(event.target.value, this.props.BasketGuid);
+    }
+
+    updateSpecificationFilterList = (data, length) => {
+        let spec = this.state.specificationListonClick.filter(x => x.Groupkey !== data.Groupkey && x.Value !== data.Value)
+        this.setState({ specificationListonClick: spec });
+        specificationList = spec;
+        if (spec.length === 0) {
+            IsSearchSpecification = 0;
+            specificationList = []
+        }
+
+        if (length === 0) {
+            IsSearchSpecification = 0;
+            IsSearchAttribute = 0;
+            IsSearchExpiry = 0;
+            specificationList = [];
+            AttributeList = [];
+            selectedExpiryFilterList = [];
+            this.setState({ specificationListonClick: '', AttributeListonClick: '', selectedProductExpiryFilterData: '' })
+        }
+        searchkit.reloadSearch();
+    }
+
+    updateAttributeFilterList = (data, length) => {
+        let attributes = this.state.AttributeListonClick.filter(x => x.Attributekey !== data.Attributekey && x.Value !== data.Value)
+        this.setState({ AttributeListonClick: attributes });
+        AttributeList = attributes;
+        if (attributes.length === 0) {
+            IsSearchAttribute = 0;
+            AttributeList = []
+        }
+
+        if (length === 0) {
+            IsSearchSpecification = 0;
+            IsSearchAttribute = 0;
+            IsSearchExpiry = 0;
+            specificationList = [];
+            AttributeList = [];
+            selectedExpiryFilterList = [];
+            this.setState({ specificationListonClick: '', AttributeListonClick: '', selectedProductExpiryFilterData: '' })
+        }
+        searchkit.reloadSearch();
+    }
+
+    updateExpiryFilterList = (data, length) => {
+        let expiryData = this.state.selectedProductExpiryFilterData.filter(x => x !== data)
+        this.setState({ selectedProductExpiryFilterData: expiryData });
+        selectedExpiryFilterList = expiryData;
+        if (expiryData.length === 0) {
+            IsSearchExpiry = 0;
+            selectedExpiryFilterList = []
+        }
+
+        if (length === 0) {
+            IsSearchSpecification = 0;
+            IsSearchAttribute = 0;
+            IsSearchExpiry = 0;
+            specificationList = [];
+            AttributeList = [];
+            selectedExpiryFilterList = [];
+            this.setState({ specificationListonClick: '', AttributeListonClick: '', selectedProductExpiryFilterData: '' })
+        }
+        searchkit.reloadSearch();
+    }
+
+    toggleAccord = (i) => {
+        isAccordionOpenBackClick = i;
+        var previousState = this.state.isAccordionOpen;
+        if (previousState !== i) {
+            this.setState({ isAccordionOpen: i }, function () {
+                if (this.state.isAccordionOpen === i) {
+                    this.setState(prevState => ({
+                        openAccordian: true
+                    }));
+                    openAccordianBackClick = false;
+                }
+            })
+        } else {
+            this.setState({ isAccordionOpen: i }, function () {
+                if (this.state.isAccordionOpen === i) {
+                    this.setState(prevState => ({
+                        openAccordian: !prevState.openAccordian
+                    }));
+                    openAccordianBackClick = this.state.openAccordian === true ? false : true;
+                }
+            })
+        }
+    }
+
+    toggleCategoriesAccord = (i, filterName, filterValue) => {
+        isAccordionOpenBackClick = i;
+        var previousState = this.state.isAccordionOpen;
+        if (previousState !== i) {
+            this.setState({ isAccordionOpen: i }, function () {
+                if (this.state.isAccordionOpen === i) {
+                    this.setState(prevState => ({
+                        openAccordian: true
+                    }));
+                    openAccordianBackClick = false;
+                }
+            })
+        } else {
+            this.setState({ isAccordionOpen: i }, function () {
+                if (this.state.isAccordionOpen === i) {
+                    this.setState(prevState => ({
+                        openAccordian: !prevState.openAccordian
+                    }));
+                    openAccordianBackClick = this.state.openAccordian === true ? false : true;
+                }
+            })
+        }
+    }
+
+    async getElasticDataByCommodityName(indexName, elasticQuery, toCount, commodityName) {
+        let headerQuery = '';
+        if (esHeaderQuery !== '') {
+            headerQuery = headerQuery + esHeaderQuery;
+        }
+
+        if (esHeaderQuery === "") {
+            headerQuery = 'productAlias.keyword:asc';
+        }
+
+        await getElasticData(indexName, elasticQuery, 0, toCount, headerQuery).then(json => {
+            if (json !== null) {
+                let sort = headerQuery.split(':');
+                let fieldName = sort[0];
+                let sortType = sort[1];
+
+                fieldName = fieldName.split('.');
+                let jsonHitsData = [];
+                fieldName = fieldName[0];
+                // if (fieldName === "productAlias") {
+                //     fieldName = 'productAlias.keyword.raw'
+                // }
+                if (sortType === 'asc') {
+                    if (fieldName === "minPrice" || fieldName === "priceSort")
+                    {
+                        jsonHitsData = json.hits.hits.sort((a, b) => (a._source[fieldName] > b._source[fieldName] ? 1 : -1));
+                    }
+                    else {
+                        jsonHitsData = json.hits.hits.sort(function (a, b) {
+                        return a._source[fieldName].localeCompare(b._source[fieldName]) || b._source["supplierCompanyGuid"] - a._source["supplierCompanyGuid"];
+                    //  return a._source[fieldName].localeCompare(b._source[fieldName]) || b._source["minPrice"] - a._source["minPrice"];
+                    });
+                    }
+                }
+                else {
+                    jsonHitsData = json.hits.hits.sort((a, b) => (a._source[fieldName] < b._source[fieldName] ? 1 : -1));
+                }
+                let currentProducts = this.state.currentProducts.length == 0 ? [] : JSON.parse(this.state.currentProducts);
+                let commodityProductsCount = this.state.commodityProductsCount.length == 0 ? [] : this.state.commodityProductsCount;
+                if (this.state.exploredClicked) {
+
+                    for (var i = 0; i < currentProducts.length; i++) {
+                        if (currentProducts[i].commodity === commodityName) {
+                            currentProducts[i].data = jsonHitsData;
+                            currentProducts[i].value = json.hits.total.value
+                        }
+                    }
+                    for (var i = 0; i < commodityProductsCount.length; i++) {
+                        if (commodityProductsCount[i].commodity === commodityName) {
+                            commodityProductsCount[i].value = json.hits.total.value
+                        }
+                    }
+
+                }
+                else {
+                    if (currentProducts.filter(x => x.commodity == commodityName).length == 1) {
+                        for (var i = 0; i < currentProducts.length; i++) {
+                            if (currentProducts[i].commodity === commodityName) {
+                                currentProducts[i].data = jsonHitsData;
+                                currentProducts[i].value = json.hits.total.value
+                            }
+                        }
+                        for (var i = 0; i < commodityProductsCount.length; i++) {
+                            if (commodityProductsCount[i].commodity === commodityName) {
+                                commodityProductsCount[i].value = json.hits.total.value
+                            }
+                        }
+                    }
+                    else {
+                        currentProducts.push({
+                            data: jsonHitsData,
+                            length: toCount,
+                            commodity: commodityName,
+                            value: json.hits.total.value
+                        })
+                        commodityProductsCount.push({
+                            commodity: commodityName,
+                            value: json.hits.total.value
+                        })
+                    }
+                }
+                this.setState({ currentProducts: JSON.stringify(currentProducts), commodityProductsCount: commodityProductsCount }, () => {
+                });
+            }
+
+        }).catch(err => console.log(err));
+    }
+    async getBuyerProductDataByCommodityName(commodityName, countriesGuid, ParentGuid) {
+        let elasticQuery = ''
+
+        if (JSON.parse(localStorage.userType) === RoleCodes.ADMIN) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        else if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "supplierGuid": ParentGuid } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "supplierGuid": ParentGuid } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        else if (JSON.parse(localStorage.userType) === RoleCodes.STRATEGICUSER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "isActive": "true" } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "isActive": "true" } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        else if (JSON.parse(localStorage.userType) === RoleCodes.APPROVER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                //{ match: { "isActive": "true" } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                //{ match: { "isActive": "true" } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        else if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERSUPPORTPERSON) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        else if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                //{ match: { "isActive": "true" } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                //{ match: { "isActive": "true" } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        else if (JSON.parse(localStorage.userType) === RoleCodes.BUYER) {
+            let gradeLevel = [];
+            if (localStorage.gradeLevel !== undefined) {
+                JSON.parse(localStorage.gradeLevel).map(item => {
+                    gradeLevel.push(item.gradeLevel);
+                })
+            }
+            let buyerBusinessType = [], buyerProductLevelCertificates = [], buyerSupplierLevelAdditionalCertificates = [],
+                buyerSupplierLevelMandatoryCertificates = [], tildeSepratedBuyerProductCategories = [];
+            if (buyerPreferencesJSONData.table3 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table3.length > 0) {
+                    buyerPreferencesJSONData.table3.map(item => {
+                        buyerBusinessType.push(item.businessTypeName);
+                    })
+                }
+            }
+            if (buyerPreferencesJSONData.table4 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table4.length > 0) {
+                    buyerPreferencesJSONData.table4.map(item => {
+                        buyerProductLevelCertificates.push(item.productCertificateName);
+                    })
+                }
+            }
+            if (buyerPreferencesJSONData.table5 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table5.length > 0) {
+                    buyerPreferencesJSONData.table5.map(item => {
+                        if (item.documentType === 'Additional') {
+                            buyerSupplierLevelAdditionalCertificates.push(item.supplierDocumentName);
+                        } else {
+                            buyerSupplierLevelMandatoryCertificates.push(item.supplierDocumentGuid);
+                        }
+                    })
+                }
+            }
+            if (buyerPreferencesJSONData.table6 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table6.length > 0) {
+                    buyerPreferencesJSONData.table6.map(item => {
+                        tildeSepratedBuyerProductCategories.push(item.productCategories);
+                    })
+                }
+            }
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "status_raw.raw.keyword": "Approved" } },
+                                { match: { "isActive": "true" } },
+                                { match: { "isSupplierActive": "true" } },
+                                //{ match: { "businessReady": "true" } },
+                                SLISearchproductGuids.length > 0 ?
+                                    { terms: { "productguid_raw.raw.keyword": SLISearchproductGuids } } : '',
+                                tildeSepratedBuyerProductCategories.length > 0 ?
+                                    SLISearchproductGuids.length > 0 ? '' :
+                                        { terms: { "productcategories_raw.raw.keyword": tildeSepratedBuyerProductCategories } } : '',
+                                { terms: { "supplierbusinesstype.raw.keyword": buyerBusinessType } },
+                                { terms: { "listproductcertifications.raw.keyword": buyerProductLevelCertificates } },
+                                {
+                                    bool: {
+                                        should: [
+                                            { terms: { "listproductgradelevel.raw.keyword": gradeLevel } },
+                                            {
+                                                bool: {
+                                                    must_not: [
+                                                        { exists: { field: "listproductgradelevel.raw.keyword" } },
+                                                    ]
+                                                }
+                                            },
+                                            { terms: { "listSupplierMandatoryCertificates.documentguid.raw.keyword": buyerSupplierLevelMandatoryCertificates } },
+                                            { terms: { "listSupplierAdditionalCertificates.documenttitle.raw.keyword": buyerSupplierLevelAdditionalCertificates } },
+                                        ]
+                                    }
+                                },
+                                // {
+                                //     bool: {
+                                //         must: [
+                                //             {
+                                //                 match: { "listBuyerCompanyMaterialTopicRankingVM.companyGuid": localStorage.companyGuid }
+                                //             },
+                                //         ]
+                                //     }
+                                // },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            }
+            else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "status_raw.raw.keyword": "Approved" } },
+                                { match: { "isActive": "true" } },
+                                { match: { "isSupplierActive": "true" } },
+                                //{ match: { "businessReady": "true" } },
+                                SLISearchproductGuids.length > 0 ?
+                                    { terms: { "productguid_raw.raw.keyword": SLISearchproductGuids } } : '',
+                                tildeSepratedBuyerProductCategories.length > 0 ?
+                                    SLISearchproductGuids.length > 0 ? '' :
+                                        { terms: { "productcategories_raw.raw.keyword": tildeSepratedBuyerProductCategories } } : '',
+                                { terms: { "supplierbusinesstype.raw.keyword": buyerBusinessType } },
+                                { terms: { "listproductcertifications.raw.keyword": buyerProductLevelCertificates } },
+                                {
+                                    bool: {
+                                        should: [
+                                            { terms: { "listproductgradelevel.raw.keyword": gradeLevel } },
+                                            {
+                                                bool: {
+                                                    must_not: [
+                                                        { exists: { field: "listproductgradelevel.raw.keyword" } },
+                                                    ]
+                                                }
+                                            },
+                                            { terms: { "listSupplierMandatoryCertificates.documentguid.raw.keyword": buyerSupplierLevelMandatoryCertificates } },
+                                            { terms: { "listSupplierAdditionalCertificates.documenttitle.raw.keyword": buyerSupplierLevelAdditionalCertificates } },
+                                        ]
+                                    }
+                                },
+                                // {
+                                //     bool: {
+                                //         must: [
+                                //             {
+                                //                 match: { "listBuyerCompanyMaterialTopicRankingVM.companyGuid": localStorage.companyGuid }
+                                //             },
+                                //         ]
+                                //     }
+                                // },
+                            ]
+                        }
+                    }
+                };
+            }
+            return elasticQuery;
+        }
+        return elasticQuery;
+    }
+    async onPageChanged() {
+        this.setState({ loadingPage: true })
+        let commodityName = this.state.commodityDisplayOrder
+        let countriesGuid = [];
+        let indexName = "";
+        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+            JSON.parse(localStorage.userCountries).map(item => {
+                countriesGuid.push(item.countryGuid);
+            })
+        }
+
+        var ParentGuid = localStorage.parentUserId !== undefined ? localStorage.parentUserId === '00000000-0000-0000-0000-000000000000' ? localStorage.userId : localStorage.parentUserId : localStorage.userId
+
+        if(localStorage.companyGuid === "8c2d2513-51fa-4024-a442-4bd8a6121a87"){
+            indexName = "f80e3994-6030-49ca-9877-6f1d4c90c1a9_8c2d2513-51fa-4024-a442-4bd8a6121a87_approverbuyerproductlisting_temp";
+        }else{
+            let url = getElasticIndexNew(localStorage.userType, ParentGuid, localStorage.languageId, localStorage.companyGuid);
+            let splitURL = url.replace("https://", "").replace("http://").split("/");
+            if (splitURL.length === 3) {
+                indexName = splitURL[1];
+            } else {
+                for (let i = 0; i < splitURL.length; i++) {
+                    if (i === 1) {
+                        indexName = splitURL[i];
+                    }
+                }
+            }
+        }
+        for (let count = 0; commodityName.length > count; count++) {
+            let commodityArray = [];
+            let elasticQuery = '';
+            let toCount = this.state.currentProducts.length == 0 ? exploreProductCount :
+                JSON.parse(this.state.currentProducts).filter(x => x.commodity == commodityName[count].commodityName)[0] == undefined ? exploreProductCount :
+                    JSON.parse(this.state.currentProducts).filter(x => x.commodity == commodityName[count].commodityName)[0].length;
+            commodityArray.push(commodityName[count].commodityName)
+
+            this.setState({
+                currentCommodity: commodityName[count].commodityName
+            }, () => {
+            });
+            elasticQuery = await this.getBuyerProductDataByCommodityName(commodityArray, countriesGuid, ParentGuid);
+            await this.getElasticDataByCommodityName(indexName, elasticQuery, toCount, commodityName[count].commodityName)
+        }
+        if (commodityName.length > 0)
+            this.setState({ loadingPage: false })
+    }
+    handleExploreProducts(commodityName) {
+        //this.myRef.current.scrollIntoView()
+        window.scrollTo(this.myRef.current);
+        const updatedForm = JSON.parse(this.state.currentProducts);
+        for (var i = 0; i < updatedForm.length; i++) {
+            if (updatedForm[i].commodity === commodityName) {
+                updatedForm[i].length = updatedForm[i].length + exploreProductCount;
+                //updatedForm[i].data = [];
+            }
+        }
+        localStorage.setItem("updatedFormlistingpage", JSON.stringify(updatedForm));
+        this.setState({
+            exploredClicked: true, currentProducts: JSON.stringify(updatedForm)
+        }, () => {
+            this.onPageChanged();
+        });
+    }
+
+    getArraysIntersection(a1, a2) {
+        let commonvalue = [];
+        if (a1.length > 0 && a2.length > 0) {
+            a2.map(item => {
+                if (a1.filter(x => x.Id.toLowerCase() == item.Value.toLowerCase()).length > 0) {
+                    commonvalue.push(a1.filter(x => x.Id.toLowerCase() == item.Value.toLowerCase())[0]);
+                }
+            })
+        }
+        return commonvalue;
+    }
+    getDataAfterFilter = (event, filterName, filterValue1, click, i) => {        
+        if (filterValue1 === 'Product Name ASC' || filterValue1 === 'Product Name DESC' || filterValue1 === 'Price Low to High' || filterValue1 === 'Price High to Low') {
+            this.setState({ sortbyfiltervalue: filterValue1 })
+            var isRemoveTheFilter = false;
+        }
+         else if (filterName === "Search Filter") {
+            var isRemoveTheFilter = false;
+        }
+        else {
+            var isRemoveTheFilter = CheckUncheckFilter.filter(item => item.filterName === filterName && item.filterValue == filterValue1).length > 0 ? true : false;
+        }
+        
+        if (event.target) {
+            event.preventDefault();
+        }
+        window.scrollTo(0, this.myRef.current);
+        var now = new Date().getTime();
+        //var isRemoveTheFilter = CheckUncheckFilter.filter(item => item.filterName === filterName && item.filterValue == filterValue1).length > 0 ? true : false;
+        if (filterName === 'Category' || filterName === 'SubCategory' || filterName === 'Supplier' || window.location.href.includes('?') === true) {
+            isRemoveTheFilter = false;
+            switch (filterName) {
+                case "Category":
+                    if (this.state.appliedFilterList.filter(a => a.Value == filterValue1).length > 0 && this.state.openAccordian == true && this.state.isAccordionOpen === i) {
+                        isRemoveTheFilter = true;
+                    }
+                    break;
+                case "SubCategory":
+                    let splitfiltervalue = filterValue1.split('~');
+                    if (this.state.appliedFilterList.filter(a => a.Category == splitfiltervalue[0] && a.SubCategory == splitfiltervalue[1]).length > 0 && this.state.openAccordianProductType == true && this.state.isAccordionOpenProductType === i) {
+                        isRemoveTheFilter = true;
+                    }
+                    break;
+            }
+        }
+        if (filterName === 'Category') {
+            if (this.state.appliedFilterList.filter(a => a.Value == filterValue1).length == 0) {
+                this.setState({ openAccordianProductType: false })
+            }
+        }
+        //if (filterName === 'SubCategory') {
+        //    let splitfiltervalue = filterValue1.split('~');
+        //    if (this.state.appliedFilterList.filter(a => a.Category == splitfiltervalue[0] && a.SubCategory == splitfiltervalue[1]).length == 0)
+        //        this.setState({ openAccordianProductType: false })
+        //    }
+        //}
+        if (isRemoveTheFilter === false) {
+            if (filterName === 'Category' || filterName === 'SubCategory' || filterName === 'Product Type') {
+                var filterIndexdata = CheckUncheckFilter.findIndex(x => x.filterName === filterName);
+                if (CheckUncheckFilter.findIndex(x => x.filterName === filterName) !== -1) {
+                    CheckUncheckFilter.splice(filterIndexdata, 1);
+                }
+                if (filterName === 'Category') {
+                    var filterIndexdata1 = CheckUncheckFilter.findIndex(x => x.filterName === "SubCategory");
+                    if (CheckUncheckFilter.findIndex(x => x.filterName === filterName) !== -1) {
+                        CheckUncheckFilter.splice(filterIndexdata1, 1);
+                    }
+
+                    var filterIndexdata2 = CheckUncheckFilter.findIndex(x => x.filterName === "Product Type");
+                    if (CheckUncheckFilter.findIndex(x => x.filterName === filterName) !== -1) {
+                        CheckUncheckFilter.splice(filterIndexdata2, 1);
+                    }
+                }
+
+                CheckUncheckFilter.push({
+                    filterName: filterName,
+                    filterValue: filterValue1
+                });
+            } else {
+                CheckUncheckFilter.push({
+                    filterName: filterName,
+                    filterValue: filterValue1
+                });
+            }
+
+        } else {
+            if (filterName === 'Category' || filterName === 'SubCategory') {
+                switch (filterName) {
+                    case "Category":
+                        if (this.state.appliedFilterList.filter(a => a.Category == filterValue1).length > 0 && this.state.openAccordian == true && this.state.isAccordionOpen == i) {
+                            this.state.appliedFilterList.filter(a => a.Category == filterValue1).map(item => {
+                                let removevalue = item.Category + '~' + item.SubCategory;
+                                if (item.SubCategory != item.Value) {
+                                    if (item.SubCategory != '') {
+                                        removevalue = removevalue + '~' + item.Value;
+                                    }
+                                }
+                                var filterIndexdata = CheckUncheckFilter.findIndex(x => x.filterValue === removevalue);
+                                if (CheckUncheckFilter.findIndex(x => x.filterValue === removevalue) !== -1) {
+                                    CheckUncheckFilter.splice(filterIndexdata, 1);
+                                }
+                            })
+                            var filterIndexdata = CheckUncheckFilter.findIndex(x => x.filterName === filterName && x.filterValue === filterValue1);
+                            if (CheckUncheckFilter.findIndex(x => x.filterName === filterName && x.filterValue === filterValue1) !== -1) {
+                                CheckUncheckFilter.splice(filterIndexdata, 1);
+                            }
+                            this.setState(prevState => ({
+                                openAccordianProductType: !prevState.openAccordianProductType
+                            }));
+                        }
+                        break;
+                    case "SubCategory":
+                        let splitfiltervalue = filterValue1.split('~');
+                        if (this.state.appliedFilterList.filter(a => a.Category == splitfiltervalue[0] && a.SubCategory == splitfiltervalue[1]).length > 0 && this.state.openAccordianProductType == true && this.state.isAccordionOpenProductType == i) {
+                            this.state.appliedFilterList.filter(a => a.Category == splitfiltervalue[0] && a.SubCategory == splitfiltervalue[1]).map(item => {
+                                let removevalue = item.Category + '~' + item.SubCategory;
+                                if (item.SubCategory != item.Value) {
+                                    if (item.SubCategory != '') {
+                                        removevalue = removevalue + '~' + item.Value;
+                                    }
+                                }
+                                var filterIndexdata = CheckUncheckFilter.findIndex(x => x.filterValue === removevalue);
+                                if (CheckUncheckFilter.findIndex(x => x.filterValue === removevalue) !== -1) {
+                                    CheckUncheckFilter.splice(filterIndexdata, 1);
+                                }
+                            })
+                        }
+                        break;
+                }
+            }
+            else {
+                var filterIndexdata = CheckUncheckFilter.findIndex(x => x.filterName === filterName && x.filterValue === filterValue1);
+                if (CheckUncheckFilter.findIndex(x => x.filterName === filterName && x.filterValue === filterValue1) !== -1) {
+                    CheckUncheckFilter.splice(filterIndexdata, 1);
+                }
+            }
+        }
+        if (filterName !== "didMount" && event !== "") {
+            SelectioSortelement.filter((item) => {
+                if (item.Value === filterName) {
+                    selectedSort = filterName;
+                }
+            });
+
+            if (selectedSort === undefined) {
+                selectedSort = JSON.parse(localStorage.userType).includes(RoleCodes.BUYER) == true ? 'Product Name ASC' : 'Product Name ASC';
+            }
+        }
+        if (filterName === 'SubCategory') {
+            isAccordionOpenProductTypeBackClick = i;
+            this.setState({ isAccordionOpenProductType: i }, function () {
+                if (this.state.isAccordionOpenProductType === i) {
+                    this.setState(prevState => ({
+                        openAccordianProductType: !prevState.openAccordianProductType
+                    }));
+                    openAccordianProductTypeBackClick = this.state.openAccordianProductType === true ? false : true;
+                }
+            })
+        }
+        isBackButtonClick = false;
+        if (filterName !== "didMount" && event !== "") {
+
+        }
+        let filterValue = '', selectedCategory = '', selectedSubCategory = '', selectedProductType = '';
+        //if (filterName !== "Search Filter" && filterName !== "MOQ"  && filterName !== "Active/Inactive" && filterName !== "Specification" && filterName !== "Sub Category") {
+        if (filterName !== "Search Filter" && filterName !== "MOQ" && filterName !== "Active" && filterName !== "Specification" && filterName !== "Sub Category") {
+            if (filterValue1.includes('-') && filterName === "Price Filter") {
+                filterValue = filterValue1.split('-')[1];
+            } else if (filterValue1.includes('~')) {
+                if (filterName === "Category") {
+                    selectedCategory = filterValue1.split('~')[0];
+                    selectedSubCategory = filterValue1.split('~')[1];
+                }
+                else if (filterName === "SubCategory") {
+                    selectedCategory = filterValue1.split('~')[0];
+                    selectedSubCategory = filterValue1.split('~')[1];
+                    filterValue = filterValue1.split('~')[1];
+                }
+                else if (filterName === "Product Type") {
+                    selectedCategory = filterValue1.split('~')[0];
+                    selectedSubCategory = filterValue1.split('~')[1];
+                    selectedProductType = filterValue1.split('~')[2];
+                    filterValue = filterValue1.split('~')[2];
+                }
+                else {
+                    filterValue = filterValue1.split('~')[1];
+                }
+            }
+            else {
+                filterValue = filterValue1;
+            }
+        }
+        else {
+            filterValue = filterValue1;
+        }
+        if (filterName === "Commodity") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: true, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Category") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: true, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "SubCategory") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: true, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Brand") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: true, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Material") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: true, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Supplier") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: true, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Manufacturing Country") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: true, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Industry") {
+            this.setState({ isproductindustriesClick: true, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Green Properties") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: true, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Supplier Accreditation") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: true, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Carbon Emission") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: true, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Product Expiry") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: true, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        //else if (filterName === "Active/Inactive") {
+        else if (filterName === "Active") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: true, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "MOQ") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: true, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Buying Window") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: true, isNewArrivalClick: false, isPriceFilterClick: false, buyingwindowFilterText: "Buying Window", isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "New Arrival") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: true, isPriceFilterClick: false, newarrivalFilterText: "New Arrival", isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Price Filter") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: true, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Specification") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: true, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Attribute") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: true, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Grade Level") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: true, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Product Certification") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Product Type") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: true, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Product Status") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: true, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "Sustainability Certificate") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: true, isProductWithoutPrice: false, isProductWithPrice: false });
+        }
+        else if (filterName === "ProductWithoutPrice") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: true, isProductWithPrice: false });
+        }
+        else if (filterName === "ProductWithPrice") {
+            this.setState({ isproductindustriesClick: false, isCommodityClick: false, isCategoryClick: false, isBrandClick: false, isMaterialClick: false, isSupplierClick: false, isCountryClick: false, isGreenPropertyClick: false, isSupplierAccreditationClick: false, isCarbonEmissionClick: false, isproductExpiredClick: false, isActiveProductClick: false, isMOQClick: false, isBuyingWindowClick: false, isNewArrivalClick: false, isPriceFilterClick: false, isSpecificationClick: false, isAttributeClick: false, isGradeLevelClick: false, isProductCertificationClick: false, isProductStatusClick: false, isSustainabilityCertificateClick: false, isProductWithoutPrice: false, isProductWithPrice: true });
+        }
+        let appliedFilterList = "";
+        if (filterName === "didMount") {
+            appliedFilterList = appliedFilterListAll;
+        } else {
+            appliedFilterList = appliedFilterListAll;
+
+        }
+        if (filterValue1 === 'Product Name DESC' || filterValue1 === 'Price Low to High' || filterValue1 === 'Price High to Low') {
+            appliedFilterList = appliedFilterList.filter(x => x.Value != 'Product Name ASC');
+
+        }
+        else if (filterValue1 === 'Product Name ASC' || filterValue1 === 'Price Low to High' || filterValue1 === 'Price High to Low') {
+            appliedFilterList = appliedFilterList.filter(x => x.Value != 'Product Name ASC');
+        }
+        else if (filterValue1 === 'Product Name ASC' || filterValue1 === 'Product Name DESC' || filterValue1 === 'Price High to Low') {
+            appliedFilterList = appliedFilterList.filter(x => x.Value != 'Price Low to High');
+        }
+        else if (filterValue1 === 'Product Name ASC' || filterValue1 === 'Product Name DESC' || filterValue1 === 'Price Low to High') {
+            appliedFilterList = appliedFilterList.filter(x => x.Value != 'Price High to Low');
+        }
+
+        let appliedFilterListId = [];
+        if (appliedFilterList.length > 0 && filterName !== "didMount") {
+            for (let i = 0; i < appliedFilterList.length; i++) {
+                let process = false;
+                if (filterName.toLowerCase() == "category" || filterName.toLowerCase() == "subcategory" || filterName.toLowerCase() == "product type") {
+                    if (filterName.toLowerCase() == "category") {
+                        if (appliedFilterList[i].Id === filterName && appliedFilterList[i].Value === filterValue) {
+                            process = true;
+                        }
+                    }
+                    else if (filterName.toLowerCase() == "subcategory") {
+                        if (appliedFilterList[i].Id === filterName && appliedFilterList[i].Value === filterValue && appliedFilterList[i].Category === selectedCategory) {
+                            process = true;
+                        }
+                    }
+                    else {
+                        if (appliedFilterList[i].Id === filterName && appliedFilterList[i].Value === filterValue && appliedFilterList[i].Category === selectedCategory && appliedFilterList[i].SubCategory === selectedSubCategory) {
+                            process = true;
+                        }
+                    }
+                }
+                if (process) {
+                    let categoryarray = [];
+                    if (isRemoveTheFilter == true) {
+                        categoryarray = this.getArraysIntersection(this.state.categoryList, this.state.categoryFilterList);
+                    }
+                    if (filterName.toLowerCase() == "category") {
+                        if (categoryarray.length > 0) {
+                            categoryarray.map(item => {
+                                appliedFilterList = appliedFilterList.filter(x => x.Value != filterValue);
+                                if (item.Id == filterValue) {
+                                    if (item.subCategory.length > 0) {
+                                        let subcatsitem = this.getArraysIntersection(item.subCategory, this.state.subCategoryFilterList);
+                                        subcatsitem.map(subitem => {
+                                            appliedFilterList = appliedFilterList.filter(x => x.Category != item.Id);
+                                            let productstype = this.getArraysIntersection(subitem.productType, this.state.productTypeFilterList);
+                                            productstype.map(proitem => {
+                                                appliedFilterList = appliedFilterList.filter(x => x.Category != item.Id);
+                                            })
+                                        })
+                                    }
+                                }
+                            })
+                        }
+                    }
+                    else if (filterName.toLowerCase() == "subcategory") {
+                        if (categoryarray.length > 0) {
+                            categoryarray.map(item => {
+                                if (item.subCategory.length > 0) {
+                                    let subsplit = filterValue1.split('~');
+                                    let index = 0;
+                                    index = appliedFilterList.findIndex(x => x.Value == subsplit[1] && x.Category == subsplit[0]);
+                                    if (appliedFilterList.findIndex(x => x.Value == subsplit[1] && x.Category == subsplit[0]) != -1) {
+                                        appliedFilterList.splice(index, 1);
+                                    }
+                                    appliedFilterList.filter(x => x.Category == subsplit[0] && x.SubCategory == subsplit[1]).map(items => {
+                                        let indexs = 0;
+                                        indexs = appliedFilterList.findIndex(x => x.Id == "Product Type" && x.Value == items.Value && x.Category == items.Category && x.SubCategory == items.SubCategory);
+                                        if (appliedFilterList.findIndex(x => x.Id == "Product Type" && x.Value == items.Value && x.Category == items.Category && x.SubCategory == items.SubCategory) != -1) {
+                                            appliedFilterList.splice(indexs, 1);
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    }
+                    else if (filterName.toLowerCase() == "product type") {
+                        if (categoryarray.length > 0) {
+                            categoryarray.map(item => {
+                                if (item.subCategory.length > 0) {
+                                    let subcatsitem = this.getArraysIntersection(item.subCategory, this.state.subCategoryFilterList);
+                                    subcatsitem.map(subitem => {
+                                        let productstype = this.getArraysIntersection(subitem.productType, this.state.productTypeFilterList);
+                                        productstype.map(proitem => {
+                                            let subsplit = filterValue1.split('~');
+                                            let index = 0;
+                                            index = appliedFilterList.findIndex(x => x.Value == subsplit[2] && x.Category == subsplit[0] && x.SubCategory == subsplit[1]);
+                                            if (appliedFilterList.findIndex(x => x.Value == subsplit[2] && x.Category == subsplit[0] && x.SubCategory == subsplit[1]) != -1) {
+                                                appliedFilterList.splice(index, 1);
+                                            }
+                                        })
+                                    })
+                                }
+                            })
+                        }
+                    }
+                }
+                else {                   
+                    if (appliedFilterList[i].Id === filterName && appliedFilterList[i].Value === filterValue && appliedFilterList[i].Click !== click) {
+                        if (filterName.toLowerCase() != "category" && filterName.toLowerCase() == "subcategory" && filterName.toLowerCase() == "product type") {
+                            let index = 0;
+                            index = appliedFilterList.findIndex(x => x.Id === filterName && x.Value === filterValue);
+                            if (appliedFilterList.findIndex(x => x.Id === filterName && x.Value === filterValue) !== -1) {
+                                appliedFilterList.splice(index, 1);
+                            }
+                        }
+                    }
+                    else {
+                        if (filterName !== 'MOQ' && (filterValue.includes('asc') || filterValue.includes('desc'))) {
+                            let index = 0;
+                            index = appliedFilterList.findIndex(x => x.Id === filterName && (x.Value.includes('asc') || x.Value.includes('desc')));
+                            if (appliedFilterList.findIndex(x => x.Id === filterName && (x.Value.includes('asc') || x.Value.includes('desc'))) === -1) {
+
+                                appliedFilterList.push({
+                                    Id: filterName,
+                                    Value: filterValue,
+                                    Click: click
+                                })
+                            } else {
+                                appliedFilterList.splice(index, 1);
+                            }
+                        }
+                        else if (filterName === 'ProductWithoutPrice') {
+                            let queryIndexPricewithout = appliedFilterList.findIndex(x => x.Id === 'ProductWithPrice');
+                            if (queryIndexPricewithout !== -1) {
+                                appliedFilterList.splice(queryIndexPricewithout, 1);
+                            }
+                            if (appliedFilterList.findIndex(x => x.Id === 'ProductWithoutPrice') === -1) {
+                                appliedFilterList.push({
+                                    Id: filterName,
+                                    Value: filterValue,
+                                    Click: click
+                                })
+                            }
+                        }
+                        else if (filterName === 'ProductWithPrice') {
+                            let queryIndexPricewith = appliedFilterList.findIndex(x => x.Id === 'ProductWithoutPrice');
+                            if (queryIndexPricewith !== -1) {
+                                appliedFilterList.splice(queryIndexPricewith, 1);
+                            }
+                            if (appliedFilterList.findIndex(x => x.Id === 'ProductWithPrice') === -1) {
+                                appliedFilterList.push({
+                                    Id: filterName,
+                                    Value: filterValue,
+                                    Click: click
+                                })
+                            }
+                        }
+                        else {
+                            if (filterName === 'Category' || filterName === 'SubCategory' || filterName === 'Product Type') {
+                                switch (filterName) {
+                                    case 'Category':
+                                        if (appliedFilterList.findIndex(x => x.Id === filterName && x.Value === filterValue) === -1) {
+                                            appliedFilterList.push({
+                                                Id: filterName,
+                                                Value: filterValue,
+                                                Click: click
+                                            })
+                                        }
+                                        break;
+                                    case 'SubCategory':
+                                        if (appliedFilterList.findIndex(x => x.Id === filterName && x.Value === filterValue && x.Category === selectedCategory) === -1) {
+                                            appliedFilterList.push({
+                                                Id: filterName,
+                                                Value: filterValue,
+                                                Click: click,
+                                                Category: selectedCategory,
+                                                SubCategory: selectedSubCategory
+                                            })
+                                        }
+                                        appliedFilterList.filter(x => x.Id == 'SubCategory').map(filter => {
+                                            if(categoryListAllData.length > 0){
+                                                categoryListAllData.filter(x => x.Id == filter.Category)[0].subCategory.filter(y => y.Id === filter.SubCategory).map(item => {
+                                                    item.productType.map(addType => {
+                                                        if (appliedFilterList.findIndex(x => x.Id === "Product Type" && x.Value === addType.Id && x.Category === filter.Category && x.SubCategory === filter.SubCategory) === -1) {
+                                                            appliedFilterList.push({
+                                                                Id: "Product Type",
+                                                                Value: addType.Id,
+                                                                Click: click,
+                                                                Category: filter.Category,
+                                                                SubCategory: filter.SubCategory
+                                                            })
+                                                        }
+                                                    })
+                                                })
+                                            }
+                                        })
+
+                                        break;
+                                    case 'Product Type':
+                                        if (appliedFilterList.findIndex(x => x.Id === filterName && x.Value === filterValue && x.Category === selectedCategory && x.SubCategory === selectedSubCategory) === -1) {
+                                            appliedFilterList.push({
+                                                Id: filterName,
+                                                Value: filterValue,
+                                                Click: click,
+                                                Category: selectedCategory,
+                                                SubCategory: selectedSubCategory
+                                            })
+                                        }
+                                        break;
+                                }
+                            }
+                            else {                                
+                                if (appliedFilterList.findIndex(x => x.Id === filterName && x.Value === filterValue) === -1) {
+                                    appliedFilterList.push({
+                                        Id: filterName,
+                                        Value: filterValue,
+                                        Click: click
+                                    })
+                                }
+                                else if (appliedFilterList.findIndex(x => x.Id === filterName && x.Value === filterValue) !== -1) {
+                                    let listFiletr = appliedFilterList;                           
+                                    listFiletr.filter(x => x.Id === "Search Filter" && x.Value !== filterValue).map(y => {
+                                        let index = appliedFilterList.findIndex(item => item.Id === "Search Filter" && item.Value === y.Value)
+
+                                        if (localStorage.previousPage === 'chatbot') {
+                                            localStorage.removeItem('previousPage');
+                                        }
+                                        // else {
+                                        //     appliedFilterList.splice(index, 1)
+                                        // }
+                                    })
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            if (filterName !== "didMount") {
+                if (filterName === "Category" && filterValue1.includes('~')) {
+                    appliedFilterList.push({
+                        Id: filterName,
+                        Value: selectedCategory,
+                        Click: click
+                    })
+                    if (selectedSubCategory !== "") {
+                        appliedFilterList.push({
+                            Id: "SubCategory",
+                            Value: selectedSubCategory,
+                            Click: click
+                        })
+                    }
+                    if (selectedProductType !== "") {
+                        appliedFilterList.push({
+                            Id: "ProductType",
+                            Value: selectedProductType,
+                            Click: click
+                        })
+                    }
+                } else {
+                    
+                    appliedFilterList.push({
+                        Id: filterName,
+                        Value: filterValue,
+                        Click: click
+                    })
+                }
+            }
+        }
+        if (isRemoveTheFilter === true) {
+            let categoryarray = this.getArraysIntersection(this.state.categoryList, this.state.categoryFilterList);
+            if (filterName.toLowerCase() == "category") {
+                if (categoryarray.length > 0) {
+                    categoryarray.map(item => {
+                        appliedFilterList = appliedFilterList.filter(x => x.Value != filterValue);
+                        if (item.Id == filterValue) {
+                            if (item.subCategory.length > 0) {
+                                let subcatsitem = this.getArraysIntersection(item.subCategory, this.state.subCategoryFilterList);
+                                subcatsitem.map(subitem => {
+                                    appliedFilterList = appliedFilterList.filter(x => x.Category != item.Id);
+                                    let productstype = this.getArraysIntersection(subitem.productType, this.state.productTypeFilterList);
+                                    productstype.map(proitem => {
+                                        appliedFilterList = appliedFilterList.filter(x => x.Category != item.Id);
+                                    })
+                                })
+                            }
+                        }
+                    })
+                }
+            }
+            else if (filterName.toLowerCase() == "subcategory") {
+                if (categoryarray.length > 0) {
+                    categoryarray.map(item => {
+                        if (item.subCategory.length > 0) {
+                            let subsplit = filterValue1.split('~');
+                            let index = 0;
+                            index = appliedFilterList.findIndex(x => x.Value == subsplit[1] && x.Category == subsplit[0]);
+                            if (appliedFilterList.findIndex(x => x.Value == subsplit[1] && x.Category == subsplit[0]) != -1) {
+                                appliedFilterList.splice(index, 1);
+                            }
+                            appliedFilterList.filter(x => x.Category == subsplit[0] && x.SubCategory == subsplit[1]).map(items => {
+                                let indexs = 0;
+                                indexs = appliedFilterList.findIndex(x => x.Id == "Product Type" && x.Value == items.Value && x.Category == items.Category && x.SubCategory == items.SubCategory);
+                                if (appliedFilterList.findIndex(x => x.Id == "Product Type" && x.Value == items.Value && x.Category == items.Category && x.SubCategory == items.SubCategory) != -1) {
+                                    appliedFilterList.splice(indexs, 1);
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+            else if (filterName.toLowerCase() == "product type") {
+                if (categoryarray.length > 0) {
+                    categoryarray.map(item => {
+                        if (item.subCategory.length > 0) {
+                            let subcatsitem = this.getArraysIntersection(item.subCategory, this.state.subCategoryFilterList);
+                            subcatsitem.map(subitem => {
+                                let productstype = this.getArraysIntersection(subitem.productType, this.state.productTypeFilterList);
+                                productstype.map(proitem => {
+                                    let subsplit = filterValue1.split('~');
+                                    let index = 0;
+                                    index = appliedFilterList.findIndex(x => x.Value == subsplit[2] && x.Category == subsplit[0] && x.SubCategory == subsplit[1]);
+                                    if (appliedFilterList.findIndex(x => x.Value == subsplit[2] && x.Category == subsplit[0] && x.SubCategory == subsplit[1]) != -1) {
+                                        appliedFilterList.splice(index, 1);
+                                    }
+                                })
+                            })
+                        }
+                    })
+                }
+            }
+            else {               
+                if (appliedFilterList.filter(x => x.Id.toLowerCase() === filterName.toLowerCase() && x.Value.toLowerCase() === filterValue.toLowerCase()).length > 0) {
+                    let filterIndex = 0;
+                    filterIndex = appliedFilterList.findIndex(x => x.Id.toLowerCase() === filterName.toLowerCase() && x.Value.toLowerCase() === filterValue.toLowerCase());
+                    if (appliedFilterList.findIndex(x => x.Id.toLowerCase() === filterName.toLowerCase() && x.Value.toLowerCase() === filterValue.toLowerCase()) !== -1) {
+                        appliedFilterList.splice(filterIndex, 1);
+                    }
+                    var filterIndexdata2 = CheckUncheckFilter.findIndex(x => x.Id.toLowerCase() === filterName.toLowerCase() && x.Value.toLowerCase() === filterValue.toLowerCase());
+                    if (CheckUncheckFilter.findIndex(x => x.Id.toLowerCase() === filterName.toLowerCase() && x.Value.toLowerCase() === filterValue.toLowerCase()) !== -1) {
+                        CheckUncheckFilter.splice(filterIndexdata2, 1);
+                    }
+                }
+            }
+        }
+        else {
+            if (filterName === "Search Filter") {
+                appliedFilterList = appliedFilterList.filter(x => x.Id.toLowerCase() !== filterName.toLowerCase())
+                appliedFilterList.push({
+                    Id: filterName,
+                    Value: filterValue,
+                    Click: click
+                })
+
+            }
+        }
+
+        let commodityFilterList1 = "", brandFilterList1 = "",
+            commodityFilterList = [], brandFilterList = [], supplierFilterList = [], materialFilterList = [], categoryFilterList = [], subCategoryFilterList = [],
+            searchFilter = "", countryFilterList = [], greenPropertyFilterList = [], supplierAccreditationFilterList = [], carbonEmissionFilterList = [],
+            productExpiryFilterList = [], activeProductFilterList = [], moqFilterList = [], BWFilter = '', newArrivalFilter = '', specificationFilterList = [],
+            attributeFilterList = [], gradeLevelFilterList = [], productCertificationFilterList = [], productTypeFilterList = [], productStatusFilterList = [],
+            sustainabilityCertificateFilterList = [], productWithoutPriceList = [], productWithPriceList = [], productIndustries = [];
+        let checkeditem = 0;
+        if (filterName !== "didMount") {
+            this.state.filterList.map((option, i) => {
+                if (option.title === 'Category') {
+                    this.state.categoryList.map((x, a) => {
+                        if (appliedFilterList.filter(item => item.Value == x.Id).length > 0) {
+                            checkeditem = parseInt(checkeditem) + 1;
+                        }
+                        if (x.subCategory.length > 0) {
+                            x.subCategory.map((y, j) => {
+                                if (appliedFilterList.filter(item => item.Value == (y.Id) && item.Category == x.Id).length > 0) {
+                                    checkeditem = parseInt(checkeditem) + 1;
+                                }
+                                if (y.productType.length > 0) {
+                                    y.productType.map(z => {
+                                        if (appliedFilterList.filter(item => item.Value == (z.Id) && item.Category == x.Id && item.SubCategory == y.Id).length > 0) {
+                                            checkeditem = parseInt(checkeditem) + 1;
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+                if (option.title === 'SubCategory') {
+                    this.state.categoryList.map((x, a) => {
+                        // if (appliedFilterList.filter(item => item.Value == x.Id).length > 0) {
+                        //     checkeditem = parseInt(checkeditem) + 1;
+                        // }
+                        if (x.subCategory.length > 0) {
+                            x.subCategory.map((y, j) => {
+                                if (appliedFilterList.filter(item => item.Value == (y.Id) && item.Category == x.Id).length > 0) {
+                                    checkeditem = parseInt(checkeditem) + 1;
+                                }
+                                if (y.productType.length > 0) {
+                                    y.productType.map(z => {
+                                        if (appliedFilterList.filter(item => item.Value == (z.Id) && item.Category == x.Id && item.SubCategory == y.Id).length > 0) {
+                                            checkeditem = parseInt(checkeditem) + 1;
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
+                this.state.FilterDataList.filter(x => x.Filter === option.filterName).map((x) => {
+                    if (appliedFilterList.filter(item => item.Value == x.Id).length > 0) {
+                        checkeditem = parseInt(checkeditem) + 1;
+                    }
+                })
+            })
+            if (this.state.ProductSpecificationHeader != null && this.state.ProductSpecificationHeader != undefined && this.state.ProductSpecificationHeader != "") {
+                this.state.ProductSpecificationHeader.map((x, i) => {
+                    this.state.ProductSpecificationChild.filter(y => y.Groupkey === x).map((z) => {
+                        if (appliedFilterList.filter(item => item.Value == (z.Groupkey + ':' + z.Value)).length > 0) {
+                            checkeditem = parseInt(checkeditem) + 1;
+                        }
+                    })
+                })
+            }
+            if (this.state.ProductAttributeHeader != null && this.state.ProductAttributeHeader != undefined && this.state.ProductAttributeHeader != "") {
+                this.state.ProductAttributeHeader.map((x, i) => {
+                    this.state.ProductAttributeChild.filter(y => y.Attributekey === x).map((z) => {
+                        if (appliedFilterList.filter(item => item.Value == (z.Attributekey + ':' + z.Value)).length > 0) {
+                            checkeditem = parseInt(checkeditem) + 1;
+                        }
+                    })
+                })
+            }
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'commodity').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'supplier').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'search filter').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'productwithoutprice').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'productwithprice').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'category').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'product name asc').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'product name desc').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'price low to high').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'price high to low').length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+            if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'price filter').length > 0) {
+                let rangevalue = appliedFilterList.filter(item => item.Id.toLowerCase() == 'price filter')[0].Value;
+                if (rangevalue.includes('-')) {
+                    let splitvalue = rangevalue.split('-');
+                    priceRangeMinData = splitvalue[0].trim();
+                    priceRangeMaxData = splitvalue[1].trim();
+                }
+                else {
+                    priceRangeMinData = rangevalue.trim();
+                    priceRangeMaxData = this.state.priceFilterMaxPrice.trim();
+                }
+            }
+
+        }
+        else {
+            if (appliedFilterList.length > 0) {
+                checkeditem = parseInt(checkeditem) + 1;
+            }
+
+        }
+        if (checkeditem == 0) {
+            appliedFilterList = [];
+        }
+        if (appliedFilterList.length > 0) {
+            appliedFilterList.map(list => {
+                if (list.Id === "Commodity") {
+                    if (commodityFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        commodityFilterList.push(list.Value);
+                        commodityFilterList1 = commodityFilterList1 + '"' + list.Value + '",';
+                    }
+                }
+                else if (list.Id === "Brand") {
+                    if (brandFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        brandFilterList.push(list.Value.toLowerCase());
+                        brandFilterList1 = brandFilterList1 + '"' + list.Value + '",';
+                    }
+                }
+                else if (list.Id === "Supplier") {
+                    if (supplierFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        supplierFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "Material") {
+                    if (materialFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        //materialFilterList.push(list.Value);
+                        materialFilterList.push(list.Value.toLowerCase());
+                    }
+                }
+                else if (list.Id === "Category") {
+                    //subCategoryFilterList = [];
+                    //if (selectedCategory === "") {
+                    if (categoryFilterList.length > 0) {
+                        //categoryFilterList = [];
+                        categoryFilterList.push({ Value: list.Value.toLowerCase() });
+                    } else {
+                        categoryFilterList.push({ Value: list.Value.toLowerCase() });
+                    }
+                    // } else {
+                    //     if (categoryFilterList.length > 0) {
+                    //         categoryFilterList = [];
+                    //         categoryFilterList.push(selectedCategory);
+                    //     } else {
+                    //         categoryFilterList.push(selectedCategory);
+                    //     }
+                    // }
+                }
+                else if (list.Id === "SubCategory") {
+                    //categoryFilterList = [];
+                    //if (selectedSubCategory === "") {
+                    if (subCategoryFilterList.length > 0) {
+                        //subCategoryFilterList = [];
+                        subCategoryFilterList.push({ Category: list.Category, SubCategory: list.SubCategory, Value: list.Value.toLowerCase() });
+                    } else {
+                        subCategoryFilterList.push({ Category: list.Category, SubCategory: list.SubCategory, Value: list.Value.toLowerCase() });
+                    }
+                    // } else {
+                    //     if (subCategoryFilterList.length > 0) {
+                    //         subCategoryFilterList = [];
+                    //         subCategoryFilterList.push(selectedSubCategory);
+                    //     } else {
+                    //         subCategoryFilterList.push(selectedSubCategory);
+                    //     }
+                    // }
+                }
+                else if (list.Id === "Search Filter") {
+                    searchFilter = list.Value;
+                    this.setState({ searchFilterText: searchFilter })
+                }
+                else if (list.Id === "Manufacturing Country") {
+                    if (countryFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        countryFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "Industry") {
+                    if (productIndustries.findIndex(x => x.Value === list.Value) === -1) {
+                        productIndustries.push(list.Value);
+                    }
+                }
+                else if (list.Id === "Green Properties") {
+                    if (greenPropertyFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        greenPropertyFilterList.push(list.Value.toLowerCase());
+                    }
+                }
+                else if (list.Id === "Supplier Accreditation") {
+                    if (supplierAccreditationFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        supplierAccreditationFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "Carbon Emission") {
+                    if (carbonEmissionFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        carbonEmissionFilterList.push(list.Value);
+                    }
+                }
+                //else if (list.Id === "Active/Inactive") {
+                else if (list.Id === "Active") {
+                    if (JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.BUYER) {
+                        let data = list.Value === 'Active' ? true : false;
+                        //if (activeProductFilterList.findIndex(x => x.Value === data) === -1) {
+                        if (activeProductFilterList.length > 0) {
+                            activeProductFilterList = [];
+                            activeProductFilterList.push(data);
+                        } else {
+                            activeProductFilterList.push(data);
+                        }
+                    } else {
+                        let data = list.Value === 'Active' ? "true" : "false";
+                        //if (activeProductFilterList.findIndex(x => x.Value === data) === -1) {
+                        if (activeProductFilterList.length > 0) {
+                            activeProductFilterList = [];
+                            activeProductFilterList.push(data);
+                        } else {
+                            activeProductFilterList.push(data);
+                        }
+                    }
+                }
+                else if (list.Id === "Product Expiry") {
+                    if (productExpiryFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        productExpiryFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "MOQ") {
+                    if (moqFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        moqFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "Buying Window") {
+                    BWFilter = list.Id;
+                }
+                else if (list.Id === "New Arrival") {
+                    newArrivalFilter = list.Id;
+                }
+                else if (list.Id === "Specification") {
+                    if (specificationFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        specificationFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "Attribute") {
+                    if (attributeFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        attributeFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "Grade Level") {
+                    if (gradeLevelFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        gradeLevelFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "Product Certification") {
+                    if (productCertificationFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        productCertificationFilterList.push(list.Value.toLowerCase());
+                    }
+                }
+                else if (list.Id === "Product Type") {
+                    //if (selectedProductType === "") {
+                    if (productTypeFilterList.length > 0) {
+                        //productTypeFilterList = [];
+                        productTypeFilterList.push({ Category: list.Category, SubCategory: list.SubCategory, Value: list.Value });
+                    } else {
+                        productTypeFilterList.push({ Category: list.Category, SubCategory: list.SubCategory, Value: list.Value });
+                    }
+                    // } else {
+                    //     if (productTypeFilterList.length > 0) {
+                    //         productTypeFilterList = [];
+                    //         productTypeFilterList.push(selectedProductType);
+                    //     } else {
+                    //         productTypeFilterList.push(selectedProductType);
+                    //     }
+                    // }
+                }
+                else if (list.Id === "Product Status") {
+                    if (productStatusFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        productStatusFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "Sustainability Certificate") {
+                    if (sustainabilityCertificateFilterList.findIndex(x => x.Value === list.Value) === -1) {
+                        sustainabilityCertificateFilterList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "ProductWithoutPrice") {
+                    if (productWithoutPriceList.findIndex(x => x.Value === list.Value) === -1) {
+                        productWithoutPriceList.push(list.Value);
+                    }
+                }
+                else if (list.Id === "ProductWithPrice") {
+                    if (productWithPriceList.findIndex(x => x.Value === list.Value) === -1) {
+                        productWithPriceList.push(list.Value);
+                    }
+                }
+                else {
+                    if (appliedFilterListId.findIndex(x => x.Id === list.Id) === -1) {
+                        appliedFilterListId.push({ Id: list.Id });
+                    }
+                }
+            });
+        }
+        let allProductsList = [], elasticQuery = [], headerQuery = '';
+        let productArray = this.state.IndexData;
+        let priceFilterData = '';
+        let appliedFilterListESQuery = this.getUnique(appliedFilterList, 'Id');
+
+        if (appliedFilterListESQuery.length > 0) {//alert('ggg')
+            for (let j = 0; j < appliedFilterListESQuery.length; j++) {
+                if (appliedFilterListESQuery[j].Id === 'Search Filter') {
+                    appliedFilterListESQuery[j].Value = searchFilter;
+                    appliedFilterListESQuery[j].Click = false;
+                    if (searchFilter !== "") {
+                        elasticQuery.push({ "multi_match": { "query": searchFilter, "type": "phrase_prefix", "fields": ["productCode", "productName", "tagAttributes", "productAlias"], "operator": "or" } });
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Price Filter') {
+
+                    if (priceRangeMinData !== "" && priceRangeMaxData !== "" && this.state.priceFilterMinPrice === "" && this.state.priceFilterMaxPrice === "") {
+                        appliedFilterListESQuery[j].Value = priceRangeMinData + ' - ' + priceRangeMaxData;
+                        appliedFilterListESQuery[j].Click = false;
+                        elasticQuery.push({ "range": { "minPrice": { "gte": priceRangeMinData, "lte": priceRangeMaxData } } });
+                    } else {
+                        appliedFilterListESQuery[j].Value = this.state.priceFilterMinPrice + ' - ' + this.state.priceFilterMaxPrice;
+                        appliedFilterListESQuery[j].Click = false;
+                        elasticQuery.push({ "range": { "minPrice": { "gte": this.state.priceFilterMinPrice, "lte": this.state.priceFilterMaxPrice } } });
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'ProductWithoutPrice') {
+
+                    appliedFilterListESQuery[j].Value = appliedFilterListESQuery[j].Value;
+                    appliedFilterListESQuery[j].Click = false;
+                    //elasticQuery.push({ "bool": { "must": [{ "match": { "minPrice": 0 } }] } });
+                    elasticQuery.push({ bool: { must: [{ match: { "minPrice": 0 } },] } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'ProductWithPrice') {
+                    appliedFilterListESQuery[j].Value = appliedFilterListESQuery[j].Value;
+                    appliedFilterListESQuery[j].Click = false;
+                    //elasticQuery.push({ "bool": { "must_not": [{ "match": { "minPrice": 0 } }] } });
+                    elasticQuery.push({ bool: { must_not: [{ match: { "minPrice": 0 } },] } });
+
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Preferred Certificates') {
+                    appliedFilterListESQuery[j].Value = 'Preferred Certificates';
+                    appliedFilterListESQuery[j].Click = false;
+                    //headerQuery = 'listBuyerCompanyMaterialTopicRankingVM.supplierRank:asc';
+                    headerQuery = 'productAlias.keyword:asc';
+                    if ((localStorage.previousPath !== 'product-details' || !localStorage.previousPath.includes('rfqlisting') || localStorage.previousPath !== 'create-rfq')) {
+                        totalProductCount = totalProductCount + 1;
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Product Name ASC') {
+                    appliedFilterListESQuery[j].Value = 'Product Name ASC';
+                    appliedFilterListESQuery[j].Click = false;
+                    headerQuery = 'productAlias.keyword:asc';
+                    if ((localStorage.previousPath !== 'product-details' || !localStorage.previousPath.includes('rfqlisting') || localStorage.previousPath !== 'create-rfq')) {
+                        totalProductCount = totalProductCount + 1;
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Product Name DESC') {
+                    appliedFilterListESQuery[j].Value = 'Product Name DESC';
+                    appliedFilterListESQuery[j].Click = false;
+                    headerQuery = 'productAlias.keyword:desc';
+                    if ((localStorage.previousPath !== 'product-details' || !localStorage.previousPath.includes('rfqlisting') || localStorage.previousPath !== 'create-rfq')) {
+                        totalProductCount = totalProductCount + 1;
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Price Low to High') {
+                    appliedFilterListESQuery[j].Value = 'Price Low to High';
+                    appliedFilterListESQuery[j].Click = false;
+                    headerQuery = 'priceSort:asc' //'minPrice:asc';
+                    if ((localStorage.previousPath !== 'product-details' || !localStorage.previousPath.includes('rfqlisting') || localStorage.previousPath !== 'create-rfq')) {
+                        totalProductCount = totalProductCount + 1;
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Price High to Low') {
+                    appliedFilterListESQuery[j].Value = 'Price High to Low';
+                    appliedFilterListESQuery[j].Click = false;
+                    headerQuery = 'minPrice:desc';
+                    if ((localStorage.previousPath !== 'product-details' || !localStorage.previousPath.includes('rfqlisting') || localStorage.previousPath !== 'create-rfq')) {
+                        totalProductCount = totalProductCount + 1;
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Commodity') {
+                    appliedFilterListESQuery[j].Click = false;
+                    //elasticQuery.push({ "terms": { "commodity.raw.keyword": commodityFilterList } });
+                    elasticQuery.push({ "terms": { "commodity.raw.keyword": commodityFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Category') {
+                    appliedFilterListESQuery[j].Click = false;
+                    if (categoryFilterList.length > 0) {
+                        let localcat = [];
+                        categoryFilterList.map(items => {
+                            localcat.push(items.Value.toLowerCase())
+                        })
+                        //elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.categoryname.raw.keyword": categoryFilterList } });
+                        elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.categoryname.raw.keyword": localcat } });
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'SubCategory') {
+                    appliedFilterListESQuery[j].Click = false;
+                    if (subCategoryFilterList.length > 0) {
+                        let localsubcat = [];
+                        subCategoryFilterList.map(items => {
+                            localsubcat.push(items.Value.toLowerCase())
+                        })
+                        //elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.subcategoryname.raw.keyword": subCategoryFilterList } });
+                        elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.subcategoryname.raw.keyword": localsubcat } });
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Brand') {
+                    appliedFilterListESQuery[j].Click = false;
+                    //elasticQuery.push({ "terms": { "listproductbrands.raw.keyword": brandFilterList } });
+                    elasticQuery.push({ "terms": { "listproductbrandslowercase.raw.keyword": brandFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Material') {
+                    appliedFilterListESQuery[j].Click = false;
+                    //elasticQuery.push({ "terms": { "listproductmaterials.raw.keyword": materialFilterList } });
+                    elasticQuery.push({ "terms": { "listproductmaterialslowercase.raw.keyword": materialFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Supplier') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "companyname_raw.raw.keyword": supplierFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Manufacturing Country') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "manufacturingcountry.raw.keyword": countryFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Industry') {
+                    appliedFilterListESQuery[j].Click = false;
+                    let localproductIndustries = [];
+                    productIndustries.map(items => {
+                        localproductIndustries.push(items.toLowerCase())
+                    })
+                    elasticQuery.push({ "terms": { "listproductindustrieslowercase.raw.keyword": localproductIndustries } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Green Properties') {
+                    appliedFilterListESQuery[j].Click = false;
+                    //elasticQuery.push({ "terms": { "listproductgreenproperties.raw.keyword": greenPropertyFilterList } });
+                    elasticQuery.push({ "terms": { "listproductgreenpropertieslowercase.raw.keyword": greenPropertyFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Supplier Accreditation') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "listsupplieraccreditation.raw.keyword": supplierAccreditationFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Carbon Emission') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "carbonEmissionCostList.carbonFootPrintRaw.keyword": carbonEmissionFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Product Expiry') {
+                    appliedFilterListESQuery[j].Click = false;
+                    if (this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER)) {
+                        elasticQuery.push({ "terms": { "listProductCountryVM.isproductexpired_raw.raw.keyword": productExpiryFilterList } });
+                    } else {
+                        elasticQuery.push({ "terms": { "isproductexpired_raw.raw.keyword": productExpiryFilterList } });
+                    }
+                }
+                //else if (appliedFilterListESQuery[j].Id === 'Active/Inactive') {
+                else if (appliedFilterListESQuery[j].Id === 'Active') {
+                    appliedFilterListESQuery[j].Click = false;
+                    //let status = activeProductFilterList[0] === "true" ? true : activeProductFilterList[0] === "false" ? false : activeProductFilterList[0];
+                    //elasticQuery.push({ "terms": { "isactive_raw.raw.keyword": [status]  } });
+                    let status = activeProductFilterList[0] === "Active" ? true : activeProductFilterList[0] === "Inactive" ? false : activeProductFilterList[0];
+                    elasticQuery.push({ "terms": { "isSupplierActive": [status] } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'MOQ') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "moq.raw": moqFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Buying Window') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "buyingwindowstatus.raw.keyword": [BWFilter] } });
+                    this.setState({ buyingwindowFilterText: "Buying Window" })
+                }
+                else if (appliedFilterListESQuery[j].Id === 'New Arrival') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "newarrival_raw.raw.keyword": [newArrivalFilter] } });
+                    this.setState({ newarrivalFilterText: "New Arrival" })
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Specification') {
+                    appliedFilterListESQuery[j].Click = false;
+                    specificationFilterList.map(item => {
+                        if (item.includes(':')) {
+                            let Groupkey = item.split(':')[0];
+                            let Value = item.split(':')[1];
+                            elasticQuery.push({ "bool": { "must": [{ "match": { "listProductSpecificationVM.groupkey.raw.keyword": Groupkey } }, { "match": { "listProductSpecificationVM.value.raw.keyword": Value } }] } });
+                        }
+                    })
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Attribute') {
+                    appliedFilterListESQuery[j].Click = false;
+                    attributeFilterList.map(item => {
+                        if (item.includes(':')) {
+                            let Attributekey = item.split(':')[0];
+                            let Value = item.split(':')[1];
+                            elasticQuery.push({ "bool": { "must": [{ "match": { "listProductAttributeVM.attributekey.raw.keyword": Attributekey } }, { "match": { "listProductAttributeVM.attributevalue.raw": Value } }] } });
+                        }
+                    })
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Grade Level') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "listproductgradelevel.raw.keyword": gradeLevelFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Product Certification') {
+                    appliedFilterListESQuery[j].Click = false;
+                    if (JSON.parse(localStorage.userType) === RoleCodes.BUYER || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+                        // elasticQuery.push({ "terms": { "listproductcertifications.raw.keyword": productCertificationFilterList } });
+                        productCertificationFilterList.map((item) => {
+                            let temparray = [];
+                            temparray.push(item);
+                            //elasticQuery.push({ "terms": { "listproductcertifications.raw.keyword": temparray } });
+                            elasticQuery.push({ "terms": { "listproductcertificationslowercase.raw.keyword": temparray } });
+                        });
+                    } else {
+                        // elasticQuery.push({ "terms": { "listproductcertifications.raw.keyword": productCertificationFilterList } });
+                        productCertificationFilterList.map((item) => {
+                            let temparray = [];
+                            temparray.push(item);
+                            // elasticQuery.push({ "terms": { "listproductcertifications.raw.keyword": temparray } });
+                            elasticQuery.push({ "terms": { "listproductcertificationslowercase.raw.keyword": temparray } });
+                        });
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Product Type') {
+                    appliedFilterListESQuery[j].Click = false;
+                    if (productTypeFilterList.length > 0) {
+                        let localproducttype = [];
+                        productTypeFilterList.map(items => {
+                            localproducttype.push(items.Value.toLowerCase())
+                        })
+                        if (JSON.parse(localStorage.userType) === RoleCodes.BUYER || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+                            elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.producttypename.raw.keyword": localproducttype } });
+                        } else {
+                            elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.producttypename.raw.keyword": localproducttype } });
+                        }
+                    }
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Product Status') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "status_raw.raw.keyword": productStatusFilterList } });
+                }
+                else if (appliedFilterListESQuery[j].Id === 'Sustainability Certificate') {
+                    appliedFilterListESQuery[j].Click = false;
+                    elasticQuery.push({ "terms": { "listSupplierSustainabilityCertificates.documenttitle.raw.keyword": sustainabilityCertificateFilterList } });
+                }
+                else {
+                    totalProductCount = 0;
+                }
+            }
+        }
+        //allProductsList = this.state.allProducts;
+        esHeaderQuery = headerQuery;
+        esElasticQuery = elasticQuery;
+
+        appliedFilterListAll = appliedFilterList;
+        // let priceFilterData = '';
+        // if (this.state.isPriceFilterClick === true) {
+        //   priceFilterData = this.state.priceFilterMinPrice + ' - ' + this.state.priceFilterMaxPrice;
+        // }
+
+        this.setState({
+            allProducts: allProductsList, appliedFilterList: appliedFilterList,
+            commodityFilterList: commodityFilterList, categoryFilterList: categoryFilterList, subCategoryFilterList: subCategoryFilterList, brandFilterList: brandFilterList, materialFilterList: materialFilterList, supplierFilterList: supplierFilterList,
+            greenPropertyFilterList: greenPropertyFilterList, supplierAccreditationFilterList: supplierAccreditationFilterList, carbonEmissionFilterList: carbonEmissionFilterList,
+            headerQuery: headerQuery, elasticQuery: elasticQuery, moqFilterList: moqFilterList, countryFilterList: countryFilterList, priceFilterText: priceFilterData, specificationFilterList: specificationFilterList, attributeFilterList: attributeFilterList,
+            productExpiryFilterList: productExpiryFilterList, activeProductFilterList: activeProductFilterList, gradeLevelFilterList: gradeLevelFilterList, productCertificationFilterList: productCertificationFilterList, productTypeFilterList: productTypeFilterList,
+            productStatusFilterList: productStatusFilterList, sustainabilityCertificateFilterList: sustainabilityCertificateFilterList, productWithoutPriceList: productWithoutPriceList, productWithPriceList: productWithPriceList,
+            productindustriesFilterList: productIndustries
+        }, () => {
+            this.getBreadCrumb();
+        });
+        this.onPageChanged();
+        if (checkeditem == 0) {
+            this.getFilterListWithData('clearAll', elasticQuery)
+        }
+        else {
+            if (filterName !== "didMount" && event === "") {
+                this.getFilterListWithData('didMount', elasticQuery);
+            }
+            else {
+                this.getFilterListWithData('filter', elasticQuery);
+            }
+        }
+    }
+
+    getUnique = (arr, index) => {
+
+        const unique = arr
+            .map(e => e[index])
+
+            // store the keys of the unique objects
+            .map((e, i, final) => final.indexOf(e) === i && i)
+
+            // eliminate the dead keys & store unique objects
+            .filter(e => arr[e]).map(e => arr[e]);
+
+        return unique;
+    }
+
+    getFilterListWithData = (action, esElasticQuery) => {
+        let elasticQuery = '', indexName = '';
+        let countriesGuid = [];
+        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+            JSON.parse(localStorage.userCountries).map(item => {
+                countriesGuid.push(item.countryGuid);
+            })
+        }
+
+        let ParentGuid = localStorage.parentUserId !== undefined ? localStorage.parentUserId === '00000000-0000-0000-0000-000000000000' ? localStorage.userId : localStorage.parentUserId : localStorage.userId
+
+        if(localStorage.companyGuid === "8c2d2513-51fa-4024-a442-4bd8a6121a87"){
+            indexName = "f80e3994-6030-49ca-9877-6f1d4c90c1a9_8c2d2513-51fa-4024-a442-4bd8a6121a87_approverbuyerproductlisting_temp";
+        }else{
+            let url = getElasticIndexNew(localStorage.userType, ParentGuid, localStorage.languageId, localStorage.companyGuid);
+
+            let splitURL = url.replace("https://", "").replace("http://").split("/");
+
+            if (splitURL.length === 3) {
+                indexName = splitURL[1];
+            } else {
+                for (let i = 0; i < splitURL.length; i++) {
+                    if (i === 1) {
+                        indexName = splitURL[i];
+                    }
+                }
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.ADMIN) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategoryLowercase.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategoryLowercase.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw.keyword" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategoryLowercase.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategoryLowercase.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategoryLowercase.producttypename.raw.keyword", "size": 30 } } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategoryLowercase.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategoryLowercase.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw.keyword" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategoryLowercase.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategoryLowercase.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategoryLowercase.producttypename.raw.keyword", "size": 30 } } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER) {
+            let ParentGuid = localStorage.parentUserId !== undefined ? localStorage.parentUserId === '00000000-0000-0000-0000-000000000000' ? localStorage.userId : localStorage.parentUserId : localStorage.userId
+            let commodityName = [];
+            this.state.commodityDisplayOrder.map(item => {
+                commodityName.push(item.commodityName)
+            })
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw.keyword" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { match: { "supplierGuid": ParentGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw.keyword" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { match: { "supplierGuid": ParentGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.STRATEGICUSER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw" } },
+                        "carbonemission": { "terms": { "field": "carbonemission.raw" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                            "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                        },
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { match: { "isActive": "true" } },
+                                {
+                                    bool: {
+                                        must: [
+                                            esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw" } },
+                        "carbonemission": { "terms": { "field": "carbonemission.raw" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                            "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                        },
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { match: { "isActive": "true" } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.APPROVER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "attribute":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "attributeheading": { "terms": { "field": "listProductAttributeVM.attributekey.raw.keyword" } } }] },
+                            "aggregations": { "attributedata": { "terms": { "field": "listProductAttributeVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw.keyword" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                            "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        //"sustainabilityCertificates": {"terms": {"field": "listSupplierSustainabilityCertificates.documenttitle.raw"}},
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                //{ match: { "isActive": "true" } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "attribute":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "attributeheading": { "terms": { "field": "listProductAttributeVM.attributekey.raw.keyword" } } }] },
+                            "aggregations": { "attributedata": { "terms": { "field": "listProductAttributeVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw.keyword" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                        //"sustainabilityCertificates": {"terms": {"field": "listSupplierSustainabilityCertificates.documenttitle.raw"}},
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                //{ match: { "isActive": "true" } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.BUYER) {
+            let commodityName = [];
+            if (localStorage.commodityName !== undefined && localStorage.commodityName !== null) {
+                JSON.parse(localStorage.commodityName).map(item => {
+                    commodityName.push(item.commodityName);
+                })
+            }
+            let gradeLevel = [];
+            if (localStorage.gradeLevel !== undefined && localStorage.gradeLevel !== null && localStorage.gradeLevel !== "null") {
+                JSON.parse(localStorage.gradeLevel).map(item => {
+                    gradeLevel.push(item.gradeLevel);
+                })
+            }
+            let buyerBusinessType = [], buyerProductLevelCertificates = [], buyerSupplierLevelAdditionalCertificates = [],
+                buyerSupplierLevelMandatoryCertificates = [], tildeSepratedBuyerProductCategories = [];
+            if (buyerPreferencesJSONData.table3 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table3.length > 0) {
+                    buyerPreferencesJSONData.table3.map(item => {
+                        buyerBusinessType.push(item.businessTypeName);
+                    })
+                }
+            }
+            if (buyerPreferencesJSONData.table4 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table4.length > 0) {
+                    buyerPreferencesJSONData.table4.map(item => {
+                        buyerProductLevelCertificates.push(item.productCertificateName);
+                    })
+                }
+            }
+            if (buyerPreferencesJSONData.table5 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table5.length > 0) {
+                    buyerPreferencesJSONData.table5.map(item => {
+                        if (item.documentType === 'Additional') {
+                            buyerSupplierLevelAdditionalCertificates.push(item.supplierDocumentName);
+                        } else {
+                            buyerSupplierLevelMandatoryCertificates.push(item.supplierDocumentGuid);
+                        }
+                    })
+                }
+            }
+            if (buyerPreferencesJSONData.table6 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table6.length > 0) {
+                    buyerPreferencesJSONData.table6.map(item => {
+                        tildeSepratedBuyerProductCategories.push(item.productCategories);
+                    })
+                }
+            }
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "attribute":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "attributeheading": { "terms": { "field": "listProductAttributeVM.attributekey.raw.keyword" } } }] },
+                            "aggregations": { "attributedata": { "terms": { "field": "listProductAttributeVM.value.raw" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "gradelevel": { "terms": { "field": "listproductgradelevel.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 50 } } },
+                        },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                        //"sustainabilityCertificates": {"terms": {"field": "listSupplierSustainabilityCertificates.documenttitle.raw"}},
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "status_raw.raw.keyword": "Approved" } },
+                                { match: { "isActive": "true" } },
+                                { match: { "isSupplierActive": "true" } },
+                                //{ match: { "businessReady": "true" } },
+                                SLISearchproductGuids.length > 0 ?
+                                    { terms: { "productguid_raw.raw.keyword": SLISearchproductGuids } } : '',
+                                tildeSepratedBuyerProductCategories.length > 0 ?
+                                    SLISearchproductGuids.length > 0 ? '' :
+                                        { terms: { "productcategories_raw.raw.keyword": tildeSepratedBuyerProductCategories } } : '',
+                                { terms: { "supplierbusinesstype.raw.keyword": buyerBusinessType } },
+                                { terms: { "listproductcertifications.raw.keyword": buyerProductLevelCertificates } },
+                                {
+                                    bool: {
+                                        should: [
+                                            { terms: { "listproductgradelevel.raw.keyword": gradeLevel } },
+                                            {
+                                                bool: {
+                                                    must_not: [
+                                                        { exists: { field: "listproductgradelevel.raw.keyword" } },
+                                                    ]
+                                                }
+                                            },
+                                            { terms: { "listSupplierMandatoryCertificates.documentguid.raw.keyword": buyerSupplierLevelMandatoryCertificates } },
+                                            { terms: { "listSupplierAdditionalCertificates.documenttitle.raw.keyword": buyerSupplierLevelAdditionalCertificates } },
+                                        ]
+                                    }
+                                },
+                                // {
+                                //     bool: {
+                                //         must: [
+                                //             {
+                                //                 match: { "listBuyerCompanyMaterialTopicRankingVM.companyGuid": localStorage.companyGuid }
+                                //             },
+                                //         ]
+                                //     }
+                                // },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                };
+            }
+            else {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "attribute":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "attributeheading": { "terms": { "field": "listProductAttributeVM.attributekey.raw.keyword" } } }] },
+                            "aggregations": { "attributedata": { "terms": { "field": "listProductAttributeVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        "activeproducts": { "terms": { "field": "isactive_raw.raw" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "gradelevel": { "terms": { "field": "listproductgradelevel.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 50 } } },
+                        },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                        //"sustainabilityCertificates": {"terms": {"field": "listSupplierSustainabilityCertificates.documenttitle.raw"}},
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "status_raw.raw.keyword": "Approved" } },
+                                { match: { "isActive": "true" } },
+                                { match: { "isSupplierActive": "true" } },
+                                //{ match: { "businessReady": "true" } },
+                                SLISearchproductGuids.length > 0 ?
+                                    { terms: { "productguid_raw.raw.keyword": SLISearchproductGuids } } : '',
+                                tildeSepratedBuyerProductCategories.length > 0 ?
+                                    SLISearchproductGuids.length > 0 ? '' :
+                                        { terms: { "productcategories_raw.raw.keyword": tildeSepratedBuyerProductCategories } } : '',
+                                { terms: { "supplierbusinesstype.raw.keyword": buyerBusinessType } },
+                                { terms: { "listproductcertifications.raw.keyword": buyerProductLevelCertificates } },
+                                {
+                                    bool: {
+                                        should: [
+                                            { terms: { "listproductgradelevel.raw.keyword": gradeLevel } },
+                                            {
+                                                bool: {
+                                                    must_not: [
+                                                        { exists: { field: "listproductgradelevel.raw.keyword" } },
+                                                    ]
+                                                }
+                                            },
+                                            { terms: { "listSupplierMandatoryCertificates.documentguid.raw.keyword": buyerSupplierLevelMandatoryCertificates } },
+                                            { terms: { "listSupplierAdditionalCertificates.documenttitle.raw.keyword": buyerSupplierLevelAdditionalCertificates } },
+                                        ]
+                                    }
+                                },
+                                // {
+                                //     bool: {
+                                //         must: [
+                                //             {
+                                //                 match: { "listBuyerCompanyMaterialTopicRankingVM.companyGuid": localStorage.companyGuid }
+                                //             },
+                                //         ]
+                                //     }
+                                // },
+                            ],
+                        }
+                    }
+                };
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERSUPPORTPERSON) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        //"activeproducts": {"terms": {"field": "isactive_raw.raw.keyword"}},
+                        "activeproducts": { "terms": { "field": "isSupplierActive" } },
+                        "moq": { "terms": { "field": "moq.raw.keyword", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        //"activeproducts": {"terms": {"field": "isactive_raw.raw.keyword"}},
+                        "activeproducts": { "terms": { "field": "isSupplierActive" } },
+                        "moq": { "terms": { "field": "moq.raw.keyword", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "attribute":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "attributeheading": { "terms": { "field": "listProductAttributeVM.attributekey.raw.keyword" } } }] },
+                            "aggregations": { "attributedata": { "terms": { "field": "listProductAttributeVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        //"activeproducts": {"terms": {"field": "isactive_raw.raw.keyword"}},
+                        "activeproducts": { "terms": { "field": "isSupplierActive" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                        //"sustainabilityCertificates": {"terms": {"field": "listSupplierSustainabilityCertificates.documenttitle.raw"}},
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                //{ match: { "isActive": "true" } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    "size": 0,
+                    "aggs": {
+                        "categoryname":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "Category": { "terms": { "field": "listProductSubCategory.categoryname.raw.keyword" } } }] },
+                            "aggregations": { "subcategoryname": { "terms": { "field": "listProductSubCategory.subcategoryname.raw.keyword" } } },
+                        },
+                        "specification":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "specificationheading": { "terms": { "field": "listProductSpecificationVM.groupkey.raw.keyword" } } }] },
+                            "aggregations": { "specificationdata": { "terms": { "field": "listProductSpecificationVM.value.raw.keyword" } } },
+                        },
+                        "attribute":
+                        {
+                            "composite":
+                                { "size": 500, "sources": [{ "attributeheading": { "terms": { "field": "listProductAttributeVM.attributekey.raw.keyword" } } }] },
+                            "aggregations": { "attributedata": { "terms": { "field": "listProductAttributeVM.value.raw.keyword" } } },
+                        },
+                        "commodity": { "terms": { "field": "commodity.raw.keyword", "size": 30 } },
+                        "brand": { "terms": { "field": "listproductbrands.raw.keyword", "size": 300 } },
+                        "material": { "terms": { "field": "listproductmaterials.raw.keyword", "size": 300 } },
+                        "supplier": { "terms": { "field": "companyname_raw.raw.keyword", "size": 300 } },
+                        "manufacturingcountry": { "terms": { "field": "manufacturingcountry.raw.keyword" } },
+                        "greenproperties": { "terms": { "field": "listproductgreenproperties.raw.keyword" } },
+                        "supplieraccreditation": { "terms": { "field": "listsupplieraccreditation.raw.keyword" } },
+                        /*"carbonemission": { "terms": { "field": "carbonemission.raw.keyword" } },*/
+                        "carbonemission": { "terms": { "field": "carbonEmissionCostList.carbonFootPrintRaw.keyword" } },
+                        //"activeproducts": {"terms": {"field": "isactive_raw.raw.keyword"}},
+                        "activeproducts": { "terms": { "field": "isSupplierActive" } },
+                        "moq": { "terms": { "field": "moq.raw", "size": 500 } },
+                        "productexpired": { "terms": { "field": "listProductCountryVM.isproductexpired_raw.raw.keyword" } },
+                        "productexpiredadmin": { "terms": { "field": "isproductexpired_raw.raw.keyword" } },
+                        "buyingwindow": { "terms": { "field": "buyingwindowstatus.raw.keyword" } },
+                        "newarrival": { "terms": { "field": "newarrival_raw.raw.keyword" } },
+                        "productCertifications": { "terms": { "field": "listproductcertifications.raw.keyword" } },
+                        "min_Price": { "min": { "field": "minPrice" } },
+                        "max_Price": { "max": { "field": "minPrice" } },
+                        "productwith_withoutprice": { "terms": { "field": "minPrice", "size": 500 } },
+                        "producttype":
+                        {
+                            "composite":
+                            {
+                                "size": 50, "sources": [
+                                    {
+                                        "categorynameproducttype": {
+                                            "terms": {
+                                                "field": "listProductSubCategory.categoryname.raw.keyword"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "subcategorynameproducttype":
+                                        {
+                                            "terms":
+                                                { "field": "listProductSubCategory.subcategoryname.raw.keyword" }
+                                        }
+                                    }]
+                            },
+                            "aggregations": { "producttypename": { "terms": { "field": "listProductSubCategory.producttypename.raw.keyword", "size": 30 } } },
+                        },
+                        "productstatus": { "terms": { "field": "status_raw.raw.keyword" } },
+                        "productindustries": { "terms": { "field": "listproductindustries.raw.keyword", "size": 300 } },
+                        //"sustainabilityCertificates": {"terms": {"field": "listSupplierSustainabilityCertificates.documenttitle.raw"}},
+                    },
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                //  { match: { "isActive": "true" } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        getElasticData(indexName, elasticQuery, "", "", "")
+
+            .then(json => {
+                if (json !== null) {
+                    if (json.hits.total.value === 0) {
+                    }
+                    else {
+                        let min = parseFloat(json.aggregations.min_Price.value).toFixed(2);
+                        let max = parseFloat(json.aggregations.max_Price.value).toFixed(2);
+
+                        let newarrivalCount = 0;
+                        if (this.state.isNewArrivalClick === false || action === 'didMount' || action === 'clearAll') {
+                            let result = json.aggregations.newarrival.buckets;
+                            if (result[0] !== undefined) {
+                                newarrivalCount = result[0].doc_count;
+                            }
+                        } else {
+                            newarrivalCount = this.state.newarrivalCount;
+                        }
+
+                        let commodityList = [], FilterDataList = [];
+                        if (this.state.isCommodityClick === false || action === 'didMount' || action === 'clearAll') {
+                            let commodityNames = json.aggregations.commodity.buckets;
+                            commodityNames.map(x => {
+                                if (x.key !== undefined) {
+                                    commodityList.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'Commodity'
+                                    })
+                                }
+                            })
+                        } else {
+                            commodityList = this.state.commodityList;
+                        }
+                        //let commodityListTop5 = commodityList.slice(0, 5);
+                        let commodityListTop5 = this.state.isCommodityViewAllClick ? commodityList : commodityList.slice(0, 5);
+                        commodityListTop5.map(x => {
+                            FilterDataList.push({
+                                Id: x.Id,
+                                Value: x.Value,
+                                Filter: x.Filter,
+                                FilterLength: commodityList.length,
+                                DisplayLength: commodityListTop5.length,
+                            })
+                        })
+
+                        let categoryList = [];
+                        if (this.state.isCategoryClick === false || action === 'didMount' || action === 'clearAll') {
+                            if (this.state.appliedFilterList.length > 0) {
+                                if (this.state.appliedFilterList.filter(item => item.Id.toLowerCase() == 'category').length == 0) {
+                                    if (this.state.defaultCategoryListAll.length > 0) {
+                                        // categoryList = this.state.defaultCategoryListAll;
+                                        {
+                                            let categoryNames = json.aggregations.categoryname.buckets;
+                                            let categoryProductType = [];
+                                            if (json.aggregations.producttype !== undefined) {
+                                                categoryProductType = json.aggregations.producttype.buckets;
+                                            }
+                                            categoryNames.map(item => {
+                                                let scategoryList = [];
+                                                if (item.subcategoryname.buckets.length > 0) {
+                                                    item.subcategoryname.buckets.map(y => {
+                                                        let productTypeList = [];
+                                                        let categoryProductTypeList = [];
+                                                        if (categoryProductType.filter(x => x.key.subcategorynameproducttype.toLowerCase() === y.key.toLowerCase() && x.key.categorynameproducttype.toLowerCase() === item.key.Category.toLowerCase()).length > 0) {
+                                                            categoryProductType.filter(x => x.key.subcategorynameproducttype.toLowerCase() === y.key.toLowerCase() && x.key.categorynameproducttype.toLowerCase() === item.key.Category.toLowerCase()).map(ptypeitem => {
+                                                                if (ptypeitem.producttypename.buckets.length > 0) {
+                                                                    ptypeitem.producttypename.buckets.map(bucketmap => {
+                                                                        categoryProductTypeList.push(bucketmap);
+                                                                    })
+                                                                }
+                                                            });
+                                                        }
+                                                        // if(categoryProductTypeList[0] !== undefined){
+                                                        //   productTypeList.push({
+                                                        //     Id: categoryProductTypeList[0].key,
+                                                        //     Value: categoryProductTypeList[0].doc_count,
+                                                        //   })
+                                                        // }
+                                                        if (categoryProductTypeList.length > 0) {
+                                                            categoryProductTypeList.map((data) => {
+                                                                productTypeList.push({
+                                                                    Id: data.key,
+                                                                    Value: data.doc_count,
+                                                                })
+                                                            })
+                                                        }
+                                                        scategoryList.push({
+                                                            Id: y.key,
+                                                            Value: y.doc_count,
+                                                            productType: productTypeList,
+                                                        })
+                                                    });
+                                                }
+                                                categoryList.push({
+                                                    Id: item.key.Category,
+                                                    Value: item.doc_count,
+                                                    subCategory: scategoryList,
+                                                });
+                                            })
+                                        }
+                                    }                                    
+                                    else {
+                                        if (this.state.appliedFilterList.filter(item => item.Id.toLowerCase() != 'category').length > 0) {
+                                            let categoryNames = json.aggregations.categoryname.buckets;
+                                            let categoryProductType = [];
+                                            if (json.aggregations.producttype !== undefined) {
+                                                categoryProductType = json.aggregations.producttype.buckets;
+                                            }
+                                            categoryNames.map(item => {
+                                                let scategoryList = [];
+                                                if (item.subcategoryname.buckets.length > 0) {
+                                                    item.subcategoryname.buckets.map(y => {
+                                                        let productTypeList = [];
+                                                        let categoryProductTypeList = [];
+                                                        if (categoryProductType.filter(x => x.key.subcategorynameproducttype.toLowerCase() === y.key.toLowerCase() && x.key.categorynameproducttype.toLowerCase() === item.key.Category.toLowerCase()).length > 0) {
+                                                            categoryProductType.filter(x => x.key.subcategorynameproducttype.toLowerCase() === y.key.toLowerCase() && x.key.categorynameproducttype.toLowerCase() === item.key.Category.toLowerCase()).map(ptypeitem => {
+                                                                if (ptypeitem.producttypename.buckets.length > 0) {
+                                                                    ptypeitem.producttypename.buckets.map(bucketmap => {
+                                                                        categoryProductTypeList.push(bucketmap);
+                                                                    })
+                                                                }
+                                                            });
+                                                        }
+                                                        // if(categoryProductTypeList[0] !== undefined){
+                                                        //   productTypeList.push({
+                                                        //     Id: categoryProductTypeList[0].key,
+                                                        //     Value: categoryProductTypeList[0].doc_count,
+                                                        //   })
+                                                        // }
+                                                        if (categoryProductTypeList.length > 0) {
+                                                            categoryProductTypeList.map((data) => {
+                                                                productTypeList.push({
+                                                                    Id: data.key,
+                                                                    Value: data.doc_count,
+                                                                })
+                                                            })
+                                                        }
+                                                        scategoryList.push({
+                                                            Id: y.key,
+                                                            Value: y.doc_count,
+                                                            productType: productTypeList,
+                                                        })
+                                                    });
+                                                }
+                                                categoryList.push({
+                                                    Id: item.key.Category,
+                                                    Value: item.doc_count,
+                                                    subCategory: scategoryList,
+                                                });
+                                            })
+                                        }
+                                    }
+                                }
+                                else {
+                                    if (this.state.appliedFilterList.filter(item => item.Id.toLowerCase() != 'category').length > 0) {
+                                        let categoryNames = json.aggregations.categoryname.buckets;
+                                        let categoryProductType = [];
+                                        if (json.aggregations.producttype !== undefined) {
+                                            categoryProductType = json.aggregations.producttype.buckets;
+                                        }
+                                        categoryNames.map(item => {
+                                            let scategoryList = [];
+                                            if (item.subcategoryname.buckets.length > 0) {
+                                                item.subcategoryname.buckets.map(y => {
+                                                    let productTypeList = [];
+                                                    let categoryProductTypeList = [];
+                                                    if (categoryProductType.filter(x => x.key.subcategorynameproducttype.toLowerCase() === y.key.toLowerCase() && x.key.categorynameproducttype.toLowerCase() === item.key.Category.toLowerCase()).length > 0) {
+                                                        categoryProductType.filter(x => x.key.subcategorynameproducttype.toLowerCase() === y.key.toLowerCase() && x.key.categorynameproducttype.toLowerCase() === item.key.Category.toLowerCase()).map(ptypeitem => {
+                                                            if (ptypeitem.producttypename.buckets.length > 0) {
+                                                                ptypeitem.producttypename.buckets.map(bucketmap => {
+                                                                    categoryProductTypeList.push(bucketmap);
+                                                                })
+                                                            }
+                                                        });
+                                                    }
+                                                    // if(categoryProductTypeList[0] !== undefined){
+                                                    //   productTypeList.push({
+                                                    //     Id: categoryProductTypeList[0].key,
+                                                    //     Value: categoryProductTypeList[0].doc_count,
+                                                    //   })
+                                                    // }
+                                                    if (categoryProductTypeList.length > 0) {
+                                                        categoryProductTypeList.map((data) => {
+                                                            productTypeList.push({
+                                                                Id: data.key,
+                                                                Value: data.doc_count,
+                                                            })
+                                                        })
+                                                    }
+                                                    scategoryList.push({
+                                                        Id: y.key,
+                                                        Value: y.doc_count,
+                                                        productType: productTypeList,
+                                                    })
+                                                });
+                                            }
+                                            categoryList.push({
+                                                Id: item.key.Category,
+                                                Value: item.doc_count,
+                                                subCategory: scategoryList,
+                                            });
+                                        })
+                                    }
+                                    else {
+                                        categoryList = this.state.defaultCategoryListAll;
+                                    }
+                                }
+                            }
+                            else {
+                                let categoryNames = json.aggregations.categoryname.buckets;
+                                let categoryProductType = [];
+                                if (json.aggregations.producttype !== undefined) {
+                                    categoryProductType = json.aggregations.producttype.buckets;
+                                }
+                                categoryNames.map(item => {
+                                    let scategoryList = [];
+                                    if (item.subcategoryname.buckets.length > 0) {
+                                        item.subcategoryname.buckets.map(y => {
+                                            let productTypeList = [];
+                                            let categoryProductTypeList = [];
+                                            if (categoryProductType.filter(x => x.key.subcategorynameproducttype.toLowerCase() === y.key.toLowerCase() && x.key.categorynameproducttype.toLowerCase() === item.key.Category.toLowerCase()).length > 0) {
+                                                categoryProductType.filter(x => x.key.subcategorynameproducttype.toLowerCase() === y.key.toLowerCase() && x.key.categorynameproducttype.toLowerCase() === item.key.Category.toLowerCase()).map(ptypeitem => {
+                                                    if (ptypeitem.producttypename.buckets.length > 0) {
+                                                        ptypeitem.producttypename.buckets.map(bucketmap => {
+                                                            categoryProductTypeList.push(bucketmap);
+                                                        })
+                                                    }
+                                                });
+                                            }
+                                            // if(categoryProductTypeList[0] !== undefined){
+                                            //   productTypeList.push({
+                                            //     Id: categoryProductTypeList[0].key,
+                                            //     Value: categoryProductTypeList[0].doc_count,
+                                            //   })
+                                            // }
+                                            if (categoryProductTypeList.length > 0) {
+                                                categoryProductTypeList.map((data) => {
+                                                    productTypeList.push({
+                                                        Id: data.key,
+                                                        Value: data.doc_count,
+                                                    })
+                                                })
+                                            }
+                                            scategoryList.push({
+                                                Id: y.key,
+                                                Value: y.doc_count,
+                                                productType: productTypeList,
+                                            })
+                                        });
+                                    }
+                                    categoryList.push({
+                                        Id: item.key.Category,
+                                        Value: item.doc_count,
+                                        subCategory: scategoryList,
+                                    });
+                                })
+                            }
+                        }
+                        else {
+                            let isdefault = 0;
+                            if (this.state.appliedFilterList.length > 0) {
+                                this.state.appliedFilterList.map(item => {
+                                    if (item.Id == "Category") {
+                                        if (this.state.categoryList.filter(x => x.Id == item.Value).length > 0) {
+                                            isdefault = parseInt(isdefault) + 1;
+                                        }
+                                    }
+                                    else if (item.Id == "SubCategory") {
+                                        if (this.state.categoryList.filter(x => x.Id == item.Category).length > 0) {
+                                            this.state.categoryList.filter(x => x.Id == item.Category).map(subitems => {
+                                                subitems.subCategory.filter(x => x.Id == item.Value).map(subcatitem => {
+                                                    if (subcatitem.Id == item.Value) {
+                                                        isdefault = parseInt(isdefault) + 1;
+                                                    }
+                                                })
+
+                                            })
+                                        }
+                                    }
+                                    else if (item.Id == "Product Type") {
+                                        if (this.state.categoryList.filter(x => x.Id == item.Category).length > 0) {
+                                            this.state.categoryList.filter(x => x.Id == item.Category).map(subitems => {
+                                                subitems.subCategory.filter(x => x.Id == item.SubCategory).map(subcatitem => {
+                                                    subcatitem.productType.filter(x => x.Id == item.Value).map(producttypeitem => {
+                                                        if (producttypeitem.Id == item.Value) {
+                                                            isdefault = parseInt(isdefault) + 1;
+                                                        }
+                                                    })
+                                                })
+                                            })
+                                        }
+                                    }
+                                });
+                            }
+                            if (isdefault > 0) {
+                                categoryList = this.state.categoryListAll;
+                            }
+                            else {
+                                categoryList = this.state.defaultCategoryListAll;
+                            }
+
+
+
+
+                            //if (this.state.appliedFilterList.length > 0) {
+                            //    if (this.state.appliedFilterList.filter(item => item.Id.toLowerCase() == 'category').length == 0) {
+                            //        categoryList = this.state.defaultCategoryListAll;
+                            //    }
+                            //    else {
+                            //        if (this.state.appliedFilterList.filter(item => item.Id.toLowerCase() != 'category').length > 0) {
+                            //            categoryList = this.state.categoryListAll;
+                            //        }
+                            //        else {
+                            //            categoryList = this.state.defaultCategoryListAll;
+                            //        }
+                            //    }
+                            //}
+                        }
+
+                        if ((localStorage.previousPath === 'product-details' || localStorage.previousPath.includes('rfqlisting') || localStorage.previousPath === 'create-rfq') && pageLoadCount < 2) {
+                            categoryList = categoryListAllData;
+                            pageLoadCount = pageLoadCount + 1;
+                        }
+                        let categoryListTop5 = [];
+                        //let categoryFilter = categoryList.slice(0, 5);
+                        let categoryFilter = this.state.isCategoryViewAllClick ? categoryList : categoryList.slice(0, 5);
+                        categoryFilter.map(x => {
+                            categoryListTop5.push({
+                                Id: x.Id,
+                                Value: x.Value,
+                                subCategory: x.subCategory
+                            })
+                        })
+
+                        let brandList1 = [], brandList = [];
+                        if (this.state.isBrandClick === false || action === 'didMount' || action === 'clearAll') {
+                            let brandNames = json.aggregations.brand.buckets;
+                            brandNames.map(x => {
+                                if (x.key !== undefined) {
+                                    brandList1.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'Brand'
+                                    })
+                                }
+                            })
+                            brandList = brandList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            brandList = this.state.brandList;
+                        }
+                        //let brandListTop5 = brandList.slice(0, 5);
+                        let brandListTop5 = this.state.isBrandViewAllClick ? brandList : brandList.slice(0, 5);
+                        brandListTop5.map(x => {
+                            FilterDataList.push({
+                                Id: x.Id,
+                                Value: x.Value,
+                                Filter: x.Filter,
+                                FilterLength: brandList.length,
+                                DisplayLength: brandListTop5.length,
+                            })
+                        })
+                        let materialList1 = [], materialList = [];
+                        if (this.state.isMaterialClick === false || action === 'didMount' || action === 'clearAll') {
+                            let materialName = json.aggregations.material.buckets;
+                            materialName.map(x => {
+                                if (x.key !== undefined) {
+                                    materialList1.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'Material'
+                                    })
+                                }
+                            })
+                            materialList = materialList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            materialList = this.state.materialList;
+                        }
+                        //let materialListTop5 = materialList.slice(0, 5);
+                        let materialListTop5 = this.state.isMaterialViewAllClick ? materialList : materialList.slice(0, 5);
+                        materialListTop5.map(x => {
+                            FilterDataList.push({
+                                Id: x.Id,
+                                Value: x.Value,
+                                Filter: x.Filter,
+                                FilterLength: materialList.length,
+                                DisplayLength: materialListTop5.length,
+                            })
+                        })
+
+                        let supplierList1 = [], supplierList = [];
+                        if (this.state.isSupplierClick === false || action === 'didMount' || action === 'clearAll') {
+                            let supplierName = json.aggregations.supplier.buckets;
+                            supplierName.map(x => {
+                                if (x.key !== undefined) {
+                                    supplierList1.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'Supplier'
+                                    })
+                                }
+                            })
+                            supplierList = supplierList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            supplierList = this.state.supplierList;
+                        }
+                        //let supplierListTop5 = supplierList.slice(0, 5);
+                        let supplierListTop5 = this.state.isSupplierlViewAllClick ? supplierList : supplierList.slice(0, 5);
+                        supplierListTop5.map(x => {
+                            FilterDataList.push({
+                                Id: x.Id,
+                                Value: x.Value,
+                                Filter: x.Filter,
+                                FilterLength: supplierList.length,
+                                DisplayLength: supplierListTop5.length,
+                            })
+                        })
+
+                        let countryList1 = [], countryList = [];
+                        if (this.state.isCountryClick === false || action === 'didMount' || action === 'clearAll') {
+                            let countryName = json.aggregations.manufacturingcountry.buckets;
+                            countryName.map(x => {
+                                if (x.key !== undefined) {
+                                    countryList1.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'Manufacturing Country'
+                                    })
+                                }
+                            })
+                            countryList = countryList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            countryList = this.state.countryList;
+                        }
+                        //let countryListTop5 = countryList.slice(0, 5);
+                        let countryListTop5 = this.state.isCountryofOriginViewAllClick ? countryList : countryList.slice(0, 5);
+                        countryListTop5.map(x => {
+                            if (x.Id !== "") {
+                                FilterDataList.push({
+                                    Id: x.Id,
+                                    Value: x.Value,
+                                    Filter: x.Filter,
+                                    FilterLength: countryList.length,
+                                    DisplayLength: countryListTop5.length,
+                                })
+                            }
+                        });
+
+                        let greenPropertyList1 = [], greenPropertyList = [];
+                        if (this.state.isGreenPropertyClick === false || action === 'didMount' || action === 'clearAll') {
+
+                            let greenPropertyName = json.aggregations.greenproperties.buckets;
+                            greenPropertyName.map(x => {
+                                if (x.key !== undefined) {
+                                    greenPropertyList1.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'Green Properties'
+                                    })
+                                }
+                            })
+                            greenPropertyList = greenPropertyList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            greenPropertyList = this.state.greenPropertyList;
+                        }
+                        //let greenPropertyListTop5 = greenPropertyList.slice(0, 5);
+                        let greenPropertyListTop5 = this.state.isGreenPropertiesViewAllClick ? greenPropertyList : greenPropertyList.slice(0, 5);
+                        greenPropertyListTop5.map(x => {
+                            FilterDataList.push({
+                                Id: x.Id,
+                                Value: x.Value,
+                                Filter: x.Filter,
+                                FilterLength: greenPropertyList.length,
+                                DisplayLength: greenPropertyListTop5.length,
+                            })
+                        });
+
+                        let supplierAccreditationList1 = [], supplierAccreditationList = [];
+                        if (this.state.isSupplierAccreditationClick === false || action === 'didMount' || action === 'clearAll') {
+
+                            let supplierAccreditationName = json.aggregations.supplieraccreditation.buckets;
+                            supplierAccreditationName.map(x => {
+                                if (x.key !== undefined) {
+                                    supplierAccreditationList1.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'Supplier Accreditation'
+                                    })
+                                }
+                            })
+                            supplierAccreditationList = supplierAccreditationList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            supplierAccreditationList = this.state.supplierAccreditationList;
+                        }
+                        //let supplierAccreditationListTop5 = supplierAccreditationList.slice(0, 5);
+                        let supplierAccreditationListTop5 = this.state.isSupplierAccreditationViewAllClick ? supplierAccreditationList : supplierAccreditationList.slice(0, 5);
+                        supplierAccreditationListTop5.map(x => {
+                            FilterDataList.push({
+                                Id: x.Id,
+                                Value: x.Value,
+                                Filter: x.Filter,
+                                FilterLength: supplierAccreditationList.length,
+                                DisplayLength: supplierAccreditationListTop5.length,
+                            })
+                        });
+
+                        let carbonEmissionList1 = [], carbonEmissionList = [];
+                        if (this.state.isCarbonEmissionClick === false || action === 'didMount' || action === 'clearAll') {
+                            let carbonEmissionName = json.aggregations.carbonemission.buckets;
+                            carbonEmissionName.map(x => {
+                                if (x.key !== undefined && x.key !== "") {
+                                    if (carbonEmissionList1.findIndex(y => y.Id === x.key && y.Value === x.doc_count) === -1) {
+                                        carbonEmissionList1.push({
+                                            Id: x.key,
+                                            Value: x.doc_count,
+                                            Filter: "Carbon Emission"
+                                        })
+                                    }
+                                }
+                            })
+                            carbonEmissionList = carbonEmissionList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            carbonEmissionList = this.state.carbonEmissionList;
+                        }
+                        //let carbonEmissionListTop5 = carbonEmissionList.slice(0, 5);
+                        let carbonEmissionListTop5 = this.state.isCarbonEmissionViewAllClick ? carbonEmissionList : carbonEmissionList.slice(0, 5);
+                        carbonEmissionListTop5.map(x => {
+                            FilterDataList.push({
+                                Id: x.Id,
+                                Value: x.Value,
+                                Filter: x.Filter,
+                                FilterLength: carbonEmissionList.length,
+                                DisplayLength: carbonEmissionListTop5.length,
+                            })
+                        });
+                        let productExpiredList = [];
+                        if (this.state.isproductExpiredClick === false || action === 'didMount' || action === 'clearAll') {
+                            if (this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER)) {
+
+                                let productExpiredData = json.aggregations.productexpired.buckets;
+                                productExpiredData.map(x => {
+                                    if (x.key !== undefined) {
+                                        productExpiredList.push({
+                                            Id: x.key,
+                                            Value: x.doc_count,
+                                            Filter: 'Product Expiry'
+                                        })
+                                        FilterDataList.push({
+                                            Id: x.key,
+                                            Value: x.doc_count,
+                                            Filter: 'Product Expiry',
+                                            FilterLength: productExpiredList.length,
+                                            DisplayLength: productExpiredList.length,
+                                        })
+                                    }
+                                })
+                            }
+                            else {
+                                let productExpiredData = json.aggregations.productexpiredadmin.buckets;
+                                productExpiredData.map(x => {
+                                    if (x !== undefined) {
+                                        productExpiredList.push({
+                                            Id: x.key,
+                                            Value: x.doc_count,
+                                            Filter: 'Product Expiry'
+                                        })
+                                        FilterDataList.push({
+                                            Id: x.key,
+                                            Value: x.doc_count,
+                                            Filter: 'Product Expiry',
+                                            FilterLength: productExpiredList.length,
+                                            DisplayLength: productExpiredList.length,
+                                        })
+                                    }
+                                })
+                            }
+                        }
+                        else {
+                            productExpiredList = this.state.productExpiryList;
+                            this.state.productExpiryList.map(x => {
+                                if (x.Id !== undefined) {
+                                    FilterDataList.push({
+                                        Id: x.Id,
+                                        Value: x.Value,
+                                        Filter: x.Filter,
+                                        FilterLength: productExpiredList.length,
+                                        DisplayLength: productExpiredList.length,
+                                    })
+                                }
+                            });
+                        }
+
+                        let activeProductList1 = [], activeProductList = [];
+                        if (this.state.isActiveProductClick === false || action === 'didMount' || action === 'clearAll') {
+                            let activeProductName = json.aggregations.activeproducts.buckets;
+                            activeProductName.map(x => {
+                                if (x.key !== undefined && x.key !== "") {
+                                    activeProductList1.push({
+                                        //Id: x.key === "true" ? 'Active' : 'InActive',
+                                        Id: x.key === 1 ? 'Active' : 'InActive',
+                                        Value: x.doc_count,
+                                        Filter: 'Active'
+                                        //Filter: 'Active/Inactive'
+                                    })
+
+                                    FilterDataList.push({
+                                        //Id: x.key === "true" ? 'Active' : 'InActive',
+                                        Id: x.key === 1 ? 'Active' : 'InActive',
+                                        Value: x.doc_count,
+                                        Filter: 'Active',
+                                        //Filter: 'Active/Inactive',
+                                        FilterLength: activeProductList1.length,
+                                        DisplayLength: activeProductList1.length,
+                                    })
+                                }
+                            })
+                            activeProductList = activeProductList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            activeProductList = this.state.activeProductList;
+                            this.state.activeProductList.map(x => {
+                                if (x.Id !== undefined) {
+                                    FilterDataList.push({
+                                        Id: x.Id,
+                                        Value: x.Value,
+                                        Filter: x.Filter,
+                                        FilterLength: activeProductList.length,
+                                        DisplayLength: activeProductList.length,
+                                    })
+                                }
+                            });
+                        }
+
+                        let moqList1 = [], moqList = [];
+                        if (this.state.isMOQClick === false || action === 'didMount' || action === 'clearAll') {
+                            let moqName = json.aggregations.moq.buckets;
+                            moqName.map(x => {
+                                if (x.key !== undefined) {
+                                    moqList1.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'MOQ'
+                                    })
+                                }
+                            })
+                            moqList = moqList1.sort((a, b) => (parseInt(a.Id) - parseInt(b.Id)));
+                        } else {
+                            moqList = this.state.moqList;
+                        }
+                        //let moqListTop5 = moqList.slice(0, 5);
+                        // let moqListTop5 = this.state.isMOQViewAllClick ? moqList : moqList.slice(0, 5);
+                        // moqListTop5.map(x => {
+                        //     FilterDataList.push({
+                        //         Id: x.Id,
+                        //         Value: x.Value,
+                        //         Filter: x.Filter,
+                        //         FilterLength: moqList.length,
+                        //         DisplayLength: moqListTop5.length,
+                        //     })
+                        // });
+
+                        let productCertificationList1 = [], productCertificationList = [], productcertificationsName = [];
+                        if (this.state.isProductCertificationClick === false || action === 'didMount' || action === 'clearAll') {
+                            if (JSON.parse(localStorage.userType.toUpperCase()) === RoleCodes.BUYER) {
+                                let buyerProductLevelCertificates = [];
+                                if (buyerPreferencesJSONData.table4 !== undefined && buyerPreferencesJSONData !== "") {
+                                    if (buyerPreferencesJSONData.table4.length > 0) {
+                                        buyerPreferencesJSONData.table4.map(item => {
+                                            buyerProductLevelCertificates.push(item.productCertificateName);
+                                        })
+                                    }
+                                }
+                                let productcertificationsName1 = json.aggregations.productCertifications.buckets;
+                                productcertificationsName = productcertificationsName1.filter(element => buyerProductLevelCertificates.includes(element.key));
+                            } else {
+                                productcertificationsName = json.aggregations.productCertifications.buckets;
+                            }
+                            //let productcertificationsName = json.aggregations.productCertifications.buckets;
+                            productcertificationsName.map(x => {
+                                if (x.key !== undefined) {
+                                    productCertificationList1.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'Product Certification'
+                                    })
+                                }
+                            })
+                            productCertificationList = productCertificationList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            let ObjproductCertificationList = this.state.productCertificationList;
+                            if (ObjproductCertificationList.length > 0) {
+                                productCertificationList = this.state.productCertificationList;
+                            }
+                        }
+                        if (productCertificationList !== undefined) {
+                            let productCertificationListTop5 = productCertificationList.slice(0, 5);
+                            productCertificationListTop5.map(x => {
+                                FilterDataList.push({
+                                    Id: x.Id,
+                                    Value: x.Value,
+                                    Filter: x.Filter,
+                                    FilterLength: productCertificationList.length,
+                                    DisplayLength: productCertificationListTop5.length,
+                                })
+                            })
+                        }
+                        let gradeLevelList = [];
+                        if (JSON.parse(localStorage.userType) !== RoleCodes.SUPPLIER && JSON.parse(localStorage.userType) !== RoleCodes.ADMIN && JSON.parse(localStorage.userType) !== RoleCodes.APPROVER
+                            && JSON.parse(localStorage.userType) !== RoleCodes.SUPPLIERSUPPORTPERSON && JSON.parse(localStorage.userType) !== RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+                            if (this.state.isGradeLevelClick === false || action === 'didMount' || action === 'clearAll') {
+                                if (json.aggregations.gradelevel.bucket !== undefined) {
+                                    let gradeLevelNames = json.aggregations.gradelevel.buckets;
+                                    gradeLevelNames.map(x => {
+                                        if (x.key !== undefined) {
+                                            gradeLevelList.push({
+                                                Id: x.key,
+                                                Value: x.doc_count,
+                                                Filter: 'Grade Level'
+                                            })
+                                        }
+                                    })
+                                }
+                            } else {
+                                gradeLevelList = this.state.gradeLevelList;
+                            }
+                            //let gradeLevelListTop5 = gradeLevelList.slice(0, 5);
+                            let gradeLevelListTop5 = this.state.isGradeLevelViewAllClick ? gradeLevelList : gradeLevelList.slice(0, 5);
+                            gradeLevelListTop5.map(x => {
+                                FilterDataList.push({
+                                    Id: x.Id,
+                                    Value: x.Value,
+                                    Filter: x.Filter,
+                                    FilterLength: gradeLevelList.length,
+                                    DisplayLength: gradeLevelListTop5.length,
+                                })
+                            })
+                        }
+
+                        let productStatusList1 = [], productStatusList = [];
+                        if (JSON.parse(localStorage.userType) !== RoleCodes.BUYER && JSON.parse(localStorage.userType) !== RoleCodes.STRATEGICUSER) {
+                            if (this.state.isProductStatusClick === false || action === 'didMount' || action === 'clearAll') {
+                                if (json.aggregations.productstatus.buckets !== undefined && json.aggregations.productstatus.buckets.length > 0) {
+                                    let productStatusName = json.aggregations.productstatus.buckets;
+                                    productStatusName.map(x => {
+                                        if (x.key !== undefined) {
+                                            productStatusList1.push({
+                                                Id: x.key,
+                                                Value: x.doc_count,
+                                                Filter: 'Product Status'
+                                            })
+                                        }
+
+                                        FilterDataList.push({
+                                            Id: x.key,
+                                            Value: x.doc_count,
+                                            Filter: 'Product Status',
+                                            FilterLength: productStatusList1.length,
+                                            DisplayLength: productStatusList1.length,
+                                        })
+                                    })
+                                }
+                                productStatusList = productStatusList1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                            } else {
+                                productStatusList = this.state.productStatusList;
+                                this.state.productStatusList.map(x => {
+                                    if (x.Id !== undefined) {
+                                        FilterDataList.push({
+                                            Id: x.Id,
+                                            Value: x.Value,
+                                            Filter: x.Filter,
+                                            FilterLength: productStatusList.length,
+                                            DisplayLength: productStatusList.length,
+                                        })
+                                    }
+                                });
+                            }
+                        }
+                        let ProductWithoutPriceCountSum = 0, ProductWithPriceCountSum = 0;
+                        //if (this.state.isProductWithoutPrice === false || action === 'didMount' || action === 'clearAll') {
+                        let ProductWithoutPrices = json.aggregations.productwith_withoutprice.buckets;
+                        ProductWithoutPrices.map(x => {
+                            if (x.key !== undefined) {
+                                if (x.key === 0) {
+                                    ProductWithoutPriceCountSum = ProductWithoutPriceCountSum + x.doc_count;
+                                }
+                                else {
+                                    ProductWithPriceCountSum = ProductWithPriceCountSum + x.doc_count;
+                                }
+                            }
+                        })
+                        //}
+
+                        let sustainabilityCertificateList = [];
+                        /*if (JSON.parse(localStorage.userType) === RoleCodes.BUYER || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER){
+                          if (this.state.isSustainabilityCertificateClick === false || action === 'didMount' || action === 'clearAll') {
+                              if(json.aggregations.sustainabilityCertificates.buckets !== undefined){
+                                let sustainabilityCertificateNames = json.aggregations.sustainabilityCertificates.buckets;
+                                sustainabilityCertificateNames.map(x => {
+                                    if (x.key !== undefined) {
+                                      sustainabilityCertificateList.push({
+                                            Id: x.key,
+                                            Value: x.doc_count,
+                                            Filter: 'Sustainability Certificate'
+                                        })
+                                    }
+                                })
+                              }
+                          } else {
+                            sustainabilityCertificateList = this.state.sustainabilityCertificateList;
+                          }
+                          let sustainabilityCertificateListTop5 = this.state.isSustainabilityCertificateViewAllClick ? sustainabilityCertificateList : sustainabilityCertificateList.slice(0, 5);
+                          sustainabilityCertificateListTop5.map(x => {
+                              FilterDataList.push({
+                                  Id: x.Id,
+                                  Value: x.Value,
+                                  Filter: x.Filter,
+                                  FilterLength: sustainabilityCertificateList.length,
+                                  DisplayLength: sustainabilityCertificateListTop5.length,
+                              })
+                          }) 
+                        }*/
+                        /*let specificationList1 = [], specificationList = [];
+                        if (this.state.isSpecificationClick === false || action === 'didMount' || action === 'clearAll') {
+                            let specificationName = [...new Set(data.map(item => item._source['listProductSpecificationVM']))];
+                            specificationName.map(list => {
+                                    if (list !== undefined && list.length > 0) {
+                                        if (specificationList1.findIndex(x => x.Id === list[0]['groupkey.raw']) === -1) {
+                                            specificationList1.push({
+                                                Groupkey: list[0]['groupkey.raw'],
+                                                Value: list[0]['value.raw'],
+                                            })
+                                        }
+                                    }
+                            });
+                            specificationList = specificationList1;
+                        } else {
+                            specificationList = this.state.ProductSpecificationChild;
+                        }
+    
+                        if (specificationList.length > 0) {
+                            this.setState({ specificationLoader: false });
+                        }
+                        let uniqueData = specificationList.map(ar => JSON.stringify(ar))
+                            .filter((item, index, arr) => arr.indexOf(item) === index)
+                            .map(str => JSON.parse(str));
+                        let filteredArray = [...new Set(uniqueData.map(x => x.Groupkey))]
+                        filteredArray.sort();
+                        let filteredArrayTop5 = filteredArray.slice(0, 5);
+    
+                        let filteredArrayAttributeTop5 = "", filteredArrayAttribute = "", uniqueDataAttribute = [];
+                        if (JSON.parse(localStorage.userType) !== RoleCodes.SUPPLIER && JSON.parse(localStorage.userType) !== RoleCodes.ADMIN){ 
+                          let attributeList1 = [], attributeList = [];
+                          if (this.state.isAttributeClick === false || action === 'didMount' || action === 'clearAll') {
+                              let attributeName = [...new Set(data.map(item => item._source['listProductAttributeVM']))];
+                              attributeName.map(list => {
+                                      if (list !== undefined && list.length > 0) {
+                                          if (attributeList1.findIndex(x => x.Id === list[0]['attributekey.raw']) === -1) {
+                                              attributeList1.push({
+                                                  Attributekey: list[0]['attributekey.raw'],
+                                                  Value: list[0]['attributevalue.raw'],
+                                              })
+                                          }
+                                      }
+                              });
+                              attributeList = attributeList1;
+                          } else {
+                              attributeList = this.state.ProductSpecificationChild;
+                          }
+                          let uniqueDataAttribute1 = attributeList.map(ar => JSON.stringify(ar))
+                              .filter((item, index, arr) => arr.indexOf(item) === index)
+                              .map(str => JSON.parse(str));
+                          uniqueDataAttribute1.map(item=> {
+                            uniqueDataAttribute.push({
+                              Attributekey: item.Attributekey,
+                              Value: item.Value,
+                              FilterLength: uniqueDataAttribute1.filter(x => x.Attributekey === item.Attributekey).length,
+                            })
+                          })
+                          filteredArrayAttribute = [...new Set(uniqueDataAttribute.map(x => x.Attributekey))]
+                          filteredArrayAttribute.sort();
+                          filteredArrayAttributeTop5 = filteredArrayAttribute.slice(0, 5);
+                        }*/
+                        if (this.state.isCategoryClick === true || action === 'didMount' || action === 'clearAll') {
+                            this.setState({
+                                defaultCategoryListAll: categoryList
+                            });
+                        }
+                        let productindustries1 = [], productindustries = [];
+                        if (this.state.isproductindustriesClick === false || action === 'didMount' || action === 'clearAll') {
+                            let productindustriesName = json.aggregations.productindustries.buckets;
+                            productindustriesName.map(x => {
+                                if (x.key !== undefined) {
+                                    productindustries1.push({
+                                        Id: x.key,
+                                        Value: x.doc_count,
+                                        Filter: 'Industry'
+                                    })
+                                }
+                            })
+                            productindustries = productindustries1.sort((a, b) => (a.Id > b.Id ? 1 : -1));
+                        } else {
+                            productindustries = this.state.productindustries;
+                        }
+                        let productindustriesTop5 = this.state.isproductindustriesViewAllClick ? productindustries : productindustries.slice(0, 5);
+                        productindustriesTop5.map(x => {
+                            FilterDataList.push({
+                                Id: x.Id,
+                                Value: x.Value,
+                                Filter: x.Filter,
+                                FilterLength: productindustries.length,
+                                DisplayLength: productindustriesTop5.length,
+                            })
+                        })
+                        this.setState({
+                            commodityList: commodityList, categoryList: categoryListTop5, categoryListAll: categoryList, brandList: brandList, materialList: materialList, supplierList: supplierList,
+                            countryList: countryList, greenPropertyList: greenPropertyList, supplierAccreditationList: supplierAccreditationList, carbonEmissionList: carbonEmissionList,
+                            productExpiryList: productExpiredList, activeProductList: activeProductList, moqList: moqList, newarrivalCount: newarrivalCount, productCertificationList: productCertificationList,
+                            FilterDataList: FilterDataList,
+                            // ProductSpecificationHeaderTop5: filteredArrayTop5, ProductSpecificationHeaderAll: filteredArray, ProductSpecificationHeader: filteredArrayTop5, ProductSpecificationChild: uniqueData,
+                            // ProductAttributeHeaderTop5: filteredArrayAttributeTop5, ProductAttributeHeaderAll: filteredArrayAttribute, ProductAttributeHeader: filteredArrayAttributeTop5, ProductAttributeChild: uniqueDataAttribute,
+                            priceFilterMinPrice: min, priceFilterMaxPrice: max, gradeLevelList: gradeLevelList, productStatusList: productStatusList, sustainabilityCertificateList: sustainabilityCertificateList,
+                            defaultMinPrice: min, defaultMaxPrice: max, ProductWithoutPriceCount: ProductWithoutPriceCountSum, ProductWithPriceCount: ProductWithPriceCountSum,
+                            productindustries: productindustries, productindustriesTop5: productindustriesTop5
+                        });
+                        categoryListAllData = categoryList;
+                    }
+                }
+            });
+        getElasticData(indexName, elasticQuery, 0, 10000, "")
+            .then(json => {
+                if (json !== null) {
+                    if (json.hits.total.value === 0) {
+                    }
+                    else {
+                        let data = json.hits.hits;
+                        let specificationList1 = [], specificationList = [];
+                        if (this.state.isSpecificationClick === false || action === 'didMount' || action === 'clearAll') {
+                            let specificationName = [...new Set(data.map(item => item._source['listProductSpecificationVM']))];
+                            specificationName.map(list => {
+                                if (list !== undefined && list.length > 0) {
+                                    if (specificationList1.findIndex(x => x.Id === list[0]['groupkey.raw']) === -1) {
+                                        specificationList1.push({
+                                            Groupkey: list[0]['groupkey.raw'],
+                                            Value: list[0]['value.raw'],
+                                            showAsFilter: list[0]['showAsFilter']
+                                            //Filter: 'Specification'
+                                        })
+                                    }
+                                }
+                            });
+                            specificationList = specificationList1.filter(x => x.showAsFilter == true);
+                        } else {
+                            specificationList = this.state.ProductSpecificationChild;
+                        }
+
+                        if (specificationList.length > 0) {
+                            this.setState({ specificationLoader: false });
+                        }
+                        let uniqueData = specificationList.map(ar => JSON.stringify(ar))
+                            .filter((item, index, arr) => arr.indexOf(item) === index)
+                            .map(str => JSON.parse(str));
+                        let filteredArray = [...new Set(uniqueData.map(x => x.Groupkey))]
+                        filteredArray.sort();
+                        let filteredArrayTop5 = filteredArray.slice(0, 5);
+
+                        let filteredArrayAttributeTop5 = "", filteredArrayAttribute = "", uniqueDataAttribute = [];
+                        if (JSON.parse(localStorage.userType) !== RoleCodes.ADMIN) {
+                            let attributeList1 = [], attributeList = [];
+                            if (this.state.isAttributeClick === false || action === 'didMount' || action === 'clearAll') {
+                                let attributeName = [...new Set(data.filter(x => x._source['listProductAttributeVM'] !== []).map(item => item._source['listProductAttributeVM']))];
+                                if (attributeName[0] !== undefined) {
+                                    attributeName.filter(x => x.length > 0).map(list => {
+                                        list.map(attribute => {
+                                            attributeList1.push({
+                                                Attributekey: attribute['attributekey.raw'],
+                                                Value: attribute['attributevalue.raw'],
+                                                //Filter: 'Attribute'
+                                            })
+                                        })
+                                    });
+                                }
+                                attributeList = attributeList1;
+                            } else {
+                                let attributeListnew = []
+                                let Attr = '', AttrValue = '';
+                                let splitdata = this.state.attributeFilterList[0];
+                                var fields = splitdata.split(':');
+                                Attr = fields[0];
+                                AttrValue = fields[1];
+                                attributeListnew.push({
+                                    Attributekey: Attr,
+                                    Value: AttrValue,
+                                    //Filter: 'Attribute'
+                                })
+                                attributeList = attributeListnew
+                                /// attributeList = this.state.ProductAttributeChild  //old code
+
+                            }
+                            let uniqueDataAttribute1 = attributeList.map(ar => JSON.stringify(ar))
+                                .filter((item, index, arr) => arr.indexOf(item) === index)
+                                .map(str => JSON.parse(str));
+                            uniqueDataAttribute1.map(item => {
+                                uniqueDataAttribute.push({
+                                    Attributekey: item.Attributekey,
+                                    Value: item.Value,
+                                    FilterLength: uniqueDataAttribute1.filter(x => x.Attributekey === item.Attributekey).length,
+                                })
+                            })
+                            filteredArrayAttribute = [...new Set(uniqueDataAttribute.map(x => x.Attributekey))]
+                            filteredArrayAttribute.sort();
+                            filteredArrayAttributeTop5 = filteredArrayAttribute.slice(0, 5);
+                        }
+                        this.setState({
+                            ProductSpecificationHeaderTop5: filteredArrayTop5, ProductSpecificationHeaderAll: filteredArray, ProductSpecificationHeader: filteredArrayTop5, ProductSpecificationChild: uniqueData,
+                            ProductAttributeHeaderTop5: filteredArrayAttributeTop5, ProductAttributeHeaderAll: filteredArrayAttribute, ProductAttributeHeader: filteredArrayAttributeTop5, ProductAttributeChild: uniqueDataAttribute,
+                        });
+                    }
+                }
+            });
+    }
+    fillremovefilterarray(Id, filterValue) {
+        let index = 0;
+        let appliedfilterlist = this.state.appliedFilterList;
+        filterValue.map(item => {
+            index = appliedfilterlist.findIndex(x => x.Id === Id && x.Value.toLowerCase() === item.toLowerCase());
+            if (appliedfilterlist.findIndex(x => x.Id === Id && x.Value.toLowerCase() === item.toLowerCase()) !== -1) {
+                appliedfilterlist.splice(index, 1);
+            }
+        })
+        this.setState({ appliedFilterList: appliedfilterlist })
+    }
+    removeFilter = (props) => {
+        let filterkey, filterValue;
+        if (props !== "") {
+            filterkey = props._dispatchInstances.memoizedProps["data-key"];
+            filterValue = props._dispatchInstances.memoizedProps["data-value"];
+        } else {
+            filterkey = "";
+            filterValue = "";
+        }
+        let appliedFilterList = this.state.appliedFilterList;
+        //if (filterkey == "categoryFilterListSingle" || filterkey == "subCategoryFilterListSingle" || filterkey == "productTypeFilterListSingle") {
+        //    appliedFilterList = this.state.appliedFilterList;
+        //}
+        //else {
+        //    let appliedFilterList2 = this.state.appliedFilterList;
+        //    appliedFilterList2.splice(0, 1);
+        //    let appliedFilterList = appliedFilterList2;
+        //}
+        let elasticQuery = esElasticQuery, headerQuery = "";
+        let SLISearchFiltersdata = [];
+        switch (filterkey) {
+            case "commodityFilterList":
+                this.setState({ commodityFilterList: [] })
+                let queryIndexCommodity = elasticQuery.findIndex(x => x.terms["commodity.raw.keyword"]);
+                if (queryIndexCommodity !== -1) {
+                    elasticQuery.splice(queryIndexCommodity, 1);
+                }
+                this.fillremovefilterarray("Commodity", filterValue);
+                break;
+            case "commodityFilterListSingle":
+                const { commodityFilterList } = this.state;
+                let commoditydata = [];
+                commodityFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Commodity' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        commoditydata.push(item);
+                    }
+                });
+                if (commoditydata.length > 0) {
+                    elasticQuery.push({ "terms": { "commodity.raw.keyword": commoditydata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["commodity.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ commodityFilterList: commoditydata, appliedFilterList: appliedFilterList });
+                break;
+            case "categoryFilterList":
+                this.setState({ categoryFilterList: [] })
+                let queryIndexCategory = elasticQuery.findIndex(x => x.terms["listProductSubCategoryLowercase.categoryname.raw.keyword"]);
+                if (queryIndexCategory !== -1) {
+                    elasticQuery.splice(queryIndexCategory, 1);
+                }
+                break;
+            case "categoryFilterListSingle":
+                const { categoryFilterList } = this.state;
+                let categorydata = [];
+                categoryFilterList.map((item) => {
+                    if (item.Value.toLowerCase() === filterValue.Value.toLowerCase()) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Category' && x.Value == filterValue.Value);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1)
+                        }
+                        appliedFilterList.filter(x => x.Category == filterValue.Value).map(mapitem => {
+                            index = appliedFilterList.findIndex(x => x.Category == mapitem.Category);
+                            if (index !== -1) {
+                                appliedFilterList.splice(index, 1);
+                            }
+                        })
+                    } else {
+                        categorydata.push(item);
+                    }
+                });
+                let localcategory = [];
+                categorydata.map(item => {
+                    localcategory.push(item.Value.toLowerCase());
+                })
+                let bools = null;
+                if (elasticQuery.filter(x => x.bool).length > 0) {
+                    bools = elasticQuery.filter(x => x.bool)[0];
+                }
+                let allterms = elasticQuery.filter(x => x.terms);
+                allterms.map((item, index) => {
+                    if (item.terms["listProductSubCategoryLowercase.categoryname.raw.keyword"] !== undefined) {
+                        allterms.splice(index, 1);
+                    }
+                })
+                elasticQuery = [];
+                if (bools != null) {
+                    elasticQuery.push(bools);
+                }
+                allterms.map(item => {
+                    elasticQuery.push(item);
+                })
+                if (categorydata.length > 0) {
+                    elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.categoryname.raw.keyword": localcategory } });
+                }
+                this.setState({ categoryFilterList: categorydata, appliedFilterList: appliedFilterList });
+                break;
+            case "subCategoryFilterList":
+                this.setState({ subCategoryFilterList: [] })
+                let queryIndexsubCategory = elasticQuery.findIndex(x => x.terms["listProductSubCategoryLowercase.subcategoryname.raw.keyword"]);
+                if (queryIndexsubCategory !== -1) {
+                    elasticQuery.splice(queryIndexsubCategory, 1);
+                }
+                break;
+            case "subCategoryFilterListSingle":
+                const { subCategoryFilterList } = this.state;
+                let subCategorydata = [];
+                subCategoryFilterList.map((item) => {
+                    if (item.Value.toLowerCase() === filterValue.Value.toLowerCase() && item.Category.toLowerCase() == filterValue.Category.toLowerCase()) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'SubCategory' && x.Value == filterValue.Value && x.Category == filterValue.Category);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1)
+                        }
+                        appliedFilterList.filter(x => x.Category == filterValue.Category && x.SubCategory == filterValue.Value).map(mapitem => {
+                            index = appliedFilterList.findIndex(x => x.Category == mapitem.Category && x.SubCategory == mapitem.SubCategory);
+                            if (index !== -1) {
+                                appliedFilterList.splice(index, 1);
+                            }
+                        })
+                    } else {
+                        subCategorydata.push(item);
+                    }
+                });
+                let localsubcategory = [];
+                subCategorydata.map(item => {
+                    localsubcategory.push(item.Value.toLowerCase());
+                })
+                if (subCategorydata.length > 0) {
+                    elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.subcategoryname.raw.keyword": localsubcategory } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listProductSubCategoryLowercase.subcategoryname.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ subCategoryFilterList: subCategorydata, appliedFilterList: appliedFilterList });
+                break;
+            case "brandFilterList":
+                this.setState({ brandFilterList: [] })
+                let queryIndexBrand = elasticQuery.findIndex(x => x.terms["listproductbrandslowercase.raw.keyword"]);
+                if (queryIndexBrand !== -1) {
+                    elasticQuery.splice(queryIndexBrand, 1);
+                }
+                this.fillremovefilterarray("Brand", filterValue);
+                break;
+            case "brandFilterListSingle":
+                const { brandFilterList } = this.state;
+                let branddata = [];
+                brandFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Brand' && x.Value.toLocaleLowerCase() === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        branddata.push(item);
+                    }
+                });
+                if (branddata.length > 0) {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listproductbrandslowercase.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                    elasticQuery.push({ "terms": { "listproductbrandslowercase.raw.keyword": branddata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listproductbrandslowercase.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ brandFilterList: branddata, appliedFilterList: appliedFilterList });
+                break;
+            case "materialFilterList":
+                this.setState({ materialFilterList: [] })
+                let queryIndexMaterial = elasticQuery.findIndex(x => x.terms["listproductmaterialslowercase.raw.keyword"]);
+                if (queryIndexMaterial !== -1) {
+                    elasticQuery.splice(queryIndexMaterial, 1);
+                }
+                this.fillremovefilterarray("Material", filterValue);
+                break;
+            case "materialFilterListSingle":
+                const { materialFilterList } = this.state;
+                let materialdata = [];
+                materialFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Material' && x.Value.toLocaleLowerCase() === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        materialdata.push(item);
+                    }
+                });
+                let bools1 = null;
+                if (elasticQuery.filter(x => x.bool).length > 0) {
+                    bools1 = elasticQuery.filter(x => x.bool)[0];
+                }
+                let allterms1 = elasticQuery.filter(x => x.terms);
+                allterms1.map((item, index) => {
+                    if (item.terms["listproductmaterialslowercase.raw.keyword"] !== undefined) {
+                        allterms1.splice(index, 1);
+                    }
+                })
+                elasticQuery = [];
+                if (bools1 != null) {
+                    elasticQuery.push(bools1);
+                }
+                allterms1.map(item => {
+                    elasticQuery.push(item);
+                })
+                if (materialdata.length > 0) {
+                    elasticQuery.push({ "terms": { "listproductmaterialslowercase.raw.keyword": materialdata } });
+                }
+                this.setState({ materialFilterList: materialdata, appliedFilterList: appliedFilterList });
+                break;
+            case "supplierFilterList":
+                this.setState({ supplierFilterList: [] })
+                let queryIndexSupplier = elasticQuery.findIndex(x => x.terms["companyname_raw.raw.keyword"]);
+                if (queryIndexSupplier !== -1) {
+                    elasticQuery.splice(queryIndexSupplier, 1);
+                }
+                this.fillremovefilterarray("Supplier", filterValue);
+                break;
+            case "supplierFilterListSingle":
+                const { supplierFilterList } = this.state;
+                let supplierdata = [];
+                supplierFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Supplier' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        supplierdata.push(item);
+                    }
+                });
+                if (supplierdata.length > 0) {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["companyname_raw.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                    elasticQuery.push({ "terms": { "companyname_raw.raw.keyword": supplierdata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["companyname_raw.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ supplierFilterList: supplierdata, appliedFilterList: appliedFilterList });
+                break;
+            case "countryFilterList":
+                this.setState({ countryFilterList: [] })
+                let queryIndexCountry = elasticQuery.findIndex(x => x.terms["manufacturingcountry.raw.keyword"]);
+                if (queryIndexCountry !== -1) {
+                    elasticQuery.splice(queryIndexCountry, 1);
+                }
+                this.fillremovefilterarray("Manufacturing Country", filterValue);
+                break;
+            case "countryFilterListSingle":
+                const { countryFilterList } = this.state;
+                let countrydata = [];
+                countryFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Manufacturing Country' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        countrydata.push(item);
+                    }
+                });
+                if (countrydata.length > 0) {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["manufacturingcountry.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                    elasticQuery.push({ "terms": { "manufacturingcountry.raw.keyword": countrydata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["manufacturingcountry.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ countryFilterList: countrydata, appliedFilterList: appliedFilterList });
+                break;
+            case "moqFilterList":
+                this.setState({ moqFilterList: [] });
+                let queryIndexMOQ = elasticQuery.findIndex(x => x.terms["moq.raw"]);
+                if (queryIndexMOQ !== -1) {
+                    elasticQuery.splice(queryIndexMOQ, 1);
+                }
+                this.fillremovefilterarray("MOQ", filterValue);
+                break;
+            case "moqFilterListSingle":
+                const { moqFilterList } = this.state;
+                let moqdata = [];
+                moqFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'MOQ' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        moqdata.push(item);
+                    }
+                });
+                if (moqdata.length > 0) {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["moq.raw"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                    elasticQuery.push({ "terms": { "moq.raw": moqdata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["moq.raw"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ moqFilterList: moqdata, appliedFilterList: appliedFilterList });
+                break;
+            case "greenPropertyFilterList":
+                this.setState({ greenPropertyFilterList: [] });
+                let queryIndexGreenProperty = elasticQuery.findIndex(x => x.terms["listproductgreenpropertieslowercase.raw.keyword"]);
+                if (queryIndexGreenProperty !== -1) {
+                    elasticQuery.splice(queryIndexGreenProperty, 1);
+                }
+                this.fillremovefilterarray("Green Properties", filterValue);
+                break;
+            case "greenPropertyFilterListSingle":
+                const { greenPropertyFilterList } = this.state;
+                let greenPropertydata = [];
+                greenPropertyFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Green Properties' && x.Value.toLocaleLowerCase() === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        greenPropertydata.push(item);
+                    }
+                });
+                if (greenPropertydata.length > 0) {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listproductgreenpropertieslowercase.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                    elasticQuery.push({ "terms": { "listproductgreenpropertieslowercase.raw.keyword": greenPropertydata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listproductgreenpropertieslowercase.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ greenPropertyFilterList: greenPropertydata, appliedFilterList: appliedFilterList });
+                break;
+            case "supplierAccreditationFilterList":
+                this.setState({ supplierAccreditationFilterList: [] });
+                let queryIndexAccreditation = elasticQuery.findIndex(x => x.terms["listsupplieraccreditation.raw.keyword"]);
+                if (queryIndexAccreditation !== -1) {
+                    elasticQuery.splice(queryIndexAccreditation, 1);
+                }
+                this.fillremovefilterarray("Supplier Accreditation", filterValue);
+                break;
+            case "supplierAccreditationFilterListSingle":
+                const { supplierAccreditationFilterList } = this.state;
+                let supplierAccreditationdata = [];
+                supplierAccreditationFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Supplier Accreditation' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        supplierAccreditationdata.push(item);
+                    }
+                });
+                if (supplierAccreditationdata.length > 0) {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listsupplieraccreditation.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                    elasticQuery.push({ "terms": { "listsupplieraccreditation.raw.keyword": supplierAccreditationdata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listsupplieraccreditation.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ supplierAccreditationFilterList: supplierAccreditationdata, appliedFilterList: appliedFilterList });
+                break;
+            case "carbonEmissionFilterList":
+                this.setState({ carbonEmissionFilterList: [] })
+                let queryIndexCarbon = elasticQuery.findIndex(x => x.terms["carbonEmissionCostList.carbonFootPrintRaw.keyword"]);
+                if (queryIndexCarbon !== -1) {
+                    elasticQuery.splice(queryIndexCarbon, 1);
+                }
+                this.fillremovefilterarray("Carbon Emission", filterValue);
+                break;
+            case "carbonEmissionFilterListSingle":
+                const { carbonEmissionFilterList } = this.state;
+                let carbonEmissiondata = [];
+                carbonEmissionFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Carbon Emission' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        carbonEmissiondata.push(item);
+                    }
+                });
+                if (carbonEmissiondata.length > 0) {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["carbonEmissionCostList.carbonFootPrintRaw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                    elasticQuery.push({ "terms": { "carbonEmissionCostList.carbonFootPrintRaw.keyword": carbonEmissiondata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["carbonEmissionCostList.carbonFootPrintRaw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ carbonEmissionFilterList: carbonEmissiondata, appliedFilterList: appliedFilterList });
+                break;
+            case "searchFilterText":
+                let queryIndexSearch = elasticQuery.findIndex(x => x.multi_match);
+                if (queryIndexSearch !== -1) {
+                    elasticQuery.splice(queryIndexSearch, 1);
+                }
+                this.setState({ searchFilterText: '' })
+                break;
+            case "priceFilterText":
+                let queryIndexPrice = elasticQuery.findIndex(x => x.range);
+                if (queryIndexPrice !== -1) {
+                    elasticQuery.splice(queryIndexPrice, 1);
+                }
+                this.setState({ priceFilterText: "" })
+                break;
+            case "buyingwindowFilterText":
+                let queryIndexBW = elasticQuery.findIndex(x => x.terms["buyingwindowstatus.raw.keyword"]);
+                if (queryIndexBW !== -1) {
+                    elasticQuery.splice(queryIndexBW, 1);
+                }
+                this.setState({ buyingwindowFilterText: '' })
+                break;
+            case "newarrivalFilterText":
+                let queryIndex = elasticQuery.findIndex(x => x.terms["newarrival_raw.raw.keyword"]);
+                if (queryIndex !== -1) {
+                    elasticQuery.splice(queryIndex, 1);
+                }
+                this.setState({ newarrivalFilterText: '' })
+                break;
+            case "specificationFilterList":
+                this.setState({ specificationFilterList: [] });
+                if (elasticQuery.filter(x => x.bool["must"]).length > 0) {
+                    let queryIndexSpecification = elasticQuery.findIndex(x => x.bool["must"][0]["match"]["listProductSpecificationVM.groupkey.raw.keyword"]);
+                    if (queryIndexSpecification !== -1) {
+                        elasticQuery.splice(queryIndexSpecification, 1);
+                    }
+                }
+                this.fillremovefilterarray("Specification", filterValue);
+                break;
+            case "specificationFilterListSingle":
+                const { specificationFilterList } = this.state;
+                let specificationdata = [];
+                specificationFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Specification' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        specificationdata.push(item);
+                    }
+                });
+                if (specificationdata.length > 0) {
+                    specificationdata.map(item => {
+                        if (item.includes(':')) {
+                            let Groupkey = item.split(':')[0];
+                            let Value = item.split(':')[1];
+                            elasticQuery.push({ "bool": { "must": [{ "match": { "listProductSpecificationVM.groupkey.raw.keyword": Groupkey } }, { "match": { "listProductSpecificationVM.value.raw.keyword": Value } }] } });
+                        }
+                    })
+                } else {
+                    // let queryIndex = elasticQuery.findIndex(x=> x.bool["must"][0]["match"]["listProductSpecificationVM.groupkey.raw.keyword"]);
+                    elasticQuery.map((item, idx) => {
+                        if (item.hasOwnProperty('bool')) {
+                            if (item['bool'].hasOwnProperty('must')) {
+                                if (item['bool']['must'][0]['match'].hasOwnProperty('listProductSpecificationVM.groupkey.raw.keyword')) {
+                                    let queryIndex = idx;
+                                    if (queryIndex !== -1) {
+                                        elasticQuery.splice(queryIndex, 1);
+                                    }
+                                }
+                            }
+                        }
+                    })
+                }
+                this.setState({ specificationFilterList: specificationdata, appliedFilterList: appliedFilterList });
+                break;
+            case "attributeFilterList":
+                this.setState({ attributeFilterList: [] });
+                if (elasticQuery.filter(x => x.bool["must"]).length > 0) {
+                    let queryIndexAtt = elasticQuery.findIndex(x => x.bool["must"][0]["match"]["listProductAttributeVM.attributekey.raw.keyword"]);
+                    if (queryIndexAtt !== -1) {
+                        elasticQuery.splice(queryIndexAtt, 1);
+                    }
+                }
+                this.fillremovefilterarray("Attribute", filterValue);
+                break;
+            case "attributeFilterListSingle":
+                const { attributeFilterList } = this.state;
+                let attributedata = [];
+                attributeFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Attribute' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        attributedata.push(item);
+                    }
+                });
+                if (attributedata.length > 0) {
+                    attributedata.map(item => {
+                        if (item.includes(':')) {
+                            let Attributekey = item.split(':')[0];
+                            let Value = item.split(':')[1];
+                            elasticQuery.push({ "bool": { "must": [{ "match": { "listProductAttributeVM.attributekey.raw.keyword": Attributekey } }, { "match": { "listProductAttributeVM.attributevalue.raw": Value } }] } });
+                        }
+                    })
+                } else {
+                    elasticQuery.filter(x => x.bool).map((item, index) => {
+                        if (item.bool.must.filter(y => y["match"]["listProductAttributeVM.attributekey.raw.keyword"]).length > 0) {
+                            elasticQuery.splice(index, 1);
+                        }
+                    })
+                }
+                this.setState({ attributeFilterList: attributedata, appliedFilterList: appliedFilterList });
+                break;
+            case "activeProductFilterList":
+                this.setState({ activeProductFilterList: [] });
+                //let queryIndexActive = elasticQuery.findIndex(x=> x.terms["isactive_raw.raw.keyword"]);
+                let queryIndexActive = elasticQuery.findIndex(x => x.terms["isSupplierActive"]);
+                if (queryIndexActive !== -1) {
+                    elasticQuery.splice(queryIndexActive, 1);
+                }
+                this.fillremovefilterarray("Active", filterValue);
+                break;
+            case "activeProductFilterListSingle":
+                const { activeProductFilterList } = this.state;
+                let activeProductdata = [];
+                let value = filterValue === true || filterValue === 'true' ? 'Active' : filterValue === false || filterValue === 'false' ? 'InActive' : filterValue
+                activeProductFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        //index = appliedFilterList.findIndex(x => x.Id === 'Active/Inactive' && x.Value === value);
+                        index = appliedFilterList.findIndex(x => x.Id === 'Active' && x.Value === value);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        activeProductdata.push(item);
+                    }
+                });
+                if (activeProductdata.length > 0) {
+                    let queryIndex = 0;
+                    //queryIndex = elasticQuery.findIndex(x=> x.terms["isactive_raw.raw.keyword"]);
+                    queryIndex = elasticQuery.findIndex(x => x.terms["isSupplierActive"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                    let status = activeProductFilterList[0] === "true" ? true : activeProductdata[0] === "false" ? false : activeProductdata[0];
+                    //elasticQuery.push({ "terms": { "isactive_raw.raw.keyword": [status]  } });
+                    elasticQuery.push({ "terms": { "isSupplierActive": [status] } });
+                } else {
+                    let queryIndex = 0;
+                    //queryIndex = elasticQuery.findIndex(x=> x.terms["isactive_raw.raw.keyword"]);
+                    queryIndex = elasticQuery.findIndex(x => x.terms["isSupplierActive"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ activeProductFilterList: activeProductdata, appliedFilterList: appliedFilterList });
+                break;
+            case "productExpiryFilterListSingle":
+                const { productExpiryFilterList } = this.state;
+                let expiredProductdata = [];
+                productExpiryFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Product Expiry' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        expiredProductdata.push(item);
+                    }
+                });
+                if (expiredProductdata.length > 0) {
+                    if (this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER)) {
+                        elasticQuery.push({ "terms": { "listProductCountryVM.isproductexpired_raw.raw.keyword": expiredProductdata } });
+                    } else {
+                        elasticQuery.push({ "terms": { "isproductexpired_raw.raw.keyword": expiredProductdata } });
+                    }
+                } else {
+                    let queryIndex = 0;
+                    if (this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER)) {
+                        queryIndex = elasticQuery.findIndex(x => x.terms["listProductCountryVM.isproductexpired_raw.raw.keyword"]);
+                    } else {
+                        queryIndex = elasticQuery.findIndex(x => x.terms["isproductexpired_raw.raw.keyword"]);
+                    }
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ productExpiryFilterList: expiredProductdata, appliedFilterList: appliedFilterList });
+                break;
+            case "productExpiryFilterList":
+                this.setState({ productExpiryFilterList: [] });
+                let queryIndexExpiry = 0;
+                if (this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER)) {
+                    queryIndexExpiry = elasticQuery.findIndex(x => x.match["listProductCountryVM.isproductexpired_raw.raw.keyword"]);
+                } else {
+                    queryIndexExpiry = elasticQuery.findIndex(x => x.match["isproductexpired_raw.raw.keyword"]);
+                }
+                if (queryIndexExpiry !== -1) {
+                    elasticQuery.splice(queryIndexExpiry, 1);
+                }
+                this.fillremovefilterarray("Product Expiry", filterValue);
+                break;
+            case "gradeLevelFilterList":
+                this.setState({ gradeLevelFilterList: [] })
+                let queryIndexGrade = elasticQuery.findIndex(x => x.terms["listproductgradelevel.raw.keyword"]);
+                if (queryIndexGrade !== -1) {
+                    elasticQuery.splice(queryIndexGrade, 1);
+                }
+                this.fillremovefilterarray("Grade Level", filterValue);
+                break;
+            case "gradeLevelFilterListSingle":
+                const { gradeLevelFilterList } = this.state;
+                let gradeLeveldata = [];
+                gradeLevelFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'listproductgradelevel' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        gradeLeveldata.push(item);
+                    }
+                });
+                if (gradeLeveldata.length > 0) {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listproductgradelevel.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                    elasticQuery.push({ "terms": { "listproductgradelevel.raw.keyword": gradeLeveldata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listproductgradelevel.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ gradeLevelFilterList: gradeLeveldata, appliedFilterList: appliedFilterList });
+                break;
+            case "productCertificationFilterList":
+                this.setState({ productCertificationFilterList: [] })
+                if (JSON.parse(localStorage.userType) === RoleCodes.BUYER || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+                    let queryIndexProductCertification = elasticQuery.findIndex(x => x.terms["listproductcertificationslowercase.raw.keyword"]);
+                    if (queryIndexProductCertification !== -1) {
+                        elasticQuery.splice(queryIndexProductCertification, 1);
+                    }
+                } else {
+                    let queryIndexProductCertification = elasticQuery.findIndex(x => x.terms["listproductcertificationslowercase.raw.keyword"]);
+                    if (queryIndexProductCertification !== -1) {
+                        elasticQuery.splice(queryIndexProductCertification, 1);
+                    }
+                }
+                this.fillremovefilterarray("Product Certification", filterValue);
+                break;
+            case "productCertificationFilterListSingle":
+                const { productCertificationFilterList } = this.state;
+                let productCertificationdata = [];
+                productCertificationFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Product Certification' && x.Value.toLocaleLowerCase() === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        productCertificationdata.push(item);
+                    }
+                });
+                let bools2 = null;
+                if (elasticQuery.filter(x => x.bool).length > 0) {
+                    bools2 = elasticQuery.filter(x => x.bool)[0];
+                }
+                let allterms2 = elasticQuery.filter(x => x.terms);
+                allterms2.map((item, index) => {
+                    if (item.terms["listproductcertificationslowercase.raw.keyword"] !== undefined) {
+                        allterms2.splice(index, 1);
+                    }
+                })
+                elasticQuery = [];
+                if (bools2 != null) {
+                    elasticQuery.push(bools2);
+                }
+                allterms2.map(item => {
+                    elasticQuery.push(item);
+                })
+                if (productCertificationdata.length > 0) {
+                    elasticQuery.push({ "terms": { "listproductcertificationslowercase.raw.keyword": productCertificationdata } });
+                }
+                this.setState({ productCertificationFilterList: productCertificationdata, appliedFilterList: appliedFilterList });
+                break;
+            case "productTypeFilterList":
+                this.setState({ productTypeFilterList: [] })
+                if (JSON.parse(localStorage.userType) === RoleCodes.BUYER || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+                    let queryIndexproductType = elasticQuery.findIndex(x => x.terms["listProductSubCategoryLowercase.producttypename.raw.keyword"]);
+                    if (queryIndexproductType !== -1) {
+                        elasticQuery.splice(queryIndexproductType, 1);
+                    }
+                } else {
+                    let queryIndexproductType = elasticQuery.findIndex(x => x.terms["listProductSubCategoryLowercase.producttypename.raw.keyword"]);
+                    if (queryIndexproductType !== -1) {
+                        elasticQuery.splice(queryIndexproductType, 1);
+                    }
+                }
+                break;
+            case "productTypeFilterListSingle":
+                const { productTypeFilterList } = this.state;
+                let productTypedata = [];
+                productTypeFilterList.map((item) => {
+                    if (item.Value.toLowerCase() === filterValue.Value.toLowerCase() && item.Category.toLowerCase() == filterValue.Category.toLowerCase() && item.SubCategory.toLowerCase() == filterValue.SubCategory.toLowerCase()) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Product Type' && x.Value === filterValue.Value && x.Category == filterValue.Category && x.SubCategory == filterValue.SubCategory);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        productTypedata.push(item);
+                    }
+                });
+                let localproducttype = [];
+                productTypedata.map(item => {
+                    localproducttype.push(item.Value.toLowerCase());
+                })
+                if (productTypedata.length > 0) {
+                    if (JSON.parse(localStorage.userType) === RoleCodes.BUYER || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+                        elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.producttypename.raw.keyword": localproducttype } });
+                    } else {
+                        elasticQuery.push({ "terms": { "listProductSubCategoryLowercase.producttypename.raw.keyword": localproducttype } });
+                    }
+                } else {
+
+                    if (JSON.parse(localStorage.userType) === RoleCodes.BUYER || JSON.parse(localStorage.userType) === RoleCodes.APPROVER || JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+                        let queryIndex = elasticQuery.findIndex(x => x.terms["listProductSubCategoryLowercase.producttypename.raw.keyword"]);
+                        if (queryIndex !== -1) {
+                            elasticQuery.splice(queryIndex, 1);
+                        }
+                    } else {
+
+                        let queryIndex = elasticQuery.findIndex(x => x.terms["listProductSubCategoryLowercase.producttypename.raw.keyword"]);
+                        if (queryIndex !== -1) {
+                            elasticQuery.splice(queryIndex, 1);
+                        }
+                    }
+                }
+                this.setState({ productTypeFilterList: productTypedata, appliedFilterList: appliedFilterList });
+                break;
+            case "productStatusFilterList":
+                this.setState({ productStatusFilterList: [] });
+                let queryIndexProductStatus = elasticQuery.findIndex(x => x.terms["status_raw.raw.keyword"]);
+                if (queryIndexProductStatus !== -1) {
+                    elasticQuery.splice(queryIndexProductStatus, 1);
+                }
+                this.fillremovefilterarray("Product Status", filterValue);
+                break;
+            case "productStatusFilterListSingle":
+                const { productStatusFilterList } = this.state;
+                let productStatusdata = [];
+                productStatusFilterList.map((item) => {
+                    if (item === filterValue[0]) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Product Status' && x.Value === filterValue[0]);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        productStatusdata.push(item);
+                    }
+                });
+                if (productStatusdata.length > 0) {
+                    elasticQuery.push({ "terms": { "status_raw.raw": productStatusdata } });
+                } else {
+                    let queryIndex = 0;
+                    queryIndex = elasticQuery.findIndex(x => x.terms["status_raw.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ productStatusFilterList: productStatusdata, appliedFilterList: appliedFilterList });
+                break;
+            case "sustainabilityCertificateFilterList":
+                this.setState({ sustainabilityCertificateFilterList: [] });
+                let queryIndexSustainability = elasticQuery.findIndex(x => x.terms["listSupplierSustainabilityCertificates.documenttitle.raw.keyword"]);
+                if (queryIndexSustainability !== -1) {
+                    elasticQuery.splice(queryIndexSustainability, 1);
+                }
+                this.fillremovefilterarray("Sustainability Certificate", filterValue);
+                break;
+            case "sustainabilityCertificateFilterListSingle":
+                const { sustainabilityCertificateFilterList } = this.state;
+                let sustainabilityCertificatedata = [];
+                sustainabilityCertificateFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Sustainability Certificate' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        sustainabilityCertificatedata.push(item);
+                    }
+                });
+                if (sustainabilityCertificatedata.length > 0) {
+                    elasticQuery.push({ "terms": { "listSupplierSustainabilityCertificates.documenttitle.raw": sustainabilityCertificatedata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listSupplierSustainabilityCertificates.documenttitle.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ sustainabilityCertificateFilterList: sustainabilityCertificatedata, appliedFilterList: appliedFilterList });
+                break;
+            case "productWithoutPriceList":
+                this.setState({ productWithoutPriceList: [] })
+                //let queryIndexPricewithout = elasticQuery.findIndex(x => x.bool["must"][0]["match"]);
+                let queryIndexPricewithout = elasticQuery.findIndex(x => x.bool);
+                if (queryIndexPricewithout !== -1) {
+                    elasticQuery.splice(queryIndexPricewithout, 1);
+                }
+                let indexes = 0;
+                indexes = appliedFilterList.findIndex(x => x.Id === 'ProductWithoutPrice' && x.Value.toLowerCase() === filterValue.toLowerCase());
+                if (indexes !== -1) {
+                    appliedFilterList.splice(indexes, 1);
+                }
+                break;
+            case "productWithPriceList":
+                this.setState({ productWithPriceList: [] })
+                //let queryIndexPricewith = elasticQuery.findIndex(x => x.bool["must_not"][0]["match"]);
+                let queryIndexPricewith = elasticQuery.findIndex(x => x.bool);
+                if (queryIndexPricewith !== -1) {
+                    elasticQuery.splice(queryIndexPricewith, 1);
+                }
+                let priceRangeIndex = elasticQuery.findIndex(x => x.range);
+                if (priceRangeIndex !== -1) {
+                    elasticQuery.splice(priceRangeIndex, 1);
+                }
+                this.setState({ priceFilterText: "" })
+                let indexes2 = 0;
+                indexes2 = appliedFilterList.findIndex(x => x.Id === 'ProductWithPrice' && x.Value.toLowerCase() === filterValue.toLowerCase());
+                if (indexes2 !== -1) {
+                    appliedFilterList.splice(indexes2, 1);
+                }
+                break;
+            case "SLISeachFilterSingle":
+                // const { SLISearchFilters } = this.state;
+                // SLISearchFiltersdata = SLISearchFilters;
+                // SLISearchproductGuids = [];
+                // SLISearchFiltersdata.map((item) => {
+                //     if (item === filterValue) {
+                //         let index = 0;
+                //         index = SLISearchFiltersdata.findIndex(x => x === filterValue);
+                //         if (index !== -1) {
+                //             SLISearchFiltersdata.splice(index, 1);
+                //         }
+                //         this.setState({SLISearchFilters: SLISearchFiltersdata, IsSLISeach: false,SLIsearchphrese:"",facetfilterName:""});
+                //     }
+                // });
+                SLISearchproductGuids = [];
+                SLISearchFilters = [];
+                this.setState({ SLISearchFilters: SLISearchFiltersdata, IsSLISeach: false, SLIsearchphrese: "", facetfilterName: "" });
+                break;
+            case "SLISeachFilterList":
+                SLISearchproductGuids = [];
+                SLISearchFilters = [];
+                this.setState({ SLISearchFilters: SLISearchFiltersdata, IsSLISeach: false, SLIsearchphrese: "", facetfilterName: "" });
+                break;
+            case "productIndustriesFilter":
+                this.setState({ productindustriesFilterList: [] })
+                let queryIndexproductindustry = elasticQuery.findIndex(x => x.terms["listproductindustrieslowercase.raw.keyword"]);
+                if (queryIndexproductindustry !== -1) {
+                    elasticQuery.splice(queryIndexproductindustry, 1);
+                }
+                this.fillremovefilterarray("Industry", filterValue);
+                break;
+            case "productIndustriesFilterListSingle":
+                const { productindustriesFilterList } = this.state;
+                let industrydata = [];
+                productindustriesFilterList.map((item) => {
+                    if (item === filterValue) {
+                        let index = 0;
+                        index = appliedFilterList.findIndex(x => x.Id === 'Industry' && x.Value === filterValue);
+                        if (index !== -1) {
+                            appliedFilterList.splice(index, 1);
+                        }
+                    } else {
+                        industrydata.push(item);
+                    }
+                });
+                if (industrydata.length > 0) {
+                    let localindustrydata = [];
+                    industrydata.map(item => {
+                        localindustrydata.push(item.toLowerCase());
+                    })
+                    let allterms = elasticQuery.filter(x => x['terms']);
+                    allterms.map((item, index) => {
+                        if (item.terms["listproductindustrieslowercase.raw.keyword"] !== undefined) {
+                            allterms.splice(index, 1);
+                        }
+                    })
+                    elasticQuery = elasticQuery.filter(x => x.terms == undefined);
+                    allterms.map(item => {
+                        elasticQuery.push(item);
+                    })
+                    elasticQuery.push({ "terms": { "listproductindustrieslowercase.raw.keyword": localindustrydata } });
+                } else {
+                    let queryIndex = elasticQuery.findIndex(x => x.terms["listproductindustrieslowercase.raw.keyword"]);
+                    if (queryIndex !== -1) {
+                        elasticQuery.splice(queryIndex, 1);
+                    }
+                }
+                this.setState({ productindustriesFilterList: industrydata, appliedFilterList: appliedFilterList });
+                break;
+            default:
+                elasticQuery = "";
+                appliedFilterListAll = [];
+                if (localStorage.IsSLISeach !== undefined && localStorage.IsSLISeach === "true") {
+                    localStorage.setItem("IsSLISeach", "false");
+                }
+                SLISearchproductGuids = [];
+                SLISearchFilters = [];
+                this.setState({
+                    appliedFilterList: [], commodityFilterList: [], categoryFilterList: [], subCategoryFilterList: [], brandFilterList: [], materialFilterList: [], supplierFilterList: [],
+                    countryFilterList: [], moqFilterList: [], greenPropertyFilterList: [], supplierAccreditationFilterList: [], carbonEmissionFilterList: [],
+                    searchFilterText: '', priceFilterText: '', buyingwindowFilterText: '', newarrivalFilterText: '', specificationFilterList: [], attributeFilterList: [],
+                    productExpiryFilterList: [], activeProductFilterList: [], gradeLevelFilterList: [], productCertificationFilterList: [], productTypeFilterList: [], productStatusFilterList: [],
+                    sustainabilityCertificateFilterList: [], productWithoutPriceList: [], productWithPriceList: [], openAccordian: false, isAccordionOpen: null, openAccordianProductType: false, isAccordionOpenProductType: null,
+                    SLISearchFilters: [], IsSLISeach: false, SLIsearchphrese: "", facetfilterName: ""
+                });
+                break;
+        }
+        let checkeditem = 0;
+        this.state.filterList.map((option, i) => {
+            if (option.title === 'Category') {
+                this.state.categoryList.map((x, a) => {
+                    if (this.state.appliedFilterList.filter(item => item.Value == x.Id).length > 0) {
+                        checkeditem = parseInt(checkeditem) + 1;
+                    }
+                    if (x.subCategory.length > 0) {
+                        x.subCategory.map((y, j) => {
+                            if (this.state.appliedFilterList.filter(item => item.Value == (y.Id) && item.Category == x.Id).length > 0) {
+                                checkeditem = parseInt(checkeditem) + 1;
+                            }
+                            if (y.productType.length > 0) {
+                                y.productType.map(z => {
+                                    if (this.state.appliedFilterList.filter(item => item.Value == (z.Id) && item.Category == x.Id && item.SubCategory == y.Id).length > 0) {
+                                        checkeditem = parseInt(checkeditem) + 1;
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+            this.state.FilterDataList.filter(x => x.Filter === option.filterName).map((x) => {
+                if (this.state.appliedFilterList.filter(item => item.Value == x.Id).length > 0) {
+                    checkeditem = parseInt(checkeditem) + 1;
+                }
+            })
+        })
+        if (this.state.ProductSpecificationHeader != null && this.state.ProductSpecificationHeader != undefined && this.state.ProductSpecificationHeader != "") {
+            this.state.ProductSpecificationHeader.map((x, i) => {
+                this.state.ProductSpecificationChild.filter(y => y.Groupkey === x).map((z) => {
+                    if (this.state.appliedFilterList.filter(item => item.Value == (z.Groupkey + ':' + z.Value)).length > 0) {
+                        checkeditem = parseInt(checkeditem) + 1;
+                    }
+                })
+            })
+        }
+        if (this.state.ProductAttributeHeader != null && this.state.ProductAttributeHeader != undefined && this.state.ProductAttributeHeader != "") {
+            this.state.ProductAttributeHeader.map((x, i) => {
+                this.state.ProductAttributeChild.filter(y => y.Attributekey === x).map((z) => {
+                    if (this.state.appliedFilterList.filter(item => item.Value == (z.Attributekey + ':' + z.Value)).length > 0) {
+                        checkeditem = parseInt(checkeditem) + 1;
+                    }
+                })
+            })
+        }
+        if (this.state.appliedFilterList.filter(item => item.Id.toLowerCase() == 'commodity').length > 0) {
+            checkeditem = parseInt(checkeditem) + 1;
+        }
+        if (this.state.appliedFilterList.filter(item => item.Id.toLowerCase() == 'search filter').length > 0) {
+            checkeditem = parseInt(checkeditem) + 1;
+        }
+        if (this.state.appliedFilterList.filter(item => item.Id.toLowerCase() == 'productwithoutprice').length > 0) {
+            checkeditem = parseInt(checkeditem) + 1;
+        }
+        if (this.state.appliedFilterList.filter(item => item.Id.toLowerCase() == 'productwithprice').length > 0) {
+            checkeditem = parseInt(checkeditem) + 1;
+        }
+        if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'product name asc').length > 0) {
+            checkeditem = parseInt(checkeditem) + 1;
+        }
+        if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'product name desc').length > 0) {
+            checkeditem = parseInt(checkeditem) + 1;
+        }
+        if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'price low to high').length > 0) {
+            checkeditem = parseInt(checkeditem) + 1;
+        }
+        if (appliedFilterList.filter(item => item.Id.toLowerCase() == 'price high to low').length > 0) {
+            checkeditem = parseInt(checkeditem) + 1;
+        }
+        if (checkeditem == 0) {
+            appliedFilterListAll = [];
+        }
+        if (appliedFilterListAll.length == 0) {
+            elasticQuery = [];
+            CheckUncheckFilter = [];
+            this.setState({
+                appliedFilterList: [], commodityFilterList: [], categoryFilterList: [], subCategoryFilterList: [], brandFilterList: [], materialFilterList: [], supplierFilterList: [],
+                countryFilterList: [], moqFilterList: [], greenPropertyFilterList: [], supplierAccreditationFilterList: [], carbonEmissionFilterList: [],
+                searchFilterText: '', priceFilterText: '', buyingwindowFilterText: '', newarrivalFilterText: '', specificationFilterList: [], attributeFilterList: [],
+                productExpiryFilterList: [], activeProductFilterList: [], gradeLevelFilterList: [], productCertificationFilterList: [], productTypeFilterList: [], productStatusFilterList: [],
+                sustainabilityCertificateFilterList: [], productWithoutPriceList: [], productWithPriceList: [], openAccordian: false, isAccordionOpen: null, openAccordianProductType: false, isAccordionOpenProductType: null,
+                productindustriesFilterList: []
+            }, () => { this.getBreadCrumb(); });
+        }
+        if (window.location.href.includes('?')) {
+            let urlData = window.location.href;
+            let decodedUrl = decodeURIComponent(urlData);
+            let ur = decodedUrl.split('?');
+            window.history.pushState({}, null, ur[0]);
+        }
+        this.getFilterListWithData('clearAll', elasticQuery)
+        esHeaderQuery = headerQuery;
+        esElasticQuery = elasticQuery.length === 0 ? "" : elasticQuery;
+        this.onPageChanged();
+        this.getBreadCrumb();
+    }
+
+    getFilterClassName = (filterName) => {
+        let className = "";
+        switch (filterName) {
+            case "Product Expired":
+                className = "sk-panel filter--commodity";
+                break;
+            case "Commodity":
+                className = "sk-panel filter--commodity";
+                break;
+            case "Category":
+                className = "sk-panel filter--categories";
+                break;
+            case "Brand":
+                className = "sk-panel filter--brand";
+                break;
+            case "Material":
+                className = "sk-panel filter--material";
+                break;
+            case "Supplier":
+                className = "sk-panel filter--suppliername";
+                break;
+            case "Manufacturing Country":
+                className = "sk-panel filter--manufacturingcountry";
+                break;
+            case "Industry":
+                className = "sk-panel filter--industry";
+                break;
+            case "MOQ":
+                className = "sk-panel filter--moq";
+                break;
+            case "Green Properties":
+                className = "sk-panel filter--greenproperties";
+                break;
+            case "Supplier Accreditation":
+                className = "sk-panel filter--accreditation"
+                break;
+            case "Carbon Emission":
+                className = "sk-panel filter--carbonemission";
+                break;
+        }
+        return className;
+    }
+
+    viewAllClick = (filterName, text) => {
+        let FilterDataList = JSON.parse(JSON.stringify(this.state.FilterDataList));
+        if (filterName === "Commodity") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Commodity"))];
+            let commodityList = this.state.commodityList;
+            if (text === "View all") {
+                this.setState({ isCommodityViewAllClick: true });
+                commodityList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: commodityList.length,
+                        DisplayLength: commodityList.length,
+                    })
+                })
+            } else {
+                this.setState({ isCommodityViewAllClick: false });
+                let commodityListTop5 = commodityList.slice(0, 5);
+                commodityListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: commodityList.length,
+                        DisplayLength: commodityListTop5.length,
+                    })
+                })
+            }
+        }
+        let categoryFilter = filterName === "Category" ? [] : this.state.categoryList
+        if (filterName === "Category") {
+            let categoryList = this.state.categoryList.length > 5 ? this.state.categoryList.slice(0, 5) : this.state.categoryListAll;
+            if (text === "View all") {
+                this.setState({ isCategoryViewAllClick: true });
+                categoryList.map(x => {
+                    categoryFilter.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        subCategory: x.subCategory
+                    })
+                })
+            } else {
+                this.setState({ isCategoryViewAllClick: false });
+                let categoryListTop5 = categoryList.slice(0, 5);
+                categoryListTop5.map(x => {
+                    categoryFilter.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        subCategory: x.subCategory
+                    })
+                })
+            }
+        }
+        if (filterName === "Brand") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Brand"))];
+            let brandList = this.state.brandList;
+            if (text === "View all") {
+                this.setState({ isBrandViewAllClick: true });
+                brandList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: brandList.length,
+                        DisplayLength: brandList.length,
+                    })
+                })
+            } else {
+                this.setState({ isBrandViewAllClick: false });
+                let brandListTop5 = brandList.slice(0, 5);
+                brandListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: brandList.length,
+                        DisplayLength: brandListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Material") {
+            let materialList = this.state.materialList;
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Material"))];
+            if (text === "View all") {
+                this.setState({ isMaterialViewAllClick: true });
+                materialList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: materialList.length,
+                        DisplayLength: materialList.length,
+                    })
+                })
+            } else {
+                this.setState({ isMaterialViewAllClick: false });
+                let materialListTop5 = materialList.slice(0, 5);
+                materialListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: materialList.length,
+                        DisplayLength: materialListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Supplier") {
+            let supplierList = this.state.supplierList;
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Supplier"))];
+            if (text === "View all") {
+                this.setState({ isSupplierViewAllClick: true });
+                supplierList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: supplierList.length,
+                        DisplayLength: supplierList.length,
+                    })
+                })
+            } else {
+                this.setState({ isSupplierViewAllClick: true });
+                let supplierListTop5 = supplierList.slice(0, 5);
+                supplierListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: supplierList.length,
+                        DisplayLength: supplierListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Manufacturing Country") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Manufacturing Country"))];
+            let countryList = this.state.countryList;
+            if (text === "View all") {
+                this.setState({ isCountryofOriginViewAllClick: true });
+                countryList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: countryList.length,
+                        DisplayLength: countryList.length,
+                    })
+                })
+            } else {
+                this.setState({ isCountryofOriginViewAllClick: false });
+                let countryListTop5 = countryList.slice(0, 5);
+                countryListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: countryList.length,
+                        DisplayLength: countryListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Industry") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Industry"))];
+            let productindustrieslist = this.state.productindustries;
+            if (text === "View all") {
+                this.setState({ isproductindustriesViewAllClick: true });
+                productindustrieslist.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: productindustrieslist.length,
+                        DisplayLength: productindustrieslist.length,
+                    })
+                })
+            } else {
+                this.setState({ isproductindustriesViewAllClick: false });
+                let productindustriesTop5 = productindustrieslist.slice(0, 5);
+                productindustriesTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: productindustrieslist.length,
+                        DisplayLength: productindustriesTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "MOQ") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "MOQ"))];
+            let moqList = this.state.moqList;
+            if (text === "View all") {
+                this.setState({ isMOQViewAllClick: true });
+                moqList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: moqList.length,
+                        DisplayLength: moqList.length,
+                    })
+                })
+            } else {
+                this.setState({ isMOQViewAllClick: false });
+                let moqListTop5 = moqList.slice(0, 5);
+                moqListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: moqList.length,
+                        DisplayLength: moqListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Green Properties") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Green Properties"))];
+            let greenPropertyList = this.state.greenPropertyList;
+            if (text === "View all") {
+                this.setState({ isGreenPropertiesViewAllClick: true });
+                greenPropertyList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: greenPropertyList.length,
+                        DisplayLength: greenPropertyList.length,
+                    })
+                })
+            } else {
+                this.setState({ isGreenPropertiesViewAllClick: false });
+                let greenPropertyListTop5 = greenPropertyList.slice(0, 5);
+                greenPropertyListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: greenPropertyList.length,
+                        DisplayLength: greenPropertyListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Supplier Accreditation") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Supplier Accreditation"))];
+            let supplieraccreditationList = this.state.supplieraccreditationList;
+            if (text === "View all") {
+                this.setState({ isSupplierAccreditationViewAllClick: true });
+                supplieraccreditationList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: supplieraccreditationList.length,
+                        DisplayLength: supplieraccreditationList.length,
+                    })
+                })
+            } else {
+                this.setState({ isSupplierAccreditationViewAllClick: false });
+                let supplieraccreditationListTop5 = supplieraccreditationList.slice(0, 5);
+                supplieraccreditationListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: supplieraccreditationList.length,
+                        DisplayLength: supplieraccreditationListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Carbon Emission") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Carbon Emission"))];
+            let carbonEmissionList = this.state.carbonEmissionList;
+            if (text === "View all") {
+                this.setState({ isCarbonEmissionViewAllClick: true });
+                carbonEmissionList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: carbonEmissionList.length,
+                        DisplayLength: carbonEmissionList.length,
+                    })
+                })
+            } else {
+                this.setState({ isCarbonEmissionViewAllClick: false });
+                let carbonEmissionListTop5 = carbonEmissionList.slice(0, 5);
+                carbonEmissionListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: carbonEmissionList.length,
+                        DisplayLength: carbonEmissionListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Product Certification") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Product Certification"))];
+            let productCertificationList = this.state.productCertificationList;
+            if (text === "View all") {
+                productCertificationList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: productCertificationList.length,
+                        DisplayLength: productCertificationList.length,
+                    })
+                })
+            } else {
+                let productCertificationListTop5 = productCertificationList.slice(0, 5);
+                productCertificationListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: productCertificationList.length,
+                        DisplayLength: productCertificationListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Product Type") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Product Type"))];
+            let productTypeList = this.state.productTypeList;
+            if (text === "View all") {
+                productTypeList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: productTypeList.length,
+                        DisplayLength: productTypeList.length,
+                    })
+                })
+            } else {
+                let productTypeListTop5 = productTypeList.slice(0, 5);
+                productTypeListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: productTypeList.length,
+                        DisplayLength: productTypeListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Grade Level") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Grade Level"))];
+            let gradeLevelList = this.state.gradeLevelList;
+            if (text === "View all") {
+                this.setState({ isGradeLevelViewAllClick: true });
+                gradeLevelList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: gradeLevelList.length,
+                        DisplayLength: gradeLevelList.length,
+                    })
+                })
+            } else {
+                this.setState({ isGradeLevelViewAllClick: false });
+                let gradeLevelListTop5 = gradeLevelList.slice(0, 5);
+                gradeLevelListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: gradeLevelList.length,
+                        DisplayLength: gradeLevelListTop5.length,
+                    })
+                })
+            }
+        }
+        if (filterName === "Sustainability Certificate") {
+            FilterDataList = [...new Set(FilterDataList.filter(item => item.Filter !== "Sustainability Certificate"))];
+            let sustainabilityCertificateList = this.state.sustainabilityCertificateList;
+            if (text === "View all") {
+                sustainabilityCertificateList.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: sustainabilityCertificateList.length,
+                        DisplayLength: sustainabilityCertificateList.length,
+                    })
+                })
+            } else {
+                let sustainabilityCertificateListTop5 = sustainabilityCertificateList.slice(0, 5);
+                sustainabilityCertificateListTop5.map(x => {
+                    FilterDataList.push({
+                        Id: x.Id,
+                        Value: x.Value,
+                        Filter: x.Filter,
+                        FilterLength: sustainabilityCertificateList.length,
+                        DisplayLength: sustainabilityCertificateListTop5.length,
+                    })
+                })
+            }
+        }
+        let specificationFilter = filterName === "Specification" ? [] : this.state.ProductSpecificationChild;
+        if (filterName === "Specification") {
+            let specificationList = this.state.ProductSpecificationChild;
+            if (text === "View all") {
+                specificationList.map(x => {
+                    if (specificationFilter.findIndex(y => y.Groupkey === x.Groupkey && y.Value === x.Value) === -1) {
+                        specificationFilter.push({
+                            Groupkey: x.Groupkey,
+                            Value: x.Value,
+                        })
+                    }
+                })
+            } else {
+                specificationFilter = specificationList;
+            }
+        }
+        let uniqueData = [];
+        if (specificationFilter !== undefined && specificationFilter !== null && specificationFilter !== '') {
+            uniqueData = specificationFilter.map(ar => JSON.stringify(ar))
+                .filter((item, index, arr) => arr.indexOf(item) === index)
+                .map(str => JSON.parse(str));
+        }
+        let filteredArray = [...new Set(uniqueData.map(x => x.Groupkey))]
+        filteredArray.sort();
+        let filteredArrayTop5 = filteredArray.slice(0, 5);
+        let attributeFilter = filterName === "Attribute" ? [] : this.state.ProductAttributeChild;
+        if (filterName === "Attribute") {
+            let attributeList = this.state.ProductAttributeChild;
+            if (text === "View all") {
+                attributeList.map(x => {
+                    if (attributeFilter.findIndex(y => y.Id === x.Id && y.Value === x.Value) === -1) {
+                        attributeFilter.push({
+                            Attributekey: x.Attributekey,
+                            Value: x.Value,
+                        })
+                    }
+                })
+            } else {
+                attributeFilter = attributeList;
+            }
+        }
+        let uniqueDataAttribute = [];
+        if (attributeFilter !== undefined && attributeFilter !== null && attributeFilter !== '') {
+            uniqueDataAttribute = attributeFilter.map(ar => JSON.stringify(ar))
+                .filter((item, index, arr) => arr.indexOf(item) === index)
+                .map(str => JSON.parse(str));
+        }
+        let filteredArrayAttribute = [...new Set(uniqueDataAttribute.map(x => x.Attributekey))]
+        filteredArrayAttribute.sort();
+        let filteredArrayAttributeTop5 = filteredArrayAttribute.slice(0, 5);
+        this.setState({
+            FilterDataList: FilterDataList, categoryList: categoryFilter, ProductSpecificationHeaderTop5: filteredArrayTop5, ProductSpecificationHeaderAll: filteredArray, ProductSpecificationHeader: filteredArrayTop5, ProductSpecificationChild: uniqueData,
+            ProductAttributeHeaderTop5: filteredArrayAttributeTop5, ProductAttributeHeaderAll: filteredArrayAttribute, ProductAttributeHeader: filteredArrayAttributeTop5, ProductAttributeChild: uniqueDataAttribute
+        })
+    }
+
+    getIndexData = () => {
+        let indexName = "";
+        let ParentGuid = localStorage.parentUserId !== undefined ? localStorage.parentUserId === '00000000-0000-0000-0000-000000000000' ? localStorage.userId : localStorage.parentUserId : localStorage.userId
+        if(localStorage.companyGuid === "8c2d2513-51fa-4024-a442-4bd8a6121a87"){
+            indexName = "f80e3994-6030-49ca-9877-6f1d4c90c1a9_8c2d2513-51fa-4024-a442-4bd8a6121a87_approverbuyerproductlisting_temp";
+        }else{
+            let url = getElasticIndexNew(localStorage.userType, ParentGuid, localStorage.languageId, localStorage.companyGuid);
+            let splitURL = url.replace("https://", "").replace("http://").split("/");
+            if (splitURL.length === 3) {
+                indexName = splitURL[1];
+            } else {
+                for (let i = 0; i < splitURL.length; i++) {
+                    if (i === 1) {
+                        indexName = splitURL[i];
+                    }
+                }
+            }
+        }
+        let countriesGuid = [], elasticQuery = "", headerQuery = "";
+        if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+            JSON.parse(localStorage.userCountries).map(item => {
+                countriesGuid.push(item.countryGuid);
+            })
+        }
+        if (esHeaderQuery === "") {
+            headerQuery = 'productAlias.keyword:asc'; //
+        } else {
+            headerQuery = esHeaderQuery;
+        }
+
+        if (JSON.parse(localStorage.userType) === RoleCodes.ADMIN) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER) {
+            let ParentGuid = localStorage.parentUserId !== undefined ? localStorage.parentUserId === '00000000-0000-0000-0000-000000000000' ? localStorage.userId : localStorage.parentUserId : localStorage.userId
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { match: { "supplierGuid": ParentGuid } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { match: { "supplierGuid": ParentGuid } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.STRATEGICUSER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { match: { "isActive": "true" } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { match: { "isActive": "true" } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.APPROVER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                //{ match: { "isActive": "true" } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                //{ match: { "isActive": "true" } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.BUYER) {
+            let commodityName = [];
+            if (localStorage.commodityName !== undefined) {
+                JSON.parse(localStorage.commodityName).map(item => {
+                    commodityName.push(item.commodityName);
+                })
+            }
+
+            let gradeLevel = [];
+            if (localStorage.gradeLevel !== undefined && localStorage.gradeLevel !== "null") {
+                JSON.parse(localStorage.gradeLevel).map(item => {
+                    gradeLevel.push(item.gradeLevel);
+                })
+            }
+            let buyerBusinessType = [], buyerProductLevelCertificates = [], buyerSupplierLevelAdditionalCertificates = [],
+                buyerSupplierLevelMandatoryCertificates = [], tildeSepratedBuyerProductCategories = [];
+
+            if (buyerPreferencesJSONData.table3 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table3.length > 0) {
+                    buyerPreferencesJSONData.table3.map(item => {
+                        buyerBusinessType.push(item.businessTypeName);
+                    })
+                }
+            }
+            if (buyerPreferencesJSONData.table4 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table4.length > 0) {
+                    buyerPreferencesJSONData.table4.map(item => {
+                        buyerProductLevelCertificates.push(item.productCertificateName);
+                    })
+                }
+            }
+            if (buyerPreferencesJSONData.table5 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table5.length > 0) {
+                    buyerPreferencesJSONData.table5.map(item => {
+                        if (item.documentType === 'Additional') {
+                            buyerSupplierLevelAdditionalCertificates.push(item.supplierDocumentName);
+                        } else {
+                            buyerSupplierLevelMandatoryCertificates.push(item.supplierDocumentGuid);
+                        }
+                    })
+                }
+            }
+            if (buyerPreferencesJSONData.table6 !== undefined && buyerPreferencesJSONData !== "") {
+                if (buyerPreferencesJSONData.table6.length > 0) {
+                    buyerPreferencesJSONData.table6.map(item => {
+                        tildeSepratedBuyerProductCategories.push(item.productCategories);
+                    })
+                }
+            }
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "status_raw.raw.keyword": "Approved" } },
+                                { match: { "isActive": "true" } },
+                                { match: { "isSupplierActive": "true" } },
+                                //{ match: { "businessReady": "true" } },
+                                SLISearchproductGuids.length > 0 ?
+                                    { terms: { "productguid_raw.raw.keyword": SLISearchproductGuids } } : '',
+                                tildeSepratedBuyerProductCategories.length > 0 ?
+                                    SLISearchproductGuids.length > 0 ? '' :
+                                        { terms: { "productcategories_raw.raw.keyword": tildeSepratedBuyerProductCategories } } : '',
+                                { terms: { "supplierbusinesstype.raw.keyword": buyerBusinessType } },
+                                { terms: { "listproductcertifications.raw.keyword": buyerProductLevelCertificates } },
+                                {
+                                    bool: {
+                                        should: [
+                                            { terms: { "listproductgradelevel.raw.keyword": gradeLevel } },
+                                            {
+                                                bool: {
+                                                    must_not: [
+                                                        { exists: { field: "listproductgradelevel.raw.keyword" } },
+                                                    ]
+                                                }
+                                            },
+                                            { terms: { "listSupplierMandatoryCertificates.documentguid.raw.keyword": buyerSupplierLevelMandatoryCertificates } },
+                                            { terms: { "listSupplierAdditionalCertificates.documenttitle.raw.keyword": buyerSupplierLevelAdditionalCertificates } },
+                                        ]
+                                    }
+                                },
+                                // {
+                                //     bool: {
+                                //         must: [
+                                //             {
+                                //                 match: { "listBuyerCompanyMaterialTopicRankingVM.companyGuid": localStorage.companyGuid }
+                                //             },
+                                //         ]
+                                //     }
+                                // },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                };
+            }
+            else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                { terms: { "listRateCardVM.CountryGuid.raw.keyword": countriesGuid } },
+                                { terms: { "commodity.raw.keyword": commodityName } },
+                                { match: { "status_raw.raw.keyword": "Approved" } },
+                                { match: { "isActive": "true" } },
+                                { match: { "isSupplierActive": "true" } },
+                                //{ match: { "businessReady": "true" } },
+                                SLISearchproductGuids.length > 0 ?
+                                    { terms: { "productguid_raw.raw.keyword": SLISearchproductGuids } } : '',
+                                tildeSepratedBuyerProductCategories.length > 0 ?
+                                    SLISearchproductGuids.length > 0 ? '' :
+                                        { terms: { "productcategories_raw.raw.keyword": tildeSepratedBuyerProductCategories } } : '',
+                                { terms: { "supplierbusinesstype.raw.keyword": buyerBusinessType } },
+                                { terms: { "listproductcertifications.raw.keyword": buyerProductLevelCertificates } },
+                                {
+                                    bool: {
+                                        should: [
+                                            { terms: { "listproductgradelevel.raw.keyword": gradeLevel } },
+                                            {
+                                                bool: {
+                                                    must_not: [
+                                                        { exists: { field: "listproductgradelevel.raw.keyword" } },
+                                                    ]
+                                                }
+                                            },
+                                            { terms: { "listSupplierMandatoryCertificates.documentguid.raw.keyword": buyerSupplierLevelMandatoryCertificates } },
+                                            { terms: { "listSupplierAdditionalCertificates.documenttitle.raw.keyword": buyerSupplierLevelAdditionalCertificates } },
+                                        ]
+                                    }
+                                },
+                                // {
+                                //     bool: {
+                                //         must: [
+                                //             { match: { "listBuyerCompanyMaterialTopicRankingVM.companyGuid": localStorage.companyGuid } },
+                                //         ]
+                                //     }
+                                // },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERSUPPORTPERSON) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        if (JSON.parse(localStorage.userType) === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+            if (esElasticQuery.length > 0) {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                //{ match: { "isActive": "true" } },
+                                {
+                                    bool: {
+                                        must: [
+                                            ...esElasticQuery
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                };
+            } else {
+                elasticQuery = {
+                    query: {
+                        bool: {
+                            must: [
+                                { match: { "languageGuid": localStorage.languageId } },
+                                //  { match: { "isActive": "true" } },
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+        getElasticData(indexName, elasticQuery, 0, 0, headerQuery).then(json => {
+            if (json !== null && json !== undefined) {
+                if (json.hits.total.value > 0) {
+                    let data = json.hits.hits;
+                    this.setState({ IndexData: data });
+                    let productArray = data;
+
+                }
+            }
+        }).catch(err => console.log(err))
+    }
+
+    getFilterURLData = (urlData) => {
+        appliedFilterListAll=[];
+        priceRangeMinData = ""; priceRangeMaxData = "";
+        let decodedUrl = decodeURIComponent(urlData);
+        let ur = decodedUrl.split('?');
+        let PArr = [];
+        if (ur.length > 0) {
+            ur.map(x => {
+                if (x.includes('&')) {
+                    x.split('&').map(y => {
+                        if (y.includes('=')) {
+                            PArr.push(y)
+                        }
+                        else {
+                            let Lastobj = PArr.slice(-1)[0]
+                            PArr.pop();
+                            PArr.push(Lastobj + '&' + y)
+                        }
+                    })
+                }
+                else if (x.includes('products=')) {
+                    PArr.push(x)
+                }
+                else if (x.includes('[0]')) {
+                    PArr.push(x)
+                }
+                else if (!x.includes('listing-page')) {
+                    PArr.push(x)
+                }
+            })
+
+            let commodityArray = [];
+            let categoryArray = '';
+            let gradeLevelArray = [];
+            let brandArray = [];
+            let supplierArray = [];
+            let manufacturingCountryArray = [];
+            let productIndustryArray = [];
+            let isBuyingWindow = '';
+            let isNewArrival = '';
+            let priceRangeMin = '';
+            let priceRangeMax = '';
+            let searchFilter = '';
+            let materialArray = [];
+            let moqArray = [];
+            let greenPropertiesArray = [];
+            let supplierAccreditationArray = [];
+            let productcertificationArray = [], productTypeArray = [], productstatusArray = [], sustainabilityCertificateArray = [];
+            let subcategoryArray = [];
+            for (let i = 0; i < PArr.length; i++) {
+                let check = PArr[i];
+
+                if (check.includes('commodity')) {
+                    if (PArr.length > 0) {
+                        commodityArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('categories')) {
+                    if (PArr.length >= 3) {
+                        if (i === 2) {
+                            productTypeArray.push(PArr[i].split('=').pop())
+                        }
+                        else if (i === 1) {
+                            subcategoryArray.push(PArr[i].split('=').pop())
+                        } else {
+                            if (PArr.length > 1) {
+                                categoryArray = categoryArray + PArr[i].split('=').pop()
+                            }
+                            else {
+                                categoryArray = PArr[i].split('=').pop()
+                            }
+                        }
+                    }
+                    else if (PArr.length == 2) {
+                        if (i === 1) {
+                            if (PArr[i].includes('subcategories')) {
+                                subcategoryArray.push(PArr[i].split('=').pop())
+                            } else {
+                                categoryArray = PArr[i].split('=').pop()
+                            }
+                        } else {
+                            if (i === 0) {
+                                if (PArr.length > 1) {
+                                    categoryArray = categoryArray + PArr[i].split('=').pop()
+                                }
+                                else {
+                                    categoryArray = PArr[i].split('=').pop()
+                                }
+                            }
+                        }
+                    }
+                    else if (PArr.length == 3) {
+                        if (i === 2) {
+                            productTypeArray.push(PArr[i].split('=').pop())
+                        }
+                        else if (i === 1) {
+                            subcategoryArray.push(PArr[i].split('=').pop())
+                        } else {
+                            if (i === 0) {
+                                if (PArr.length > 1) {
+                                    categoryArray = categoryArray + PArr[i].split('=').pop()
+                                }
+                                else {
+                                    categoryArray = PArr[i].split('=').pop()
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        if (PArr.length > 1) {
+                            categoryArray = categoryArray + PArr[i].split('=').pop()
+                        }
+                        else {
+                            categoryArray = PArr[i].split('=').pop()
+                        }
+                    }
+                }
+                if (check.includes('gradelevel')) {
+                    if (PArr.length > 0) {
+                        gradeLevelArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('brand')) {
+                    if (PArr.length > 0) {
+                        brandArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('supplier')) {
+                    if (PArr.length > 0) {
+                        supplierArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('manufacturingcountry')) {
+                    if (PArr.length > 0) {
+                        manufacturingCountryArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('industry')) {
+                    if (PArr.length > 0) {
+                        productIndustryArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('minprice[min]')) {
+                    priceRangeMin = (PArr[i].split('=').pop())
+                    priceRangeMinData = parseInt(priceRangeMin);
+                }
+                if (check.includes('minprice[max]')) {
+                    priceRangeMax = (PArr[i].split('=').pop())
+                    priceRangeMaxData = parseInt(priceRangeMax);
+                }
+                if (check.includes('buyingwindowstatus')) {
+                    isBuyingWindow = 'Buying Window'
+                }
+                if (check.includes('newarrival')) {
+                    isNewArrival = 'New Arrival'
+                }
+                if (check.includes('products')) {
+                    searchFilter = (PArr[i].split('=').pop())
+                }
+                if (check.includes('material')) {
+                    if (check.includes('raw')) {
+                        //raw material filter issue
+                    }
+                    else {
+                        if (PArr.length > 0) {
+                            materialArray.push(PArr[i].split('=').pop())
+                        }
+                    }
+                }
+                if (check.includes('moq')) {
+                    if (PArr.length > 0) {
+                        moqArray.push(parseInt(PArr[i].split('=').pop()))
+                    }
+                }
+                if (check.includes('greenproperties')) {
+                    if (PArr.length > 0) {
+                        greenPropertiesArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('accreditation')) {
+                    if (PArr.length > 0) {
+                        supplierAccreditationArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('productcertification')) {
+                    if (PArr.length > 0) {
+                        productcertificationArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('producttype')) {
+                    if (PArr.length > 0) {
+                        productTypeArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('productstatus')) {
+                    if (PArr.length > 0) {
+                        productstatusArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('sustainabilitycertificate')) {
+                    if (PArr.length > 0) {
+                        sustainabilityCertificateArray.push(PArr[i].split('=').pop())
+                    }
+                }
+                if (check.includes('subcategories')) {
+                    if (PArr.length > 0) {
+                        subcategoryArray.push(PArr[i].split('=').pop())
+                    }
+                }
+            }
+
+            if (commodityArray.length > 0) {
+                this.getDataAfterFilter("", "Commodity", commodityArray[0], true, 0);
+            }
+            if (categoryArray !== "") {
+                if (categoryArray.length === 1) {
+                    this.getDataAfterFilter("", "Category", categoryArray[0], true, 0);
+                }
+                else {
+                    this.getDataAfterFilter("", "Category", categoryArray, true, 0);
+                }
+
+            }
+            if (gradeLevelArray.length > 0) {
+                this.getDataAfterFilter("", "GradeLevel", gradeLevelArray[0], true, 0);
+            }
+            if (brandArray.length > 0) {
+                this.getDataAfterFilter("", "Brand", brandArray[0], true, 0);
+            }
+            if (supplierArray.length > 0) {
+                this.getDataAfterFilter("", "Supplier", supplierArray[0], true, 0);
+            }
+            if (manufacturingCountryArray.length > 0) {
+                this.getDataAfterFilter("", "Manufacturing Country", manufacturingCountryArray[0], true, 0);
+            }
+            if (productIndustryArray.length > 0) {
+                this.getDataAfterFilter("", "Industry", productIndustryArray[0], true, 0);
+            }
+            if (materialArray.length > 0) {
+                this.getDataAfterFilter("", "Material", materialArray[0], true);
+            }
+            if (moqArray.length > 0) {
+                this.getDataAfterFilter("", "MOQ", moqArray[0], true);
+            }
+            if (greenPropertiesArray.length > 0) {
+                this.getDataAfterFilter("", "Green Properties", greenPropertiesArray[0], true);
+            }
+            if (supplierAccreditationArray.length > 0) {
+                this.getDataAfterFilter("", "Supplier Accreditation", supplierAccreditationArray[0], true);
+            }
+            if (isNewArrival !== "") {
+                this.getDataAfterFilter("", "New Arrival", isNewArrival, true, 0);
+            }
+            if (searchFilter !== "") {
+                this.getDataAfterFilter("", "Search Filter", searchFilter, true, 0);
+            }
+
+            if (productcertificationArray.length > 0) {
+                this.getDataAfterFilter("", "Product Certification", productcertificationArray[0], true);
+            }
+            if (productstatusArray.length > 0) {
+                this.getDataAfterFilter("", "Product Status", productstatusArray[0], true, 0);
+            }
+            if (sustainabilityCertificateArray.length > 0) {
+                this.getDataAfterFilter("", "Sustainability Certificate", productstatusArray[0], true, 0);
+            }
+            if (priceRangeMinData !== "" && priceRangeMaxData > 0) {
+                this.getDataAfterFilter("", "Price Filter", priceRangeMinData + '-' + priceRangeMaxData, true, 0);
+            }
+            if (subcategoryArray.length > 0) {
+
+                let subcategory = categoryArray + '~' + subcategoryArray[0];
+                this.getDataAfterFilter("", "SubCategory", subcategory, true, 0);
+            }
+            if (productTypeArray.length > 0) {
+                let prodttype = categoryArray + '~' + subcategoryArray[0] + '~' + productTypeArray[0];
+                this.getDataAfterFilter("", "Product Type", prodttype, true, 0);
+            }
+        }
+    }
+
+    async getBuyerPreferences() {
+        var config = {
+            headers: {
+                "Authorization": "Bearer " + localStorage.tokenId,
+                'Content-Type': 'application/json',
+                'UserGuid': localStorage.userId,
+                'CompanyGuid': localStorage.companyGuid
+            },
+        };
+        await axios.post(getServiceUrl() + 'Punchout/GetBuyerPreferences', "", config)
+            .then((response) => {
+                buyerPreferencesJSONData = response.data.user;
+                this.setState({
+                    buyerPreferencesJSONDataState: response.data.user,
+                    focusAreaList: response.data.user.table8,
+
+                });
+            }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    }
+    getUnitList = () => {
+        let siteGUID = getWebsiteGUID();
+        let index = siteGUID + "_unitmaster"
+        getElasticData(index, '', 0, 500, '').then(result => {
+            if (result !== null && result !== undefined) {
+                let unitData = [...new Set(result.hits.hits.map(x => x._source))];
+                this.setState({ unitList: unitData });
+            }
+        });
+    }
+    // getShoplanguageresource() {
+    //     getPageResource(getLanguageResourceElasticIndex(getWebsiteLanguageGuid(), 'shop') + '&size=10000')
+    //         .then(json => {
+    //             this.setState({ shoplanguageresource: json });
+    //         }).catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/' : '' : '');
+    // }
+    openFilterHandler = (val) => {
+        document.body.style.overflow = "hidden"
+        this.setState({ openFilter: val })
+    }
+    closeFilterHandler = () => {
+        document.body.style.overflow = "auto"
+        this.setState({ openFilter: '' })
+    }
+
+    async getRFQ() {
+
+        var config = {
+            headers: {
+                Authorization: "Bearer " + localStorage.tokenId,
+                "Content-Type": "application/json",
+
+
+            }
+        };
+        await axios
+            .get(getServiceUrl() + "product/GetOnGoingRFQProductList?UserGuid=" + this.props.userId, config)
+            .then(json => {
+
+                if (json.status === 200) {
+                    rfqProductDetails = json.data;
+                }
+            })
+            .catch(err => err.response !== undefined ? err.response.status === 401 ? window.location.pathname = '/logout' : '' : '');
+    }
+
+    getData = async () => {
+        var config = {
+            headers: {
+                "Authorization": "Bearer " + localStorage.tokenId,
+                'Content-Type': 'application/json',
+                'userguid': localStorage.companyGuid,
+                'startfrom': '0',
+                'searchphrese': localStorage.searchphrese,
+                'counts': '1000',
+                'searchbytitle': '',
+                "facetfilter": localStorage.facetfilter
+            },
+        };
+        await axios.post(getServiceUrl() + 'Users/SLISearch', null, config)
+            .then((response) => {
+
+                // console.log(response);
+                var result_Meta = response.data.saveresult.result_meta;
+                var facets = response.data.saveresult.facets !== null ? response.data.saveresult.facets : [];
+                var suggestions = response.data.saveresult.suggestions !== null ? response.data.saveresult.suggestions : [];
+                var pages = response.data.saveresult.pages !== null ? response.data.saveresult.pages : [];
+                var results = response.data.saveresult.results !== null ? response.data.saveresult.results : [];
+                var spelling = response.data.saveresult.spelling !== null ? response.data.saveresult.spelling : null;
+                this.setState({
+                    result_Meta: result_Meta,
+                    facets: facets,
+                    suggestions: suggestions,
+                    pages: pages,
+                    results: results,
+                    spelling: spelling,
+                    loading: false
+                });
+
+                let productGuids = results.map((item) => {
+                    return item.productGuid;
+                });
+                SLISearchproductGuids = productGuids;
+
+            }).catch(err => {
+                console.log(err);
+            });
+    }
+
+    ProductCountRow = () => {
+        let users = this.state.commodityProductsCount;
+        let final = [];
+        let arry = '';
+        let userlength = ''
+        let count = 0
+        userlength = users.length
+        for (let user of users) {
+            if (count != 0 && count != userlength && arry != '' && user.value != 0) {
+                arry = arry + ' and  '
+            }
+            if (user.value > 0) {
+                arry = arry + user.value + ' ' + user.commodity
+            }
+            count++;
+        }
+        if (arry != '') {
+            arry = arry + ' found.'
+            final.push(arry);
+        }
+        return (
+            <span className="listpageprodcount">
+                {final}
+            </span>
+        );
+    }
+
+    onExploreAllClick = async () => {
+        if (this.props.userType.includes(RoleCodes.BUYER)) {
+            if (localStorage.IsSLISeach !== undefined && localStorage.IsSLISeach === "true") {
+                await this.getData();
+                SLISearchFilters = [];
+                if (localStorage.searchphrese !== undefined && localStorage.searchphrese !== "") {
+                    if (localStorage.facetfilterName !== undefined && localStorage.facetfilterName !== "") {
+                        SLISearchFilters.push(localStorage.searchphrese + " in " + capitalizeFirst(localStorage.facetfilterName));
+                    } else {
+                        SLISearchFilters.push(localStorage.searchphrese);
+                    }
+                } else if (localStorage.facetfilterName !== undefined && localStorage.facetfilterName !== "") {
+                    SLISearchFilters.push(capitalizeFirst(localStorage.facetfilterName));
+                }
+                await this.setState({ SLISearchFilters: SLISearchFilters, IsSLISeach: true, SLIsearchphrese: localStorage.searchphrese, facetfilterName: localStorage.facetfilterName });
+                localStorage.setItem("IsSLISeach", "false");
+                localStorage.setItem("searchphrese", "");
+                localStorage.setItem("facetfilterName", "");
+            }
+
+        }
+        // await this.getBuyerPreferences();
+        if (window.location.href.includes('?')) {
+
+            this.getFilterURLData(window.location.href);
+        } else {
+            if (appliedFilterListAll.length === 0) {
+                this.getFilterListWithData('didMount', esElasticQuery);
+            } else {
+                this.getDataAfterFilter("", "didMount", "", true, 0);
+            }
+        }
+        await this.onPageChanged();
+        this.forceUpdate();
+    }
+    RemoveSLISearchFilter = (RemoveFilter) => {
+        let array = [];
+        let arraydata = appliedFilterListAll;
+        appliedFilterListAll.map((item) => {
+            if (item.Id === RemoveFilter.Id && item.Value === RemoveFilter.Value) {
+
+            } else {
+                array = item;
+            }
+        });
+        appliedFilterListAll = array;
+        let props = {
+            _dispatchInstances: {
+                memoizedProps: {
+                    'data-key': RemoveFilter.Id.toLowerCase() + "FilterListSingle",
+                    'data-value': RemoveFilter.Value
+                }
+            }
+        };
+        this.removeFilter(props);
+        this.forceUpdate();
+    }
+    getBreadCrumb() {
+        if (this.state.appliedFilterList.length > 0) {
+            switch (this.props.userType) {
+                case RoleCodes.BUYER:
+                    {
+
+                        let categories = [];
+                        categories.push({ 'pageName': 'Shop', 'url': '/shop' })
+                        let caturl = '';
+                        let subcaturl = '';
+                        let protype = '';
+                        if (this.state.appliedFilterList.filter(x => x.Id == 'Category').length == 1) {
+                            if (this.state.appliedFilterList.filter(x => x.Id == 'SubCategory').length <= 1) {
+                                if (this.state.appliedFilterList.filter(x => x.Id == 'Product Type').length <= 1) {
+                                    this.state.appliedFilterList.filter(x => x.Id == 'Category' || x.Id == 'SubCategory' || x.Id == 'Product Type')
+                                        .map((item, index) => {
+                                            // categories.push(
+                                            //     {
+                                            //         'pageName': item.Value,
+                                            //         'url': '/listing-page?Category='+item.Value
+                                            //     })
+                                            if (index == 0) {
+                                                caturl = item.Value;
+                                                categories.push({ 'pageName': item.Value, 'url': '/listing-page?categories[0][0]=' + caturl });
+                                            }
+                                            else if (index == 1) {
+                                                subcaturl = item.Value;
+                                                categories.push({ 'pageName': item.Value, 'url': '/listing-page?categories[0][0]=' + caturl + '&subcategories[0][0]=' + subcaturl });
+                                            }
+                                            else if (index == 2) {
+                                                protype = item.Value;
+                                                categories.push({ 'pageName': item.Value, 'url': '/listing-page?categories[0][0]=' + caturl + '&subcategories[0][0]=' + subcaturl + '&producttype[0][0]=' + protype });
+                                            }
+                                        })
+                                }
+                                else {
+                                    categories.push(
+                                        {
+                                            'pageName': 'Product Listing',
+                                            'url': '/listing-page'
+                                        })
+                                }
+                            }
+                            else {
+                                categories.push(
+                                    {
+                                        'pageName': 'Product Listing',
+                                        'url': '/listing-page'
+                                    })
+                            }
+                        }
+                        else {
+                            categories.push(
+                                {
+                                    'pageName': 'Product Listing',
+                                    'url': '/listing-page'
+                                })
+                        }
+                        this.setState({
+                            breadCrumb: BreadCrumb(categories)
+                        })
+                    }
+                    break;
+                default:
+                    {
+                        this.setState({
+                            breadCrumb: BreadCrumb([{ 'pageName': 'Dashboard', 'url': '/home' },
+                            { 'pageName': 'Product Listing', 'url': '/listing-page' }
+                            ])
+                        })
+                    }
+            }
+        }
+        else {
+            this.setState({
+                breadCrumb: BreadCrumb([{ 'pageName': 'Shop', 'url': '/shop' },
+                { 'pageName': 'Product Listing', 'url': '/listing-page' }
+                ])
+            })
+        }
+
+    }
+  // search click on sli removal
+    //handlesearchClick = event => {
+ 
+    //    if (this.state.isSliSearchEnabled === false) {
+ 
+    //        if (this.state.searchFilterText !== undefined && this.state.searchFilterText !== null) {
+    //            if (this.state.searchvalue !== "") {
+    //                let pageLink = '/listing-page?products=' + this.state.searchFilterText;
+    //                window.open(pageLink, "_self");
+                    
+    //            }
+    //        }
+    //    }
+    //};
+     // search click on sli removal
+
+    render() {
+
+     let Selectedcategoryfilterarray = [];
+        if (this.state.appliedFilterList.length > 0) {
+            this.state.appliedFilterList.map(item => {
+                if (item.Id == "Category") {
+                    Selectedcategoryfilterarray.push({ Id: "categoryFilterListSingle", Value: item.Value, Category: '', SubCategory: '' });
+                    //if (this.state.categoryList.filter(x => x.Id == item.Value).length > 0) {
+
+                    //}
+                }
+                else if (item.Id == "SubCategory") {
+                    Selectedcategoryfilterarray.push({ Id: "subCategoryFilterListSingle", Value: item.Value, Category: item.Category, SubCategory: '' });
+                    //if (this.state.categoryList.filter(x => x.Id == item.Category).length > 0) {
+                    //    this.state.categoryList.filter(x => x.Id == item.Category).map(subitems => {
+                    //        subitems.subCategory.filter(x => x.Id == item.Value).map(subcatitem => {
+                    //            if (subcatitem.Id == item.Value) {
+
+                    //            }
+                    //        })
+
+                    //    })
+                    //}
+                }
+                else if (item.Id == "Product Type") {
+                    Selectedcategoryfilterarray.push({ Id: "productTypeFilterListSingle", Value: item.Value, Category: item.Category, SubCategory: item.SubCategory });
+                    //if (this.state.categoryList.filter(x => x.Id == item.Category).length > 0) {
+                    //    this.state.categoryList.filter(x => x.Id == item.Category).map(subitems => {
+                    //        subitems.subCategory.filter(x => x.Id == item.SubCategory).map(subcatitem => {
+                    //            subcatitem.productType.filter(x => x.Id == item.Value).map(producttypeitem => {
+                    //                if (producttypeitem.Id == item.Value) {
+
+                    //                }
+                    //            })
+                    //        })
+                    //    })
+                    //}
+                }
+            });
+        }
+        const certificatearray = [];
+        if (this.state.jsonData !== null) {
+            if (this.state.jsonData.productCertifications.includes('|')) {
+                let arraylist = this.state.jsonData.productCertifications.split('|')
+                for (let i = 0; i < arraylist.length; i++) {
+                    certificatearray.push(arraylist[i]);
+                }
+            }
+            else {
+                certificatearray.push(this.state.jsonData.productCertifications);
+            }
+        }
+        let FocusAreaDetails = null;
+        // if (this.props.userType === RoleCodes.BUYER) {
+        //     FocusAreaDetails = <h6 className="listin_note">Products are shown based on the ranking of the suppliers in the sustainability focus areas of your organization.
+        //         {this.state.focusAreaList !== undefined && this.state.focusAreaList.length > 0 ? <Tooltip title={<div className="certificate_tooltip">
+        //             {this.state.focusAreaList.length > 0 ?
+        //                 this.state.focusAreaList.map(x => {
+        //                     return <p>{x.companySectionName}</p>
+        //                 }) : ''}</div>}><Info /></Tooltip> : null}
+        //     </h6>
+        // }
+        const { currentProducts } = this.state;
+
+        let inputs = document.querySelectorAll('.sk-reset-filters__reset')[0]
+        if (inputs !== undefined) {
+            inputs.addEventListener('click', function () {
+                handleClearAll = 1;
+            });
+        }
+
+        let countriesGuid = [];
+        let commodityName = [];
+        let gradeLevel = []
+        // let breadCrumb = null;
+        // if (this.props.userType === RoleCodes.SUPPLIERRELATIONSHIPMANAGER) {
+        //     breadCrumb = BreadCrumb([{ 'pageName': 'Dashboard', 'url': '/home' },
+        //     { 'pageName': 'Product Listing', 'url': '/listing-page' }
+        //     ])
+        // }
+        // else if (this.props.userType === RoleCodes.SUPPLIER) {
+        //     breadCrumb = BreadCrumb([{ 'pageName': 'Dashboard', 'url': '/home' },
+        //     { 'pageName': 'Product Listing', 'url': '/listing-page' }
+        //     ])
+        // }
+        // else if (this.props.userType === RoleCodes.SUPPLIERSUPPORTPERSON) {
+        //     breadCrumb = BreadCrumb([{ 'pageName': 'Dashboard', 'url': '/home' },
+        //     { 'pageName': 'Product Listing', 'url': '/listing-page' }
+        //     ])
+        // }
+        // else if (this.props.userType === RoleCodes.BUYER) {
+        //     breadCrumb = BreadCrumb([{ 'pageName': 'Shop', 'url': '/shop' },
+        //     { 'pageName': 'Product Listing', 'url': '/listing-page' }
+        //     ])
+        // }
+
+        if (this.props.userType !== RoleCodes.SUPPLIER) {
+            if (localStorage.userCountries !== undefined && localStorage.userCountries !== null && localStorage.userCountries !== 'null') {
+                JSON.parse(localStorage.userCountries).map(item => {
+                    countriesGuid.push(item.countryGuid);
+                })
+            }
+
+            if (localStorage.commodityName !== undefined && JSON.parse(localStorage.commodityName) !== null) {
+                JSON.parse(localStorage.commodityName).map(item => {
+                    commodityName.push(item.commodityName);
+                })
+            }
+
+            if (localStorage.gradeLevel !== undefined && JSON.parse(localStorage.gradeLevel)) {
+                JSON.parse(localStorage.gradeLevel).map(item => {
+                    gradeLevel.push(item.gradeLevel);
+                })
+            }
+        }
+        const formElementsArray = [];
+        for (let key in this.state.ProductVariantType) {
+            formElementsArray.push({
+                id: key,
+                config: this.state.ProductVariantType[key]
+            });
+        }
+        let cart = null;
+        let wishList = null;
+        if (this.state.jsonData !== null) {
+            let productInsideCart = this.state.ProductIsInCart;
+            let productInsideWishList = this.state.ProductIsInWishList;
+            let cartIcon = '';
+            let wishListIcon = '';
+            if (basketDetails !== undefined && basketDetails !== null) {
+                if (basketDetails.filter(x => x.productGuid === this.state.jsonData.productGuid).length === 1) {
+                    productInsideCart = true;
+                }
+            }
+            if (wishListDetails !== undefined && wishListDetails !== null) {
+                if (wishListDetails.filter(x => x.productGuid === this.state.jsonData.productGuid).length === 1) {
+                    productInsideWishList = true;
+                }
+            }
+            if (productInsideCart) {
+                cartIcon = (
+                    <div className="addtocart_cont">
+                        <RemoveFromCart ProductGuid={this.state.jsonData.productGuid} onRemoveToCart={this.removeCartIcon} />
+                    </div>
+                );
+            }
+            else {
+                cartIcon = (
+                    <div className={this.state.productExpired === true || this.state.productMinPrice === 0 ? 'addtocart_cont disabled' : 'addtocart_cont'}>
+                        <AddToCart ProductGuid={this.state.jsonData.productGuid} onAddToCart={this.addCartIcon} />
+                    </div>
+                );
+            }
+            if (productInsideWishList) {
+                wishListIcon = (
+                    <div className="wishlist_cont">
+                        <RemoveFromWishList ProductGuid={this.state.jsonData.productGuid} onRemoveToWishList={this.removeWishListIcon} />
+                    </div>
+                )
+            }
+            else {
+                wishListIcon = (
+                    <div className={this.state.productExpired === true ? 'wishlist_cont disabled' : 'wishlist_cont'}>
+                        <AddtoWishlist ProductGuid={this.state.jsonData.productGuid} onAddToWishList={this.addWishListIcon} />
+                    </div>
+                )
+            }
+            if (this.state.jsonData.status === "Approved") {
+                cart = (
+                    <React.Fragment>
+                        {/* {cartIcon} */}
+                    </React.Fragment>
+                );
+                wishList = (
+                    <React.Fragment>
+                        {wishListIcon}
+                    </React.Fragment>
+                );
+            }
+        }
+        let pVariants, pImage = null;
+        const valueOfImageURL = this.props;
+        if (this.state.jsonData !== null) {
+            pVariants = (
+                <ProductSKU
+                    ProductVariants={this.state.jsonData.listProductVariantsVM.filter(x => x.isDeleted === false)}
+                    SupplierGuid={this.state.jsonData.supplierGuid}
+                    imageUrl={valueOfImageURL}
+                    onUserInputChange={this.handleUserInputChange}
+                    ProductGuid={this.state.jsonData.ProductGuid}
+                    onProductSkuChange={this.ProductDetailSkuChange}
+                    // defaultSKUGuid={(this.state.jsonData.listProductVariantsVM).filter(t => t.isDefault === true)[0].skuGuid}                
+                    // defaultVariantName={(this.state.jsonData.listProductVariantsVM).filter(t => t.isDefault === true)[0].variantName}   
+                    // id={"ProductDetails_" + (this.state.jsonData.listProductVariantsVM).filter(t => t.isDefault === true)[0].skuGuid}            
+                    defaultSKUGuid={this.state.jsonData.listProductVariantsVM.skuGuid}
+                    defaultVariantName={this.state.jsonData.listProductVariantsVM.variantName}
+                    id={"ProductDetails_" + this.state.jsonData.listProductVariantsVM.skuGuid}
+                />
+            )
+            pImage = (
+                <React.Fragment>
+                    <div className="prod_type_deac_expi">
+                        {this.state.productExpired === true ? <div className="expired_prod">
+                            <RemoveCircle /><span>EXPIRED</span>
+                        </div> : ''}
+                    </div>
+                    <img alt=" " src={this.state.ImageURL}
+                        onError={(e) => {
+                            e.target.onerror = null; e.target.src = awsUrl +
+                                "ProductImages/Thumbnail/default.jpg"
+                        }} />
+                </React.Fragment>)
+        }
+        let SplittedSavings, Savings, QtyRange;
+        let SavingPerUnit = 0.00, SplittedRange, MaxQty;
+
+        let ProductGreenPropertiesIcon = null;
+        let ProductSupplierAccreditations = null;
+        let ProductCertificationsIcon = null;
+        if (this.state.jsonData !== null) {
+
+            ProductGreenPropertiesIcon = getGreenPropertiesIconName(this.state.jsonData["listproductgreenproperties.raw"])
+            ProductSupplierAccreditations = getSupplierAccreditations(this.state.jsonData["listsupplieraccreditation.raw"])
+            ProductCertificationsIcon = getCertificateIconName(this.state.jsonData["listproductcertifications.raw"])
+        }
+
+        if (this.state.jsonData !== null) {
+            let SavingsMsg = CalculateSaving(this.state.jsonData.listRateCardVM.filter(x => x.skuGuid === this.state.jsonData.skuGuid),
+                //let SavingsMsg = CalculateSaving(this.state.jsonData.listRateCardVM.filter(x => x.isDefault === true && x.countryGuid === countriesGuid[0]),    
+                this.state.Totalcommitment)
+            if (SavingsMsg !== undefined && SavingsMsg !== null) {
+                SplittedSavings = SavingsMsg.split("|");
+                if (SplittedSavings !== undefined) {
+                    Savings = SplittedSavings[1].trim();
+                    SavingPerUnit = Savings.substring(
+                        Savings.lastIndexOf("$") + 1,
+                        Savings.lastIndexOf("/")
+                    );
+                }
+            }
+        }
+        const { classes, theme } = this.props;
+        const { open } = this.state;
+        if (
+            getUserPermision(this.props.permissions, PageKeys.productlisting) === null
+        ) {
+            return <Redirect to="/home" />;
+        }
+        const { resources } = this.state;
+        let pageBody = '';
+        let ProductDetails = '';
+        let errorComponent = false;
+        let commodityData = false;
+        let data = this.ProductCountRow();
+        ProductDetails = (
+            <div>
+                <GridContainer className="productlisting_cont">
+
+                    {currentProducts.length > 0 ?
+                        JSON.parse(currentProducts).map(productData => {
+                            return productData.data.length > 0 ? <React.Fragment >
+                                {commodityData = true}
+                                <div className="prolist_section">
+                                    {/* <div ref={this.myRef} className="listpageprodcount_cont"><span className="listpageprodcount">{productData.value} products</span></div> */}
+                                    <div ref={this.myRef} className="listpageprodcount_cont"><span style={{ fontWeight: 600 }} className="listpageprodcount">
+                                        {productData.commodity === 'Material' ? getLabelText(this.state.resources.filter((x) => { return x.resourceKey === 'sustainablematerial' })[0], "Sustainable Material") : productData.commodity === 'Finished Goods' ? getLabelText(this.state.resources.filter((x) => { return x.resourceKey === 'sustainablefinishedgoods' })[0], "Sustainable Finished Goods") : ''} ({productData.value})
+                                    </span></div>
+                                    {productData.data.map(productArray => {
+                                        return <ProductsGridItem openDrawer={this.handleDrawerOpen} result={productArray} />
+                                    })}
+                                    {
+                                        productData.value > productData.length ?
+                                            <ExploreMoreProducts loading={this.state.loadingPage} clicked={() => this.handleExploreProducts(productData.commodity)} currentCommodity={this.state.currentCommodity} commodityName={productData.commodity} />
+                                            : null
+                                    }
+                                </div>
+                            </React.Fragment> : this.state.loadingPage ? ''// <Spinner />
+                                : JSON.parse(this.state.currentProducts).filter(x => x.data.length > 0).length ? null : errorComponent ? null : commodityData ? null :
+                                <React.Fragment>
+                                    <ErrorComponent />
+                                    {errorComponent = true}
+                                </React.Fragment>
+                        }) : this.state.loadingPage ? <Spinner /> : <ErrorComponent />
+                    }
+                </GridContainer>
+            </div >
+        );
+        pageBody = (
+            <Aux>
+                {/* {BreadCrumb([{ 'pageName': 'Shop', 'url': '/listing-page' }])} */}
+                <div className="breadtitle_wrap listingpaebreadwrap">
+                    {this.state.breadCrumb}
+                    <div className="page_top_title listingpaewrapbox">
+                        <h4>Products
+                        </h4>
+                        {/* <div className="sk-hits-stats" data-qa="hits-stats">
+                                <div className="sk-hits-stats__info" data-qa="info">({this.state.indexDataLength})</div>
+                            </div> */}                       
+                        {(JSON.parse(localStorage.userType) !== RoleCodes.BUYER) ?
+                            <div className="searchbox_cont">
+                                <div className="sk-panel filter--products">
+                                    <div className="sk-panel__header"></div>
+                                    <div className="sk-panel__content">
+                                        <div className="sk-input-filter">
+                                            <div className="search_form">
+                                                <div className="sk-input-filter__icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+                                                        <path d="M7.02064 1.5177e-05C5.88916 -0.00332111 4.77373 0.267676 3.76991 0.789792C2.76609 1.31191 1.90379 2.06958 1.25689 2.9979C0.609988 3.92623 0.197764 4.99753 0.0555287 6.12004C-0.0867061 7.24256 0.045288 8.38282 0.440204 9.44315C0.83512 10.5035 1.48119 11.4523 2.32306 12.2083C3.16493 12.9643 4.17752 13.5049 5.27407 13.7839C6.37063 14.0629 7.51847 14.0719 8.61927 13.8101C9.72007 13.5484 10.741 13.0237 11.5946 12.281L12.0206 12.707V14L18.0206 20L20.0206 18L14.0206 12H12.7276L12.3016 11.574C13.1833 10.5623 13.7549 9.31797 13.9479 7.98993C14.141 6.6619 13.9474 5.30636 13.3904 4.08545C12.8333 2.86454 11.9363 1.82995 10.8067 1.10543C9.67705 0.380914 8.36264 -0.00285939 7.02064 1.5177e-05ZM7.02064 2.00002C8.00955 2.00002 8.97625 2.29326 9.79849 2.84267C10.6207 3.39207 11.2616 4.17297 11.64 5.0866C12.0185 6.00023 12.1175 7.00556 11.9246 7.97547C11.7316 8.94537 11.2554 9.83629 10.5562 10.5355C9.85691 11.2348 8.966 11.711 7.99609 11.9039C7.02619 12.0969 6.02085 11.9979 5.10722 11.6194C4.19359 11.241 3.4127 10.6001 2.86329 9.77787C2.31389 8.95562 2.02064 7.98892 2.02064 7.00002C2.01866 6.34285 2.14664 5.69178 2.39721 5.08426C2.64778 4.47674 3.016 3.92475 3.48069 3.46007C3.94538 2.99538 4.49736 2.62716 5.10488 2.37658C5.71241 2.12601 6.36348 1.99803 7.02064 2.00002Z" fill="white" />
+                                                    </svg>
+                                                </div>                                                
+                                                <input type="text" data-qa="input-filter" className="sk-input-filter__text" placeholder={getLabelText(this.state.resources.filter((x) => { return x.resourceKey === 'searchbrandscategories' })[0], "Search brands, categories or products")} value={this.state.searchFilterText} onChange={(event) => this.getDataAfterFilter(event, 'Search Filter', event.target.value, true, 0)} />
+                                                <input type="submit" className="sk-input-filter__action" data-qa="submit" value="search" />
+                                                {/*  <div data-qa="remove" className="sk-input-filter__remove is-hidden"></div>*/}
+                                                <div data-qa="remove" onClick={this.removeFilter} className={this.state.searchFilterText !== undefined && this.state.searchFilterText !== "" ? "sk-input-filter__remove_black" : "sk-input-filter__remove_black is-hidden"} style={{ top: '15px', cursor: 'pointer' }} >{this.state.searchFilterText !== undefined && this.state.searchFilterText !== "" ? "x" : ""}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> :
+                            this.state.isSliSearchEnabled === true ?
+                                <SLISearch onExploreAllClick={this.onExploreAllClick} appliedFilterListAll={appliedFilterListAll} RemoveSLISearchFilter={this.RemoveSLISearchFilter} wishListDetails={wishListDetails} ></SLISearch>
+                                :
+                                <div className="searchbox_cont">
+                                    <div className="sk-panel filter--products">
+                                        <div className="sk-panel__header"></div>
+                                        <div className="sk-panel__content">
+                                            <div className="sk-input-filter">
+                                                <div className="search_form">
+                                                    <div className="sk-input-filter__icon">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+                                                            <path d="M7.02064 1.5177e-05C5.88916 -0.00332111 4.77373 0.267676 3.76991 0.789792C2.76609 1.31191 1.90379 2.06958 1.25689 2.9979C0.609988 3.92623 0.197764 4.99753 0.0555287 6.12004C-0.0867061 7.24256 0.045288 8.38282 0.440204 9.44315C0.83512 10.5035 1.48119 11.4523 2.32306 12.2083C3.16493 12.9643 4.17752 13.5049 5.27407 13.7839C6.37063 14.0629 7.51847 14.0719 8.61927 13.8101C9.72007 13.5484 10.741 13.0237 11.5946 12.281L12.0206 12.707V14L18.0206 20L20.0206 18L14.0206 12H12.7276L12.3016 11.574C13.1833 10.5623 13.7549 9.31797 13.9479 7.98993C14.141 6.6619 13.9474 5.30636 13.3904 4.08545C12.8333 2.86454 11.9363 1.82995 10.8067 1.10543C9.67705 0.380914 8.36264 -0.00285939 7.02064 1.5177e-05ZM7.02064 2.00002C8.00955 2.00002 8.97625 2.29326 9.79849 2.84267C10.6207 3.39207 11.2616 4.17297 11.64 5.0866C12.0185 6.00023 12.1175 7.00556 11.9246 7.97547C11.7316 8.94537 11.2554 9.83629 10.5562 10.5355C9.85691 11.2348 8.966 11.711 7.99609 11.9039C7.02619 12.0969 6.02085 11.9979 5.10722 11.6194C4.19359 11.241 3.4127 10.6001 2.86329 9.77787C2.31389 8.95562 2.02064 7.98892 2.02064 7.00002C2.01866 6.34285 2.14664 5.69178 2.39721 5.08426C2.64778 4.47674 3.016 3.92475 3.48069 3.46007C3.94538 2.99538 4.49736 2.62716 5.10488 2.37658C5.71241 2.12601 6.36348 1.99803 7.02064 2.00002Z" fill="white" />
+                                                        </svg>
+                                                    </div>
+
+                                                    <input type="text" data-qa="input-filter" className="sk-input-filter__text" placeholder={getLabelText(this.state.resources.filter((x) => { return x.resourceKey === 'searchbrandscategories' })[0], "Search brands, categories or products")} value={this.state.searchFilterText} onChange={(event) => this.getDataAfterFilter(event, 'Search Filter', event.target.value, true, 0)} />
+                                                    <input type="submit" className="sk-input-filter__action" data-qa="submit" value="search"  />
+                                                    {/*<div data-qa="remove" className="sk-input-filter__remove is-hidden"></div>*/}
+                                                    <div data-qa="remove" onClick={this.removeFilter} className={this.state.searchFilterText !== undefined && this.state.searchFilterText !== "" ? "sk-input-filter__remove_black" : "sk-input-filter__remove_black is-hidden"} style={{ top: '15px', cursor: 'pointer'}} >{this.state.searchFilterText !== undefined && this.state.searchFilterText !== "" ? "x" : ""}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                   </div>
+                                }
+                        </div>  
+                </div>
+
+                <div className={classes.root + ' ' + 'listingPage_parent'}>
+                    {/* <main
+                        className={classNames(classes.content, {
+                            [classes.contentShift]: open
+                        })}
+                    >
+
+                        <div className={classes.container + ' ' + 'listing_page_main'}> */}
+                    <div className="listingPage_cont">
+                        {this.state.FilterDataList !== undefined && this.state.FilterDataList.length > 0 ?
+                            <div class="leftfilters_cont">
+                                <div className="left_filters">
+                                    {this.state.screenSize < 820 ?
+                                        <div className="mobile_filter">
+                                            <FilterList onClick={this.showMobileFilter} />
+                                            <div className={this.state.showMobileFilter ? 'mobile_filter_inner_open' : 'mobile_filter_inner_close'}>
+                                                <Close id="close_btn" onClick={this.hideMobileFilter} />
+                                                <h5>Filters</h5><Loop />
+                                                <div>
+                                                    <div className="sk-filter-groups">
+                                                        {this.state.commodityFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-commodity">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Commodity</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.commodityFilterList !== undefined && this.state.commodityFilterList.length === 0 ? "" :
+                                                                            this.state.commodityFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="commodityFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="commodityFilterList" data-value={this.state.commodityFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {/*{this.state.productTypeFilterList.length !== 0 ?*/}
+                                                        {/*    <div className="sk-filter-group filter-group-brand">*/}
+                                                        {/*        <div className="sk-filter-group-items">*/}
+                                                        {/*            <div className="sk-filter-group-items__title">Product Type</div>*/}
+                                                        {/*            <div className="sk-filter-group-items__list">*/}
+                                                        {/*                {this.state.productTypeFilterList === undefined && this.state.productTypeFilterList.length === 0 ? "" :*/}
+                                                        {/*                    this.state.productTypeFilterList.map((item) => (*/}
+                                                        {/*                        <div className="sk-filter-group-items__value" data-key="productTypeFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>*/}
+                                                        {/*                    ))*/}
+                                                        {/*                }*/}
+                                                        {/*            </div>*/}
+                                                        {/*        </div>*/}
+                                                        {/*        <div className="sk-filter-group__remove-action" data-key="productTypeFilterList" data-value={this.state.productTypeFilterList} onClick={this.removeFilter}>X</div>*/}
+                                                        {/*    </div> :*/}
+                                                        {/*    this.state.subCategoryFilterList !== undefined && this.state.subCategoryFilterList.length > 0 ?*/}
+                                                        {/*        <div className="sk-filter-group filter-group-category">*/}
+                                                        {/*            <div className="sk-filter-group-items">*/}
+                                                        {/*                <div className="sk-filter-group-items__title">Sub Category</div>*/}
+                                                        {/*                <div className="sk-filter-group-items__list">*/}
+                                                        {/*                    {this.state.subCategoryFilterList !== undefined && this.state.subCategoryFilterList.length > 0 ?*/}
+                                                        {/*                        this.state.subCategoryFilterList.map((item) => (*/}
+                                                        {/*                            <div className="sk-filter-group-items__value" data-key="subCategoryFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>*/}
+                                                        {/*                        )) : ""*/}
+                                                        {/*                    }*/}
+                                                        {/*                </div>*/}
+                                                        {/*            </div>*/}
+                                                        {/*            <div className="sk-filter-group__remove-action" data-key="subCategoryFilterList" onClick={this.removeFilter}>X</div>*/}
+                                                        {/*        </div>*/}
+                                                        {/*        :*/}
+                                                        {/*        this.state.categoryFilterList !== undefined && this.state.categoryFilterList.length > 0 ?*/}
+                                                        {/*            <div className="sk-filter-group filter-group-category">*/}
+                                                        {/*                <div className="sk-filter-group-items">*/}
+                                                        {/*                    <div className="sk-filter-group-items__title">Category</div>*/}
+                                                        {/*                    <div className="sk-filter-group-items__list">*/}
+                                                        {/*                        {this.state.categoryFilterList === undefined && this.state.categoryFilterList.length === 0 ? "" :*/}
+                                                        {/*                            this.state.categoryFilterList.map((item) => (*/}
+                                                        {/*                                <div className="sk-filter-group-items__value" data-key="categoryFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>*/}
+                                                        {/*                            ))*/}
+                                                        {/*                        }*/}
+                                                        {/*                    </div>*/}
+                                                        {/*                </div>*/}
+                                                        {/*                <div className="sk-filter-group__remove-action" data-key="categoryFilterList" onClick={this.removeFilter}>X</div>*/}
+                                                        {/*            </div> : ""}*/}
+                                                        {Selectedcategoryfilterarray.length > 0 ?
+                                                            Selectedcategoryfilterarray.map((item) => (
+                                                                <div className="sk-filter-group filter-group-category">
+                                                                    <div className="sk-filter-group-items">
+                                                                        <div className="sk-filter-group-items__title">Category</div>
+                                                                        <div className="sk-filter-group-items__list">
+                                                                            <div className="sk-filter-group-items__value" data-key={item.Id} data-value={item} onClick={this.removeFilter}>{item.Id == "categoryFilterListSingle" ? item.Value : item.Id == "subCategoryFilterListSingle" ? item.Category + ' | ' + item.Value : item.Id == "productTypeFilterListSingle" ? item.Category + ' | ' + item.SubCategory + '|' + item.Value : ""}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="sk-filter-group__remove-action" data-key={item.Id} data-value={item} onClick={this.removeFilter}>X</div>
+                                                                </div>
+                                                            ))
+                                                            : ""}
+                                                        {this.state.brandFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-brand">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Brand</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.brandFilterList === undefined && this.state.brandFilterList.length === 0 ? "" :
+                                                                            this.state.brandFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="brandFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="brandFilterList" data-value={this.state.brandFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.materialFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-material">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Material</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.materialFilterList === undefined && this.state.materialFilterList.length === 0 ? "" :
+                                                                            this.state.materialFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="materialFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="materialFilterList" data-value={this.state.materialFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.supplierFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Supplier</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.supplierFilterList === undefined && this.state.supplierFilterList.length === 0 ? "" :
+                                                                            this.state.supplierFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="supplierFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="supplierFilterList" data-value={this.state.supplierFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.productindustriesFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-industry">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Industry</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.productindustriesFilterList === undefined && this.state.productindustriesFilterList.length === 0 ? "" :
+                                                                            this.state.productindustriesFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="productIndustriesFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="productIndustriesFilter" data-value={this.state.productindustriesFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.countryFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-country">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Country</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.countryFilterList === undefined && this.state.countryFilterList.length === 0 ? "" :
+                                                                            this.state.countryFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="countryFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="countryFilterList" data-value={this.state.countryFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.moqFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-moq">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">MOQ</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.moqFilterList === undefined && this.state.moqFilterList.length === 0 ? "" :
+                                                                            this.state.moqFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="moqFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="moqFilterList" data-value={this.state.moqFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.greenPropertyFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Green Property</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.greenPropertyFilterList === undefined && this.state.greenPropertyFilterList.length === 0 ? "" :
+                                                                            this.state.greenPropertyFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="greenPropertyFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="greenPropertyFilterList" data-value={this.state.greenPropertyFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.supplierAccreditationFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Supplier Accreditation</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.supplierAccreditationFilterList === undefined && this.state.supplierAccreditationFilterList.length === 0 ? "" :
+                                                                            this.state.supplierAccreditationFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="supplierAccreditationFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="supplierAccreditationFilterList" data-value={this.state.supplierAccreditationFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.SLISearchFilters.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">SLI Search</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.SLISearchFilters === undefined && this.state.SLISearchFilters.length === 0 ? "" :
+                                                                            this.state.SLISearchFilters.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="SLISeachFilterSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="SLISeachFilterList" data-value={this.state.SLISearchFilters} onClick={this.removeFilter}>X</div>
+                                                            </div>
+                                                        }
+                                                        {/*{this.state.carbonEmissionFilterList.length === 0 ? "" :*/}
+                                                        {/*    <div className="sk-filter-group filter-group-supplier">*/}
+                                                        {/*        <div className="sk-filter-group-items">*/}
+                                                        {/*            <div className="sk-filter-group-items__title">Carbon Emission</div>*/}
+                                                        {/*            <div className="sk-filter-group-items__list">*/}
+                                                        {/*                {this.state.carbonEmissionFilterList !== undefined && this.state.carbonEmissionFilterList.length > 0 ?*/}
+                                                        {/*                    this.state.carbonEmissionFilterList.map((item) => (*/}
+                                                        {/*                        <div className="sk-filter-group-items__value" data-key="carbonEmissionFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>*/}
+                                                        {/*                    )) : ""*/}
+                                                        {/*                }*/}
+                                                        {/*            </div>*/}
+                                                        {/*        </div>*/}
+                                                        {/*        <div className="sk-filter-group__remove-action" data-key="carbonEmissionFilterList" data-value={this.state.carbonEmissionFilterList} onClick={this.removeFilter}>X</div>*/}
+                                                        {/*    </div>}*/}
+                                                        {this.state.searchFilterText === "" ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Search Filter</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        <div className="sk-filter-group-items__value" data-key="searchFilterText" data-value={this.state.searchFilterText} onClick={this.removeFilter}>{this.state.searchFilterText}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="searchFilterText" data-value={this.state.searchFilterText} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.priceFilterText === "" ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Price Filter</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        <div className="sk-filter-group-items__value" data-key="priceFilterText" data-value={this.state.priceFilterText} onClick={this.removeFilter}>{this.state.priceFilterText}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="searchFilterText" data-value={this.state.priceFilterText} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.buyingwindowFilterText === "" ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Buying Window</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        <div className="sk-filter-group-items__value" data-key="buyingwindowFilterText" data-value={this.state.buyingwindowFilterText} onClick={this.removeFilter}>{this.state.buyingwindowFilterText}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="buyingwindowFilterText" data-value={this.state.buyingwindowFilterText} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.newarrivalFilterText === "" ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">New Arrival</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        <div className="sk-filter-group-items__value" data-key="newarrivalFilterText" data-value={this.state.newarrivalFilterText} onClick={this.removeFilter}>{this.state.newarrivalFilterText}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="newarrivalFilterText" data-value={this.state.newarrivalFilterText} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.specificationFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Specification</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.specificationFilterList === undefined && this.state.specificationFilterList.length === 0 ? "" :
+                                                                            this.state.specificationFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="specificationFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="specificationFilterList" data-value={this.state.specificationFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.attributeFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Attribute</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.attributeFilterList === undefined && this.state.attributeFilterList.length === 0 ? "" :
+                                                                            this.state.attributeFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="attributeFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="attributeFilterList" data-value={this.state.attributeFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.activeProductFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-brand">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Active/InActive</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.activeProductFilterList === undefined && this.state.activeProductFilterList.length === 0 ? "" :
+                                                                            this.state.activeProductFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="activeProductFilterListSingle" data-value={item} onClick={this.removeFilter}>{item === 'true' ? 'Active' : 'Inactive'}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="activeProductFilterList" data-value={this.state.activeProductFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.productExpiryFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-brand">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Product Expiry</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.productExpiryFilterList === undefined && this.state.productExpiryFilterList.length === 0 ? "" :
+                                                                            this.state.productExpiryFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="productExpiryFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="productExpiryFilterList" data-value={this.state.productExpiryFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.gradeLevelFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-brand">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Grade Level</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.gradeLevelFilterList === undefined && this.state.gradeLevelFilterList.length === 0 ? "" :
+                                                                            this.state.gradeLevelFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="gradeLevelFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="gradeLevelFilterList" data-value={this.state.gradeLevelFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.productCertificationFilterList !== undefined && this.state.productCertificationFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-brand">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Grade Level</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.productCertificationFilterList !== undefined && this.state.productCertificationFilterList.length === 0 ? "" :
+                                                                            this.state.productCertificationFilterList !== undefined ? this.state.productCertificationFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="productCertificationFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            )) : ""
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="productCertificationFilterList" data-value={this.state.productCertificationFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.productStatusFilterList !== undefined && this.state.productStatusFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Product Status</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        <div className="sk-filter-group-items__value" data-key="productStatusFilterListSingle" data-value={this.state.productStatusFilterList} onClick={this.removeFilter}>{this.state.productStatusFilterList}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="productStatusFilterList" data-value={this.state.productStatusFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.sustainabilityCertificateFilterList !== undefined && this.state.sustainabilityCertificateFilterList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-supplier">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Sustainability Certificate</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.sustainabilityCertificateFilterList !== undefined && this.state.sustainabilityCertificateFilterList.length === 0 ? "" :
+                                                                            this.state.sustainabilityCertificateFilterList !== undefined ? this.state.sustainabilityCertificateFilterList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="sustainabilityCertificateFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            )) : ""
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="sustainabilityCertificateFilterList" data-value={this.state.sustainabilityCertificateFilterList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.productWithoutPriceList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-brand">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">Without Price</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.productWithoutPriceList === undefined && this.state.productWithoutPriceList.length === 0 ? "" :
+                                                                            this.state.productWithoutPriceList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="productWithoutPriceList" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="productWithoutPriceList" data-value={this.state.productWithoutPriceList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                        {this.state.productWithPriceList.length === 0 ? "" :
+                                                            <div className="sk-filter-group filter-group-brand">
+                                                                <div className="sk-filter-group-items">
+                                                                    <div className="sk-filter-group-items__title">With Price</div>
+                                                                    <div className="sk-filter-group-items__list">
+                                                                        {this.state.productWithPriceList === undefined && this.state.productWithPriceList.length === 0 ? "" :
+                                                                            this.state.productWithPriceList.map((item) => (
+                                                                                <div className="sk-filter-group-items__value" data-key="productWithPriceList" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                            ))
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div className="sk-filter-group__remove-action" data-key="productWithPriceList" data-value={this.state.productWithPriceList} onClick={this.removeFilter}>X</div>
+                                                            </div>}
+                                                    </div>
+                                                    {(this.state.commodityFilterList !== undefined && this.state.commodityFilterList.length > 0) || (this.state.categoryFilterList !== undefined && this.state.categoryFilterList.length > 0) || (this.state.subCategoryFilterList !== undefined && this.state.subCategoryFilterList.length > 0) || (this.state.brandFilterList !== undefined && this.state.brandFilterList.length > 0) || (this.state.materialFilterList !== undefined && this.state.materialFilterList.length > 0) || (this.state.supplierFilterFilterList !== undefined && this.state.supplierFilterFilterList.length > 0) ||
+                                                        (this.state.countryFilterList !== undefined && this.state.countryFilterList.length > 0) || (this.state.moqFilterList !== undefined && this.state.moqFilterList.length > 0) || (this.state.greenPropertyFilterList !== undefined && this.state.greenPropertyFilterList.length > 0) || (this.state.supplierAccreditationFilterList !== undefined && this.state.supplierAccreditationFilterList.length > 0) || (this.state.carbonEmissionFilterList !== undefined && this.state.carbonEmissionFilterList.length) ||
+                                                        this.state.searchFilterText !== "" || this.state.priceFilterText !== "" || this.state.newarrivalFilterText !== "" || this.state.buyingwindowFilterText !== "" || (this.state.specificationFilterList !== undefined && this.state.specificationFilterList.length > 0) || (this.state.attributeFilterList !== undefined && this.state.attributeFilterList.length > 0)
+                                                        || (this.state.activeProductFilterList !== undefined && this.state.activeProductFilterList.length > 0) || (this.state.productExpiryFilterList !== undefined && this.state.productExpiryFilterList.length > 0) || (this.state.gradeLevelFilterList !== undefined && this.state.gradeLevelFilterList.length > 0) || (this.state.productTypeFilterList !== undefined && this.state.productTypeFilterList.length > 0)
+                                                        || (this.state.productCertificationFilterList !== undefined && this.state.productCertificationFilterList.length > 0) || (this.state.productStatusFilterList !== undefined && this.state.productStatusFilterList.length > 0) || (this.state.sustainabilityCertificateFilterList !== undefined && this.state.sustainabilityCertificateFilterList.length > 0) || (this.state.productWithoutPriceList !== undefined && this.state.productWithoutPriceList.length > 0) || (this.state.productWithPriceList !== undefined && this.state.productWithPriceList.length > 0) ?
+                                                        <div className="sk-reset-filters"><div className="sk-reset-filters__reset" data-key="" data-value="" onClick={this.removeFilter}>Reset</div></div> : ""}
+
+
+                                                    <div className="">
+                                                        {this.state.filterList.map((option, i) => (
+                                                            option.filterType === "CustomFilterList" ?
+                                                                this.state.specificationLoader === true ? <Spinner /> :
+                                                                    this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER) ?
+                                                                        <div className={this.state.listing_page_spec ? 'sk-panel listing_page_spec open_more_spec' : 'sk-panel listing_page_spec close_more_spec'}>
+                                                                            {this.state.ProductExpiryFilterData.length > 0 ? <h6 onClick={this.openSpec} className="listing_page_spec_heading">Product Expiry</h6> : ''}
+                                                                            {this.state.ProductExpiryFilterData.length > 0 ?
+                                                                                this.state.ProductExpiryFilterData.map((x) =>
+                                                                                    <div className="sk-item-list-option sk-item-list__item" onClick={(event) => this.handleExpiryClick(event, x)}>
+                                                                                        <div className="sk-item-list-option__text">{x}</div>
+                                                                                        <div className="sk-item-list-option__count">{x === "Yes" ? this.state.expiredProductCount : this.state.availableProductCount}</div>
+                                                                                    </div>
+                                                                                ) : ''}
+                                                                        </div> : ''
+                                                                :
+                                                                option.title === 'Category' ?
+                                                                    <div className="filter_accord">
+                                                                        <Accordion
+                                                                            active={0}
+                                                                            collapses={[
+                                                                                {
+                                                                                    title: <div className="sk-panel__header">{option.resourceValue}</div>,
+                                                                                    content: <React.Fragment>
+                                                                                        {
+                                                                                            this.state.categoryList.map((x, i) =>
+                                                                                                <React.Fragment>
+                                                                                                    <div className='sk-item-list'>
+                                                                                                        <div onClick={() => this.toggleAccord(i)} className="sk-item-list-option sk-item-list__item">
+                                                                                                            <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, option.title, x.Id, true, i)}>
+                                                                                                                <FormControlLabel
+                                                                                                                    control={
+                                                                                                                        <Checkbox
+                                                                                                                            checked={appliedFilterListAll.filter(item => item.Value == (x.Id)).length > 0 ? true : false}
+                                                                                                                            // checked={CheckUncheckFilter.filter(item => item.filterName === option.filterName && item.filterValue == (x.Id)).length > 0 ? true : false}
+                                                                                                                            // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                            value={x.Id}
+                                                                                                                            classes={{
+                                                                                                                                root: classes.root,
+                                                                                                                                checked: classes.checked,
+                                                                                                                            }}
+                                                                                                                        />
+                                                                                                                    }
+                                                                                                                    label={x.Id}
+                                                                                                                />
+                                                                                                            </div>
+                                                                                                            <div class="sk-item-list-option__count">{x.Value}</div>
+                                                                                                        </div>
+                                                                                                        <div style={{ display: this.state.openAccordian && this.state.isAccordionOpen === i ? 'block' : 'none' }}>
+                                                                                                            {x.subCategory.length > 0 ? x.subCategory.map((y, j) => (y.Id !== undefined ?
+                                                                                                                <div data-qa="options" className="sk-hierarchical-menu-list__hierarchical-options">
+                                                                                                                    <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                        <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'SubCategory', x.Id + '~' + y.Id, true, j)}>
+                                                                                                                            <FormControlLabel
+                                                                                                                                control={
+                                                                                                                                    <Checkbox
+                                                                                                                                        checked={appliedFilterListAll.filter(item => item.Value == y.Id).length > 0 ? true : false}
+                                                                                                                                        // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                                        value={y.Id}
+                                                                                                                                        classes={{
+                                                                                                                                            root: classes.root,
+                                                                                                                                            checked: classes.checked,
+                                                                                                                                        }}
+                                                                                                                                    />
+                                                                                                                                }
+                                                                                                                                label={y.Id}
+                                                                                                                            />
+                                                                                                                        </div>
+                                                                                                                        <div class="sk-item-list-option__count">{y.Value}</div>
+                                                                                                                    </div>
+                                                                                                                    <div style={{ display: this.state.openAccordianProductType && this.state.isAccordionOpenProductType === j ? 'block' : 'none' }}>
+                                                                                                                        {y.productType.length > 0 ? y.productType.map(z => (z.Id !== undefined ?
+                                                                                                                            <div data-qa="options" className="sk-hierarchical-menu-list__hierarchical-options">
+                                                                                                                                <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                                    <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}>
+                                                                                                                                        <FormControlLabel
+                                                                                                                                            control={
+                                                                                                                                                <Checkbox
+                                                                                                                                                    checked={appliedFilterListAll.filter(item => item.Value == z.Id).length > 0 ? true : false}
+                                                                                                                                                    // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                                                    value={z.Id}
+                                                                                                                                                    classes={{
+                                                                                                                                                        root: classes.root,
+                                                                                                                                                        checked: classes.checked,
+                                                                                                                                                    }}
+                                                                                                                                                />
+                                                                                                                                            }
+                                                                                                                                            label={z.Id}
+                                                                                                                                        />
+                                                                                                                                    </div>
+                                                                                                                                    <div class="sk-item-list-option__count">{z.Value}</div>
+                                                                                                                                </div>
+                                                                                                                            </div> : '')) : ''}
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                : '')) : ''}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </React.Fragment>
+                                                                                            )}
+                                                                                        <div data-qa="show-more" className="sk-refinement-list__view-more-action" onClick={() => this.viewAllClick(option.title, this.state.categoryList !== undefined && this.state.categoryList.length > 5 ? "View less" : "View all")}>
+                                                                                            {this.state.categoryList !== undefined && this.state.categoryList.length > 5 ? "View less" : this.state.categoryList !== undefined && this.state.categoryList.length <= 4 ? "" : "View all"}</div>
+                                                                                    </React.Fragment>
+                                                                                }]} />
+                                                                    </div>
+                                                                    : option.filterName === 'Range' ?
+                                                                        // <div className="sk-panel filter--minprice">
+                                                                        //     <div className="sk-panel__header">Price (<span className="currencySymbolFont">{currencysymbol}</span>)</div>
+                                                                        //     <div className="sk-panel__content">
+                                                                        //         <form className="sk-range-input">
+                                                                        //             <input type="number" className="sk-range-input__input" placeholder="min" step="any" onChange={(event) => this.setState({ priceFilterMinPrice: event.target.value })} value={parseFloat(this.state.priceFilterMinPrice).toFixed(2)} />
+                                                                        //             <div className="sk-range-input__to-label">-</div>
+                                                                        //             <input type="number" className="sk-range-input__input" placeholder="max" step="any" onChange={(event) => this.setState({ priceFilterMaxPrice: event.target.value })} value={parseFloat(this.state.priceFilterMaxPrice).toFixed(2)} />
+                                                                        //             <button type="submit" className="sk-range-input__submit" onClick={(event) => this.getDataAfterFilter(event, 'Price Filter', this.state.priceFilterMinPrice + ' - ' + this.state.priceFilterMinPrice, true, 0)}>Go</button>
+                                                                        //         </form>
+                                                                        //     </div>
+                                                                        // </div>
+                                                                        <div className="filter_accord">
+                                                                            <Accordion
+                                                                                active={0}
+                                                                                collapses={[
+                                                                                    {
+                                                                                        title: <div className="sk-panel__header">Price (<span className="currencySymbolFont">{currencysymbol}</span>)</div>,
+                                                                                        content: <React.Fragment>
+                                                                                            <div data-qa="options" className="sk-item-list">
+                                                                                                <div className="sk-item-list-option sk-item-list__item">
+                                                                                                    <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'ProductWithoutPrice', "Without Price", true, 0)}>Without Price</div>
+                                                                                                    <div className="sk-item-list-option__count">{this.state.ProductWithoutPriceCount}</div>
+                                                                                                </div>
+                                                                                                <div className="sk-item-list-option sk-item-list__item">
+                                                                                                    <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'ProductWithPrice', "With Price", true, 0)}>With Price</div>
+                                                                                                    <div className="sk-item-list-option__count">{this.state.ProductWithPriceCount}</div>
+                                                                                                </div>
+                                                                                                <div className="sk-panel__content" style={{ display: this.state.productWithPriceList.length !== 0 ? 'block' : 'none' }}>
+                                                                                                    <form className="sk-range-input">
+                                                                                                        <input type="number" className="sk-range-input__input" placeholder="min" step="any" onChange={(event) => this.setState({ priceFilterMinPrice: event.target.value.substring(0, 8) })} value={(this.state.priceFilterMinPrice)} onBlur={(e) => this.convertdecimalMinprice()} />
+                                                                                                        <div className="sk-range-input__to-label">-</div>
+                                                                                                        <input type="number" className="sk-range-input__input" placeholder="max" step="any" onChange={(event) => this.setState({ priceFilterMaxPrice: event.target.value.substring(0, 8) })} value={(this.state.priceFilterMaxPrice)} onBlur={(e) => this.convertdecimalMaxprice()} />
+                                                                                                        <button type="submit" className="sk-range-input__submit" onClick={(event) => this.getDataAfterFilter(event, 'Price Filter', this.state.priceFilterMinPrice + ' - ' + this.state.priceFilterMinPrice, true, 0)}>Go</button>
+                                                                                                    </form>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </React.Fragment>
+                                                                                    }]} />
+                                                                        </div>
+                                                                        : option.filterName === 'Buying Window' ?
+                                                                            this.state.buyingwindowCount > 0 ?
+                                                                                // Below LOC is commented to Hide BW for all users | ShriGanesh Singh | 11th June 2021
+                                                                                // <div>
+                                                                                //   <div className="sk-panel filter--buyingwindowstatus" onClick={(event) => this.getDataAfterFilter(event, option.title, option.title, true, 0)}>
+                                                                                //     <div className="sk-panel__header is-collapsable">Buying Window</div>
+                                                                                //     <div className="sk-panel__content">
+                                                                                //       <div data-qa="options" className="sk-item-list">
+                                                                                //         <div className="sk-item-list-option sk-item-list__item">
+                                                                                //           <div className="sk-item-list-option__text">Buying Window</div>
+                                                                                //           <div className="sk-item-list-option__count">{this.state.buyingwindowCount}</div>
+                                                                                //         </div>
+                                                                                //       </div>
+                                                                                //     </div>
+                                                                                //   </div>
+                                                                                // </div> 
+                                                                                "" : ""
+                                                                            : option.title === 'New Arrival' ?
+                                                                                this.state.newarrivalCount > 0 ?
+                                                                                    <div className="sk-panel filter--newarrival" onClick={(event) => this.getDataAfterFilter(event, option.title, option.title, true, 0)}>
+                                                                                        <div className="sk-panel__header is-collapsable">New Arrival</div>
+                                                                                        <div className="sk-panel__content">
+                                                                                            <div data-qa="options" className="sk-item-list">
+                                                                                                <div className="sk-item-list-option sk-item-list__item">
+                                                                                                    <div className="sk-item-list-option__text">New Arrival</div>
+                                                                                                    <div className="sk-item-list-option__count">{this.state.newarrivalCount}</div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div> : "" :
+                                                                                this.state.FilterDataList !== undefined && this.state.FilterDataList.filter(x => x.Filter === option.filterName).length > 0 ?
+                                                                                    <div className="filter_accord">
+                                                                                        <Accordion
+                                                                                            active={0}
+                                                                                            collapses={[
+                                                                                                {
+                                                                                                    title: <div className="sk-panel__header">{option.resourceValue}</div>,
+                                                                                                    content: <React.Fragment>
+                                                                                                        {this.state.FilterDataList.filter(x => x.Filter === option.filterName).map((x) =>
+
+                                                                                                            <div data-qa="options" className="sk-item-list">
+                                                                                                                <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                    <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, option.filterName, x.Id, true, 0)}>{x.Id}</div>
+                                                                                                                    <div className="sk-item-list-option__count">{x.Value}</div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        )}
+                                                                                                        {option.title === "Product Expiry" ?
+                                                                                                            this.props.userType.includes(RoleCodes.ADMIN) || this.props.userType.includes(RoleCodes.SUPPLIER) ?
+                                                                                                                <p className="expiry_note">Please select an expired product to check if it is expired either globally or for a country or for an SKU </p> : ''
+                                                                                                            : this.state.FilterDataList.filter(x => x.Filter === option.title) !== undefined && this.state.FilterDataList.filter(x => x.Filter === option.title).length > 0 ?
+                                                                                                                // option.title === "Product Certification" ? '' :
+                                                                                                                <div data-qa="show-more" className="sk-refinement-list__view-more-action" onClick={() => this.viewAllClick(option.title, (this.state.FilterDataList.filter(x => x.Filter === option.title)[0].FilterLength > 5 && this.state.FilterDataList.filter(x => x.Filter === option.title)[0].DisplayLength > 5) ? 'View less' : 'View all')}>
+                                                                                                                    {(this.state.FilterDataList.filter(x => x.Filter === option.title)[0].FilterLength > 5 && this.state.FilterDataList.filter(x => x.Filter === option.title)[0].DisplayLength > 5) ? 'View less' : (this.state.FilterDataList.filter(x => x.Filter === option.title)[0].FilterLength <= 5 && this.state.FilterDataList.filter(x => x.Filter === option.title)[0].DisplayLength <= 5) ? "" : 'View all'}</div> : ''}
+                                                                                                    </React.Fragment>
+                                                                                                }]} />
+                                                                                    </div> : ""
+                                                        ))}
+                                                    </div>
+                                                    <div className="">
+                                                        {this.state.ProductSpecificationHeader === null ? <Spinner /> :
+                                                            this.state.ProductSpecificationHeader.length > 0 ?
+                                                                <div className="filter_accord">
+                                                                    {
+                                                                        this.state.ProductSpecificationHeader.map((x, i) => {
+                                                                            return <Accordion
+                                                                                active={0}
+                                                                                collapses={[
+                                                                                    {
+                                                                                        title: <div className="sk-panel__header">{x}</div>,
+                                                                                        content: <React.Fragment>
+                                                                                            {this.state.ProductSpecificationChild.filter(y => y.Groupkey === x).map((z) =>
+                                                                                                // <li onClick={(event) => this.handleClick(event, x)}>{z.Value}</li>
+                                                                                                <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, "Specification", z.Groupkey + ':' + z.Value, true, 0)}>
+                                                                                                    <FormControlLabel
+                                                                                                        control={
+                                                                                                            <Checkbox
+                                                                                                                checked={appliedFilterListAll.filter(item => item.Value == (z.Groupkey + ':' + z.Value)).length > 0 ? true : false}
+                                                                                                                // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                value={z.Groupkey + ':' + z.Value}
+                                                                                                                classes={{
+                                                                                                                    root: classes.root,
+                                                                                                                    checked: classes.checked,
+                                                                                                                }}
+                                                                                                            />
+                                                                                                        }
+                                                                                                        label={z.Value}
+                                                                                                    />
+                                                                                                </div>
+                                                                                            )
+                                                                                            }
+                                                                                        </React.Fragment>
+                                                                                    }]} />
+                                                                        })
+                                                                    }
+
+                                                                </div> : null
+                                                        }
+                                                        {/* Attribute Filter */}
+                                                        <div className={this.state.listing_page_spec ? 'listing_page_spec open_more_spec sk-panel' : 'listing_page_spec close_more_spec sk-panel'}>
+                                                            {this.state.ProductAttributeHeader !== undefined && this.state.ProductAttributeHeader !== null && this.state.ProductAttributeHeader.length > 0 ?
+                                                                this.state.ProductAttributeHeader.map((x, i) =>
+                                                                    <div className='sk-panel filter_accord'>
+                                                                        <Accordion
+                                                                            active={0}
+                                                                            collapses={[
+                                                                                {
+                                                                                    title: <div className="sk-panel__header">{x}</div>,
+                                                                                    content: <React.Fragment>
+                                                                                        <div className={(this.state.openAttribute === false && this.state.attributeFilterViewAllHeader === x) ? 'close_spec' : 'open_spec custom_panel'}>
+                                                                                            {this.state.attributeFilterViewAll === true && this.state.attributeFilterViewAllHeader === x ?
+                                                                                                this.state.ProductAttributeChild.filter(y => y.Attributekey === x).map((z) =>
+                                                                                                    //<li onClick={(event) => this.handleAttributeClick(event, x)}>{z.Value}</li>
+                                                                                                    <div className='sk-item-list-option__text' onClick={(event) => this.getDataAfterFilter(event, "Attribute", z.Attributekey + ':' + z.Value, true, 0)}>{z.Value}</div>
+                                                                                                )
+                                                                                                :
+                                                                                                this.state.ProductAttributeChild.filter(y => y.Attributekey === x).slice(0, 5).map((z) =>
+                                                                                                    //<li onClick={(event) => this.handleAttributeClick(event, x)}>{z.Value}</li>
+                                                                                                    <div className='sk-item-list-option__text' onClick={(event) => this.getDataAfterFilter(event, "Attribute", z.Attributekey + ':' + z.Value, true, 0)}>{z.Value}</div>
+                                                                                                )
+                                                                                            }
+                                                                                        </div>
+                                                                                        {this.state.ProductAttributeChild.filter(t => t.Attributekey === x).length > 4 && this.state.openAttribute ?
+                                                                                            <h6 id={x} onClick={(event) => this.filterViewAttribute(event, x)} className="filter_view_more">
+                                                                                                {(this.state.attributeFilterViewAllHeader === x && this.state.attributeFilterViewAll === true) ?
+                                                                                                    'View less' : this.state.ProductAttributeChild.filter(t => t.Attributekey === x)[0]['FilterLength'] > 5 ? 'View all' : ''}</h6> : ''}
+                                                                                    </React.Fragment>
+                                                                                }]}
+                                                                        />
+                                                                    </div>
+                                                                ) : ''}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        :
+                                        <div className="desktop_filter">
+                                            <div>
+                                                {/* <div>
+                                                                <div className="sk-panel filter--products">
+                                                                    <div className="sk-panel__header"></div>
+                                                                    <div className="sk-panel__content">
+                                                                        <div className="sk-input-filter">
+                                                                            <div className="search_form">
+                                                                                <div className="sk-input-filter__icon"></div>
+                                                                                <input type="text" data-qa="input-filter" className="sk-input-filter__text" placeholder="Search" value={this.state.searchFilterText} onChange={(event) => this.getDataAfterFilter(event, 'Search Filter', event.target.value, true, 0)} />
+                                                                                <input type="submit" className="sk-input-filter__action" data-qa="submit" value="search" />
+                                                                                <div data-qa="remove" className="sk-input-filter__remove is-hidden"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div> */}
+                                                <div className="filterslistwrap">
+                                                    <div className="filter_accord">
+                                                        <div className="filter_heading">
+                                                            {/* <FilterList />
+                                                            <span> </span> */}
+                                                            <div onMouseLeave={() => this.closeFilterHandler('')} onMouseOver={() => this.openFilterHandler('All Filter')} className="new_filter_design">
+                                                                <Button onClick={() => this.openFilterHandler('All Filter')} className={this.state.openFilter === 'All Filter' ? "filter_selected_btn  filter_btn" : "filter_btn"}><FilterList />All Filter</Button>
+                                                                {/* {this.state.openFilter === option.title && <div onClick={this.closeFilterHandler} className="backdrop"></div>} */}
+                                                                <div onMouseLeave={() => this.closeFilterHandler('')} className={'filter_content'}>
+                                                                    <div>
+                                                                        {/* <div className="SearchBar_left_search_icon">
+                                                                            <div className="newThemeInput_2">
+                                                                                <Input startIcon={<svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+                                                                                    <path d="M11.5161 6.76744C11.5148 7.90927 11.0426 9.00397 10.203 9.81136C9.36347 10.6187 8.22517 11.0729 7.03785 11.0741C5.85054 11.0729 4.71224 10.6187 3.87268 9.81136C3.03312 9.00397 2.56089 7.90927 2.55959 6.76744C2.56089 5.62562 3.03312 4.53092 3.87268 3.72353C4.71224 2.91614 5.85054 2.462 7.03785 2.46075C8.22517 2.462 9.36347 2.91614 10.203 3.72353C11.0426 4.53092 11.5148 5.62562 11.5161 6.76744ZM16.6337 14.7645C16.6328 14.4408 16.5002 14.1304 16.2642 13.8997L12.8356 10.6024C13.6433 9.47449 14.0752 8.13699 14.0741 6.76744C14.0749 5.8785 13.8935 4.99812 13.5402 4.17668C13.1868 3.35524 12.6685 2.60887 12.0149 1.98029C11.3613 1.35171 10.5852 0.853261 9.73101 0.513458C8.87685 0.173655 7.9614 -0.000824383 7.03704 2.92832e-06C6.11268 -0.000824383 5.19722 0.173655 4.34306 0.513458C3.4889 0.853261 2.7128 1.35171 2.05918 1.98029C1.40556 2.60887 0.887252 3.35524 0.533913 4.17668C0.180573 4.99812 -0.000857224 5.8785 3.04498e-06 6.76744C-0.000857224 7.65639 0.180573 8.53677 0.533913 9.35821C0.887252 10.1796 1.40556 10.926 2.05918 11.5546C2.7128 12.1832 3.4889 12.6816 4.34306 13.0214C5.19722 13.3612 6.11268 13.5357 7.03704 13.5349C8.46187 13.5359 9.85329 13.1199 11.0264 12.3422L14.455 15.6301C14.5721 15.7453 14.712 15.8368 14.8664 15.8992C15.0209 15.9616 15.1868 15.9936 15.3543 15.9933C15.6926 15.991 16.0164 15.8609 16.2558 15.631C16.4951 15.401 16.6309 15.0898 16.6337 14.7645Z" fill="#D7D7D7" />
+                                                                                </svg>} class="newInput_2" elementConfig={{ 'placeholder': 'Search here..' }} elementType='input_2' />
+                                                                            </div>
+                                                                        </div> */}
+                                                                        <div className="">
+                                                                            {this.state.filterList.map((option, i) => (
+                                                                                option.filterType === "CustomFilterList" ?
+                                                                                    this.state.specificationLoader === true ? <Spinner /> :
+                                                                                        this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER) ?
+                                                                                            <div className={this.state.listing_page_spec ? 'sk-panel listing_page_spec open_more_spec' : 'sk-panel listing_page_spec close_more_spec'}>
+                                                                                                {this.state.ProductExpiryFilterData.length > 0 ? <h6 onClick={this.openSpec} className="listing_page_spec_heading">Product Expiry</h6> : ''}
+                                                                                                {this.state.ProductExpiryFilterData.length > 0 ?
+                                                                                                    this.state.ProductExpiryFilterData.map((x) =>
+                                                                                                        <div className="sk-item-list-option sk-item-list__item" onClick={(event) => this.handleExpiryClick(event, x)}>
+                                                                                                            <div className="sk-item-list-option__text">{x}</div>
+                                                                                                            <div className="sk-item-list-option__count">{x === "Yes" ? this.state.expiredProductCount : this.state.availableProductCount}</div>
+                                                                                                        </div>
+                                                                                                    ) : ''}
+                                                                                            </div> : ''
+                                                                                    :
+                                                                                    option.title === 'Category' ?
+                                                                                        <div className="filter_accord">
+                                                                                            <Accordion
+                                                                                                active={0}
+                                                                                                collapses={[
+                                                                                                    {
+                                                                                                        title: <div className="sk-panel__header">{option.resourceValue}</div>,
+                                                                                                        content: <React.Fragment>
+                                                                                                            {this.state.categoryList.map((x, i) =>
+                                                                                                                <div data-qa="options" className="sk-item-list">
+                                                                                                                    <div onClick={() => this.toggleAccord(i)} className="sk-item-list-option sk-item-list__item">
+                                                                                                                        <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, option.title, x.Id, true, i)}>
+                                                                                                                            <FormControlLabel
+                                                                                                                                control={
+                                                                                                                                    <Checkbox
+                                                                                                                                        checked={appliedFilterListAll.filter(item => item.Value == x.Id && item.Id == option.title).length > 0 ? true : false}
+                                                                                                                                        // onChange={(event) => this.getDataAfterFilter(event, option.title, x.Id, true, i)}
+                                                                                                                                        value={x.Id}
+                                                                                                                                        classes={{
+                                                                                                                                            root: classes.root,
+                                                                                                                                            checked: classes.checked,
+                                                                                                                                        }}
+                                                                                                                                    />
+                                                                                                                                }
+                                                                                                                                label={x.Id}
+                                                                                                                            />
+                                                                                                                        </div>
+                                                                                                                        <div className="sk-item-list-option__count">{x.Value}</div>
+                                                                                                                    </div>
+                                                                                                                    <div style={{ display: this.state.openAccordian && this.state.isAccordionOpen === i && appliedFilterListAll.filter(item => item.Value == x.Id).length > 0 ? 'block' : 'none' }}>
+                                                                                                                        {x.subCategory.length > 0 ? x.subCategory.map((y, j) => (y.Id !== undefined ?
+                                                                                                                            <div data-qa="options" className="sk-hierarchical-menu-list__hierarchical-options">
+                                                                                                                                <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                                    <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'SubCategory', x.Id + '~' + y.Id, true, j)}>
+                                                                                                                                        <FormControlLabel
+                                                                                                                                            control={
+                                                                                                                                                <Checkbox
+                                                                                                                                                    checked={appliedFilterListAll.filter(item => item.Value == (y.Id) && item.Category == x.Id && item.Id == "SubCategory").length > 0 ? true : false}
+                                                                                                                                                    // onChange={(event) => this.getDataAfterFilter(event, 'SubCategory', x.Id + '~' + y.Id, true, j)}
+                                                                                                                                                    value={y.Id}
+                                                                                                                                                    classes={{
+                                                                                                                                                        root: classes.root,
+                                                                                                                                                        checked: classes.checked,
+                                                                                                                                                    }}
+                                                                                                                                                />
+                                                                                                                                            }
+                                                                                                                                            label={y.Id}
+                                                                                                                                        />
+                                                                                                                                    </div>
+                                                                                                                                    <div className="sk-item-list-option__count">{y.Value}</div>
+                                                                                                                                </div>
+                                                                                                                                <div style={{ display: (this.state.openAccordianProductType && this.state.isAccordionOpenProductType === j && appliedFilterListAll.filter(item => item.Value == (y.Id) && item.Category == x.Id).length > 0) ? 'block' : 'none' }}>
+                                                                                                                                    {y.productType.length > 0 ? y.productType.map(z => (z.Id !== undefined ?
+                                                                                                                                        <div data-qa="options" className="sk-hierarchical-menu-list__hierarchical-options">
+                                                                                                                                            <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                                                <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}>
+                                                                                                                                                    <FormControlLabel
+                                                                                                                                                        control={
+                                                                                                                                                            <Checkbox
+                                                                                                                                                                checked={appliedFilterListAll.filter(item => item.Value == (z.Id) && item.Category == x.Id && item.SubCategory == y.Id && item.Id == "Product Type").length > 0 ? true : false}
+                                                                                                                                                                // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                                                                value={z.Id}
+                                                                                                                                                                classes={{
+                                                                                                                                                                    root: classes.root,
+                                                                                                                                                                    checked: classes.checked,
+                                                                                                                                                                }}
+                                                                                                                                                            />
+                                                                                                                                                        }
+                                                                                                                                                        label={z.Id}
+                                                                                                                                                    />
+                                                                                                                                                </div>
+                                                                                                                                                <div className="sk-item-list-option__count">{z.Value}</div>
+                                                                                                                                            </div>
+                                                                                                                                        </div> : '')) : ''}
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                            : '')) : ''}
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            )}
+                                                                                                            <div data-qa="show-more" className="sk-refinement-list__view-more-action" onClick={() => this.viewAllClick(option.title, this.state.categoryList !== undefined && this.state.categoryList.length > 5 ? "View less" : "View all")}>
+                                                                                                                {this.state.categoryList !== undefined && this.state.categoryList.length > 5 ? "View less" : this.state.categoryList !== undefined && this.state.categoryList.length <= 4 ? "" : "View all"}</div>
+                                                                                                        </React.Fragment>
+                                                                                                    }]} />
+                                                                                        </div>
+                                                                                        : option.filterName === 'Range' ?
+                                                                                            <div className="filter_accord">
+                                                                                                <Accordion
+                                                                                                    active={0}
+                                                                                                    collapses={[
+                                                                                                        {
+                                                                                                            title: <div className="sk-panel__header">Price (<span className="currencySymbolFont">{currencysymbol}</span>)</div>,
+                                                                                                            content: <React.Fragment>
+                                                                                                                {this.state.ProductWithoutPriceCount > 0 ?
+                                                                                                                    <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                        <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'ProductWithoutPrice', "Without Price", true, 0)}>Without Price</div>
+                                                                                                                        <div className="sk-item-list-option__count">{this.state.ProductWithoutPriceCount}</div>
+                                                                                                                    </div>
+                                                                                                                    : ""}
+                                                                                                                {this.state.ProductWithPriceCount > 0 ?
+                                                                                                                    <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                        <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'ProductWithPrice', "With Price", true, 0)}>With Price</div>
+                                                                                                                        <div className="sk-item-list-option__count">{this.state.ProductWithPriceCount}</div>
+                                                                                                                    </div>
+                                                                                                                    : ""}
+                                                                                                                <div className="sk-panel__content" style={{ display: this.state.productWithPriceList.length !== 0 ? 'block' : 'none' }}>
+                                                                                                                    <form className="sk-range-input">
+                                                                                                                        <input type="number" className="sk-range-input__input" placeholder="min" step="any" onChange={(event) => this.setState({ priceFilterMinPrice: event.target.value.substring(0, 8) })} value={(this.state.priceFilterMinPrice)} onBlur={(e) => this.convertdecimalMinprice()} />
+                                                                                                                        <div className="sk-range-input__to-label">-</div>
+                                                                                                                        <input type="number" className="sk-range-input__input" placeholder="max" step="any" onChange={(event) => this.setState({ priceFilterMaxPrice: event.target.value.substring(0, 8) })} value={(this.state.priceFilterMaxPrice)} onBlur={(e) => this.convertdecimalMaxprice()} />
+                                                                                                                        <button type="submit" className="sk-range-input__submit" onClick={(event) => this.getDataAfterFilter(event, 'Price Filter', this.state.priceFilterMinPrice + ' - ' + this.state.priceFilterMinPrice, true, 0)}>Go</button>
+                                                                                                                    </form>
+                                                                                                                </div>
+                                                                                                            </React.Fragment>
+                                                                                                        }]}
+                                                                                                />
+                                                                                            </div>
+                                                                                            : option.filterName === 'Buying Window' ?
+                                                                                                this.state.buyingwindowCount > 0 ?
+                                                                                                    // Below LOC is commented to Hide BW for all users | ShriGanesh Singh | 11th June 2021
+                                                                                                    // <div>
+                                                                                                    //   <div className="sk-panel filter--buyingwindowstatus" onClick={(event) => this.getDataAfterFilter(event, option.title, option.title, true, 0)}>
+                                                                                                    //     <div className="sk-panel__header is-collapsable">Buying Window</div>
+                                                                                                    //     <div className="sk-panel__content">
+                                                                                                    //       <div data-qa="options" className="sk-item-list">
+                                                                                                    //         <div className="sk-item-list-option sk-item-list__item">
+                                                                                                    //           <div className="sk-item-list-option__text">Buying Window</div>
+                                                                                                    //           <div className="sk-item-list-option__count">{this.state.buyingwindowCount}</div>
+                                                                                                    //         </div>
+                                                                                                    //       </div>
+                                                                                                    //     </div>
+                                                                                                    //   </div>
+                                                                                                    // </div> 
+                                                                                                    "" : ""
+                                                                                                :
+                                                                                                // option.title === 'New Arrival' ?
+                                                                                                //     this.state.newarrivalCount > 0 ?
+                                                                                                //         <div className="sk-panel filter--newarrival" onClick={(event) => this.getDataAfterFilter(event, option.title, option.title, true, 0)}>
+                                                                                                //             <div className="sk-panel__header is-collapsable">New Arrival</div>
+                                                                                                //             <div className="sk-panel__content">
+                                                                                                //                 <div data-qa="options" className="sk-item-list">
+                                                                                                //                     <div className="sk-item-list-option sk-item-list__item">
+                                                                                                //                         <div className="sk-item-list-option__text">New Arrival</div>
+                                                                                                //                         <div className="sk-item-list-option__count">{this.state.newarrivalCount}</div>
+                                                                                                //                     </div>
+                                                                                                //                 </div>
+                                                                                                //             </div>
+                                                                                                //         </div> : "" :
+                                                                                                this.state.FilterDataList !== undefined && this.state.FilterDataList.filter(x => x.Filter === option.filterName).length > 0 ?
+                                                                                                    <div className="filter_accord">
+                                                                                                        <Accordion
+                                                                                                            active={0}
+                                                                                                            collapses={[
+                                                                                                                {
+                                                                                                                    title: <div className="sk-panel__header">{option.resourceValue}</div>,
+                                                                                                                    content: <React.Fragment>
+                                                                                                                        {this.state.FilterDataList.filter(x => x.Filter === option.filterName).map((x) =>
+
+                                                                                                                            <div data-qa="options" className="sk-item-list">
+                                                                                                                                <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                                    <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, option.filterName, x.Id, true, 0)}>
+                                                                                                                                        <FormControlLabel
+                                                                                                                                            control={
+                                                                                                                                                <Checkbox
+                                                                                                                                                    checked={appliedFilterListAll.filter(item => item.Value == x.Id && item.Id == option.filterName).length > 0 ? true : false}
+                                                                                                                                                    // onChange={(event) =>  this.getDataAfterFilter(event, option.filterName, x.Id, true, 0)}
+                                                                                                                                                    value={x.Id}
+                                                                                                                                                    classes={{
+                                                                                                                                                        root: classes.root,
+                                                                                                                                                        checked: classes.checked,
+                                                                                                                                                    }}
+                                                                                                                                                />
+                                                                                                                                            }
+                                                                                                                                            label={x.Id}
+                                                                                                                                        />
+                                                                                                                                    </div>
+                                                                                                                                    <div className="sk-item-list-option__count">{x.Value}</div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        )}
+                                                                                                                        {option.title === "Product Expiry" ?
+                                                                                                                            this.props.userType.includes(RoleCodes.ADMIN) || this.props.userType.includes(RoleCodes.SUPPLIER) ?
+                                                                                                                                <p className="expiry_note">Please select an expired product to check if it is expired either globally or for a country or for an SKU </p> : ''
+                                                                                                                            : this.state.FilterDataList.filter(x => x.Filter === option.title) !== undefined && this.state.FilterDataList.filter(x => x.Filter === option.title).length > 0 ?
+                                                                                                                                // option.title === "Product Certification" ? '' :
+                                                                                                                                <div data-qa="show-more" className="sk-refinement-list__view-more-action" onClick={() => this.viewAllClick(option.title, (this.state.FilterDataList.filter(x => x.Filter === option.title)[0].FilterLength > 5 && this.state.FilterDataList.filter(x => x.Filter === option.title)[0].DisplayLength > 5) ? 'View less' : 'View all')}>
+                                                                                                                                    {(this.state.FilterDataList.filter(x => x.Filter === option.title)[0].FilterLength > 5 && this.state.FilterDataList.filter(x => x.Filter === option.title)[0].DisplayLength > 5) ? 'View less' : (this.state.FilterDataList.filter(x => x.Filter === option.title)[0].FilterLength <= 5 && this.state.FilterDataList.filter(x => x.Filter === option.title)[0].DisplayLength <= 5) ? "" : 'View all'}</div> : ''}
+                                                                                                                    </React.Fragment>
+                                                                                                                }]} />
+                                                                                                    </div> : ""
+                                                                            ))}
+                                                                        </div>
+                                                                        <div className="">
+                                                                            {this.state.ProductSpecificationHeader === null ? <Spinner /> :
+                                                                                this.state.ProductSpecificationHeader.length > 0 ?
+                                                                                    <div className="filter_accord">
+                                                                                        {
+                                                                                            this.state.ProductSpecificationHeader.map((x, i) => {
+                                                                                                return <Accordion
+                                                                                                    active={0}
+                                                                                                    collapses={[
+                                                                                                        {
+                                                                                                            title: <div className="sk-panel__header">{x}</div>,
+                                                                                                            content: <React.Fragment>
+                                                                                                                {this.state.ProductSpecificationChild.filter(y => y.Groupkey === x).map((z) =>
+                                                                                                                    // <li onClick={(event) => this.handleClick(event, x)}>{z.Value}</li>
+                                                                                                                    <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, "Specification", z.Groupkey + ':' + z.Value, true, 0)}>
+                                                                                                                        <FormControlLabel
+                                                                                                                            control={
+                                                                                                                                <Checkbox
+                                                                                                                                    checked={appliedFilterListAll.filter(item => item.Value == (z.Groupkey + ':' + z.Value) && item.Id == "Specification").length > 0 ? true : false}
+                                                                                                                                    // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                                    value={z.Groupkey + ':' + z.Value}
+                                                                                                                                    classes={{
+                                                                                                                                        root: classes.root,
+                                                                                                                                        checked: classes.checked,
+                                                                                                                                    }}
+                                                                                                                                />
+                                                                                                                            }
+                                                                                                                            label={z.Value}
+                                                                                                                        />
+                                                                                                                    </div>
+                                                                                                                )
+                                                                                                                }
+                                                                                                            </React.Fragment>
+                                                                                                        }]} />
+                                                                                            })
+                                                                                        }
+
+
+                                                                                    </div> : null
+                                                                            }
+                                                                            {/* Attribute Filter */}
+                                                                            <div className={this.state.listing_page_spec ? 'listing_page_spec open_more_spec sk-panel' : 'listing_page_spec close_more_spec sk-panel'}>
+                                                                                {this.state.ProductAttributeHeader !== undefined && this.state.ProductAttributeHeader !== null && this.state.ProductAttributeHeader.length > 0 ?
+                                                                                    this.state.ProductAttributeHeader.map((x, i) =>
+                                                                                        <div className='sk-panel filter_accord'>
+                                                                                            <Accordion
+                                                                                                active={0}
+                                                                                                collapses={[
+                                                                                                    {
+                                                                                                        title: <div className="sk-panel__header">{x}</div>,
+                                                                                                        content: <React.Fragment>
+                                                                                                            <div className={(this.state.openAttribute === false && this.state.attributeFilterViewAllHeader === x) ? 'close_spec' : 'open_spec custom_panel'}>
+                                                                                                                {this.state.attributeFilterViewAll === true && this.state.attributeFilterViewAllHeader === x ?
+                                                                                                                    this.state.ProductAttributeChild.filter(y => y.Attributekey === x).map((z) =>
+                                                                                                                        //<li onClick={(event) => this.handleAttributeClick(event, x)}>{z.Value}</li>
+                                                                                                                        <div className='sk-item-list-option__text' onClick={(event) => this.getDataAfterFilter(event, "Attribute", z.Attributekey + ':' + z.Value, true, 0)}>
+                                                                                                                            <FormControlLabel
+                                                                                                                                control={
+                                                                                                                                    <Checkbox
+                                                                                                                                        checked={appliedFilterListAll.filter(item => item.Value == (z.Attributekey + ':' + z.Value) && item.Id == "Attribute").length > 0 ? true : false}
+                                                                                                                                        // checked={CheckUncheckFilter.filter(item => item.filterName === 'Attribute' && item.filterValue == (z.Attributekey + ':' + z.Value)).length > 0 ? true : false}
+                                                                                                                                        // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                                        value={z.Attributekey + ':' + z.Value}
+                                                                                                                                        classes={{
+                                                                                                                                            root: classes.root,
+                                                                                                                                            checked: classes.checked,
+                                                                                                                                        }}
+                                                                                                                                    />
+                                                                                                                                }
+                                                                                                                                label={z.Value}
+                                                                                                                            />
+                                                                                                                        </div>
+                                                                                                                    )
+                                                                                                                    :
+                                                                                                                    this.state.ProductAttributeChild.filter(y => y.Attributekey === x).slice(0, 5).map((z) =>
+                                                                                                                        //<li onClick={(event) => this.handleAttributeClick(event, x)}>{z.Value}</li>
+                                                                                                                        <div className='sk-item-list-option__text' onClick={(event) => this.getDataAfterFilter(event, "Attribute", z.Attributekey + ':' + z.Value, true, 0)}>
+                                                                                                                            <FormControlLabel
+                                                                                                                                control={
+                                                                                                                                    <Checkbox
+                                                                                                                                        checked={appliedFilterListAll.filter(item => item.Value == (z.Attributekey + ':' + z.Value)).length > 0 ? true : false}
+                                                                                                                                        // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                                        value={z.Attributekey + ':' + z.Value}
+                                                                                                                                        classes={{
+                                                                                                                                            root: classes.root,
+                                                                                                                                            checked: classes.checked,
+                                                                                                                                        }}
+                                                                                                                                    />
+                                                                                                                                }
+                                                                                                                                label={z.Value}
+                                                                                                                            />
+                                                                                                                        </div>
+                                                                                                                    )
+                                                                                                                }
+                                                                                                            </div>
+                                                                                                            {this.state.ProductAttributeChild.filter(t => t.Attributekey === x).length > 4 && this.state.openAttribute ?
+                                                                                                                <h6 id={x} onClick={(event) => this.filterViewAttribute(event, x)} className="filter_view_more">
+                                                                                                                    {(this.state.attributeFilterViewAllHeader === x && this.state.attributeFilterViewAll === true) ?
+                                                                                                                        'View less' : this.state.ProductAttributeChild.filter(t => t.Attributekey === x)[0]['FilterLength'] > 5 ? 'View all' : ''}</h6> : ''}
+                                                                                                        </React.Fragment>
+                                                                                                    }]}
+                                                                                            />
+                                                                                        </div>
+                                                                                    ) : ''}
+                                                                            </div>
+                                                                        </div>
+                                                                        {/* <div className="clear_search">
+                                                                            <span>Clear</span>
+                                                                        </div> */}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        {this.state.filterList.slice(0, 4).map((option, i) => (
+                                                            option.filterType === "CustomFilterList" ?
+                                                                this.state.specificationLoader === true ? <Spinner /> :
+                                                                    this.props.userType.includes(RoleCodes.BUYER) || this.props.userType.includes(RoleCodes.APPROVER) ?
+                                                                        <div className={this.state.listing_page_spec ? 'sk-panel listing_page_spec open_more_spec' : 'sk-panel listing_page_spec close_more_spec'}>
+                                                                            {this.state.ProductExpiryFilterData.length > 0 ? <h6 onClick={this.openSpec} className="listing_page_spec_heading">Product Expiry</h6> : ''}
+                                                                            {this.state.ProductExpiryFilterData.length > 0 ?
+                                                                                this.state.ProductExpiryFilterData.map((x) =>
+                                                                                    <div className="sk-item-list-option sk-item-list__item" onClick={(event) => this.handleExpiryClick(event, x)}>
+                                                                                        <div className="sk-item-list-option__text">{x}</div>
+                                                                                        <div className="sk-item-list-option__count">{x === "Yes" ? this.state.expiredProductCount : this.state.availableProductCount}</div>
+                                                                                    </div>
+                                                                                ) : ''}
+                                                                        </div> : ''
+                                                                :
+                                                                option.title === 'Category' ?
+                                                                    <div onMouseLeave={() => this.closeFilterHandler('')} onMouseOver={() => this.openFilterHandler(option.title)} className="new_filter_design">
+                                                                        <Button onClick={() => this.openFilterHandler(option.title)} className={this.state.openFilter === option.title ? "filter_selected_btn  filter_btn" : "filter_btn"}>{option.resourceValue}<i class="fa fa-angle-down" aria-hidden="true"></i></Button>
+                                                                        {/* {this.state.openFilter === option.title && <div onClick={this.closeFilterHandler} className="backdrop"></div>} */}
+                                                                        <div onMouseLeave={() => this.closeFilterHandler('')} className={'filter_content filter_accord'}>
+                                                                            <div>
+                                                                                {
+                                                                                    this.state.categoryList.map((x, i) =>
+                                                                                        <React.Fragment>
+                                                                                            <div className='sk-item-list'>
+                                                                                                <div onClick={() => this.toggleAccord(i)} className="sk-item-list-option sk-item-list__item">
+                                                                                                    <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, option.title, x.Id, true, i)}>
+                                                                                                        <FormControlLabel
+                                                                                                            control={
+                                                                                                                <Checkbox
+                                                                                                                    checked={appliedFilterListAll.filter(item => item.Value == (x.Id) && item.Id == option.title).length > 0 ? true : false}
+                                                                                                                    // checked={CheckUncheckFilter.filter(item => item.filterName === option.filterName && item.filterValue == (x.Id)).length > 0 ? true : false}
+                                                                                                                    // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                    value={x.Id}
+                                                                                                                    classes={{
+                                                                                                                        root: classes.root,
+                                                                                                                        checked: classes.checked,
+                                                                                                                    }}
+                                                                                                                />
+                                                                                                            }
+                                                                                                            label={x.Id}
+                                                                                                        />
+                                                                                                    </div>
+                                                                                                    <div class="sk-item-list-option__count">{x.Value}</div>
+                                                                                                </div>
+
+                                                                                                <div style={{ display: this.state.openAccordian && this.state.isAccordionOpen === i && appliedFilterListAll.filter(item => item.Value == (x.Id)).length > 0 ? 'block' : 'none' }}>
+                                                                                                    {x.subCategory.length > 0 ? x.subCategory.map((y, j) => (y.Id !== undefined ?
+                                                                                                        <div data-qa="options" className="sk-hierarchical-menu-list__hierarchical-options">
+                                                                                                            <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'SubCategory', x.Id + '~' + y.Id, true, j)}>
+                                                                                                                    <FormControlLabel
+                                                                                                                        control={
+                                                                                                                            <Checkbox
+                                                                                                                                checked={appliedFilterListAll.filter(item => item.Value == (y.Id) && item.Category == x.Id && item.Id == "SubCategory").length > 0 ? true : false}
+                                                                                                                                // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                                value={y.Id}
+                                                                                                                                classes={{
+                                                                                                                                    root: classes.root,
+                                                                                                                                    checked: classes.checked,
+                                                                                                                                }}
+                                                                                                                            />
+                                                                                                                        }
+                                                                                                                        label={y.Id}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                                <div class="sk-item-list-option__count">{y.Value}</div>
+                                                                                                            </div>
+                                                                                                            <div style={{ display: this.state.openAccordianProductType && this.state.isAccordionOpenProductType === j && appliedFilterListAll.filter(item => item.Value == (y.Id) && item.Category == x.Id).length > 0 ? 'block' : 'none' }}>
+                                                                                                                {y.productType.length > 0 ? y.productType.map(z => (z.Id !== undefined ?
+                                                                                                                    <div data-qa="options" className="sk-hierarchical-menu-list__hierarchical-options">
+                                                                                                                        <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                            <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}>
+                                                                                                                                <FormControlLabel
+                                                                                                                                    control={
+                                                                                                                                        <Checkbox
+                                                                                                                                            checked={appliedFilterListAll.filter(item => item.Value == (z.Id) && item.Category == x.Id && item.SubCategory == y.Id && item.Id == "Product Type").length > 0 ? true : false}
+                                                                                                                                            // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                                            value={z.Id}
+                                                                                                                                            classes={{
+                                                                                                                                                root: classes.root,
+                                                                                                                                                checked: classes.checked,
+                                                                                                                                            }}
+                                                                                                                                        />
+                                                                                                                                    }
+                                                                                                                                    label={z.Id}
+                                                                                                                                />
+                                                                                                                            </div>
+                                                                                                                            <div class="sk-item-list-option__count">{z.Value}</div>
+                                                                                                                        </div>
+                                                                                                                    </div> : '')) : ''}
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        : '')) : ''}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </React.Fragment>
+                                                                                    )}
+                                                                                <div data-qa="show-more" className="sk-refinement-list__view-more-action" onClick={() => this.viewAllClick(option.title, this.state.categoryList !== undefined && this.state.categoryList.length > 5 ? "View less" : "View all")}>
+                                                                                    {this.state.categoryList !== undefined && this.state.categoryList.length > 5 ? "View less" : this.state.categoryList !== undefined && this.state.categoryList.length <= 4 ? "" : "View all"}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    : option.filterName === 'Range' ?
+                                                                        <div onMouseLeave={() => this.closeFilterHandler('')} onMouseOver={() => this.openFilterHandler('Price')} className="new_filter_design">
+                                                                            <Button onClick={() => this.openFilterHandler('Price')} className={this.state.openFilter === 'Price' ? "filter_selected_btn  filter_btn" : "filter_btn"}>Price Range (<span className="currencySymbolFont">{currencysymbol}</span>)<i class="fa fa-angle-down" aria-hidden="true"></i></Button>
+                                                                            {/* {this.state.openFilter === 'Price' && <div onClick={this.closeFilterHandler} className="backdrop"></div>} */}
+                                                                            <div onMouseLeave={() => this.closeFilterHandler('')} className={'filter_content'}>
+                                                                                <div>
+                                                                                    {this.state.ProductWithoutPriceCount > 0 ?
+                                                                                        <div className="sk-item-list-option sk-item-list__item">
+                                                                                            <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'ProductWithoutPrice', "Without Price", true, 0)}>Without Price</div>
+                                                                                            <div className="sk-item-list-option__count">{this.state.ProductWithoutPriceCount}</div>
+                                                                                        </div>
+                                                                                        : ""}
+                                                                                    {this.state.ProductWithPriceCount > 0 ?
+                                                                                        <div className="sk-item-list-option sk-item-list__item">
+                                                                                            <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, 'ProductWithPrice', "With Price", true, 0)}>With Price</div>
+                                                                                            <div className="sk-item-list-option__count">{this.state.ProductWithPriceCount}</div>
+                                                                                        </div>
+                                                                                        : ""}
+                                                                                    <div className="sk-panel__content" style={{ display: this.state.productWithPriceList.length !== 0 ? 'block' : 'none' }}>
+                                                                                        <form className="sk-range-input">
+                                                                                            <input type="number" className="sk-range-input__input" placeholder="min" step="any" onChange={(event) => this.setState({ priceFilterMinPrice: event.target.value.substring(0, 8) })} value={(this.state.priceFilterMinPrice)} onBlur={(e) => this.convertdecimalMinprice()} />
+                                                                                            <div className="sk-range-input__to-label">-</div>
+                                                                                            <input type="number" className="sk-range-input__input" placeholder="max" step="any" onChange={(event) => this.setState({ priceFilterMaxPrice: event.target.value.substring(0, 8) })} value={(this.state.priceFilterMaxPrice)} onBlur={(e) => this.convertdecimalMaxprice()} />
+                                                                                            <button type="submit" className="sk-range-input__submit" onClick={(event) => this.getDataAfterFilter(event, 'Price Filter', this.state.priceFilterMinPrice + ' - ' + this.state.priceFilterMinPrice, true, 0)}>Go</button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        : option.filterName === 'Buying Window' ?
+                                                                            this.state.buyingwindowCount > 0 ?
+                                                                                // Below LOC is commented to Hide BW for all users | ShriGanesh Singh | 11th June 2021
+                                                                                // <div>
+                                                                                //   <div className="sk-panel filter--buyingwindowstatus" onClick={(event) => this.getDataAfterFilter(event, option.title, option.title, true, 0)}>
+                                                                                //     <div className="sk-panel__header is-collapsable">Buying Window</div>
+                                                                                //     <div className="sk-panel__content">
+                                                                                //       <div data-qa="options" className="sk-item-list">
+                                                                                //         <div className="sk-item-list-option sk-item-list__item">
+                                                                                //           <div className="sk-item-list-option__text">Buying Window</div>
+                                                                                //           <div className="sk-item-list-option__count">{this.state.buyingwindowCount}</div>
+                                                                                //         </div>
+                                                                                //       </div>
+                                                                                //     </div>
+                                                                                //   </div>
+                                                                                // </div>
+                                                                                "" : ""
+                                                                            :
+                                                                            // option.title === 'New Arrival' ?
+                                                                            //     this.state.newarrivalCount > 0 ?
+                                                                            //         <div className="sk-panel filter--newarrival" onClick={(event) => this.getDataAfterFilter(event, option.title, option.title, true, 0)}>
+                                                                            //             <div className="sk-panel__header is-collapsable">New Arrival</div>
+                                                                            //             <div className="sk-panel__content">
+                                                                            //                 <div data-qa="options" className="sk-item-list">
+                                                                            //                     <div className="sk-item-list-option sk-item-list__item">
+                                                                            //                         <div className="sk-item-list-option__text">New Arrival</div>
+                                                                            //                         <div className="sk-item-list-option__count">{this.state.newarrivalCount}</div>
+                                                                            //                     </div>
+                                                                            //                 </div>
+                                                                            //             </div>
+                                                                            //         </div> : "" :
+                                                                            this.state.FilterDataList !== undefined && this.state.FilterDataList.filter(x => x.Filter === option.filterName).length > 0 ?
+                                                                                <div onMouseLeave={() => this.closeFilterHandler('')} onMouseOver={() => this.openFilterHandler(option.title)} className="new_filter_design">
+                                                                                    <Button onClick={() => this.openFilterHandler(option.title)} className={this.state.openFilter === option.title ? "filter_selected_btn  filter_btn" : "filter_btn"}>{option.resourceValue}<i class="fa fa-angle-down" aria-hidden="true"></i></Button>
+                                                                                    {/* {this.state.openFilter === option.title && <div onClick={this.closeFilterHandler} className="backdrop"></div>} */}
+                                                                                    <div onMouseLeave={() => this.closeFilterHandler('')} className={'filter_content filter_accord'}>
+                                                                                        <div>
+                                                                                            {
+                                                                                                this.state.FilterDataList.filter(x => x.Filter === option.filterName).map((x) =>
+                                                                                                    <React.Fragment>
+                                                                                                        <div className='sk-item-list'>
+                                                                                                            <div className="sk-item-list-option sk-item-list__item">
+                                                                                                                <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, option.filterName, x.Id, true, 0)}>
+                                                                                                                    <FormControlLabel
+                                                                                                                        control={
+                                                                                                                            <Checkbox
+                                                                                                                                checked={appliedFilterListAll.filter(item => item.Value == x.Id && item.Id == option.filterName).length > 0 ? true : false}
+                                                                                                                                // onChange={(event) => this.getDataAfterFilter(event, 'Product Type', x.Id + '~' + y.Id + '~' + z.Id, true, j)}
+                                                                                                                                value={x.Id}
+                                                                                                                                classes={{
+                                                                                                                                    root: classes.root,
+                                                                                                                                    checked: classes.checked,
+                                                                                                                                }}
+                                                                                                                            />
+                                                                                                                        }
+                                                                                                                        label={x.Id}
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                                <div class="sk-item-list-option__count">{x.Value}</div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </React.Fragment>
+                                                                                                )}
+                                                                                            {/* {this.state.FilterDataList.filter(x => x.Filter === option.filterName).map((x) =>
+
+                                                                                                <div data-qa="options" className="sk-item-list">
+                                                                                                    <div className="sk-item-list-option sk-item-list__item">
+                                                                                                        <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, option.filterName, x.Id, true, 0)}>{x.Id}</div>
+                                                                                                        <div className="sk-item-list-option__count">{x.Value}</div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            )} */}
+                                                                                            {option.title === "Product Expiry" ?
+                                                                                                this.props.userType.includes(RoleCodes.ADMIN) || this.props.userType.includes(RoleCodes.SUPPLIER) ?
+                                                                                                    <p className="expiry_note">Please select an expired product to check if it is expired either globally or for a country or for an SKU </p> : ''
+                                                                                                : this.state.FilterDataList.filter(x => x.Filter === option.title) !== undefined && this.state.FilterDataList.filter(x => x.Filter === option.title).length > 0 ?
+                                                                                                    // option.title === "Product Certification" ? '' :
+                                                                                                    <div data-qa="show-more" className="sk-refinement-list__view-more-action" onClick={() => this.viewAllClick(option.title, (this.state.FilterDataList.filter(x => x.Filter === option.title)[0].FilterLength > 5 && this.state.FilterDataList.filter(x => x.Filter === option.title)[0].DisplayLength > 5) ? 'View less' : 'View all')}>
+                                                                                                        {(this.state.FilterDataList.filter(x => x.Filter === option.title)[0].FilterLength > 5 && this.state.FilterDataList.filter(x => x.Filter === option.title)[0].DisplayLength > 5) ? 'View less' : (this.state.FilterDataList.filter(x => x.Filter === option.title)[0].FilterLength <= 5 && this.state.FilterDataList.filter(x => x.Filter === option.title)[0].DisplayLength <= 5) ? "" : 'View all'}</div> : ''}
+
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                : ""
+                                                        ))}
+                                                        {/* {this.state.ProductSpecificationHeader === null ? <div className="new_filter_design"><Button className="filter_btn disabled">Loading...</Button></div> :
+                                                            this.state.ProductSpecificationHeader.length > 0 ?
+                                                                <div className="new_filter_design">
+                                                                    <Button onClick={() => this.openFilterHandler('Product Specification')} className={this.state.openFilter === 'Product Specification' ? "filter_selected_btn  filter_btn" : "filter_btn"}>Product Specification <i class="fa fa-angle-down" aria-hidden="true"></i></Button>
+                                                                    <div style={{ display: this.state.loading && 'none' }} className={this.state.openFilter === 'Product Specification' ? "filter_opened filter_content" : "filter_content"}>
+                                                                        {this.state.ProductSpecificationHeader !== undefined && this.state.ProductSpecificationHeader !== null && this.state.ProductSpecificationHeader.length > 0 ?
+                                                                            this.state.ProductSpecificationHeader.map((x, i) =>
+                                                                                <div>
+                                                                                    <div className={this.state.openSpec ? 'open_spec sk-item-list' : 'close_spec sk-item-list'}>
+                                                                                        <div className="sk-item-list-option__text" onClick={() => this.innerOpenSpec(i)}><span>{x}</span>
+                                                                                            <div className={i === this.state.innerOpenSpecId ? 'open_spec sk-hierarchical-menu-list__hierarchical-options' : 'close_spec sk-hierarchical-menu-list__hierarchical-options'}>
+                                                                                                {this.state.ProductSpecificationChild.filter(y => y.Groupkey === x).map((z) =>
+                                                                                                    <div className="sk-item-list-option__text" onClick={(event) => this.getDataAfterFilter(event, "Specification", z.Groupkey + ':' + z.Value, true, 0)}>{z.Value}</div>
+                                                                                                )
+                                                                                                }
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            ) : ''}
+                                                                        {this.state.ProductSpecificationHeader.length > 4 && this.state.openSpec ? <h6 onClick={this.filterView} className="filter_view_more">{this.state.specFilterViewAll === false ? 'View all' : 'View less'}</h6> : ''}
+
+                                                                    </div>
+                                                                </div>
+                                                                : null
+                                                        } */}
+                                                        {/* {this.state.ProductAttributeHeader !== undefined && this.state.ProductAttributeHeader !== null && this.state.ProductAttributeHeader.length > 0 ?
+                                                            this.state.ProductAttributeHeader.map((x, i) =>
+                                                                <div className="new_filter_design">
+                                                                    <Button onClick={() => this.openFilterHandler(x)} className={this.state.openFilter === x ? "filter_selected_btn  filter_btn" : "filter_btn"}>{x}<i class="fa fa-angle-down" aria-hidden="true"></i></Button>
+                                                                    <div style={{ display: this.state.loading && 'none' }} className={this.state.openFilter === x ? "filter_opened filter_content" : "filter_content"}>
+                                                                        <div className={(this.state.openAttribute === false && this.state.attributeFilterViewAllHeader === x) ? 'close_spec' : 'open_spec custom_panel'}>
+                                                                            {this.state.attributeFilterViewAll === true && this.state.attributeFilterViewAllHeader === x ?
+                                                                                this.state.ProductAttributeChild.filter(y => y.Attributekey === x).map((z) =>
+                                                                                    <div className='sk-item-list-option__text' onClick={(event) => this.getDataAfterFilter(event, "Attribute", z.Attributekey + ':' + z.Value, true, 0)}>{z.Value}</div>
+                                                                                )
+                                                                                :
+                                                                                this.state.ProductAttributeChild.filter(y => y.Attributekey === x).slice(0, 5).map((z) =>
+                                                                                    <div className='sk-item-list-option__text' onClick={(event) => this.getDataAfterFilter(event, "Attribute", z.Attributekey + ':' + z.Value, true, 0)}>{z.Value}</div>
+                                                                                )
+                                                                            }
+                                                                        </div>
+                                                                        {this.state.ProductAttributeChild.filter(t => t.Attributekey === x).length > 4 && this.state.openAttribute ?
+                                                                            <h6 id={x} onClick={(event) => this.filterViewAttribute(event, x)} className="filter_view_more">
+                                                                                {(this.state.attributeFilterViewAllHeader === x && this.state.attributeFilterViewAll === true) ?
+                                                                                    'View less' : this.state.ProductAttributeChild.filter(t => t.Attributekey === x)[0]['FilterLength'] > 5 ? 'View all' : ''}</h6> : ''}
+
+                                                                    </div>
+                                                                </div>
+                                                            ) : ''} */}
+                                                        {(this.state.commodityFilterList !== undefined && this.state.commodityFilterList.length > 0) || (this.state.supplierFilterList !== undefined && this.state.supplierFilterList.length > 0) || (this.state.categoryFilterList !== undefined && this.state.categoryFilterList.length > 0) || (this.state.subCategoryFilterList !== undefined && this.state.subCategoryFilterList.length > 0) || (this.state.brandFilterList !== undefined && this.state.brandFilterList.length > 0) || (this.state.materialFilterList !== undefined && this.state.materialFilterList.length > 0) || (this.state.supplierFilterFilterList !== undefined && this.state.supplierFilterFilterList.length > 0) ||
+                                                            (this.state.productWithoutPriceList !== undefined && this.state.productWithoutPriceList.length > 0) || (this.state.productWithPriceList !== undefined && this.state.productWithPriceList.length > 0) ||
+                                                            (this.state.countryFilterList !== undefined && this.state.countryFilterList.length > 0) || (this.state.moqFilterList !== undefined && this.state.moqFilterList.length > 0) || (this.state.greenPropertyFilterList !== undefined && this.state.greenPropertyFilterList.length > 0) || (this.state.supplierAccreditationFilterList !== undefined && this.state.supplierAccreditationFilterList.length > 0) || (this.state.carbonEmissionFilterList !== undefined && this.state.carbonEmissionFilterList.length) ||
+                                                            this.state.searchFilterText !== "" || this.state.priceFilterText !== "" || this.state.newarrivalFilterText !== "" || this.state.buyingwindowFilterText !== "" || (this.state.specificationFilterList !== undefined && this.state.specificationFilterList.length > 0) || (this.state.attributeFilterList !== undefined && this.state.attributeFilterList.length > 0)
+                                                            || (this.state.activeProductFilterList !== undefined && this.state.activeProductFilterList.length > 0) || (this.state.productExpiryFilterList !== undefined && this.state.productExpiryFilterList.length > 0) || (this.state.gradeLevelFilterList !== undefined && this.state.gradeLevelFilterList.length > 0) || (this.state.productTypeFilterList !== undefined && this.state.productTypeFilterList.length > 0)
+                                                            || (this.state.productCertificationFilterList !== undefined && this.state.productCertificationFilterList.length > 0) || (this.state.productStatusFilterList !== undefined && this.state.productStatusFilterList.length > 0) || (this.state.sustainabilityCertificateFilterList !== undefined && this.state.sustainabilityCertificateFilterList.length > 0)
+                                                            || (this.state.SLISearchFilters !== undefined && this.state.SLISearchFilters.length > 0) || (this.state.SLISearchFilters !== undefined && this.state.SLISearchFilters.length > 0) || (this.state.SLISearchFilters !== undefined && this.state.SLISearchFilters.length > 0) || (this.state.productindustriesFilterList != undefined && this.state.productindustriesFilterList.length > 0) ?
+                                                            <div className="reset_filters" data-key="" data-value="" onClick={this.removeFilter}>Clear Filters</div> : ""}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="applied_filters_left">
+                                                {this.state.commodityFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-commodity">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Commodity</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.commodityFilterList !== undefined && this.state.commodityFilterList.length === 0 ? "" :
+                                                                    this.state.commodityFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="commodityFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="commodityFilterList" data-value={this.state.commodityFilterList} onClick={this.removeFilter}>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
+                                                                <path d="M0.649619 0L0 0.649619L3.35038 4L0 7.35038L0.649619 8L4 4.64962L7.35038 8L8 7.35038L4.64962 4L8 0.649619L7.35038 0L4 3.35038L0.649619 0Z" fill="#666666" />
+                                                            </svg>
+                                                        </div>
+                                                    </div>}
+                                                {Selectedcategoryfilterarray.length > 0 ?
+                                                    Selectedcategoryfilterarray.map((item) => (
+                                                        <div className="sk-filter-group filter-group-category">
+                                                            <div className="sk-filter-group-items">
+                                                                <div className="sk-filter-group-items__title">Category</div>
+                                                                <div className="sk-filter-group-items__list">
+                                                                    <div className="sk-filter-group-items__value" data-key={item.Id} data-value={item} onClick={this.removeFilter}>{item.Id == "categoryFilterListSingle" ? item.Value : item.Id == "subCategoryFilterListSingle" ? item.Category + ' | ' + item.Value : item.Id == "productTypeFilterListSingle" ? item.Category + ' | ' + item.SubCategory + '|' + item.Value : ""}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="sk-filter-group__remove-action" data-key={item.Id} data-value={item} onClick={this.removeFilter}>X</div>
+                                                        </div>
+                                                    ))
+                                                    : ""}
+                                                {/*{this.state.productTypeFilterList.length !== 0 ?*/}
+                                                {/*    <div className="sk-filter-group filter-group-brand">*/}
+                                                {/*        <div className="sk-filter-group-items">*/}
+                                                {/*            <div className="sk-filter-group-items__title">Product Type</div>*/}
+                                                {/*            <div className="sk-filter-group-items__list">*/}
+                                                {/*                {this.state.productTypeFilterList === undefined && this.state.productTypeFilterList.length === 0 ? "" :*/}
+                                                {/*                    this.state.productTypeFilterList.map((item) => (*/}
+                                                {/*                        <div className="sk-filter-group-items__value" data-key="productTypeFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>*/}
+                                                {/*                    ))*/}
+                                                {/*                }*/}
+                                                {/*            </div>*/}
+                                                {/*        </div>*/}
+                                                {/*        <div className="sk-filter-group__remove-action" data-key="productTypeFilterList" data-value={this.state.productTypeFilterList} onClick={this.removeFilter}>X</div>*/}
+                                                {/*    </div> :*/}
+                                                {/*    this.state.subCategoryFilterList !== undefined && this.state.subCategoryFilterList.length > 0 ?*/}
+                                                {/*        <div className="sk-filter-group filter-group-category">*/}
+                                                {/*            <div className="sk-filter-group-items">*/}
+                                                {/*                <div className="sk-filter-group-items__title">Sub Category</div>*/}
+                                                {/*                <div className="sk-filter-group-items__list">*/}
+                                                {/*                    {this.state.subCategoryFilterList !== undefined && this.state.subCategoryFilterList.length > 0 ?*/}
+                                                {/*                        this.state.subCategoryFilterList.map((item) => (*/}
+                                                {/*                            <div className="sk-filter-group-items__value" data-key="subCategoryFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>*/}
+                                                {/*                        )) : ""*/}
+                                                {/*                    }*/}
+                                                {/*                </div>*/}
+                                                {/*            </div>*/}
+                                                {/*            <div className="sk-filter-group__remove-action" data-key="subCategoryFilterList" onClick={this.removeFilter}>X</div>*/}
+                                                {/*        </div>*/}
+                                                {/*        :*/}
+                                                {/*        this.state.categoryFilterList !== undefined && this.state.categoryFilterList.length > 0 ?*/}
+                                                {/*            <div className="sk-filter-group filter-group-category">*/}
+                                                {/*                <div className="sk-filter-group-items">*/}
+                                                {/*                    <div className="sk-filter-group-items__title">Category</div>*/}
+                                                {/*                    <div className="sk-filter-group-items__list">*/}
+                                                {/*                        {this.state.categoryFilterList === undefined && this.state.categoryFilterList.length === 0 ? "" :*/}
+                                                {/*                            this.state.categoryFilterList.map((item) => (*/}
+                                                {/*                                <div className="sk-filter-group-items__value" data-key="categoryFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>*/}
+                                                {/*                            ))*/}
+                                                {/*                        }*/}
+                                                {/*                    </div>*/}
+                                                {/*                </div>*/}
+                                                {/*                <div className="sk-filter-group__remove-action" data-key="categoryFilterList" onClick={this.removeFilter}>X</div>*/}
+                                                {/*            </div> : ""}*/}
+                                                {this.state.brandFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-brand">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Brand</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.brandFilterList === undefined && this.state.brandFilterList.length === 0 ? "" :
+                                                                    this.state.brandFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="brandFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="brandFilterList" data-value={this.state.brandFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.materialFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-material">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Material</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.materialFilterList === undefined && this.state.materialFilterList.length === 0 ? "" :
+                                                                    this.state.materialFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="materialFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="materialFilterList" data-value={this.state.materialFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.supplierFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Supplier</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.supplierFilterList === undefined && this.state.supplierFilterList.length === 0 ? "" :
+                                                                    this.state.supplierFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="supplierFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="supplierFilterList" data-value={this.state.supplierFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.countryFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-country">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Country</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.countryFilterList === undefined && this.state.countryFilterList.length === 0 ? "" :
+                                                                    this.state.countryFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="countryFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="countryFilterList" data-value={this.state.countryFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.productindustriesFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-industry">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Industry</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.productindustriesFilterList === undefined && this.state.productindustriesFilterList.length === 0 ? "" :
+                                                                    this.state.productindustriesFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="productIndustriesFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="productIndustriesFilter" data-value={this.state.productindustriesFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.moqFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-moq">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">MOQ</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.moqFilterList === undefined && this.state.moqFilterList.length === 0 ? "" :
+                                                                    this.state.moqFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="moqFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="moqFilterList" data-value={this.state.moqFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.greenPropertyFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Green Property</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.greenPropertyFilterList === undefined && this.state.greenPropertyFilterList.length === 0 ? "" :
+                                                                    this.state.greenPropertyFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="greenPropertyFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="greenPropertyFilterList" data-value={this.state.greenPropertyFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.supplierAccreditationFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Supplier Accreditation</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.supplierAccreditationFilterList === undefined && this.state.supplierAccreditationFilterList.length === 0 ? "" :
+                                                                    this.state.supplierAccreditationFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="supplierAccreditationFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="supplierAccreditationFilterList" data-value={this.state.supplierAccreditationFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.SLISearchFilters.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">SLI Search</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.SLISearchFilters === undefined && this.state.SLISearchFilters.length === 0 ? "" :
+                                                                    this.state.SLISearchFilters.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="SLISeachFilterSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="SLISeachFilterList" data-value={this.state.SLISearchFilters} onClick={this.removeFilter}>X</div>
+                                                    </div>
+                                                }
+                                                {/*{this.state.carbonEmissionFilterList.length === 0 ? "" :*/}
+                                                {/*    <div className="sk-filter-group filter-group-supplier">*/}
+                                                {/*        <div className="sk-filter-group-items">*/}
+                                                {/*            <div className="sk-filter-group-items__title">Carbon Emission</div>*/}
+                                                {/*            <div className="sk-filter-group-items__list">*/}
+                                                {/*                {this.state.carbonEmissionFilterList !== undefined && this.state.carbonEmissionFilterList.length > 0 ?*/}
+                                                {/*                    this.state.carbonEmissionFilterList.map((item) => (*/}
+                                                {/*                        <div className="sk-filter-group-items__value" data-key="carbonEmissionFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>*/}
+                                                {/*                    )) : ""*/}
+                                                {/*                }*/}
+                                                {/*            </div>*/}
+                                                {/*        </div>*/}
+                                                {/*        <div className="sk-filter-group__remove-action" data-key="carbonEmissionFilterList" data-value={this.state.carbonEmissionFilterList} onClick={this.removeFilter}>X</div>*/}
+                                                {/*    </div>}*/}
+                                                {this.state.searchFilterText === "" ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Search Filter</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                <div className="sk-filter-group-items__value" data-key="searchFilterText" data-value={this.state.searchFilterText} onClick={this.removeFilter}>{this.state.searchFilterText}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="searchFilterText" data-value={this.state.searchFilterText} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.priceFilterText === "" ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Price Filter</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                <div className="sk-filter-group-items__value" data-key="priceFilterText" data-value={this.state.priceFilterText} onClick={this.removeFilter}>{this.state.priceFilterText}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="searchFilterText" data-value={this.state.priceFilterText} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.buyingwindowFilterText === "" ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Buying Window</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                <div className="sk-filter-group-items__value" data-key="buyingwindowFilterText" data-value={this.state.buyingwindowFilterText} onClick={this.removeFilter}>{this.state.buyingwindowFilterText}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="buyingwindowFilterText" data-value={this.state.buyingwindowFilterText} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.newarrivalFilterText === "" ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">New Arrival</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                <div className="sk-filter-group-items__value" data-key="newarrivalFilterText" data-value={this.state.newarrivalFilterText} onClick={this.removeFilter}>{this.state.newarrivalFilterText}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="newarrivalFilterText" data-value={this.state.newarrivalFilterText} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.specificationFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Specification</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.specificationFilterList === undefined && this.state.specificationFilterList.length === 0 ? "" :
+                                                                    this.state.specificationFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="specificationFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="specificationFilterList" data-value={this.state.specificationFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.attributeFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Attribute</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.attributeFilterList === undefined && this.state.attributeFilterList.length === 0 ? "" :
+                                                                    this.state.attributeFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="attributeFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="attributeFilterList" data-value={this.state.attributeFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.activeProductFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-brand">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Active/InActive</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.activeProductFilterList === undefined && this.state.activeProductFilterList.length === 0 ? "" :
+                                                                    this.state.activeProductFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="activeProductFilterListSingle" data-value={item} onClick={this.removeFilter}>{item === 'true' ? 'Active' : 'Inactive'}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="activeProductFilterList" data-value={this.state.activeProductFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.productExpiryFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-brand">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Product Expiry</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.productExpiryFilterList === undefined && this.state.productExpiryFilterList.length === 0 ? "" :
+                                                                    this.state.productExpiryFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="productExpiryFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="productExpiryFilterList" data-value={this.state.productExpiryFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.gradeLevelFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-brand">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Grade Level</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.gradeLevelFilterList === undefined && this.state.gradeLevelFilterList.length === 0 ? "" :
+                                                                    this.state.gradeLevelFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="gradeLevelFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="gradeLevelFilterList" data-value={this.state.gradeLevelFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.productCertificationFilterList !== undefined && this.state.productCertificationFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-brand">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Grade Level</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.productCertificationFilterList !== undefined && this.state.productCertificationFilterList.length === 0 ? "" :
+                                                                    this.state.productCertificationFilterList !== undefined ? this.state.productCertificationFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="productCertificationFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    )) : ""
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="productCertificationFilterList" data-value={this.state.productCertificationFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.productStatusFilterList !== undefined && this.state.productStatusFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Product Status</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                <div className="sk-filter-group-items__value" data-key="productStatusFilterListSingle" data-value={this.state.productStatusFilterList} onClick={this.removeFilter}>{this.state.productStatusFilterList}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="productStatusFilterList" data-value={this.state.productStatusFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.sustainabilityCertificateFilterList !== undefined && this.state.sustainabilityCertificateFilterList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-supplier">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Sustainability Certificate</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.sustainabilityCertificateFilterList !== undefined && this.state.sustainabilityCertificateFilterList.length === 0 ? "" :
+                                                                    this.state.sustainabilityCertificateFilterList !== undefined ? this.state.sustainabilityCertificateFilterList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="sustainabilityCertificateFilterListSingle" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    )) : ""
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="sustainabilityCertificateFilterList" data-value={this.state.sustainabilityCertificateFilterList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.productWithoutPriceList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-brand">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">Without Price</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.productWithoutPriceList === undefined && this.state.productWithoutPriceList.length === 0 ? "" :
+                                                                    this.state.productWithoutPriceList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="productWithoutPriceList" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="productWithoutPriceList" data-value={this.state.productWithoutPriceList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                                {this.state.productWithPriceList.length === 0 ? "" :
+                                                    <div className="sk-filter-group filter-group-brand">
+                                                        <div className="sk-filter-group-items">
+                                                            <div className="sk-filter-group-items__title">With Price</div>
+                                                            <div className="sk-filter-group-items__list">
+                                                                {this.state.productWithPriceList === undefined && this.state.productWithPriceList.length === 0 ? "" :
+                                                                    this.state.productWithPriceList.map((item) => (
+                                                                        <div className="sk-filter-group-items__value" data-key="productWithPriceList" data-value={item} onClick={this.removeFilter}>{item}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div className="sk-filter-group__remove-action" data-key="productWithPriceList" data-value={this.state.productWithPriceList} onClick={this.removeFilter}>X</div>
+                                                    </div>}
+                                            </div>
+                                        </div>
+                                    }
+                                </div></div> : ''}
+                        <div className={this.state.FilterDataList !== undefined && this.state.FilterDataList.length > 0 ? "All_listings" : "All_listings with_no_filter"}>
+                            {this.state.openFilter && <div onClick={this.closeFilterHandler} className="backdrop"></div>}
+                            {ProductsListItem.length || ProductsGridItem.length > 0 ?
+                                <GridContainer style={{ padding: 0, justifyContent: 'space-between' }}>
+                                    <GridItem style={{ padding: 0 }} md={5} xs={12}>
+                                        {/* <span>{this.state.indexDataLength} results found.</span> */}
+                                        {data}
+                                    </GridItem>
+                                    <GridItem xs={12} md={2} className="sort_by_filter">
+                                        {this.props.userType === RoleCodes.BUYER ? (
+                                            ""
+                                        ) : (
+                                            this.state.isFeatureAvailable === true ? <StatusFilter Resources={resources} /> : ""
+                                        )}
+                                        <div className={'newThemeInput'}>
+                                            <span>Sort by</span>
+                                            <Input
+                                                elementType="select_2"
+                                                class="newInput_2"
+                                                label="Sort by"
+                                                value={selectedSort}
+                                                SelectChange={(event) => this.state.sortbyfiltervalue !== event.target.value === true ? this.getDataAfterFilter(event, event.target.value, event.target.value, true) : ''}
+                                                elementConfig={{
+                                                    options: JSON.parse(localStorage.userType).includes(RoleCodes.BUYER) == true ? [
+                                                        //  { 'Value': 'Preferred Certificates', 'Id': 'Preferred Certificates' },
+                                                        { 'Value': 'Product Name ASC', 'Id': 'Product Name ASC' },
+                                                        { 'Value': 'Product Name DESC', 'Id': 'Product Name DESC' },
+                                                        { 'Value': 'Price Low to High', 'Id': 'Price Low to High' },
+                                                        { 'Value': 'Price High to Low', 'Id': 'Price High to Low' },
+                                                    ] : [
+                                                        { 'Value': 'Product Name ASC', 'Id': 'Product Name ASC' },
+                                                        { 'Value': 'Product Name DESC', 'Id': 'Product Name DESC' },
+                                                        { 'Value': 'Price Low to High', 'Id': 'Price Low to High' },
+                                                        { 'Value': 'Price High to Low', 'Id': 'Price High to Low' },
+                                                    ]
+                                                }}
+                                            // selectLableHeader={'Sort by'}
+                                            />
+                                        </div>
+
+                                    </GridItem>
+
+                                    {/* <GridItem
+                                        className="applied_filters"
+                                        md={9}
+                                        sm={9}
+                                        xs={12}
+                                    >
+                                        <div className="applied_filters_right">
+                                            {this.props.userType === RoleCodes.SUPPLIER || this.props.userType === RoleCodes.SUPPLIERSUPPORTPERSON ? (
+                                                <Link to="/import-products">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="48" viewBox="0 0 44 48" fill="none">
+                                                        <path d="M21.4002 35.2H14.4002C14.0289 35.2 13.6728 35.0525 13.4102 34.79C13.1477 34.5274 13.0002 34.1713 13.0002 33.8V14.2C13.0002 13.8287 13.1477 13.4726 13.4102 13.2101C13.6728 12.9475 14.0289 12.8 14.4002 12.8H21.4002V17C21.4002 18.1139 21.8427 19.1822 22.6303 19.9698C23.418 20.7575 24.4863 21.2 25.6002 21.2H29.8002V24C29.8002 24.3713 29.9477 24.7274 30.2102 24.9899C30.4728 25.2525 30.8289 25.4 31.2002 25.4C31.5715 25.4 31.9276 25.2525 32.1901 24.9899C32.4527 24.7274 32.6002 24.3713 32.6002 24V19.8C32.6002 19.8 32.6002 19.8 32.6002 19.716C32.5856 19.5874 32.5575 19.4607 32.5162 19.338V19.212C32.4458 19.0656 32.3563 18.929 32.2502 18.806V18.806L23.8502 10.406C23.7271 10.2999 23.5906 10.2104 23.4442 10.14C23.4024 10.1341 23.36 10.1341 23.3182 10.14L22.8842 10H14.4002C13.2863 10 12.218 10.4425 11.4303 11.2302C10.6427 12.0178 10.2002 13.0861 10.2002 14.2V33.8C10.2002 34.9139 10.6427 35.9822 11.4303 36.7698C12.218 37.5575 13.2863 38 14.4002 38H21.4002C21.7715 38 22.1276 37.8525 22.3901 37.59C22.6527 37.3274 22.8002 36.9713 22.8002 36.6C22.8002 36.2287 22.6527 35.8726 22.3901 35.61C22.1276 35.3475 21.7715 35.2 21.4002 35.2ZM24.2002 14.774L27.8262 18.4H25.6002C25.2289 18.4 24.8728 18.2525 24.6102 17.9899C24.3477 17.7274 24.2002 17.3713 24.2002 17V14.774ZM32.6002 28.2H24.7742L26.5942 26.394C26.8578 26.1304 27.0059 25.7728 27.0059 25.4C27.0059 25.0272 26.8578 24.6696 26.5942 24.406C26.3306 24.1424 25.973 23.9943 25.6002 23.9943C25.2274 23.9943 24.8698 24.1424 24.6062 24.406L20.4062 28.606C20.2825 28.7421 20.1831 28.8983 20.1122 29.068C19.9722 29.4088 19.9722 29.7912 20.1122 30.132C20.1763 30.3051 20.2766 30.4626 20.4062 30.594L24.6062 34.794C24.7363 34.9252 24.8912 35.0294 25.0618 35.1004C25.2324 35.1715 25.4154 35.2081 25.6002 35.2081C25.785 35.2081 25.968 35.1715 26.1386 35.1004C26.3092 35.0294 26.464 34.9252 26.5942 34.794C26.7254 34.6639 26.8296 34.509 26.9006 34.3384C26.9717 34.1678 27.0083 33.9848 27.0083 33.8C27.0083 33.6152 26.9717 33.4322 26.9006 33.2616C26.8296 33.091 26.7254 32.9361 26.5942 32.806L24.7742 31H32.6002C32.9715 31 33.3276 30.8525 33.5901 30.59C33.8527 30.3274 34.0002 29.9713 34.0002 29.6C34.0002 29.2287 33.8527 28.8726 33.5901 28.6101C33.3276 28.3475 32.9715 28.2 32.6002 28.2Z" fill="#666666" />
+                                                    </svg>
+                                                    <Button>Import</Button>
+                                                </Link>
+                                            ) : (
+                                                ""
+                                            )}
+                                            {this.props.userType === RoleCodes.BUYER ? '' :
+                                                <div className="exportprod_btn">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+                                                        <path d="M6.36364 0C4.95727 0 3.81818 1.13909 3.81818 2.54545V8.90909H2.54545C1.13909 8.90909 0 10.0482 0 11.4545V17.8182C0 19.2245 1.13909 20.3636 2.54545 20.3636H3.81818V22.9091C3.81818 24.3155 4.95727 25.4545 6.36364 25.4545H16.7642L14.2188 22.9091H6.36364V20.3636H19.0909V17.8182C19.0909 16.4118 20.23 15.2727 21.6364 15.2727H24.1818V6.36364L17.8182 0H6.36364ZM6.36364 2.54545H16.5455V7.63636H21.6364V8.90909H6.36364V2.54545ZM5.09091 11.4545C6.49727 11.4545 7.63636 12.5936 7.63636 14H6.36364C6.36364 13.2987 5.79218 12.7273 5.09091 12.7273C4.38964 12.7273 3.81818 13.2987 3.81818 14V15.2727C3.81818 15.974 4.38964 16.5455 5.09091 16.5455C5.79218 16.5455 6.36364 15.974 6.36364 15.2727H7.63636C7.63636 16.6791 6.49727 17.8182 5.09091 17.8182C3.68455 17.8182 2.54545 16.6791 2.54545 15.2727V14C2.54545 12.5936 3.68455 11.4545 5.09091 11.4545ZM11.0021 11.4545C12.8132 11.5067 12.9237 13.0873 12.9237 13.3686H11.6932C11.6932 13.2375 11.7153 12.4812 10.9822 12.4812C10.7595 12.4812 10.258 12.5799 10.2962 13.1946C10.3331 13.7584 11.0772 14.0247 11.2134 14.0845C11.4985 14.1889 12.9072 14.8176 12.9187 16.1005C12.9212 16.3729 12.8508 17.7991 11.027 17.8182C9.04281 17.8398 8.90909 16.1324 8.90909 15.7798H10.1495C10.1495 15.9669 10.1654 16.8715 11.027 16.8015C11.545 16.7582 11.658 16.3854 11.6758 16.108C11.7051 15.6409 11.2593 15.3601 10.7884 15.1335C10.1265 14.8153 9.07981 14.4243 9.06072 13.1847C9.04418 12.0685 9.86431 11.4227 11.0021 11.4545ZM14 11.4545H15.3398L16.5355 16.0955L17.7386 11.4545H19.0909L17.3683 17.8182H15.7127L14 11.4545ZM21.6364 17.8182V22.9091H17.8182L22.9091 28L28 22.9091H24.1818V17.8182H21.6364Z" fill="#666666" />
+                                                    </svg>
+                                                    <ExportProducts
+                                                        Resources={resources}
+                                                        UserId={this.props.userId}
+                                                        CompanyGuid={this.state.companyGuid}
+                                                        UserType={this.props.userType}
+                                                    />
+                                                </div>
+                                            }
+                                        </div>
+                                    </GridItem>
+                                    {FocusAreaDetails === null ? '' : <GridItem
+                                        className=""
+                                        md={12}
+                                        sm={12}
+                                        xs={12}
+                                    >
+                                        {FocusAreaDetails}
+                                    </GridItem>}
+                                    {this.props.userType.includes(RoleCodes.ADMIN) || this.props.userType.includes(RoleCodes.SUPPLIER) ?
+                                        <GridItem className="text-right" lg={12} md={12} sm={12} style={{ paddingRight: "0" }}>
+                                            <p className="expiry_note">Please select an expired product to check if it is expired either globally or for a country or for an SKU </p>
+                                        </GridItem> : ''} */}
+                                </GridContainer>
+                                : ""}
+                            {ProductDetails}
+                        </div>
+                    </div>
+                </div>
+
+                {
+                    this.state.jsonData !== null ?
+                        <Drawer
+                            className={classes.drawer}
+                            variant="persistent"
+                            anchor="right"
+                            open={open}
+                            classes={{
+                                paper: classes.drawerPaper + ' ' + 'quick_view_pannel'
+                            }}
+                        >
+                            <div className='quick_view_header'>
+                                <IconButton onClick={this.handleDrawerClose}>
+                                    {theme.direction === "rtl" ? (
+                                        <Close />
+                                    ) : (
+                                        <Close />
+                                    )}
+                                </IconButton>
+                            </div>
+                            <div className="quick_view">
+                                <div className="quick_view_top">
+                                    <div className="quick_view_prod_name">
+                                        <ProductName ProductName={this.state.jsonData.productName} />
+                                        <SupplierName Name={this.state.jsonData.companyName} />
+                                    </div>
+                                    {/* <StarAndReviews Ratings={this.state.jsonData.ratings} />              */}
+                                    <div className="quick_view_price_moq">
+                                        <div className="quick_view_price_moq_left">
+                                            {this.state.productMinPrice === 0 ?
+                                                <h5>Price on request</h5> :
+                                                <ProductPrice
+                                                    //ProductPrice={this.state.jsonData.minPrice}
+                                                    ProductPrice={this.state.productMinPrice}
+                                                    CurrencySymbol={this.state.jsonData.currencySymbol}
+                                                    UserType={this.props.userType}
+                                                    QuantityUnit={this.state.unitList.filter(x => x.unitGuid === this.state.jsonData.quantityUnitGuid).length > 0 ? this.state.unitList.filter(x => x.unitGuid === this.state.jsonData.quantityUnitGuid)[0]['name'] : ""}
+                                                // cartdetailLanguageResources={cartdetailLanguageResources} 
+                                                />}
+                                        </div>
+                                        {this.state.jsonData.mOQ !== 0 ? <div className="quick_view_price_moq_right">
+                                            <ProductMoq MinimumOrderQuantity={this.state.jsonData.mOQ}
+                                                QuantityUnit={this.state.unitList.filter(x => x.unitGuid === this.state.jsonData.quantityUnitGuid).length > 0 ? this.state.unitList.filter(x => x.unitGuid === this.state.jsonData.quantityUnitGuid)[0]['name'] : ""} />
+                                        </div> : ""}
+                                        {this.state.productMinPrice !== 0 ? <Link onClick={(e) => e.preventDefault()} to="//listing-page#rate_card">VIEW RATE CARD</Link> : ""}
+                                    </div>
+                                </div>
+                                <div className="quick_view_center">
+                                    <div className="quick_view_center_img">
+                                        {pImage}
+                                        {pVariants}
+                                        {this.state.variantattributesAvailable ?
+                                            <div className="product_sku">
+                                                {formElementsArray.map(formElement => (
+                                                    <Input
+                                                        className={formElement.config.requiredclass}
+                                                        key={formElement.id}
+                                                        elementType={formElement.config.elementType}
+                                                        elementConfig={formElement.config.elementConfig}
+                                                        invalid={!formElement.config.valid}
+                                                        shouldValidate={formElement.config.validation}
+                                                        touched={formElement.config.touched}
+                                                        errorMessage={formElement.config.errorMessage}
+                                                        SelectChange={(event) => this.inputChangedHandler(event, formElement.id)}
+                                                        value={formElement.config.value} />
+                                                ))}
+                                            </div> : ""}
+                                    </div>
+                                </div>
+                                <div className="prod_detail_prod_icons">
+                                    {ProductGreenPropertiesIcon !== undefined ?
+                                        ProductGreenPropertiesIcon.map(data =>
+                                            <Tooltip title={data.greenPropertyName}>
+                                                <img alt=" " src={awsUrl + "GreenPropertiesIcons/" + data.iconName}
+                                                    onError={e => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = awsUrl + "\ProductCertificationIcons/defaultCertificate.png";
+                                                    }} />
+                                            </Tooltip>
+                                        ) : ''}
+                                    {ProductSupplierAccreditations !== undefined ?
+                                        ProductSupplierAccreditations.map(data =>
+                                            <Tooltip title={data.supplierAccreditationName}>
+                                                <img alt=" "
+                                                    src={awsUrl + "\SupplierAccreditationsIcons/" + data.iconName}
+                                                    onError={e => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = awsUrl + "\ProductCertificationIcons/defaultCertificate.png";
+                                                    }} />
+                                            </Tooltip>
+                                        ) : ''}
+                                    {ProductCertificationsIcon !== '' && ProductCertificationsIcon !== undefined ?
+                                        ProductCertificationsIcon.map(data =>
+                                            <Tooltip title={data.productCertificateName}>
+                                                <img alt=""
+                                                    src={awsUrl + "\ProductCertificationIcons/" + data.iconName}
+                                                    onError={e => {
+                                                        e.target.onerror = null;
+                                                        e.target.src =
+                                                            awsUrl + "\ProductCertificationIcons/defaultCertificate.png";
+                                                    }}
+                                                />
+                                            </Tooltip>,
+                                        ) : ''}
+                                </div>
+                                <div className="quick_view_bottom">
+
+                                    {this.state.showBWStatus !== null && this.state.showBWStatus !== '' ?
+                                        <BuyingWindowStatus
+                                            ProductGuid={this.state.jsonData.productGuid}
+                                            MinimumOrderQuantity={this.state.jsonData.mOQ}
+                                            LanguageResources={this.state.resources}
+                                            BuyingWindowStatus={this.state.showBWStatus}
+                                            BuyingWindowGuid={this.state.BuyingWindowGuid}
+                                            BuyingWindowTotalQuantity={this.state.BuyingWindowTotalQuantity}
+                                        /> :
+                                        this.state.spinner === true ? <Spinner /> :
+                                            this.state.buyingWindowGuid !== '00000000-0000-0000-0000-000000000000' && this.state.buyingWindowGuid !== undefined && this.state.buyingWindowGuid !== null ?
+                                                <div className="quickViewBW">
+                                                    <div className="quickViewBW_left BW_price_range_slider_div BW_Current">
+                                                        <h1 className="bw_price">{this.state.jsonData.currencySymbol}{this.state.bwPrice}</h1>
+                                                        <h5>QTY</h5>
+                                                        <h5> {this.state.bwQtyRange}</h5>
+                                                        <h6>Lead Time: {this.state.bwLeadTime} days </h6>
+                                                    </div>
+                                                    <div className="quickViewBW_right">
+                                                        <p className="BW_ending"><QueryBuilder />Ending in {this.getRemaindays()} days</p>
+                                                        <p>MOQ: {this.state.jsonData.mOQ}</p>
+                                                        <p className="tt_commit">Total commitments now </p>
+                                                        <p>QTY:{this.state.Totalcommitment}</p>
+                                                        <p> Savings {this.state.jsonData.currencySymbol}{SavingPerUnit}/unit</p>
+                                                        <p> Total Savings {this.state.jsonData.currencySymbol}{Number(Math.round(SavingPerUnit * this.state.bwCommitmentQtyCount + "e2") + "e-2").toFixed(decimalValue)}</p>
+                                                    </div>
+
+                                                </div> : ''}
+
+                                    <div className="products_detals_acc">
+                                        <ProductDetailTab Active={this.state.collapse} Resources={this.state.resources} Description={this.state.jsonData.description} />
+                                        <ProductSpecsTab Active={this.state.collapse} Resources={this.state.resources} ListProductSpecification={this.state.jsonData.listProductSpecificationVM}
+                                            commodityName={this.state.jsonData["commodity.raw.keyword"]}
+                                            Category={this.state.jsonData["listProductSubCategory"]}
+                                            Brand={this.state.jsonData["listproductbrands.raw.keyword"]}
+                                            Material={this.state.jsonData["productmaterial.raw.keyword"]}
+                                            Length={this.state.jsonData.length}
+                                            Width={this.state.jsonData.width}
+                                            Height={this.state.jsonData.height}
+                                            Weight={this.state.jsonData.weight}
+                                            Volume={this.state.jsonData.volume}
+                                            VolumeUnit={this.state.jsonData.volumeDimensionUnit}
+                                            WeightUnit={this.state.jsonData.weightUnit}
+                                            DimensionUnit={this.state.jsonData.dimensionUnit}
+                                            SupplierAccreditations={this.state.jsonData["listsupplieraccreditation.raw"]}
+                                            GreenProperties={this.state.jsonData["productgreenproperties.raw"]}
+                                            CarbonEmission={this.state.jsonData.carbonEmission}
+                                            ProductCertifications={certificatearray}
+                                        />
+                                        <span id="rate_card"></span>
+                                        <ProductRateCardTab
+                                            Active={this.state.collapse}
+                                            Resources={this.state.resources}
+                                            ListRateCard={this.state.NewListRateCard}
+                                            ListProductVariant={this.state.jsonData.listProductVariantsVM}
+                                            DecimalPrecision={decimalValue}
+                                            //SkuGuid={this.state.jsonData.skuGuid}   
+                                            SkuGuid={this.state.SkuGuid}
+                                            QuantityUnit={this.state.unitList.filter(x => x.unitGuid === this.state.jsonData.quantityUnitGuid).length > 0 ? this.state.unitList.filter(x => x.unitGuid === this.state.jsonData.quantityUnitGuid)[0]['name'] : ""}
+                                        />
+                                    </div>
+
+                                    <div className="quick_view_prod_typ">
+                                        <RecentlyBought
+                                            RecentlyBoughtProducts={this.state.recentlyBoughtProducts}
+                                            LanguageResources={this.state.resources} />
+                                        {this.state.comparableProductList !== undefined ? this.state.comparableProductList.length > 0 ?
+                                            <AvailableSupplier
+                                                SimilarProductCount={this.state.comparableProductList}
+                                                SimilarProductScroll={this.SimilarProductScroll_func} />
+                                            : "" : ""}
+                                        <LikelyToBuyLink
+                                            LikelyToBuyUsers={this.state.likelyToBuyUsers}
+                                            LanguageResources={this.state.resources} />
+                                    </div>
+                                    <div className="quick_view_icons">
+                                        {cart}
+                                        {wishList}
+                                        <Tooltip title="View Details">
+                                            <div className="details_view_icon">
+                                                <span ><Link to={"/product-details?product=" + this.state.jsonData.productGuid}><Info /></Link></span>
+                                            </div>
+                                        </Tooltip>
+                                    </div>
+                                    {/* <div className="go_to_detail_page">
+                        <Link to={"/product-details?product=" + this.state.jsonData.productGuid}>VIEW MORE</Link>
+                        
+                      </div> */}
+                                </div>
+                            </div>
+
+                        </Drawer>
+                        : <div style={{ width: '320px', flexShrink: '0' }}></div>
+                }
+            </Aux >
+        );
+
+        // if(JSON.parse(localStorage.userType) === RoleCodes.SUPPLIER)
+        // {
+        //   if(localStorage.userStatus !== "Account Approved")
+        //   {
+        //     pageBody = (<div id="no_prod_listing_page" className="no-products-found">  
+        //   <h4>Oops! Your Account is not Approved to access this page.</h4>     
+        //   </div>)
+        //   }
+        // }
+        return (
+            <div className=" no_container">
+                {/* {this.state.loading && <div className="listingPage_loader"><Spinner /></div>} */}
+                {pageBody}
+            </div>
+        )
+    }
+}
+const mapStateToProps = state => {
+    return {
+        userId: state.login.userId,
+        languageId: state.login.languageId,
+        userType: state.login.userType,
+        permissions: state.login.permissions
+    };
+};
+const mapDispatchToProps = dispatch => {
+    return {
+        //onGetCartCounter: (userId, languageId) => dispatch(actionCreators.cartCounter(userId, languageId)),
+        onGetWishlistCounter: (userId, languageId) => dispatch(actionCreators.wishlistCounter(userId, languageId)),
+        //onGetBuyingWindowCounter: (userId, languageId) => dispatch(actionCreators.buyingWindowCounter(userId, languageId))
+    }
+};
+export default connect(mapStateToProps, mapDispatchToProps)(
+    withStyles(styles, { withTheme: true })(ProductListingPage)
+);

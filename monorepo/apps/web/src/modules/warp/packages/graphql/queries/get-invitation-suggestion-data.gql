@@ -1,0 +1,36 @@
+query getInvitationSuggestionData(
+  $invitationId: [uuid!]!
+  $inputFields: [String!]!
+) {
+  FormInvitation(where: { id: { _in: $invitationId } }) {
+    id
+    Suggestions {
+      id
+      selectedByUserId
+      isSelected
+      formFieldId
+      suggestion
+      FormField {
+        id
+        type
+        field
+        questionId
+        fieldOptions
+      }
+    }
+    Form {
+      FormFields(
+        where: { questionId: { _is_null: false }, type: { _in: $inputFields } }
+      ) {
+        id
+        fieldOptions
+        displayRules
+        type
+        questionId
+        Question {
+          key
+        }
+      }
+    }
+  }
+}

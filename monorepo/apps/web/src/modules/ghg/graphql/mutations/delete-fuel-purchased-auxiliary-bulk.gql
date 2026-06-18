@@ -1,0 +1,14 @@
+mutation deleteFuelPurchasedAuxiliaryBulk($ids: [uuid!]!) {
+  delete_GHGEnergyConsumption_FuelPurchased_Auxiliary(where: { id: { _in: $ids } }) {
+    affected_rows
+    returning {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      GHGEnergyConsumption_FuelPurchased {
+        id
+        task_request_id
+        organization_address_id
+      }
+    }
+  }
+}

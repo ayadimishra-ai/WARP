@@ -1,0 +1,16 @@
+query GetUserDetailsByDynamicColumns($where: Tbl_Users_bool_exp!) {
+  Tbl_Users(where: $where) {
+    UserGuid
+    EmailId
+    MobileNumber
+    FirstName
+    CpanelUserId
+    OPSUserId
+    Tbl_Roles {
+      RoleGuid
+      RoleName
+      IsActive
+      CreatedDateUtc
+    }
+  }
+}

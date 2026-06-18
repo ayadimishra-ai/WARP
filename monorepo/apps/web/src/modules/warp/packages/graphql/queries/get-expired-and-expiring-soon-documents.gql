@@ -1,0 +1,46 @@
+query GetDocumentsForExpiry(
+  $where_30: DocumentLogs_bool_exp!
+  $where_20: DocumentLogs_bool_exp!
+  $where_5: DocumentLogs_bool_exp!
+  $where_expired: DocumentLogs_bool_exp!
+) {
+  reminder_30: DocumentLogs(where: $where_30) {
+    id
+    fileName
+    originalFileName
+    expiryDate
+    createdBy
+    companyId
+    metadata
+  }
+
+  reminder_20: DocumentLogs(where: $where_20) {
+    id
+    fileName
+    originalFileName
+    expiryDate
+    createdBy
+    companyId
+    metadata
+  }
+
+  reminder_5: DocumentLogs(where: $where_5) {
+    id
+    fileName
+    originalFileName
+    expiryDate
+    createdBy
+    companyId
+    metadata
+  }
+
+  expired: DocumentLogs(where: $where_expired) {
+    id
+    fileName
+    originalFileName
+    expiryDate
+    createdBy
+    companyId
+    metadata
+  }
+}

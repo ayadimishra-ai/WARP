@@ -1,0 +1,33 @@
+query getOrgMaterialsAndSuppliersByCode(
+  $materialMasterIdList: [String!]!
+  $supplierMasterIdList: [String!]!
+  $organizationId: uuid!
+) {
+  OrgMaterialMaster(
+    where: {
+      _and: {
+        code: { _in: $materialMasterIdList }
+        organization_id: { _eq: $organizationId }
+        is_deleted: { _eq: false }
+      }
+    }
+  ) {
+    id
+    name
+    code
+    client_master_id
+    type
+  }
+  OrgSupplierMaster(
+    where: {
+      code: { _in: $supplierMasterIdList }
+      organization_id: { _eq: $organizationId }
+      _and: { is_deleted: { _eq: false } }
+    }
+  ) {
+    id
+    name
+    code
+    category
+  }
+}

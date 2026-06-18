@@ -1,0 +1,33 @@
+query GetDocumentLogsWithAISuggestedDocuments($where: DocumentLogs_bool_exp) {
+  DocumentLogs(where: $where, order_by: [{ createdAt: desc }]) {
+    id
+    originalFileName
+    fileName
+    fileSize
+    fileUrl
+    status
+    createdAt
+    createdBy
+    deletedAt
+    deletedBy
+    cardName
+    version
+    aiSuggestedDocumentId
+    expiryDate
+    raraResponse
+    error
+    AISuggestedDocuments {
+      id
+      title
+      isOther
+    }
+    CreatedByUser: UserByCreatedBy {
+      id
+      name
+    }
+    DeletedByUser: DeletedByUser {
+      id
+      name
+    }
+  }
+}

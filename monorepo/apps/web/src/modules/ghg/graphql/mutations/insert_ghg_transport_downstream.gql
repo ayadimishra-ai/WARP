@@ -1,0 +1,89 @@
+mutation insertGHGTransportDownstreamDetails(
+  $where: GHGTransport_Downstream_bool_exp!
+  $input: [GHGTransport_Downstream_insert_input!]!
+  $addressInput: [TravelDistance_insert_input!]!
+) {
+  delete_GHGTransport_Downstream(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Which_Products
+      Which_SKUs
+      Number_of_Skus_Transported
+      supplier_code
+      distributed_from_country
+      distributed_from_location_pincode
+      distributed_to_country
+      distributed_to_location_pincode
+      total_distance_travelled
+      total_distance_travelled_uom
+      kpi_total_weight_transported
+      kpi_total_weight_transported_uom
+      kpi_em_EmissionBy_Transport
+      kpi_emf_EmissionBy_Transport
+      Destination_Location_Name
+      Destination_pin_or_zip_code
+      Transport_Managed_by
+      Mode_of_Transport
+      Vehicle_Type_Used_for_Road_Transport
+      Fuel_Used
+      Distance_per_trip
+      Distance_per_trip_UoM
+      Number_of_Trips
+      Total_Weight_of_SKUs
+      Quantity_of_Fuel_Consumed
+      Quantity_of_Fuel_Consumed_UoM
+      supporting_docs
+      kpi_Distance_Travelled
+      kpi_Distance_Travelled_uom
+      kpi_em_EmissionBy_TravelledDistance
+      kpi_emf_EmissionBy_TravelledDistance
+    }
+  }
+  insert_GHGTransport_Downstream(objects: $input) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Which_Products
+      Which_SKUs
+      Number_of_Skus_Transported
+      supplier_code
+      distributed_from_country
+      distributed_from_location_pincode
+      distributed_to_country
+      distributed_to_location_pincode
+      total_distance_travelled
+      total_distance_travelled_uom
+      kpi_total_weight_transported
+      kpi_total_weight_transported_uom
+      kpi_em_EmissionBy_Transport
+      kpi_emf_EmissionBy_Transport
+      Destination_Location_Name
+      Destination_pin_or_zip_code
+      Transport_Managed_by
+      Mode_of_Transport
+      Vehicle_Type_Used_for_Road_Transport
+      Fuel_Used
+      Distance_per_trip
+      Distance_per_trip_UoM
+      Number_of_Trips
+      Total_Weight_of_SKUs
+      Quantity_of_Fuel_Consumed
+      Quantity_of_Fuel_Consumed_UoM
+      supporting_docs
+      kpi_Distance_Travelled
+      kpi_Distance_Travelled_uom
+      kpi_em_EmissionBy_TravelledDistance
+      kpi_emf_EmissionBy_TravelledDistance
+    }
+  }
+  insert_TravelDistance(objects: $addressInput) {
+    returning {
+      id
+    }
+  }
+}

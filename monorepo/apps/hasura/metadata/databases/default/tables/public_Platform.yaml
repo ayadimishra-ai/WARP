@@ -1,0 +1,39 @@
+table:
+  name: Platform
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: AppGlobalMasters
+    using:
+      foreign_key_constraint_on:
+        column: platformId
+        table:
+          name: AppGlobalMaster
+          schema: public
+  - name: EmailConfigurations
+    using:
+      foreign_key_constraint_on:
+        column: platformId
+        table:
+          name: EmailConfiguration
+          schema: public
+  - name: EmailTemplates
+    using:
+      foreign_key_constraint_on:
+        column: platformId
+        table:
+          name: EmailTemplate
+          schema: public
+  - name: Organizations
+    using:
+      foreign_key_constraint_on:
+        column: platformId
+        table:
+          name: Organization
+          schema: public

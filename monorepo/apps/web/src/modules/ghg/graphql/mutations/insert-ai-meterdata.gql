@@ -1,0 +1,11 @@
+mutation InsertMeterData($input: [MeterData_insert_input!]!) {
+  insert_MeterData(objects: $input) {
+    returning {
+      id
+      filedata_id
+      meter_number
+      average_units_consumed
+      organization_address_id
+    }
+  }
+}

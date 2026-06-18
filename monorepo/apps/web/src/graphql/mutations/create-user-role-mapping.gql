@@ -1,0 +1,10 @@
+mutation createUserRoleMapping($object: [Tbl_UserRoleMapping_insert_input!]!) {
+  insert_Tbl_UserRoleMapping(objects: $object) {
+    affected_rows
+    returning {
+			UserRoleMappingGuid
+      UserGuid
+      RoleGuid
+    }
+  }
+}

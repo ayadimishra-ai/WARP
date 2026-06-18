@@ -1,0 +1,16 @@
+mutation updateCompanyDetails(
+  $companyId: uuid!
+  $IsManufacturing: Boolean
+  $metadata: jsonb!
+) {
+  update_Company(
+    _set: { metadata: $metadata, IsManufacturing: $IsManufacturing }
+    where: { id: { _eq: $companyId } }
+  ) {
+    returning {
+      id
+      IsManufacturing
+      parentCompanyId
+    }
+  }
+}

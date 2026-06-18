@@ -1,0 +1,27 @@
+mutation updateUseOfSoldProductsEmission(
+  $fuelUpdates: [GHGUseOfSoldProducts_Fuel_updates!]!
+  $electricityUpdates: [GHGUseOfSoldProducts_Electricity_updates!]!
+  $refrigerantUpdates: [GHGUseOfSoldProducts_Refrigerant_updates!]!
+) {
+  update_GHGUseOfSoldProducts_Fuel_many(updates: $fuelUpdates) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+    }
+  }
+  update_GHGUseOfSoldProducts_Electricity_many(updates: $electricityUpdates) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+    }
+  }
+  update_GHGUseOfSoldProducts_Refrigerant_many(updates: $refrigerantUpdates) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+    }
+  }
+}

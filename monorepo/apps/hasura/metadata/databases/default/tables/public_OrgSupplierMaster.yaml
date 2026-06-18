@@ -1,0 +1,21 @@
+table:
+  name: OrgSupplierMaster
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: Organization
+    using:
+      foreign_key_constraint_on: organization_id
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: SupplierAddressMappings
+    using:
+      foreign_key_constraint_on:
+        column: org_supplier_master_id
+        table:
+          name: SupplierAddressMapping
+          schema: public

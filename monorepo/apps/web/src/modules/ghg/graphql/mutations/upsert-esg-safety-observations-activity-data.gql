@@ -1,0 +1,46 @@
+mutation upsertESGSafetyObservationActivity(
+  $where: ESGSafetyObservations_bool_exp!
+  $esgSafetyObservationsData: [ESGSafetyObservations_insert_input!]!
+) {
+  delete_ESGSafetyObservations(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      new_safety_observations_reported
+      corrective_actions_closed
+      number_of_fire_incidents_reported
+      number_of_mock_drills_conducted
+      total_safety_observations_closed_resolved
+      total_safety_observations_reported
+      unsafe_acts_behaviour_observations_reported
+    }
+  }
+  insert_ESGSafetyObservations(
+    objects: $esgSafetyObservationsData
+    on_conflict: { constraint: ESGSafetyObservations_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      new_safety_observations_reported
+      corrective_actions_closed
+      number_of_fire_incidents_reported
+      number_of_mock_drills_conducted
+      total_safety_observations_closed_resolved
+      total_safety_observations_reported
+      unsafe_acts_behaviour_observations_reported
+    }
+  }
+}

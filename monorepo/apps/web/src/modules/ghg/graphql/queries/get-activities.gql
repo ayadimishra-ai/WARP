@@ -1,0 +1,15 @@
+query getActivities($organizationId: uuid!) @cached {
+  Activity(
+    where: {
+      OrganizationActivityMappings: {
+        organization_id: { _eq: $organizationId }
+      }
+    }
+  ) {
+    id
+    name
+    code
+    parent_code
+    metadata
+  }
+}

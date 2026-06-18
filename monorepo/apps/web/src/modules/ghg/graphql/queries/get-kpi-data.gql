@@ -1,0 +1,227 @@
+query GetKPIData($organization_id: uuid!) {
+  kpiMain: KPIMain(
+    where: { organization_id: { _eq: $organization_id } }
+    order_by: { year: asc, month: asc }
+  ) {
+    Region {
+      name
+    }
+    OrganizationAddress {
+      Address {
+        name
+        latitude
+        longitude
+        full_address
+        type
+        ownership_type
+        City {
+          name
+        }
+      }
+    }
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_uom
+    kpi_em_Total_Emission
+    kpi_em_Total_Emission_Scope1
+    kpi_em_Total_Emission_Scope2
+    kpi_em_Total_Emission_Scope3
+    kpi_em_TopEmission_Category
+    kpi_em_TopEmission_Product
+    kpi_em_CurrentEmissionIntensity_PerTonProduction
+    kpi_em_CurrentEmissionIntensity_PerEmployee
+    kpi_em_CurrentEmissionIntensity_PerProduct
+    kpi_em_Cont_TotalEmission_StreamOfWork_Upstream
+    kpi_em_Cont_TotalEmission_StreamOfWork_Operations
+    kpi_em_Cont_TotalEmission_StreamOfWork_Downstream
+    kpi_em_Cont_TotalEmission_Categories_Energy
+    kpi_em_Cont_TotalEmission_Categories_Waste
+    kpi_em_Cont_TotalEmission_Categories_Transport
+    kpi_em_Cont_TotalEmission_Categories_Material
+    kpi_em_Scope3_Cont_Upstream
+    kpi_em_Scope3_Cont_Downstream
+    timestamp
+  }
+  kpiEmissionByPowerConsumption: KPIEmissionByPowerConsumption(
+    where: { organization_id: { _eq: $organization_id } }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_PowerPurchased_RenewableSources
+    kpi_em_PowerPurchased_NonRenewableSources
+    kpi_em_TotalPowerPurchased
+    kpi_em_Emission_PowerPurchased_PPA_Renewable
+    kpi_em_PowerPurchased_PPA_NonRenewable
+    kpi_em_Emission_PowerPurchased_REC
+    kpi_em_Renewable_CaptivePower
+    kpi_em_NonRenewable_CaptivePower
+    kpi_em_CaptivePower
+    kpi_em_PowerConsumption_Scope2
+    kpi_em_PowerConsumption_Scope1
+    kpi_CaptivePower_GeneratedUnits
+    kpi_TotalPowerPurchased_GeneratedUnits
+  }
+
+  kpiEmissionByFuelConsumption: KPIEmissionByFuelConsumption(
+    where: { organization_id: { _eq: $organization_id } }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_Diesel_Consumption
+    kpi_em_Gasoline_Consumption
+    kpi_em_Biodiesel_Consumption
+    kpi_em_Ethanol_Consumption
+    kpi_em_LPG_Consumption
+    kpi_em_CNG_Consumption
+    kpi_em_GaseousNitrogen_Consumption
+    kpi_em_GaseousOxygen_Consumption
+    kpi_em_LiquidNitrogen_Consumption
+    kpi_em_CompressedAir_Consumption
+    kpi_em_Electric_Consumption
+    kpi_em_JetFuel_Consumption
+    kpi_em_SAF_Consumption
+    kpi_em_Coal_Consumption
+    kpi_em_Petcoke_Consumption
+    kpi_em_NaturalGas_Consumption
+    kpi_em_Biomass_Consumption
+    kpi_em_Bagasse_Consumption
+    kpi_em_TotalEmission_FuelConsumption
+    kpi_em_FuelConsumption_Scope1
+    kpi_em_Kerosene_Consumption
+  }
+  kpiEmissionByTransportation: KPIEmissionByTransportation(
+    where: { organization_id: { _eq: $organization_id } }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_UpstreamTransport
+    kpi_em_UpstreamTransport_Scope1
+    kpi_em_UpstreamTransport_Scope3
+    kpi_em_DownstreamTransport_Scope1
+    kpi_em_DownstreamTransport_Scope3
+    kpi_em_DownstreamTransport
+    kpi_em_EmployeeTravel
+    kpi_em_EmployeeTravel_Scope1
+    kpi_em_EmployeeTravel_Scope3
+    kpi_em_BusinessTravel
+    kpi_em_BusinessTravel_Scope3
+    kpi_em_Transport_WasteManagement
+    kpi_em_Transport_WasteManagement_Scope1
+    kpi_em_Transport_WasteManagement_Scope3
+    kpi_em_TotalEmission_Transport
+    kpi_em_Transport_Scope1
+    kpi_em_Transport_Scope3
+    kpi_em_Modes_and_Fuel_Types
+  }
+  kpiEmissionByMaterialConsumption: KPIEmissionByMaterialConsumption(
+    where: { organization_id: { _eq: $organization_id } }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_TotalEmission_MaterialProcurement
+    kpi_em_MaterialProcurement_Scope1
+    kpi_em_MaterialProcurement_Scope3
+  }
+  kpiEmissionByWasteGeneration: KPIEmissionByWasteGeneration(
+    where: { organization_id: { _eq: $organization_id } }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    WasteDisposal_ManagedBy_ThirdParty_Name
+    kpi_em_TotalEmission_WasteGeneration
+    kpi_em_WasteGeneration_Scope1
+    kpi_em_WasteGeneration_Scope3
+  }
+  kpiEmissionByMaterialConsumptionSuppliers: KPIEmissionByMaterialConsumption_Suppliers(
+    where: { organization_id: { _eq: $organization_id } }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    supplier_id
+    supplier_name
+    supplier_category
+    kpi_em_MaterialProcurement_Scope3
+    kpi_em_TansportUpstreamEmission
+  }
+  kpiEmissionByPowerConsumptionVendors: KPIEmissionByPowerConsumption_Vendors(
+    where: { organization_id: { _eq: $organization_id } }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    kpi_em_Emission_PowerPurchased_PPA_Renewable_vendor
+    kpi_em_PowerPurchased_PPA_NonRenewable_vendor
+    kpi_em_PowerPurchased_NonRenewableSources_vendor
+    kpi_em_Emission_PowerPurchased_REC_vendor
+    kpi_em_Emission_PowerPurchased_PPA_Renewable
+    kpi_em_PowerPurchased_PPA_NonRenewable
+    kpi_em_PowerPurchased_NonRenewableSources
+    kpi_em_Emission_PowerPurchased_REC
+  }
+  kpiEmissionByProducts: KPIEmissionByProducts(
+    where: { organization_id: { _eq: $organization_id } }
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    region_id
+    address_id
+    year
+    month
+    product_id
+    product_name
+    brand_id
+    brand_name
+    kpi_em_Total_Emission
+    kpi_weight
+  }
+  productionDetail: GHGProductionDetails(
+    where: {
+      OrganizationAddress: {
+        organization_id: { _eq: $organization_id }
+        Address: {
+          ownership_type: { _eq: "Contract" }
+          type: { _eq: "Manufacturing" }
+        }
+      }
+    }
+  ) {
+    TaskRequest {
+      month
+      year
+    }
+    OrganizationAddress {
+      id
+    }
+    Perc_of_Total_Prod_Represents_Prod_Of_Org_SKU
+  }
+}

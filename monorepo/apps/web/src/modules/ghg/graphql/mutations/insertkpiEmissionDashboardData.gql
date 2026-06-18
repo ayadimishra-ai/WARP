@@ -1,0 +1,260 @@
+mutation insertkpiEmissionDashboardData(
+  $kpiemissionbyfuelconsumptiondata: [KPIEmissionByFuelConsumption_insert_input!]!
+  $kpiemissionbymaterialconsumptiondata: [KPIEmissionByMaterialConsumption_insert_input!]!
+  $kpiemissionbypowerconsumptiondata: [KPIEmissionByPowerConsumption_insert_input!]!
+  $kpiemissionbytransportationdata: [KPIEmissionByTransportation_insert_input!]!
+  $kpiemissionbywastegenerationdata: [KPIEmissionByWasteGeneration_insert_input!]!
+  $kpiemissionbyproducts: [KPIEmissionByProducts_insert_input!]!
+  $kpiemissionbymaterialconsumptionsuppliers: [KPIEmissionByMaterialConsumption_Suppliers_insert_input!]!
+  $kpiemissionbypowerconsumptionvendors: [KPIEmissionByPowerConsumption_Vendors_insert_input!]!
+  $kpiEnergy: [KPIEnergy_insert_input!]!
+  $kpiWaterConsumption: [KPIWaterConsumption_insert_input!]!
+  $kpiFugitiveData: [KPIFugitiveGases_insert_input!]!
+  $kpiEmissionByCapitalGoodsSuppliers: [KPIEmissionByCapitalGoods_Suppliers_insert_input!]!
+  $deletekpiemissionbyfuelconsumptiondata: KPIEmissionByFuelConsumption_bool_exp!
+  $deletekpiemissionbymaterialconsumptiondata: KPIEmissionByMaterialConsumption_bool_exp!
+  $deletekpiemissionbypowerconsumptiondata: KPIEmissionByPowerConsumption_bool_exp!
+  $deletekpiemissionbytransportationdata: KPIEmissionByTransportation_bool_exp!
+  $deletekpiemissionbywastegenerationdata: KPIEmissionByWasteGeneration_bool_exp!
+  $deletekpiemissionbyproducts: KPIEmissionByProducts_bool_exp!
+  $deletekpiemissionbymaterialconsumptionsuppliers: KPIEmissionByMaterialConsumption_Suppliers_bool_exp!
+  $deletekpiemissionbypowerconsumptionvendors: KPIEmissionByPowerConsumption_Vendors_bool_exp!
+  $kpiwastemanagementdetails: [KPIWasteManagement_insert_input!]!
+  $deletekpiwastemanagementdetails: KPIWasteManagement_bool_exp!
+  $deleteKpiEnergy: KPIEnergy_bool_exp!
+  $deleteKpiWaterConsumption: KPIWaterConsumption_bool_exp!
+  $deleteKpiFugitiveData: KPIFugitiveGases_bool_exp!
+  $deleteKpiEmissionByCapitalGoodsSuppliers: KPIEmissionByCapitalGoods_Suppliers_bool_exp!
+  $deleteKPIEmissionByScope3: KPIEmissionByScope3_bool_exp!
+  $kpiEmissionByScope3: [KPIEmissionByScope3_insert_input!]!
+  $deleteKPIEmissionLifetimeSoldProductCategory11: KPIEmissionLifetimeSoldProductCategory11_bool_exp!
+  $kpiEmissionLifetimeSoldProductCategory11: [KPIEmissionLifetimeSoldProductCategory11_insert_input!]!
+) {
+  delete_KPIWasteManagement(where: $deletekpiwastemanagementdetails) {
+    returning {
+      id
+    }
+  }
+  insert_KPIWasteManagement(
+    objects: $kpiwastemanagementdetails
+    on_conflict: { constraint: KPIWasteManagement_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByFuelConsumption(
+    where: $deletekpiemissionbyfuelconsumptiondata
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByFuelConsumption(
+    objects: $kpiemissionbyfuelconsumptiondata
+    on_conflict: { constraint: KPIEmissionByFuelConsumption_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByMaterialConsumption(
+    where: $deletekpiemissionbymaterialconsumptiondata
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByMaterialConsumption(
+    objects: $kpiemissionbymaterialconsumptiondata
+    on_conflict: { constraint: KPIEmissionByMaterialConsumption_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByPowerConsumption(
+    where: $deletekpiemissionbypowerconsumptiondata
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByPowerConsumption(
+    objects: $kpiemissionbypowerconsumptiondata
+    on_conflict: { constraint: KPIEmissionByPowerConsumption_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByTransportation(
+    where: $deletekpiemissionbytransportationdata
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByTransportation(
+    objects: $kpiemissionbytransportationdata
+    on_conflict: { constraint: KPIEmissionByTransportation_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByWasteGeneration(
+    where: $deletekpiemissionbywastegenerationdata
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByWasteGeneration(
+    objects: $kpiemissionbywastegenerationdata
+    on_conflict: { constraint: KPIEmissionByWasteGeneration_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByProducts(where: $deletekpiemissionbyproducts) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByProducts(
+    objects: $kpiemissionbyproducts
+    on_conflict: { constraint: KPIEmissionByProducts_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByMaterialConsumption_Suppliers(
+    where: $deletekpiemissionbymaterialconsumptionsuppliers
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByMaterialConsumption_Suppliers(
+    objects: $kpiemissionbymaterialconsumptionsuppliers
+    on_conflict: { constraint: KPIEmissionByMaterialConsumption_Suppliers_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByPowerConsumption_Vendors(
+    where: $deletekpiemissionbypowerconsumptionvendors
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByPowerConsumption_Vendors(
+    objects: $kpiemissionbypowerconsumptionvendors
+    on_conflict: { constraint: KPIEmissionByPowerConsumption_Vendors_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEnergy(where: $deleteKpiEnergy) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEnergy(
+    objects: $kpiEnergy
+    on_conflict: { constraint: KPIEnergy_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIWaterConsumption(where: $deleteKpiWaterConsumption) {
+    returning {
+      id
+    }
+  }
+  insert_KPIWaterConsumption(
+    objects: $kpiWaterConsumption
+    on_conflict: { constraint: KPIWaterConsumption_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIFugitiveGases(where: $deleteKpiFugitiveData) {
+    returning {
+      id
+    }
+  }
+  insert_KPIFugitiveGases(
+    objects: $kpiFugitiveData
+    on_conflict: { constraint: KPIFigitiveGases_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByCapitalGoods_Suppliers(
+    where: $deleteKpiEmissionByCapitalGoodsSuppliers
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByCapitalGoods_Suppliers(
+    objects: $kpiEmissionByCapitalGoodsSuppliers
+    on_conflict: { constraint: KPIEmissionByCapitalGoods_Suppliers_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionByScope3(where: $deleteKPIEmissionByScope3) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionByScope3(
+    objects: $kpiEmissionByScope3
+    on_conflict: { constraint: KPIEmissionByScope3_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+  delete_KPIEmissionLifetimeSoldProductCategory11(
+    where: $deleteKPIEmissionLifetimeSoldProductCategory11
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIEmissionLifetimeSoldProductCategory11(
+    objects: $kpiEmissionLifetimeSoldProductCategory11
+    on_conflict: {
+      constraint: KPIEmissionLifetimeSoldProductCategory11_pkey
+      update_columns: [
+        kpi_em_Scope3_Category11_Fuel
+        kpi_em_Scope3_Category11_Electricity
+        kpi_em_Scope3_Category11_Refrigerant
+        kpi_em_Scope3_Category11_Total
+        updated_at
+        updated_by
+      ]
+    }
+  ) {
+    returning {
+      id
+      product_code
+      year
+      month
+      kpi_em_Scope3_Category11_Total
+    }
+  }
+}

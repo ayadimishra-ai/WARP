@@ -1,0 +1,15 @@
+query GetCompanyStatusLog($companyGuid: uuid, $excludeCreatedBy: uuid) {
+  Tbl_CompanyStatusLog(
+    where: {
+      CompanyGuid: { _eq: $companyGuid }
+      CreatedBy: { _neq: $excludeCreatedBy }
+    }
+    order_by: { CreatedDate: desc }
+    limit: 1
+  ) {
+    CompanyStatusLogGuid
+    CompanyGuid
+    Comment
+    CreatedBy
+  }
+}

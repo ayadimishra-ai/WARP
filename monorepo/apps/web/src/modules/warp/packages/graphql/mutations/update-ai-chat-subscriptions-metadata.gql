@@ -1,0 +1,13 @@
+mutation UpdateSubscriptionMetadata($id: uuid!, $metadata: jsonb!) {
+  update_AIChatSubscription(
+    where: {id: {_eq: $id}}, 
+    _set: {metadata: $metadata}
+  ) {
+    affected_rows
+    returning {
+      id
+      metadata
+      updatedAt
+    }
+  }
+}

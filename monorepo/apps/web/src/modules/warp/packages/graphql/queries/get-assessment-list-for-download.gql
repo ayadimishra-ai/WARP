@@ -1,0 +1,164 @@
+query getAssessmentListForDownload(
+  $companyId: uuid
+  $where2: AddressMapping_bool_exp!
+  $userId: uuid
+  $statusWhere: FormInvitation_bool_exp!
+) {
+  CompanyForm(where: { companyId: { _eq: $companyId } }) {
+    formId
+    Form {
+      GroupForms {
+        formId
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  FormInvitation(where: $statusWhere, order_by: { updated_at: desc }) {
+    id
+    email
+    interimCheck
+    ValidationWarningLogs_aggregate(
+      where: { IsActive: { _eq: true }, Logtype: { _eq: "invitation" } }
+    ) {
+      aggregate {
+        count
+        __typename
+      }
+      __typename
+    }
+    ParentCompanyMapping {
+      Id
+      UserId
+      ParentUserId
+      Address {
+        addressLable
+        __typename
+      }
+      User {
+        id
+        name
+        email
+        __typename
+      }
+      Company {
+        id
+        name
+        metadata
+        __typename
+      }
+      companyByParentcompanyid {
+        id
+        name
+        __typename
+      }
+      userByParentuserid {
+        id
+        name
+        email
+        __typename
+      }
+      __typename
+    }
+    Form {
+      id
+      name
+      calc
+      GroupForms {
+        groupFormId
+        formId
+        Form {
+          name
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    Company {
+      id
+      name
+      __typename
+    }
+    durationTo
+    durationFrom
+    status
+    created_at
+    updated_at
+    FormSubmissions(
+      where: { isActive: { _eq: true } }
+      order_by: { updated_at: desc }
+    ) {
+      id
+      status
+      FormResults(
+        where: {
+          _and: [
+            { questionId: { _is_null: true } }
+            { sectionId: { _is_null: true } }
+          ]
+        }
+      ) {
+        score
+        __typename
+      }
+      __typename
+      Answers(order_by: { updated_at: desc }, limit: 1) {
+        questionId
+        __typename
+      }
+      Interim_Answers(
+        where: {
+          Question: { AssesseeUserMappings: { userId: { _eq: $userId } } }
+        }
+      ) {
+        id
+        questionId
+        Interim_Recommendations {
+          id
+          status
+          __typename
+        }
+        Interim_Answer {
+          id
+          Interim_Recommendations {
+            id
+            status
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+    }
+    InvitationComments(limit: 1) {
+      content
+      created_at
+      __typename
+    }
+    __typename
+    AssesseeUserMappings {
+      id
+      formId
+      InvitationId
+      IsActive
+      __typename
+    }
+  }
+
+  AddressMapping(where: $where2) {
+    Address {
+      addressLable
+      __typename
+    }
+    __typename
+  }
+  AssesseeUserMapping(where: { _and: [{ userId: { _eq: $userId } }] }) {
+    id
+    userId
+    questionId
+    InvitationId
+    __typename
+  }
+}

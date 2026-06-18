@@ -1,0 +1,10 @@
+query getSourceDataById($sourceId: [uuid!]!) {
+  Sources(where: { id: { _in: $sourceId } }) {
+    id
+    SourceFile {
+      originalFileUrl
+      originalFileName
+      status
+    }
+  }
+}

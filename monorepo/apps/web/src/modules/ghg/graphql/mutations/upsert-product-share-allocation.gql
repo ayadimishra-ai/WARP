@@ -1,0 +1,41 @@
+mutation upsertProductShareAllocation(
+  $where: GHGProductShareAttribution_bool_exp!
+  $productShareData: [GHGProductShareAttribution_insert_input!]!
+) {
+  delete_GHGProductShareAttribution(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Buyer_Name
+      Material_Code
+      Material_Description
+      SKU_Production_Percentage
+      Rationale_For_Percentage
+      meta_data
+      created_by
+      updated_by
+    }
+  }
+  insert_GHGProductShareAttribution(
+    objects: $productShareData
+    on_conflict: { constraint: GHGProductShareAttribution_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Buyer_Name
+      Material_Code
+      Material_Description
+      SKU_Production_Percentage
+      Rationale_For_Percentage
+      meta_data
+      created_by
+      updated_by
+    }
+  }
+}

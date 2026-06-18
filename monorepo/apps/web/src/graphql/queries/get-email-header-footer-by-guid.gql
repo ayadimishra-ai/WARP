@@ -1,0 +1,6 @@
+query GetEmailHeaderFooterByGuid($emailHeaderFooterGuid: uuid!) {
+  Tbl_EmailHeaderFooter(where: {EmailHeaderFooterGUID: {_eq: $emailHeaderFooterGuid}}) {
+    EmailHeaderFooterGUID
+    HTML
+  }
+}

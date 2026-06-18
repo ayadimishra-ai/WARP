@@ -1,0 +1,7 @@
+table:
+  name: GHGEnergy_CaptivePower_NonRenewable
+  schema: public
+object_relationships:
+  - name: GHGEnergy_CaptivePower
+    using:
+      foreign_key_constraint_on: GHGEnergyConsumption_CaptivePower_id

@@ -1,0 +1,6 @@
+query GetOpsCompanyDbDetails($companyGuid: uuid!) {
+  Tbl_OPsCompanyDBDetails(where: {CompanyGuid: {_eq: $companyGuid}}) {
+    AccessTokenUrl
+    PlatformSecret
+  }
+}

@@ -1,0 +1,14 @@
+query getSupplierList($supplierId: [String!]!) {
+  OrgSupplierMaster(
+    where: {
+      client_master_id: { _in: $supplierId }
+      _and: { is_deleted: { _eq: false } }
+    }
+  ) {
+    id
+    client_master_id
+    name
+    code
+    category
+  }
+}

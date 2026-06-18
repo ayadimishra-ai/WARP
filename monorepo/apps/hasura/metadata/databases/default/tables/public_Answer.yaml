@@ -1,0 +1,28 @@
+table:
+  name: Answer
+  schema: public
+object_relationships:
+  - name: FormField
+    using:
+      foreign_key_constraint_on: formFieldId
+  - name: FormSubmission
+    using:
+      foreign_key_constraint_on: submissionId
+  - name: Question
+    using:
+      foreign_key_constraint_on: questionId
+array_relationships:
+  - name: AnswerFiles
+    using:
+      foreign_key_constraint_on:
+        column: answerId
+        table:
+          name: AnswerFile
+          schema: public
+  - name: Interim_Answers
+    using:
+      foreign_key_constraint_on:
+        column: answerId
+        table:
+          name: Interim_Answer
+          schema: public

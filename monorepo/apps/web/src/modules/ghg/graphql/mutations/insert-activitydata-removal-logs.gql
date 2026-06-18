@@ -1,0 +1,7 @@
+mutation insert_ActivityDataRemovalLogs($objects: [ActivityDataRemovalLogs_insert_input!]!) {
+  insert_ActivityDataRemovalLogs(objects: $objects) {
+    returning {
+      id
+     }
+  }
+}

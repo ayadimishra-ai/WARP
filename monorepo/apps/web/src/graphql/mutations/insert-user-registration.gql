@@ -1,0 +1,11 @@
+mutation registrationUser($input: [Tbl_Users_insert_input!]!) {
+  insert_Tbl_Users(objects: $input, on_conflict: {constraint: Tbl_Users_pkey}) {
+    affected_rows
+    returning {
+      UserGuid
+      Tbl_Companies{
+        CompanyGuid
+      }
+    }
+  }
+}

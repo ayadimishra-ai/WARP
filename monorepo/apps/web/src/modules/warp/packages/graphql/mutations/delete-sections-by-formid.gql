@@ -1,0 +1,8 @@
+mutation DeleteSectionsByFormId($formid: uuid!) {
+  delete_Section(where: { formId: { _eq: $formid } }) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+}

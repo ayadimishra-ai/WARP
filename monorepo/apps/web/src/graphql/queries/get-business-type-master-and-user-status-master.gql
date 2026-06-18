@@ -1,0 +1,7 @@
+query GetBusinessTypeMasterAndUserStatusMaster($BusinessTypeGuid: uuid) {
+  Tbl_BusinessTypeMaster(where: {BusinessTypeGuid: {_eq: $BusinessTypeGuid}}) {
+    BusinessTypeGuid
+    BusinessTypeName
+    Image
+  }
+}

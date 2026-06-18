@@ -1,0 +1,93 @@
+.textInput,.SelectInput {
+  font-size: 12px;
+  color    : #1a1a1a;
+
+  &::placeholder {
+    font-size: 12px;
+    color    : #666666;
+  }
+
+  &:focus {
+    outline: none !important;
+  }
+}
+
+.textInput.error,.SelectInput.error {
+  color: red;
+
+  &::placeholder {
+    color: red;
+  }
+}
+
+.datePickerInputPlaceholder {
+  font-size: 12px;
+  color    : #666666;
+}
+
+.labelStyle {
+  font-size  : 14px !important;
+  line-height: normal;
+}
+
+.RadioLabel,
+.CheckboxLabel {
+  font-size   : 12px;
+  color       : #666666;
+  padding-left: 8px;
+}
+
+.RadioIcon input {
+  border-width: 0.1rem;
+}
+
+.multiSelectInput {
+  font-size: 12px;
+  color    : #1a1a1a;
+  height   : 32px;
+
+  &::placeholder {
+    font-size: 12px;
+    color    : #666666;
+  }
+
+  &:focus {
+    outline: none !important;
+  }
+}
+
+/* styles for dropdown */
+.selectDropdown {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.selectOption {
+  height   : auto !important;
+  font-size: 14px;
+}
+
+.description {
+  font-size: 12px;
+  color    : #1a1a1a;
+}
+
+.SelectError,
+.numberError,
+.checkBoxLabel {
+  font-size: 12px;
+}
+
+.RadioError,
+.checkBoxError {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.formHeaderFontSize {
+  font-size: 18px !important;
+}
+
+.SelectValuepill {
+  font-size: 14px !important;
+}

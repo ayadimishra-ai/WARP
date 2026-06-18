@@ -1,0 +1,13 @@
+query getActivitybycode($activitycode: [String!]!) {
+  Activity(
+    where: {
+      code: { _in: $activitycode }
+      _and: { is_deleted: { _eq: false } }
+    }
+  ) {
+    id
+    code
+    name
+    metadata
+  }
+}

@@ -1,0 +1,39 @@
+query GetDocumentLogsWithSources(
+  $where: DocumentLogs_bool_exp!
+  $limit: Int
+  $offset: Int
+  $order_by: [DocumentLogs_order_by!]
+) {
+  DocumentLogs(
+    where: $where
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    id
+    companyId
+    fileUrl
+    originalFileName
+    status
+    createdAt
+    createdBy
+    fileName
+    fileSize
+    expiryDate
+
+    documentLogsSources {
+      id
+      formInvitationId
+      documentLogsId
+      type
+      url
+      created_at
+    }
+
+    AISuggestedDocuments {
+      title
+      isOther
+      id
+    }
+  }
+}

@@ -1,0 +1,11 @@
+query getSkuDetailsFromBySkucodeOrClientMasterId(
+  $where: OrgSKUMaster_bool_exp!
+) {
+  OrgSKUMaster(where: $where) {
+    id
+    name
+    client_master_id
+    code
+    weight
+  }
+}

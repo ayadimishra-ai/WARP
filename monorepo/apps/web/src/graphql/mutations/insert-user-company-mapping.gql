@@ -1,0 +1,10 @@
+mutation createUserCompanyMapping($object: [Tbl_UserCompanyMapping_insert_input!]!) {
+  insert_Tbl_UserCompanyMapping(objects: $object) {
+    affected_rows
+    returning {
+      UserCompanyMappingGuid
+      UserGuid
+      CompanyGuid
+    }
+  }
+}

@@ -1,0 +1,7 @@
+query GetGlobalMasterDatabyCityStateCountry($type: String) {
+  GlobalMaster(where: { type: { _eq: $type } }) {
+    id
+    type
+    data
+  }
+}

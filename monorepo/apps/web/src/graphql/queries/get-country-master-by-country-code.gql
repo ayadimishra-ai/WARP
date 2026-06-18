@@ -1,0 +1,7 @@
+query GetCountryMasterByCountryCode($countryCode: String!) {
+  Tbl_CountryMaster(where: { CountryCode: { _eq: $countryCode } }) {
+   	CountryGuid
+    CountryName
+    CountryCode
+  }
+}

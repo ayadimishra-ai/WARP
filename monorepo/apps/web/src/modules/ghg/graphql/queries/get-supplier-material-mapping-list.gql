@@ -1,0 +1,44 @@
+query getSupplierMaterialMappingList(
+  $where: SupplierMaterialMapping_bool_exp
+  $order_by: [SupplierMaterialMapping_order_by!]
+  $limit: Int
+  $offset: Int
+) {
+  SupplierMaterialMapping(
+    where: $where
+    order_by: $order_by
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    organization_id
+    supplier_address_mapping_id
+    org_material_master_id
+    From_Year
+    From_Month
+    To_Year
+    To_Month
+    meta_data
+    created_at
+    updated_at
+    SupplierAddressMapping {
+      id
+      OrgSupplierMaster {
+        id
+        name
+        code
+      }
+    }
+    OrgMaterialMaster {
+      id
+      name
+      code
+      type
+    }
+  }
+  SupplierMaterialMapping_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}

@@ -1,0 +1,21 @@
+mutation upsertUomConversionMaster($input: UomConversionMaster_insert_input!) {
+  insert_UomConversionMaster(
+    objects: [$input]
+    on_conflict: {
+      constraint: UomConversionMaster_pkey
+      update_columns: [from_key, to_key, factor, metadata, updated_by]
+    }
+  ) {
+    returning {
+      id
+      from_key
+      to_key
+      factor
+      metadata
+      created_at
+      created_by
+      updated_at
+      updated_by
+    }
+  }
+}

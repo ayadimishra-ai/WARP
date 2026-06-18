@@ -1,0 +1,8 @@
+query GetRoleByName($roleName: String!) {
+  Tbl_Roles(where: {RoleName: {_eq: $roleName}}) {
+		RoleGuid
+    RoleName
+    Priority
+    ParentRoleGuid
+  }
+}

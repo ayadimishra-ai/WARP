@@ -1,0 +1,5 @@
+ mutation DeleteKPIEmissionByFuelConsumptionbycondition($criteria: [KPIEmissionByFuelConsumption_bool_exp!]!) {
+          delete_KPIEmissionByFuelConsumption(where: { _or: $criteria }) {
+            affected_rows
+          }
+        }

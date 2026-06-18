@@ -1,0 +1,48 @@
+@media print {
+    .pdfClick {
+        display: none !important
+    }
+
+    nav,
+    header,
+    .footer,
+    .esg_header_right span,
+    /* .pdfClick, */
+    .breadtitle_wrap {
+        visibility: hidden;
+    }
+
+    /* #pdf-view iframe,
+    #pdf-view .first_class,
+    #pdf-view .printChart {
+        width: 10000px;
+    } */
+    html,
+    body,
+    div,
+    iframe {
+        width: 130%;
+        text-align: left;
+    }
+
+    .esg_report_container>div>div,
+    .top_esg_report {
+        margin-bottom: 0px;
+        flex-direction: column !important;
+    }
+
+    .top_esg_report {
+        justify-content: flex-start !important;
+    }
+
+    @page {
+        size: A3 landscape;
+        margin: 0;
+    }
+}
+
+@media (min-width:1280px) {
+    body.grid_6>div {
+        width: 65% !important
+    }
+}

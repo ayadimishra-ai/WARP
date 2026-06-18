@@ -1,0 +1,8 @@
+query GetGlobalSettingByKey($settingsKey: String!) {
+  Tbl_GlobalSettings(where: {SettingsKey: {_eq: $settingsKey}}) {
+		GlobalSettingsGuid
+    SettingsKey
+    SettingsValue
+    IsSuperAdminSetting
+  }
+}

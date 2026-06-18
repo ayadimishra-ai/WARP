@@ -1,0 +1,107 @@
+query getActivityDataEnergyGridPowerPaginated(
+  $organization_address_ids: [uuid!]!
+  $limit: Int
+  $offset: Int
+  $order_by: [GHGEnergyConsumption_GridPower_order_by!]
+  $activityFilter: GHGEnergyConsumption_GridPower_bool_exp = {}
+  $uploadTypeFilter: GHGEnergyConsumption_GridPower_bool_exp = {}
+) {
+  GHGEnergyConsumption_GridPower(
+    where: {
+      TaskRequest: {
+        organization_address_id: { _in: $organization_address_ids }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter, $uploadTypeFilter]
+    }
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    id
+    grid_provider: Name_of_Distribution_Company
+    grid_kwh: PowerConsumed_through_Grid_Kwh
+    ppa_renewable_provider: NameOfCompany_PPA_Renewable
+    ppa_renewable_kwh: PowerPurchased_through_PPA_Kwh_Renewable
+    ppa_nonrenewable_provider: NameOfCompany_PPA_NonRenewable
+    ppa_nonrenewable_kwh: PowerPurchased_through_PPA_Kwh_NonRenewable
+    rec_provider: Name_of_company_for_REC
+    rec_kwh: PowerPurchased_through_REC_Kwh
+    status
+    task_request_id
+    created_by
+    metadata
+    updated_at
+    CreatedByUser: AppUser {
+      id
+      name
+      email
+    }
+    UpdatedByUser: appUserByUpdatedBy {
+      id
+      name
+      email
+    }
+    TaskRequest {
+      id
+      month
+      year
+      organization_address_id
+      OrganizationAddress {
+        Address {
+          name
+        }
+      }
+    }
+  }
+  totalCount: GHGEnergyConsumption_GridPower(
+    where: {
+      TaskRequest: {
+        organization_address_id: { _in: $organization_address_ids }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter, $uploadTypeFilter]
+    }
+  ) {
+    id
+  }
+  allCount: GHGEnergyConsumption_GridPower(
+    where: {
+      TaskRequest: {
+        organization_address_id: { _in: $organization_address_ids }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter]
+    }
+  ) {
+    id
+  }
+  aiUploadedCount: GHGEnergyConsumption_GridPower(
+    where: {
+      TaskRequest: {
+        organization_address_id: { _in: $organization_address_ids }
+      }
+      id: { _is_null: false }
+      metadata: { _contains: { AIExtractedData: {} } }
+      _and: [$activityFilter]
+    }
+  ) {
+    id
+  }
+  manualEntryCount: GHGEnergyConsumption_GridPower(
+    where: {
+      TaskRequest: {
+        organization_address_id: { _in: $organization_address_ids }
+      }
+      id: { _is_null: false }
+      _or: [
+        { metadata: { _is_null: true } }
+        { metadata: { _eq: "{}" } }
+        { _not: { metadata: { _contains: { AIExtractedData: {} } } } }
+      ]
+      _and: [$activityFilter]
+    }
+  ) {
+    id
+  }
+}

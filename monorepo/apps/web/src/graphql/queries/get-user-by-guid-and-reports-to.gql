@@ -1,0 +1,12 @@
+query GetUserByGuidAndReportsTo($userGuid: uuid!) {
+  Tbl_Users(where: {_and: [
+    {UserGuid: {_eq: $userGuid}},
+    {ReportsTo: {_is_null: true}}
+  ]}) {
+    EmailId
+    Password
+    FirstName
+    UserGuid
+    MobileNumber
+  }
+}

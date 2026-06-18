@@ -1,0 +1,15 @@
+mutation DeleteMeterOrganizationAddressMapping($fileDataIds: [uuid!]!) {
+          delete_MeterOrganizationAddressMapping(
+            where: {
+              MeterData: {
+                filedata_id: {_in: $fileDataIds}
+              }
+            }
+          ) {
+            affected_rows
+            returning {
+              id
+              meter_number
+            }
+          }
+        }

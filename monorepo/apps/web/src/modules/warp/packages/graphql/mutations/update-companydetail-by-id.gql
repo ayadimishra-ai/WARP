@@ -1,0 +1,17 @@
+mutation updateCompanyDetailById($input: [Company_updates!]!) {
+  update_Company_many(updates: $input) {
+    affected_rows
+    returning {
+      id
+      name
+      primaryContact
+      details
+      parentCompanyId
+      platformId
+      created_by
+      updated_by
+      country
+      isActive
+    }
+  }
+}

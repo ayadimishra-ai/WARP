@@ -1,0 +1,74 @@
+query checkMaterialUsedInActivities(
+$material_codes: [String!]!,
+$material_codes_upper: [String!]!,
+$material_codes_lower: [String!]!, 
+$org_address_ids: [uuid!]!) {
+  # Check if material is used in any activity data
+  # This will help determine update restrictions
+  
+  # Check in Material Procurement (purchase data)
+  MaterialProcurement: GHGMaterialProcurement(
+    where: {
+      _or: [
+        { Material_Code: { _in: $material_codes } }
+        { Material_Code: { _in: $material_codes_upper } }
+        { Material_Code: { _in: $material_codes_lower } }
+      ]
+      organization_address_id: { _in: $org_address_ids }
+    }
+    distinct_on: Material_Code
+  ) {
+    Material_Code
+    organization_address_id
+  }
+  
+  # Check in Capital Goods
+  CapitalGoods: GHGCapital_Goods(
+    where: {
+       _or: [
+        { Material_Code: { _in: $material_codes } }
+        { Material_Code: { _in: $material_codes_upper } }
+        { Material_Code: { _in: $material_codes_lower } }
+      ]
+      organization_address_id: { _in: $org_address_ids }
+    }
+    distinct_on: Material_Code
+  ) {
+    Material_Code
+    Quantity_Procured_uom
+    organization_address_id
+  }
+  
+  # Check in Upstream Transport
+  UpstreamTransport: GHGTransport_Upstream(
+    where: {
+      _or: [
+        { Material_ID: { _in: $material_codes } }
+        { Material_ID: { _in: $material_codes_upper } }
+        { Material_ID: { _in: $material_codes_lower } }
+      ]
+      organization_address_id: { _in: $org_address_ids }
+    }
+    distinct_on: Material_ID
+  ) {
+    Material_ID
+    organization_address_id
+  }
+  
+  # Check in Product Share Attribution
+  ProductShare: GHGProductShareAttribution(
+    where: {
+      _or: [
+        { Material_Code: { _in: $material_codes } }
+        { Material_Code: { _in: $material_codes_upper } }
+        { Material_Code: { _in: $material_codes_lower } }
+      ]
+      organization_address_id: { _in: $org_address_ids }
+      is_deleted: { _eq: false }
+    }
+    distinct_on: Material_Code
+  ) {
+    Material_Code
+    organization_address_id
+  }
+}

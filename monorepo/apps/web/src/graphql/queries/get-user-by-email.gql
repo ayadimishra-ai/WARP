@@ -1,0 +1,42 @@
+query GetUserByEmail($email: String) {
+  Tbl_Users(
+    where: {
+      _and: [
+        { EmailId: { _ilike: $email } }
+        { IsActive: { _eq: true } }
+        { IsDeleted: { _eq: false } }
+      ]
+    }
+  ) {
+    UserGuid
+    EmailId
+    MobileNumber
+    FirstName
+    LastName
+    CpanelUserId
+    OPSUserId
+    IsVerified
+    Password
+    CreatedDate
+    isResetPasswordDone
+    Tbl_UserCompanyMappings {
+      CompanyGuid
+      Tbl_Company {
+        Tbl_CompanyRoleMappings {
+          RoleGuid
+          StatusGuid
+          Tbl_CompanyStatusMaster {
+            CompanyStatusGuid
+            CompanyStatusName
+          }
+        }
+      }
+    }
+    Tbl_UserRoleMappings: Tbl_UserRoleMappings_userGuid {
+      RoleGuid
+      Tbl_Role {
+        RoleName
+      }
+    }
+  }
+}

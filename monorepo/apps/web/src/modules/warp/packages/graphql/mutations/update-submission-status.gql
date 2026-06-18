@@ -1,0 +1,13 @@
+mutation updateSubmissionStatus(
+  $submissionId: uuid!
+  $submissionStatus: String!
+) {
+  update_FormSubmission_by_pk(
+    pk_columns: { id: $submissionId }
+    _set: { status: $submissionStatus }
+  ) {
+    id
+    invitationId
+    status
+  }
+}

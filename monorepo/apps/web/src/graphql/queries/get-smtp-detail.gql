@@ -1,0 +1,6 @@
+query GetSMTPDetail {
+  Tbl_GlobalSettings(where: {SettingsKey: {_like: "%SMTP%"}}) {
+    SettingsKey
+    SettingsValue
+  }
+}

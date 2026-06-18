@@ -1,0 +1,13 @@
+query GetBuyerSupplierMappingBySupplierOrgId($organizationId: uuid!) {
+  BuyerSupplierMappings(where: { supplierOrgid: { _eq: $organizationId } }) {
+    id
+    buyerOrgid
+    supplierOrgid
+    metadata
+    supplier_id
+    Organization {
+      id
+      name
+    }
+  }
+}

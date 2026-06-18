@@ -1,0 +1,9 @@
+query getAppGlobalMasterDetailsByType($key: [String!]!) {
+  AppGlobalMaster(where: { key: { _in: $key }, is_deleted: { _eq: false } }) {
+    key
+    data
+    metadata
+    sub_type
+    type
+  }
+}

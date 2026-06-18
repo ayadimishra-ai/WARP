@@ -1,0 +1,36 @@
+mutation DeleteAddressById($id: uuid!, $is_deleted: Boolean) {
+  update_Addresses(where: { id: { _eq: $id } }, _set: { is_deleted: true }) {
+    affected_rows
+    returning {
+      id
+      name
+      code
+      full_address
+      pincode
+      country_id
+      state_id
+      city_id
+      type
+      metadata
+      ownership_type
+      facility_type
+      updated_at
+      updated_by
+      is_deleted
+    }
+  }
+}
+
+mutation DeleteOrganizationAddressById($id: uuid!, $is_deleted: Boolean) {
+  update_OrganizationAddress(
+    where: { address_id: { _eq: $id } }
+    _set: { is_deleted: true }
+  ) {
+    affected_rows
+    returning {
+      id
+
+      is_deleted
+    }
+  }
+}

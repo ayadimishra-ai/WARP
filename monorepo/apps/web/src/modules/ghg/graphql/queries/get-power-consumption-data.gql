@@ -1,0 +1,109 @@
+query getPowerConsumptionData($task_request_id: [uuid!]) {
+  GHGEnergyConsumption_GridPower(
+    where: { task_request_id: { _in: $task_request_id } }
+  ) {
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+    TaskRequest {
+      year
+      month
+    }
+    id
+    organization_address_id
+    task_request_id
+    activity_task_request_id
+    Name_of_Distribution_Company
+    PowerConsumed_through_Grid_Kwh
+    PowerPurchased_through_PPA_Kwh_Renewable
+    NameOfCompany_PPA_Renewable
+    PowerPurchased_through_PPA_Kwh_NonRenewable
+    NameOfCompany_PPA_NonRenewable
+    PowerPurchased_through_REC_Kwh
+    Name_of_company_for_REC
+    supporting_docs
+    kpi_em_Emission_PowerPurchased_PPA_Renewable
+    kpi_emf_Emission_PowerPurchased_PPA_Renewable
+    kpi_em_Emission_PowerPurchased_REC
+    kpi_emf_Emission_PowerPurchased_REC
+    kpi_em_Emission_PowerPurchased_RenewableSources
+    kpi_emf_Emission_PowerPurchased_RenewableSources
+    kpi_em_Emission_PowerPurchased_NonRenewableSources
+    kpi_emf_Emission_PowerPurchased_NonRenewableSources
+    kpi_em_Emission_TotalPowerPurchased
+    kpi_em_Emission_PowerPurchased_PPA_NonRenewable
+    kpi_emf_Emission_PowerPurchased_PPA_NonRenewable
+    created_at
+    updated_at
+    created_by
+    updated_by
+    metadata
+  }
+  GHGEnergy_CaptivePower(
+    where: { task_request_id: { _in: $task_request_id } }
+  ) {
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+    TaskRequest {
+      year
+      month
+    }
+    GHGEnergy_CaptivePower_NonRenewables {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      Type_of_Fuel_Used
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      Quality_of_fuel
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+      created_at
+      updated_at
+      created_by
+      updated_by
+    }
+    GHGEnergy_CaptivePower_Renewable_Fuels {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      Type_of_Fuel_Used
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      Quality_of_fuel
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+      created_at
+      updated_at
+      created_by
+      updated_by
+    }
+    GHGEnergy_CaptivePower_Renewables {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      Type_of_Technology_Used
+      Year_of_installation
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+      created_at
+      updated_at
+      created_by
+      updated_by
+    }
+  }
+}

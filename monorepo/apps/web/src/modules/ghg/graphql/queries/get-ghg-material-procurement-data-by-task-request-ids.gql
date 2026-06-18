@@ -1,0 +1,31 @@
+query getGHGMaterialProcurementDataByTaskRequestIds($taskRequestIds: [uuid!]!) {
+  GHGMaterialProcurement(where: { task_request_id: { _in: $taskRequestIds } }) {
+    id
+    activity_task_request_id
+    organization_address_id
+    task_request_id
+    Material_Code
+    Supplier_Code
+    Material_Quantity_Procured
+    Material_Quantity_Procured_uom
+    kpi_em_EmissionBy_MaterialProcured
+    kpi_emf_EmissionBy_MaterialProcured
+    created_at
+    updated_at
+    created_by
+    updated_by
+    supporting_docs
+    TaskRequest {
+      month
+      year
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+mutation UpdateParentCompanyMappingbyCompanyId($companyId: uuid!) {
+  update_ParentCompanyMapping(
+    _set: { isActive: false }
+    where: {
+      _and: [
+        { CompanyId: { _eq: $companyId } }
+        { ParentCompanyId: { _is_null: true } }
+      ]
+    }
+  ) {
+    affected_rows
+  }
+}

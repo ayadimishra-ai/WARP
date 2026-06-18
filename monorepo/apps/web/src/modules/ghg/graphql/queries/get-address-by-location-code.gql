@@ -1,0 +1,35 @@
+
+query GetAddressesByLocationCode(
+  $locationCode: String
+  $organizationId: uuid
+) {
+  OrganizationAddress(
+    where: {
+      organization_id: { _eq: $organizationId }
+      Address: { code: { _like: $locationCode } }
+    }
+  ) {
+    Address {
+      is_deleted
+      metadata
+      latitude
+      longitude
+      client_master_id
+      code
+      facility_type
+      full_address
+      name
+      ownership_type
+      pincode
+      type
+      created_at
+      updated_at
+      city_id
+      country_id
+      created_by
+      id
+      state_id
+      updated_by
+    }
+  }
+}

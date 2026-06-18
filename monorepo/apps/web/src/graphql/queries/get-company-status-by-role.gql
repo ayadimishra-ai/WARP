@@ -1,0 +1,25 @@
+query GetCompanyStatusesByRole($roleGuid: uuid!) {
+  createdStatus: Tbl_CompanyStatusMaster(
+    where: {
+      RoleGuid: { _eq: $roleGuid },
+      CompanyStatusName: { _eq: "Created" }
+    },
+    limit: 1
+  ) {
+    CompanyStatusGuid
+    CompanyStatusName
+    RoleGuid
+  }
+  
+  registeredStatus: Tbl_CompanyStatusMaster(
+    where: {
+      RoleGuid: { _eq: $roleGuid },
+      CompanyStatusName: { _eq: "Registered" }
+    },
+    limit: 1
+  ) {
+    CompanyStatusGuid
+    CompanyStatusName
+    RoleGuid
+  }
+}

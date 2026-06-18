@@ -1,0 +1,20 @@
+query getCountIfLocationIsMappedOrIfItsDataUploaded($address_id: uuid!) {
+  Addresses(where: { id: { _eq: $address_id } }) {
+    id
+    OrganizationAddresses {
+      id
+      UserOrganizationAddressMappings_aggregate(
+        where: { AppUser: { role: { _eq: "LocationExecutive" } } }
+      ) {
+        aggregate {
+          count
+        }
+      }
+      TaskRequests_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+}

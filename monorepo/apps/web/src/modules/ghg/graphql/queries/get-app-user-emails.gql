@@ -1,0 +1,15 @@
+query getAppUserEmails($organizationId: uuid!) {
+  AppUser(
+    where: {
+      organization_id: { _eq: $organizationId }
+      is_deleted: { _eq: false }
+    }
+  ) {
+    id
+    email
+    organization_id
+    role
+    name
+    created_at
+  }
+}

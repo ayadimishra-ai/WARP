@@ -1,0 +1,7 @@
+query getCityData($where: City_bool_exp!) {
+  City(where: $where) {
+    id
+    name
+    code
+  }
+}

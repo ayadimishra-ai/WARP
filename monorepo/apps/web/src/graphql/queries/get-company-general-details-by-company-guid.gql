@@ -1,0 +1,9 @@
+query GetCompanyGeneralDetailsByCompanyGuid($companyGuid: uuid!) {
+  Tbl_CompanyGeneralDetails(where: {CompanyGuid: {_eq: $companyGuid}}) {
+    CompanyGuid
+    GSTNumber
+    CompanyRegistrationNumber
+    YearEstablished
+    LegalStructureGuid
+  }
+}

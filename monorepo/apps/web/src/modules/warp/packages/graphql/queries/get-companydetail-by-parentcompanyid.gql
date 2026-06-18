@@ -1,0 +1,21 @@
+query getCompanyDetailByparentcompanyid(
+  $companyId: uuid!
+  $parentCompanyId: uuid!
+) {
+  Company(where: { id: { _eq: $companyId }, isActive: { _eq: true } }) {
+    id
+    name
+    primaryContact
+    ParentCompanyMappings(
+      where: {
+        isActive: { _eq: true }
+        ParentCompanyId: { _eq: $parentCompanyId }
+      }
+    ) {
+      ParentCompanyId
+    }
+    details
+    platformId
+    metadata
+  }
+}

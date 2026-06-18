@@ -1,0 +1,9 @@
+query GetPageByKey($pageKey: String!) {
+  Tbl_Pages(where: {PageKey: {_eq: $pageKey}}) {
+    PageGuid
+    PageKey
+    URL
+    PlatformType
+    ParentPageGuid
+  }
+}

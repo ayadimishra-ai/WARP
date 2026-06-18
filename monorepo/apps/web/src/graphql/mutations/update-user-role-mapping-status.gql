@@ -1,0 +1,10 @@
+mutation updateUserRoleMappingStatus($userGuid: uuid!, $statusGuid: uuid!) {
+  update_Tbl_UserRoleMapping(
+    _set: { StatusGuid: $statusGuid }
+    where: { UserGuid: { _eq: $userGuid } }
+  ) {
+    returning {
+      UserGuid
+    }
+  }
+}

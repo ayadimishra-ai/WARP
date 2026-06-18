@@ -1,0 +1,12 @@
+query getSkuDetailsByProductionMonthAndYear($where: TaskRequest_bool_exp!) {
+  TaskRequest(where: $where) {
+    month
+    year
+    id
+    GHGProductionDetails {
+      id
+      SKUs_Manufactured
+      SKU_ID
+    }
+  }
+}

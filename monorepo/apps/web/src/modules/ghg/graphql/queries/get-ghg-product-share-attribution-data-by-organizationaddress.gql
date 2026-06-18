@@ -1,0 +1,18 @@
+query getGHGProductShareAttributionDataByOrganizationAddress(
+  $organizationAddressId: uuid!
+) {
+  GHGProductShareAttribution(
+    where: { organization_address_id: { _eq: $organizationAddressId } }
+    order_by: { Material_Code: asc }
+  ) {
+    task_request_id
+    organization_address_id
+    Material_Code
+    Material_Name
+    TaskRequest {
+      id
+      month
+      year
+    }
+  }
+}

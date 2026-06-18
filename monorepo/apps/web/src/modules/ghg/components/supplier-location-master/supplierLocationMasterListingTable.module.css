@@ -1,0 +1,40 @@
+.SupplierLocationMasterListingStyle {
+  padding: 0 0 60px 0 !important;
+}
+
+.SupplierLocationMasterListingStyle table {
+  box-shadow:
+    rgba(159, 162, 191, 0.18) 0px 9px 16px,
+    rgba(159, 162, 191, 0.32) 0px 2px 2px !important;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+.SupplierLocationMasterListingStyle table thead th {
+  background-color: #003b52 !important;
+  color: #fff !important;
+}
+
+.SupplierLocationMasterListingStyle
+  :global(.mantine-Pagination-control[data-active="true"]) {
+  background-color: #005c81 !important;
+  color: #fff !important;
+  border-color: #005c81 !important;
+}
+
+.SupplierLocationMasterListingStyle
+  :global(.mantine-Pagination-control[data-active="true"]):hover {
+  background-color: #004a6b !important;
+  border-color: #004a6b !important;
+}
+
+.SupplierLocationMasterListingStyle :global(.mantine-Pagination-control) {
+  color: #666666 !important;
+  border-color: #ddd !important;
+}
+
+.SupplierLocationMasterListingStyle
+  :global(.mantine-Pagination-control):hover:not([data-active="true"]) {
+  background-color: #f8f9fa !important;
+  color: #005c81 !important;
+}

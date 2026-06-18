@@ -1,0 +1,15 @@
+mutation insertSupplierMaterialMapping(
+  $object: SupplierMaterialMapping_insert_input!
+) {
+  insert_SupplierMaterialMapping_one(object: $object) {
+    id
+    organization_id
+    supplier_address_mapping_id
+    org_material_master_id
+    From_Year
+    From_Month
+    To_Year
+    To_Month
+    created_at
+  }
+}

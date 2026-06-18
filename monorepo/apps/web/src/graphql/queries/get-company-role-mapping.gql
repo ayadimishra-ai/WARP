@@ -1,0 +1,30 @@
+query GetCompanyRoleMapping($companyGuid: uuid!) {
+  Tbl_CompanyRoleMapping(where: {CompanyGuid: {_eq: $companyGuid}}) {
+    CompanyGuid
+    StatusGuid
+    Tbl_Role {
+      RoleGuid
+      RoleName
+    }
+    Tbl_CompanyStatusMaster {
+      RoleGuid
+      CompanyStatusName
+      CompanyStatusGuid
+    }
+  }
+  Tbl_UserCompanyMapping(where: {CompanyGuid: {_eq: $companyGuid}}) {
+    CompanyGuid
+    UserCompanyMappingGuid
+    UserGuid
+    Tbl_User {
+      EmailId
+      UserGuid
+      Tbl_UserRoleMappings:Tbl_UserRoleMappings_userGuid  {
+        Tbl_Role {
+          RoleGuid
+          RoleName
+        }
+      }
+    }
+  }
+}

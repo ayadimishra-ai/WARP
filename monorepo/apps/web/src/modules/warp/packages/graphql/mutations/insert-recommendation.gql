@@ -1,0 +1,13 @@
+mutation insertRecommendation(
+  $recommendationsData: [Interim_Recommendation_insert_input!]!
+) {
+  insert_Interim_Recommendation(objects: $recommendationsData) {
+    affected_rows
+    returning {
+      id
+      interim_answer_id
+      recommendations
+      expectedDate
+    }
+  }
+}

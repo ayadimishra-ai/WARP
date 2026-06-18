@@ -1,0 +1,22 @@
+table:
+  name: InvitationComment
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: FormField
+    using:
+      foreign_key_constraint_on: formFieldId
+  - name: FormInvitation
+    using:
+      foreign_key_constraint_on: invitationId
+  - name: Organization
+    using:
+      foreign_key_constraint_on: companyId
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+  - name: appUserByUserid
+    using:
+      foreign_key_constraint_on: userId

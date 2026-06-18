@@ -1,0 +1,8 @@
+mutation DeleteAddressDetails($id: uuid, $IsActive: Boolean) {
+  update_Addresses(_set: { IsActive: $IsActive }, where: { id: { _eq: $id } }) {
+    returning {
+      id
+      IsActive
+    }
+  }
+}

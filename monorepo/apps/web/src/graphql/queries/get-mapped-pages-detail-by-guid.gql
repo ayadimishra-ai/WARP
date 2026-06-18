@@ -1,0 +1,16 @@
+query GetMappedPagesDetailByGuid($userGuid: uuid!) {
+  Tbl_Pages(
+    where: {
+      IsActive: { _eq: true },
+      Tbl_Permissions: {
+        Tbl_UserPermissions: {
+          UserGuid: { _eq: $userGuid }
+        }
+      }
+    }
+  ) {
+    PageGuid
+    PageKey
+    URL
+  }
+}

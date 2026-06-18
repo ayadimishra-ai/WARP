@@ -1,0 +1,11 @@
+query GetInviters {
+  User(where: { UserRoles: { roleName: { _eq: "Inviter" } } }) {
+    id
+    name
+    email
+    Company {
+      id
+      name
+    }
+  }
+}

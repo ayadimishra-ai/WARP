@@ -1,0 +1,13 @@
+query getUomConversionFactors @cached {
+  UomConversionMaster(order_by: { from_key: asc, to_key: asc }) {
+    id
+    from_key
+    to_key
+    factor
+    metadata
+    created_at
+    created_by
+    updated_at
+    updated_by
+  }
+}

@@ -1,0 +1,13 @@
+mutation InsertTaskRequest($input: [TaskRequest_insert_input!]!) {
+  insert_TaskRequest(objects: $input) {
+    returning {
+      id
+      organization_address_id
+      month
+      year
+      status
+      metadata
+      is_deleted
+    }
+  }
+}

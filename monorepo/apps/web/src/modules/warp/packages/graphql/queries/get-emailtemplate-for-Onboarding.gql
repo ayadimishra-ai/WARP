@@ -1,0 +1,62 @@
+query getEmailtemplateForOnboarding(
+  $invitationId: [uuid!]
+  $emailType: [String!]!
+) {
+  FormInvitation(where: { id: { _in: $invitationId } }) {
+    id
+    created_by
+    email
+    companyId
+    ParentUser {
+      name
+      email
+      isEmailSubscribed
+      UserRoles {
+        roleName
+      }
+      Company {
+        name
+        primaryContact
+      }
+    }
+    Company {
+      name
+      primaryContact
+      platformId
+      Platform {
+        origin
+        EmailTemplates(where: { _and: { type: { _in: $emailType } } }) {
+          type
+          ccEmails
+          subject
+          template
+          companyId
+          formId
+          bccEmails
+        }
+        EmailConfigs {
+          fromEmail
+          host
+          port
+          isSecure
+          user
+          password
+        }
+      }
+      Users {
+        id
+        email
+        isEmailSubscribed
+        name
+      }
+    }
+    Form {
+      id
+      title
+    }
+    companyByParentcompanyid {
+      name
+      metadata
+    }
+  }
+}

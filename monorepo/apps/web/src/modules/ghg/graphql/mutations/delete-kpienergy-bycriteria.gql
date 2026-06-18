@@ -1,0 +1,5 @@
+ mutation DeleteKPIEnergybycondition($criteria: [KPIEnergy_bool_exp!]!) {
+          delete_KPIEnergy(where: { _or: $criteria }) {
+            affected_rows
+          }
+        }

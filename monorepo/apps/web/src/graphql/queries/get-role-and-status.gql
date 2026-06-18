@@ -1,0 +1,11 @@
+query getRoleAndStatus($roleName: String!) {
+  Tbl_Roles(where: {RoleName: {_eq: $roleName}}) {
+    RoleGuid
+    RoleName
+    Priority
+  }
+  Tbl_UserStatusMaster(where: {Status: {_eq: "Registered"}}) {
+    StatusGuid
+    Status
+  }
+}

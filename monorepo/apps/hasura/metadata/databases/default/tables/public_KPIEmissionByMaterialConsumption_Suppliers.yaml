@@ -1,0 +1,3 @@
+table:
+  name: KPIEmissionByMaterialConsumption_Suppliers
+  schema: public

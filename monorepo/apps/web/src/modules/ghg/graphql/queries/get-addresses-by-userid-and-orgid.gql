@@ -1,0 +1,21 @@
+query getLocationsAndAddresses($organizationId: uuid!, $userId: uuid!) {
+  UserOrganizationAddressMapping(
+    where: {
+      organization_id: { _eq: $organizationId }
+      user_id: { _eq: $userId }
+    }
+  ) {
+    organization_address_id
+    activities
+    OrganizationAddress {
+      id
+      Address {
+        id
+        name
+        City {
+          name
+        }
+      }
+    }
+  }
+}

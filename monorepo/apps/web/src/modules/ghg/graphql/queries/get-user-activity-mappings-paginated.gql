@@ -1,0 +1,29 @@
+query getUserActivityMappingsPaginated(
+  $where: view_user_activity_mappings_bool_exp
+  $limit: Int
+  $offset: Int
+  $order_by: [view_user_activity_mappings_order_by!]
+) {
+  view_user_activity_mappings(
+    where: $where
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    id
+    user_id
+    user_name
+    user_email
+    organization_id
+    organization_address_id
+    organization_address_name
+    activities
+    user_created_at
+    permission_created_at
+  }
+  totalCount: view_user_activity_mappings_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}

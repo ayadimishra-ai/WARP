@@ -1,0 +1,50 @@
+<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="36" height="36" fill="#F5F5F5"/>
+<g id="Emission Dashboard - Long Scroll" clip-path="url(#clip0_6637_11237)">
+<rect width="1600" height="10000" transform="translate(-1228 -210)" fill="#F7F9FB"/>
+<rect id="Rectangle 7622" x="-827" y="-109" width="1199" height="237" fill="#142335"/>
+<g id="Rectangle 7606" filter="url(#filter0_d_6637_11237)">
+<rect x="-27.5" y="-48.5" width="339" height="149" rx="7.5" stroke="#1C9689" shape-rendering="crispEdges"/>
+</g>
+<g id="Mask group">
+<mask id="mask0_6637_11237" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="-28" y="-49" width="340" height="150">
+<rect id="Rectangle 7607" x="-28" y="-49" width="340" height="150" rx="8" fill="white"/>
+</mask>
+<g mask="url(#mask0_6637_11237)">
+<rect id="Rectangle 7607_2" opacity="0.8" x="-28" y="-49" width="340" height="150" rx="4" fill="url(#paint0_linear_6637_11237)"/>
+</g>
+</g>
+<g id="Group 5920">
+<rect id="Rectangle 7617" x="-6" y="-6" width="48" height="48" rx="6" fill="white"/>
+</g>
+<g id="9024451_factory_light_icon 1" clip-path="url(#clip1_6637_11237)">
+<path id="Vector" d="M11.25 24.75H15.1875" stroke="#1C9689" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M20.8125 24.75H24.75" stroke="#1C9689" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M30.375 30.375V19.125H23.625L14.625 12.375V19.125L5.625 12.375V30.375" stroke="#1C9689" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M2.25 30.375H33.75" stroke="#1C9689" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_5" d="M30.375 19.125L28.2656 4.34531C28.2284 4.0769 28.0955 3.83095 27.8914 3.65268C27.6873 3.47442 27.4257 3.37581 27.1547 3.375H24.5953C24.3243 3.37581 24.0627 3.47442 23.8586 3.65268C23.6545 3.83095 23.5216 4.0769 23.4844 4.34531L21.5859 17.6062" stroke="#1C9689" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_6637_11237" x="-34" y="-52" width="352" height="162" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="3"/>
+<feGaussianBlur stdDeviation="3"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_6637_11237"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_6637_11237" result="shape"/>
+</filter>
+<linearGradient id="paint0_linear_6637_11237" x1="-20" y1="-49" x2="89.5" y2="145" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2B8A80"/>
+<stop offset="1" stop-color="#0E4A44"/>
+</linearGradient>
+<clipPath id="clip0_6637_11237">
+<rect width="1600" height="10000" fill="white" transform="translate(-1228 -210)"/>
+</clipPath>
+<clipPath id="clip1_6637_11237">
+<rect width="36" height="36" fill="white"/>
+</clipPath>
+</defs>
+</svg>

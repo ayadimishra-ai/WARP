@@ -1,0 +1,9 @@
+mutation updateBulkTravelDistance(
+  $TravelDistanceUpdate: [TravelDistance_updates!]!
+) {
+  update_TravelDistance_many(updates: $TravelDistanceUpdate) {
+    returning {
+      id
+    }
+  }
+}

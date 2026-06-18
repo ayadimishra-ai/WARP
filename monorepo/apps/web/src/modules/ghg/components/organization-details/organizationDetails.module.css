@@ -1,0 +1,47 @@
+/* Override Mantine button animations with highest specificity */
+.noAnimationButton,
+.noAnimationButton:active,
+.noAnimationButton:hover,
+.noAnimationButton:focus,
+.noAnimationButton:focus-visible,
+.noAnimationButton.mantine-active,
+.noAnimationButton[data-active="true"],
+.noAnimationButton[data-pressed="true"] {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+  -o-transform: none !important;
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+  -webkit-animation: none !important;
+  -moz-animation: none !important;
+  -ms-animation: none !important;
+  -o-animation: none !important;
+}
+
+/* More specific selectors for Mantine's internal classes */
+.noAnimationButton.m_77c9d27d,
+.noAnimationButton.m_77c9d27d:active,
+.noAnimationButton.m_77c9d27d:hover,
+.noAnimationButton.m_77c9d27d:focus {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Target any possible Mantine button class variations */
+[class*="mantine-Button"].noAnimationButton,
+[class*="mantine-Button"].noAnimationButton:active,
+[class*="mantine-Button"].noAnimationButton:hover,
+[class*="mantine-Button"].noAnimationButton:focus {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* noAnimationButton styles have been moved to globals.css */

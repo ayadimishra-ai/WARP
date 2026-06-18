@@ -1,0 +1,77 @@
+query getValidationDataForDownstreamExcel(
+  $organizationId: uuid!
+  $organizationaddressId: uuid!
+  $skucode: [String!]!
+  $destinationLocationMasterIds: [String!]!
+) {
+  products_skus: OrgSKUMaster(where: { code: { _in: $skucode } }) {
+    id
+    client_master_id
+    code
+    weight
+    weight_uom
+    OrgProductMaster {
+      id
+      client_master_id
+      code
+    }
+  }
+
+  destination_locations: Addresses(
+    where: {
+      _and: [
+        { name: { _in: $destinationLocationMasterIds } }
+        {
+          _or: [
+            {
+              SupplierAddressMappings: {
+                OrgSupplierMaster: {
+                  organization_id: { _eq: $organizationId }
+                  category: { _eq: "Finished Goods" }
+                }
+              }
+            }
+            {
+              OrganizationAddresses: {
+                organization_id: { _eq: $organizationId }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ) {
+    id
+    pincode
+    name
+    latitude
+    longitude
+    client_master_id
+  }
+
+  activity_locations: OrganizationAddress(
+    where: { id: { _eq: $organizationaddressId } }
+  ) {
+    id
+    address_id
+    Address {
+      id
+      pincode
+      name
+      latitude
+      longitude
+      client_master_id
+    }
+  }
+  VehicleTypeMaster {
+    category
+    name
+    code
+    configuration_value
+  }
+  UomConversionMaster {
+    from_key
+    to_key
+    factor
+  }
+}

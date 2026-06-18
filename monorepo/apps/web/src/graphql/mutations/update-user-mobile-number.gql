@@ -1,0 +1,10 @@
+mutation UpdateUserMobileNumber($userGuid: uuid!, $phone: String!) {
+  update_Tbl_Users_by_pk(
+    pk_columns: { UserGuid: $userGuid }
+    _set: { MobileNumber: $phone }
+  ) {
+    UserGuid
+    EmailId
+    MobileNumber
+  }
+}

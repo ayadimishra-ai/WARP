@@ -1,0 +1,5 @@
+query GetCompanyBusinessTypeByCompanyGuid($companyGuid: uuid!) {
+  Tbl_CompanyBusinessType(where: {CompanyGuid: {_eq: $companyGuid}}) {
+    BusinessTypeGuid
+  }
+}

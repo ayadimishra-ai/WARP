@@ -1,0 +1,16 @@
+query getMaterialMasterByOrgIdAndCodes(
+  $where: OrgMaterialMaster_bool_exp!
+) {
+  OrgMaterialMaster(where: $where) {
+    id
+    client_master_id
+    name
+    type
+    organization_id
+    code
+    created_at
+    updated_at
+    Material_Weight_Per_Unit
+    UoM_Material_Weight
+  }
+}

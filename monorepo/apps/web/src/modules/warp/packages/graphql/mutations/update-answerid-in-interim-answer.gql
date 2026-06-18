@@ -1,0 +1,20 @@
+mutation updateAnswerIdinInterimAnswer(
+  $InterimAnswerUpdate: [Interim_Answer_updates!]!
+  $oldSubmissionId: uuid
+) {
+  update_Interim_Answer_many(updates: $InterimAnswerUpdate) {
+    returning {
+      id
+      answerId
+    }
+  }
+  update_Interim_Answer(
+    _set: { isViewOnly: true }
+    where: { submissionId: { _eq: $oldSubmissionId } }
+  ) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+}

@@ -1,0 +1,55 @@
+table:
+  name: Addresses
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: City
+    using:
+      foreign_key_constraint_on: city_id
+  - name: Country
+    using:
+      foreign_key_constraint_on: country_id
+  - name: State
+    using:
+      foreign_key_constraint_on: state_id
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: AddressDistances
+    using:
+      foreign_key_constraint_on:
+        column: from_address_id
+        table:
+          name: AddressDistance
+          schema: public
+  - name: OrganizationAddresses
+    using:
+      foreign_key_constraint_on:
+        column: address_id
+        table:
+          name: OrganizationAddress
+          schema: public
+  - name: ParentCompanyMappings
+    using:
+      foreign_key_constraint_on:
+        column: AddressId
+        table:
+          name: ParentCompanyMapping
+          schema: public
+  - name: SupplierAddressMappings
+    using:
+      foreign_key_constraint_on:
+        column: address_id
+        table:
+          name: SupplierAddressMapping
+          schema: public
+  - name: addressDistancesByToAddressId
+    using:
+      foreign_key_constraint_on:
+        column: to_address_id
+        table:
+          name: AddressDistance
+          schema: public

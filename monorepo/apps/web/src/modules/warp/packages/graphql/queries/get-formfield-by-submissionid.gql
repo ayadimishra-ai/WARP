@@ -1,0 +1,31 @@
+query getformFieldsbySubmissionId($submissionId: uuid!) {
+  FormSubmission(where: { id: { _eq: $submissionId } }) {
+    FormInvitation {
+      Form {
+        id
+        FormFields(where: { interfaceOptions: { _has_key: "rara" } }) {
+          formId
+          id
+          interfaceOptions
+          questionId
+          Answers(where: { submissionId: { _eq: $submissionId } }) {
+            id
+            data
+          }
+        }
+      }
+      Company {
+        id
+        name
+        primaryContact
+      }
+    }
+  }
+
+  GlobalMaster(where: { type: { _eq: "Rara_integration" } }) {
+    id
+    platformId
+    type
+    data
+  }
+}

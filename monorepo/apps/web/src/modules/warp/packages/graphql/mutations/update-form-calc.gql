@@ -1,0 +1,10 @@
+mutation updateFormCalc($calc: json!) {
+  update_Form(
+    _set: { calc: $calc }
+    where: { id: { _eq: "0d4655d1-b58b-4d52-826d-d28f8a5514c6" } }
+  ) {
+    returning {
+      calc
+    }
+  }
+}

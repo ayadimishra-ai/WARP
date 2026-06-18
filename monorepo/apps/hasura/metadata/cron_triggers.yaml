@@ -1,0 +1,46 @@
+- name: Distance Matrix Calculation
+  webhook: https://rpgvnj3rgw.ap-south-1.awsapprunner.com/api/v1/distance-matrix-calculation
+  schedule: '*/15 * * * *'
+  include_in_metadata: true
+  payload: {}
+  retry_conf:
+    num_retries: 3
+    retry_interval_seconds: 10
+    timeout_seconds: 150
+    tolerance_seconds: 21600
+  headers:
+    - name: Organizationid
+      value: cfe37694-341f-4ff7-afe4-97e0e77eaf7e
+    - name: Content-Type
+      value: application/json
+    - name: Authorization
+      value: EzqUt3IXQxidMdRA
+  comment: ""
+  request_transform:
+    method: POST
+    query_params: {}
+    template_engine: Kriti
+    version: 2
+- name: Update Business Travel Trip Distance Data
+  webhook: https://rpgvnj3rgw.ap-south-1.awsapprunner.com/api/v1/update-business-travel-data
+  schedule: '*/20 * * * *'
+  include_in_metadata: true
+  payload: {}
+  retry_conf:
+    num_retries: 3
+    retry_interval_seconds: 10
+    timeout_seconds: 150
+    tolerance_seconds: 21600
+  headers:
+    - name: Organizationid
+      value: cfe37694-341f-4ff7-afe4-97e0e77eaf7e
+    - name: Content-Type
+      value: application/json
+    - name: Authorization
+      value: EzqUt3IXQxidMdRA
+  comment: ""
+  request_transform:
+    method: POST
+    query_params: {}
+    template_engine: Kriti
+    version: 2

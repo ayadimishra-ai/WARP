@@ -1,0 +1,9 @@
+query getAddressDetail($organisationAddressId: uuid) {
+  OrganizationAddress(where: { id: { _eq: $organisationAddressId } }) {
+    Address {
+      ownership_type
+      type
+      pincode
+    }
+  }
+}

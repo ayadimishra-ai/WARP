@@ -1,0 +1,69 @@
+query getInvitationStatusCounts($invitationId: uuid!) {
+  FormInvitation(
+    where: {
+      _and: [{ id: { _eq: $invitationId } }, { isActive: { _eq: true } }]
+    }
+  ) {
+    id
+    companyId
+    formId
+    reviewerDetails
+    ParentCompanyMapping {
+      Id
+      UserId
+      ParentUserId
+    }
+    parentCompanyMappingByReviewerparentcompanyid {
+      Id
+      UserId
+      ParentUserId
+    }
+    FormSubmissions(where: { _and: [{ isActive: { _eq: true } }] }) {
+      id
+      status
+    }
+    ReviewerDetailsMappings(order_by: [{ Question: { key: asc } }]) {
+      id
+      currentStatus
+      questionId
+      Question {
+        key
+      }
+      MakerCheckerRemarks(
+        where: { remark: { _neq: "Answered by Maker" } }
+        order_by: { created_at: asc }
+      ) {
+        remark
+        created_at
+        status
+        Ismailsent
+      }
+    }
+    Declined_Questions_aggregate: ReviewerDetailsMappings_aggregate(
+      where: { currentStatus: { _eq: "Declined" } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+    Resubmitted_Questions_aggregate: ReviewerDetailsMappings_aggregate(
+      where: { currentStatus: { _eq: "Re-Submitted" } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+    Form {
+      FormFields_aggregate(
+        where: {
+          questionId: { _is_null: false }
+          groupField: { _like: "%tabs%" }
+        }
+      ) {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+}

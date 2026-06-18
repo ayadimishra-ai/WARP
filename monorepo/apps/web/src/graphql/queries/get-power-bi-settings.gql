@@ -1,0 +1,6 @@
+query GetPowerBISettings($settingsKeys: [String!]!) {
+  Tbl_GlobalSettings(where: {SettingsKey: {_in: $settingsKeys}}) {
+    SettingsKey
+    SettingsValue
+  }
+}

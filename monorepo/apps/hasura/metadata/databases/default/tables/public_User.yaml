@@ -1,0 +1,7 @@
+table:
+  name: User
+  schema: public
+object_relationships:
+  - name: Organization
+    using:
+      foreign_key_constraint_on: companyId

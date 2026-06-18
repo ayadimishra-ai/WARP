@@ -1,0 +1,8 @@
+mutation InsertUserPermission($object: Tbl_UserPermissions_insert_input!) {
+  insert_Tbl_UserPermissions_one(object: $object) {
+    UserPermissionGuid
+    UserGuid
+    PermissionGuid
+    Rights
+  }
+}

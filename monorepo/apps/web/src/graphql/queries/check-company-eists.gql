@@ -1,0 +1,13 @@
+query CheckCompanyExists($companyName: String!) {
+  Tbl_Companies(
+    where: {
+      CompanyName: { _ilike: $companyName }
+    },
+    limit: 1
+  ) {
+    CompanyGuid
+    CompanyName
+    CountryGuid
+    IsActive
+  }
+}

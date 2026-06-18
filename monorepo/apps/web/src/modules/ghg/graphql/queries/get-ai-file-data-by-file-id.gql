@@ -1,0 +1,14 @@
+query GetAIFileDataByFileId($file_id: uuid!) {
+  AIFileData(where: { file_id: { _eq: $file_id } }) {
+    id
+    file_id
+    previous_reading_date
+    present_reading_date
+    extracted_values
+    edited_values
+    verified_at
+    verified_by
+    created_by
+    updated_by
+  }
+}

@@ -1,0 +1,8 @@
+mutation DeleteAIFileActivityTaskRequestMapping($aiFileUploadIds: [uuid!]!) {
+          delete_AIFileActivityTaskRequestMapping(where: {aifileupload_id: {_in: $aiFileUploadIds}}) {
+            affected_rows
+            returning {
+              id
+            }
+          }
+        }

@@ -1,0 +1,25 @@
+query getParentCompanyMappingByAddressId(
+  $companyId: uuid
+  $parentUserId: uuid
+) {
+  ParentCompanyMapping(
+    where: {
+      CompanyId: { _eq: $companyId }
+      ParentUserId: { _eq: $parentUserId }
+    }
+  ) {
+    AddressId
+    User {
+      email
+      id
+      name
+      UserRoles {
+        userId
+        roleName
+      }
+    }
+  }
+  Addresses(where: { companyId: { _eq: $companyId } }) {
+    id
+  }
+}

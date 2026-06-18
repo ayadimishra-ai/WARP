@@ -1,0 +1,58 @@
+mutation BulkInsertCompaniesWithUsers(
+  $companyInput: [Company_insert_input!]!
+  $userInput: [User_insert_input!]!
+  $parentCompanyInput: [ParentCompanyMapping_insert_input!]!
+) {
+  insert_Company(
+    objects: $companyInput
+    on_conflict: { constraint: Company_name_key }
+  ) {
+    returning {
+      id
+      name
+      country
+      details
+      primaryContact
+      parentCompanyId
+      created_by
+      updated_by
+      created_at
+      updated_at
+      isActive
+    }
+  }
+  insert_User(objects: $userInput) {
+    returning {
+      id
+      name
+      email
+      emailVerified
+      details
+      image
+      companyId
+      phone
+      phoneVerified
+      created_by
+      updated_by
+      created_at
+      updated_at
+      isActive
+      UserRoles {
+        roleName
+      }
+    }
+  }
+
+  #parent company mapping bulk insert
+
+  insert_ParentCompanyMapping(
+    objects: $parentCompanyInput
+    on_conflict: { constraint: ParentCompanyMapping_pkey }
+  ) {
+    returning {
+      Id
+      CompanyId
+      ParentCompanyId
+    }
+  }
+}

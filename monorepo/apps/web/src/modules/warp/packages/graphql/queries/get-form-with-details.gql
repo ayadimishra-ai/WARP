@@ -1,0 +1,25 @@
+query GetFormWithDetails($companyId: uuid) {
+  Form(where: { CompanyForms: { companyId: { _eq: $companyId } } }) {
+    id
+    name
+    title
+    description
+    tags
+    formtype
+    Details {
+      id
+      formId
+      focusArea
+      timeInMinutes
+    }
+    GroupForms {
+      groupFormId
+      formId
+      Form {
+        Details {
+          industry
+        }
+      }
+    }
+  }
+}

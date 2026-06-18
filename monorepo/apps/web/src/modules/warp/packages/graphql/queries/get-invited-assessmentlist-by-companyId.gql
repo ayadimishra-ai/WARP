@@ -1,0 +1,20 @@
+query getInvitedAssessmentListByCompanyId($companyId: uuid!) {
+  FormInvitation(
+    where: {
+      _and: { status: { _eq: "Invited" } }
+      companyId: { _eq: $companyId }
+    }
+  ) {
+    id
+    formId
+    companyId
+    parentcompanyId
+    email
+    reviewerDetails
+    reviewerParentCompanyId
+    Form {
+      id
+      name
+    }
+  }
+}

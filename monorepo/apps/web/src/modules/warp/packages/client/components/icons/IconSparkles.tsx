@@ -1,0 +1,39 @@
+import React from "react";
+
+interface IconSparklesProps {
+  width?: number;
+  height?: number;
+  color?: string;
+  className?: string;
+}
+
+const IconSparkles: React.FC<IconSparklesProps> = ({
+  width = 24,
+  height = 24,
+  color = "currentColor",
+  className,
+}) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 26 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M13.3876 15.3209L13 15.4421L12.8896 15.833L11.3359 21.3362L9.65515 15.8182L9.5414 15.4448L9.17025 15.3237L3.46836 13.4641L9.15623 11.7316L9.54138 11.6143L9.65643 11.2284L11.3358 5.59591L12.8885 11.2139L12.9999 11.6169L13.4012 11.7341L19.3261 13.4642L13.3876 15.3209Z"
+        stroke={color}
+        strokeWidth="1.5"
+      />
+      <path
+        d="M20.4457 6.18368L20.0581 6.30488L19.9477 6.69572L19.4633 8.41161L18.9361 6.68098L18.8224 6.30752L18.4512 6.18647L16.5367 5.56206L18.4372 4.98319L18.8224 4.86587L18.9374 4.48003L19.4632 2.71651L19.9466 4.46552L20.058 4.86848L20.4593 4.98566L22.4335 5.56215L20.4457 6.18368Z"
+        stroke={color}
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+};
+
+export default IconSparkles;

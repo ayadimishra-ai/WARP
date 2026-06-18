@@ -1,0 +1,10 @@
+mutation InsertAIFileUploads($objects: [AIFileUploads_insert_input!]!) {
+  insert_AIFileUploads(objects: $objects) {
+    returning {
+      id
+      file_name
+      status
+      created_at
+    }
+  }
+}

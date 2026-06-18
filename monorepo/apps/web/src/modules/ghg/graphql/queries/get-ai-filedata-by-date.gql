@@ -1,0 +1,48 @@
+query GetAIFiledatabydate($where: AIFileData_bool_exp!) {
+  AIFileData(where: $where) {
+    id
+    previous_reading_date
+    present_reading_date
+    extracted_values
+    edited_values
+    verified_at
+    verified_by
+    created_by
+    updated_by
+    AIFileUpload {
+      file_name
+      activity_code
+      status
+      is_deleted
+      AIFileActivityTaskRequestMappings {
+        task_request_id
+        activity_task_request_id
+        aifileupload_id
+        TaskRequest {
+          year
+          month
+          organization_address_id
+          GHGEnergyConsumption_GridPowers {
+            OrganizationAddress {
+              Address {
+                Country {
+                  region_code
+                }
+              }
+            }
+            id
+            organization_address_id
+            task_request_id
+            PowerConsumed_through_Grid_Kwh
+            activity_task_request_id
+            grid_metadata: metadata
+          }
+        }
+      }
+    }
+    MeterData {
+      average_units_consumed
+      organization_address_id
+    }
+  }
+}

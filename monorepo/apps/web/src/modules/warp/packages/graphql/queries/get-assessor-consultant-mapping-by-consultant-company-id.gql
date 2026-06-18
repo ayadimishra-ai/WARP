@@ -1,0 +1,12 @@
+query getAssessorConsultantMappingByConsultantCompanyId(
+  $consultantCompanyId: uuid
+) {
+  AssessorConsultantMapping(
+    where: { consultantCompanyId: { _eq: $consultantCompanyId } }
+  ) {
+    id
+    consultantCompanyId
+    assessorCompanyId
+    formId
+  }
+}

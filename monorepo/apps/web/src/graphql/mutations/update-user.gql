@@ -1,0 +1,14 @@
+mutation updateUser($input: [Tbl_Users_updates!]!) {
+  update_Tbl_Users_many(updates: $input) {
+    affected_rows
+    returning {
+      UserGuid
+      FirstName
+      LastName
+      EmailId
+      MobileNumber
+      OPSUserId
+      SetPasswordToken
+    }
+  }
+}

@@ -1,0 +1,23 @@
+mutation upsertSupplierAddressMapping(
+  $objects: [SupplierAddressMapping_insert_input!]!
+) {
+  insert_SupplierAddressMapping(
+    objects: $objects
+    on_conflict: {
+      constraint: SupplierAddressMapping_pkey
+      update_columns: [address_id, org_supplier_master_id, updated_by]
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      address_id
+      org_supplier_master_id
+      supplier_organization_address_id
+      metadata
+      is_deleted
+      created_by
+      updated_by
+    }
+  }
+}

@@ -1,0 +1,94 @@
+mutation upsertCaptivePowerActivity(
+  $GHGEnergy_CaptivePower_Renewable_id: [uuid!]!
+  $GHGEnergy_CaptivePower_NonRenewable_id: [uuid!]!
+
+  $NonRenewabledata: [GHGEnergy_CaptivePower_NonRenewable_insert_input!]!
+  
+  $Renewabledata: [GHGEnergy_CaptivePower_Renewable_insert_input!]!
+) {
+  delete_GHGEnergy_CaptivePower_Renewable(
+    where: {
+      GHGEnergyConsumption_CaptivePower_id: {
+        _in: $GHGEnergy_CaptivePower_Renewable_id
+      }
+    }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      Type_of_Technology_Used
+      Year_of_installation
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+      GHGEnergy_CaptivePower {
+        task_request_id
+      }
+    }
+  }
+  delete_GHGEnergy_CaptivePower_NonRenewable(
+    where: {
+      GHGEnergyConsumption_CaptivePower_id: {
+        _in: $GHGEnergy_CaptivePower_NonRenewable_id
+      }
+    }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      Type_of_Fuel_Used
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      Quality_of_fuel
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+      GHGEnergy_CaptivePower {
+        task_request_id
+      }
+    }
+  }
+  insert_GHGEnergy_CaptivePower_Renewable(
+    objects: $Renewabledata
+    on_conflict: { constraint: GHGEnergy_CaptivePower_Renewable_pkey }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      Type_of_Technology_Used
+      Year_of_installation
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+      GHGEnergy_CaptivePower {
+        task_request_id
+      }
+    }
+  }
+  insert_GHGEnergy_CaptivePower_NonRenewable(
+    objects: $NonRenewabledata
+    on_conflict: { constraint: GHGEnergy_CaptivePower_NonRenewable_pkey }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      Type_of_Fuel_Used
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      Quality_of_fuel
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+      GHGEnergy_CaptivePower {
+        task_request_id
+      }
+    }
+  }
+  
+
+  
+}

@@ -1,0 +1,12 @@
+query GetExistingFormInvitationEkyc($companyId: [uuid!], $formId: [uuid!]) {
+  FormInvitation(
+    where: {
+      _and: [{ formId: { _in: $formId } }, { companyId: { _in: $companyId } }]
+    }
+  ) {
+    durationFrom
+    durationTo
+    companyId
+    formId
+  }
+}

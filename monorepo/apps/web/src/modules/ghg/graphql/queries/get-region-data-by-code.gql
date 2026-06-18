@@ -1,0 +1,6 @@
+query getRegionDataByCode($code: [String!]) {
+  Region(where: { code: { _in: $code } }) {
+    id
+    code
+  }
+}

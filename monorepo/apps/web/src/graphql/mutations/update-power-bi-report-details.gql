@@ -1,0 +1,15 @@
+mutation UpdatePowerBIReportDetails(
+  $powerBIGuid: uuid!
+  $tokenDetails: String!
+  $expirationTime: timestamp!
+) {
+  update_Tbl_PowerBIReportDetails(
+    where: { PowerBIGuid: { _eq: $powerBIGuid } }
+    _set: {
+      PowerBIReportTokenDetails: $tokenDetails
+      TokenExpirationTime: $expirationTime
+    }
+  ) {
+    affected_rows
+  }
+}

@@ -1,0 +1,19 @@
+query GetPermissionsDetails($where: Tbl_Permissions_bool_exp!) {
+  Tbl_Permissions(where: $where) {
+    PermissionGuid
+    RoleGuid
+    PageGuid
+    IsActive
+    CreatedDate
+    Tbl_Page {
+      PageKey
+      URL
+      ParentPageGuid
+    }
+    Tbl_Role {
+      RoleGuid
+      RoleName
+      IsActive
+    }
+  }
+}

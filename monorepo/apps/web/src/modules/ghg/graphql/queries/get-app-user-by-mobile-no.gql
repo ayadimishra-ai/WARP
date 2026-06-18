@@ -1,0 +1,13 @@
+query GetAppUserByMobileNo($mobileNo: String!) {
+  AppUser(
+    where: {
+      metadata: {
+        _contains: [{ phonenumber: $mobileNo }]
+      }
+    }
+  ) {
+    id
+    name
+    metadata
+  }
+}

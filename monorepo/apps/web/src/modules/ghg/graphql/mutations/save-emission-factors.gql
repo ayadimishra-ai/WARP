@@ -1,0 +1,53 @@
+mutation saveemissonFactorData(
+  $insertData: [CO2EmissionFactorMaster_insert_input!]!
+  $updateData: [CO2EmissionFactorMaster_updates!]!
+) {
+  insert_CO2EmissionFactorMaster(
+    on_conflict: { constraint: CO2EmissionFactorMaster_pkey }
+    objects: $insertData
+  ) {
+    returning {
+      id
+      geography
+      year
+      month
+      region
+      category
+      activity
+      sub_activity
+      type
+      sub_type
+      configuration
+      fuel_type
+      factor
+      factor_uom
+      metadata
+      group
+      created_by
+      updated_by
+    }
+  }
+  update_CO2EmissionFactorMaster_many(updates: $updateData) {
+    returning {
+      id
+      geography
+      year
+      month
+      region
+      category
+      activity
+      sub_activity
+      type
+      sub_type
+      configuration
+      fuel_type
+      factor
+      factor_uom
+      metadata
+      group
+      created_by
+      updated_by
+      id
+    }
+  }
+}

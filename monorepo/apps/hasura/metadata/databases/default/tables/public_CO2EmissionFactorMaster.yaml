@@ -1,0 +1,13 @@
+table:
+  name: CO2EmissionFactorMaster
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: Region
+    using:
+      foreign_key_constraint_on: region
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by

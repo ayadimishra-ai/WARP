@@ -1,0 +1,1368 @@
+table:
+  name: AppUser
+  schema: public
+object_relationships:
+  - name: AppRole
+    using:
+      foreign_key_constraint_on: role
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: Organization
+    using:
+      foreign_key_constraint_on: organization_id
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: AIBulkDocumentProcessings
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: AIBulkDocumentProcessing
+          schema: public
+  - name: Activities
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Activity
+          schema: public
+  - name: ActivityMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ActivityMaster
+          schema: public
+  - name: ActivityTaskRequests
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ActivityTaskRequest
+          schema: public
+  - name: AddressTypes
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: AddressType
+          schema: public
+  - name: Addresses
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Addresses
+          schema: public
+  - name: AnswerFiles
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: AnswerFile
+          schema: public
+  - name: AppGlobalMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: AppGlobalMaster
+          schema: public
+  - name: AppRoles
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: AppRole
+          schema: public
+  - name: AppUsers
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: AppUser
+          schema: public
+  - name: AssesseeUserMappings
+    using:
+      foreign_key_constraint_on:
+        column: parentUserId
+        table:
+          name: AssesseeUserMapping
+          schema: public
+  - name: CO2EmissionFactorMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: CO2EmissionFactorMaster
+          schema: public
+  - name: Cities
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: City
+          schema: public
+  - name: CompanyFormFundtypes
+    using:
+      foreign_key_constraint_on:
+        column: invitedBy
+        table:
+          name: CompanyFormFundtype
+          schema: public
+  - name: CompanyForms
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: CompanyForm
+          schema: public
+  - name: Countries
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Country
+          schema: public
+  - name: DataImportHistories
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: DataImportHistory
+          schema: public
+  - name: ESGBoardCompositions
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ESGBoardComposition
+          schema: public
+  - name: ESGCSRs
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ESGCSR
+          schema: public
+  - name: ESGEmployeeDiversities
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ESGEmployeeDiversity
+          schema: public
+  - name: ESGEmployeeTurnovers
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ESGEmployeeTurnover
+          schema: public
+  - name: ESGGovernances
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ESGGovernance
+          schema: public
+  - name: ESGGrievances
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ESGGrievances
+          schema: public
+  - name: ESGHealthAndSafeties
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ESGHealthAndSafety
+          schema: public
+  - name: ESGTrainingHours
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ESGTrainingHours
+          schema: public
+  - name: EmailConfigurations
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: EmailConfiguration
+          schema: public
+  - name: EmailNotifications
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: EmailNotifications
+          schema: public
+  - name: EmailTemplates
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: EmailTemplate
+          schema: public
+  - name: FormDetails
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: FormDetails
+          schema: public
+  - name: FormFields
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: FormField
+          schema: public
+  - name: FormInvitations
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: FormInvitation
+          schema: public
+  - name: FormResults
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: FormResult
+          schema: public
+  - name: FormSubmissions
+    using:
+      foreign_key_constraint_on:
+        column: approvedBy
+        table:
+          name: FormSubmission
+          schema: public
+  - name: Forms
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Form
+          schema: public
+  - name: FuelQualityMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: FuelQualityMaster
+          schema: public
+  - name: FuelTypeMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: FuelTypeMaster
+          schema: public
+  - name: GHGBuyer_Shares
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGBuyer_Share
+          schema: public
+  - name: GHGEnergyConsumption_FuelPurchased_Auxiliaries
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased_Auxiliary
+          schema: public
+  - name: GHGEnergyConsumption_FuelPurchased_Generals
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased_General
+          schema: public
+  - name: GHGEnergyConsumption_FuelPurchased_HeatingWaters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased_HeatingWater
+          schema: public
+  - name: GHGEnergyConsumption_FuelPurchased_Transportations
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased_Transportation
+          schema: public
+  - name: GHGEnergyConsumption_FuelPurchaseds
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased
+          schema: public
+  - name: GHGEnergyConsumption_GridPowers
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGEnergyConsumption_GridPower
+          schema: public
+  - name: GHGEnergy_CaptivePower_Renewables
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGEnergy_CaptivePower_Renewable
+          schema: public
+  - name: GHGEnergy_CaptivePowers
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGEnergy_CaptivePower
+          schema: public
+  - name: GHGGeneralDetails
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGGeneralDetails
+          schema: public
+  - name: GHGMaterialProcurements
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGMaterialProcurement
+          schema: public
+  - name: GHGProductionDetails
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGProductionDetails
+          schema: public
+  - name: GHGTransport_Downstreams
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGTransport_Downstream
+          schema: public
+  - name: GHGTransport_EmployeeTravels
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGTransport_EmployeeTravel
+          schema: public
+  - name: GHGTransport_Upstreams
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGTransport_Upstream
+          schema: public
+  - name: GHGWastes
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGWaste
+          schema: public
+  - name: GHGWaterWithdrawals
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GHGWaterWithdrawal
+          schema: public
+  - name: GroupForms
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: GroupForm
+          schema: public
+  - name: InterimFormLogs
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: InterimFormLogs
+          schema: public
+  - name: Interim_Answers
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Interim_Answer
+          schema: public
+  - name: Interim_Comments
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Interim_Comments
+          schema: public
+  - name: Interim_Recommendations
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Interim_Recommendation
+          schema: public
+  - name: InvitationComments
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: InvitationComment
+          schema: public
+  - name: InvitationConsultantMappings
+    using:
+      foreign_key_constraint_on:
+        column: consultantUserId
+        table:
+          name: InvitationConsultantMapping
+          schema: public
+  - name: Modules
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Modules
+          schema: public
+  - name: OrgBrandMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: OrgBrandMaster
+          schema: public
+  - name: OrgMaterialMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: OrgMaterialMaster
+          schema: public
+  - name: OrgProductMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: OrgProductMaster
+          schema: public
+  - name: OrgSKUMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: OrgSKUMaster
+          schema: public
+  - name: OrgSkuBomMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: OrgSkuBomMaster
+          schema: public
+  - name: OrgSupplierMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: OrgSupplierMaster
+          schema: public
+  - name: OrganizationActivityMappings
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: OrganizationActivityMapping
+          schema: public
+  - name: OrganizationAddresses
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: OrganizationAddress
+          schema: public
+  - name: Organizations
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Organization
+          schema: public
+  - name: ParentCompanyMappings
+    using:
+      foreign_key_constraint_on:
+        column: ParentUserId
+        table:
+          name: ParentCompanyMapping
+          schema: public
+  - name: Platforms
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Platform
+          schema: public
+  - name: Questions
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Question
+          schema: public
+  - name: RaraValidationAndRatings
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: RaraValidationAndRating
+          schema: public
+  - name: Regions
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Region
+          schema: public
+  - name: Sections
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Section
+          schema: public
+  - name: SourceFiles
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: SourceFiles
+          schema: public
+  - name: Sources
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Sources
+          schema: public
+  - name: States
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: State
+          schema: public
+  - name: SuggestedDocuments
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: SuggestedDocuments
+          schema: public
+  - name: SuggestionSourceMappings
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: SuggestionSourceMapping
+          schema: public
+  - name: Suggestions
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Suggestions
+          schema: public
+  - name: SupplierAddressMappings
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: SupplierAddressMapping
+          schema: public
+  - name: TaskRequests
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: TaskRequest
+          schema: public
+  - name: UomConversionMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: UomConversionMaster
+          schema: public
+  - name: UomMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: UomMaster
+          schema: public
+  - name: UserOrganizationAddressMappings
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          name: UserOrganizationAddressMapping
+          schema: public
+  - name: UsermodulePermissions
+    using:
+      foreign_key_constraint_on:
+        column: UserId
+        table:
+          name: UsermodulePermission
+          schema: public
+  - name: ValidationWarningLogs
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: ValidationWarningLogs
+          schema: public
+  - name: VehicleTypeMasters
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: VehicleTypeMaster
+          schema: public
+  - name: WebCurations
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: WebCuration
+          schema: public
+  - name: Zones
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: Zone
+          schema: public
+  - name: aIBulkDocumentProcessingsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: AIBulkDocumentProcessing
+          schema: public
+  - name: activitiesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Activity
+          schema: public
+  - name: activityMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ActivityMaster
+          schema: public
+  - name: activityTaskRequestsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ActivityTaskRequest
+          schema: public
+  - name: addressTypesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: AddressType
+          schema: public
+  - name: addressesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Addresses
+          schema: public
+  - name: answerFilesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: AnswerFile
+          schema: public
+  - name: appGlobalMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: AppGlobalMaster
+          schema: public
+  - name: appRolesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: AppRole
+          schema: public
+  - name: appUsersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: AppUser
+          schema: public
+  - name: assesseeUserMappingsByRevieweruserid
+    using:
+      foreign_key_constraint_on:
+        column: reviewerUserId
+        table:
+          name: AssesseeUserMapping
+          schema: public
+  - name: assesseeUserMappingsByUserid
+    using:
+      foreign_key_constraint_on:
+        column: userId
+        table:
+          name: AssesseeUserMapping
+          schema: public
+  - name: cO2EmissionFactorMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: CO2EmissionFactorMaster
+          schema: public
+  - name: citiesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: City
+          schema: public
+  - name: companyFormsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: CompanyForm
+          schema: public
+  - name: countriesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Country
+          schema: public
+  - name: dataImportHistoriesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: DataImportHistory
+          schema: public
+  - name: eSGBoardCompositionsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ESGBoardComposition
+          schema: public
+  - name: eSGCSRsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ESGCSR
+          schema: public
+  - name: eSGEmployeeDiversitiesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ESGEmployeeDiversity
+          schema: public
+  - name: eSGEmployeeTurnoversByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ESGEmployeeTurnover
+          schema: public
+  - name: eSGGovernancesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ESGGovernance
+          schema: public
+  - name: eSGGrievancesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ESGGrievances
+          schema: public
+  - name: eSGHealthAndSafetiesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ESGHealthAndSafety
+          schema: public
+  - name: eSGTrainingHoursByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ESGTrainingHours
+          schema: public
+  - name: emailConfigurationsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: EmailConfiguration
+          schema: public
+  - name: emailNotificationsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: EmailNotifications
+          schema: public
+  - name: emailTemplatesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: EmailTemplate
+          schema: public
+  - name: formDetailsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: FormDetails
+          schema: public
+  - name: formFieldsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: FormField
+          schema: public
+  - name: formResultsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: FormResult
+          schema: public
+  - name: formSubmissionsByCreatedBy
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: FormSubmission
+          schema: public
+  - name: formSubmissionsBySubmittedby
+    using:
+      foreign_key_constraint_on:
+        column: submittedBy
+        table:
+          name: FormSubmission
+          schema: public
+  - name: formSubmissionsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: FormSubmission
+          schema: public
+  - name: formsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Form
+          schema: public
+  - name: fuelQualityMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: FuelQualityMaster
+          schema: public
+  - name: fuelTypeMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: FuelTypeMaster
+          schema: public
+  - name: gHGBuyerSharesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGBuyer_Share
+          schema: public
+  - name: gHGEnergyCaptivepowerRenewablesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGEnergy_CaptivePower_Renewable
+          schema: public
+  - name: gHGEnergyCaptivepowersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGEnergy_CaptivePower
+          schema: public
+  - name: gHGEnergyConsumptionFuelpurchasedAuxiliariesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased_Auxiliary
+          schema: public
+  - name: gHGEnergyConsumptionFuelpurchasedGeneralsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased_General
+          schema: public
+  - name: gHGEnergyConsumptionFuelpurchasedHeatingwatersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased_HeatingWater
+          schema: public
+  - name: gHGEnergyConsumptionFuelpurchasedTransportationsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased_Transportation
+          schema: public
+  - name: gHGEnergyConsumptionFuelpurchasedsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGEnergyConsumption_FuelPurchased
+          schema: public
+  - name: gHGEnergyConsumptionGridpowersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGEnergyConsumption_GridPower
+          schema: public
+  - name: gHGGeneralDetailsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGGeneralDetails
+          schema: public
+  - name: gHGMaterialProcurementsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGMaterialProcurement
+          schema: public
+  - name: gHGProductionDetailsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGProductionDetails
+          schema: public
+  - name: gHGTransportDownstreamsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGTransport_Downstream
+          schema: public
+  - name: gHGTransportEmployeetravelsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGTransport_EmployeeTravel
+          schema: public
+  - name: gHGTransportUpstreamsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGTransport_Upstream
+          schema: public
+  - name: gHGWastesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGWaste
+          schema: public
+  - name: gHGWaterWithdrawalsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GHGWaterWithdrawal
+          schema: public
+  - name: groupFormsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: GroupForm
+          schema: public
+  - name: interimAnswersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Interim_Answer
+          schema: public
+  - name: interimCommentsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Interim_Comments
+          schema: public
+  - name: interimFormLogsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: InterimFormLogs
+          schema: public
+  - name: interimRecommendationsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Interim_Recommendation
+          schema: public
+  - name: invitationCommentsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: InvitationComment
+          schema: public
+  - name: invitationCommentsByUserid
+    using:
+      foreign_key_constraint_on:
+        column: userId
+        table:
+          name: InvitationComment
+          schema: public
+  - name: invitationConsultantMappingsByCreatedBy
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: InvitationConsultantMapping
+          schema: public
+  - name: invitationConsultantMappingsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: InvitationConsultantMapping
+          schema: public
+  - name: modulesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Modules
+          schema: public
+  - name: orgBrandMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: OrgBrandMaster
+          schema: public
+  - name: orgMaterialMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: OrgMaterialMaster
+          schema: public
+  - name: orgProductMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: OrgProductMaster
+          schema: public
+  - name: orgSKUMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: OrgSKUMaster
+          schema: public
+  - name: orgSkuBomMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: OrgSkuBomMaster
+          schema: public
+  - name: orgSupplierMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: OrgSupplierMaster
+          schema: public
+  - name: organizationActivityMappingsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: OrganizationActivityMapping
+          schema: public
+  - name: organizationAddressesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: OrganizationAddress
+          schema: public
+  - name: organizationsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Organization
+          schema: public
+  - name: parentCompanyMappingsByUserid
+    using:
+      foreign_key_constraint_on:
+        column: UserId
+        table:
+          name: ParentCompanyMapping
+          schema: public
+  - name: platformsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Platform
+          schema: public
+  - name: questionsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Question
+          schema: public
+  - name: raraValidationAndRatingsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: RaraValidationAndRating
+          schema: public
+  - name: regionsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Region
+          schema: public
+  - name: sectionsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Section
+          schema: public
+  - name: sourceFilesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: SourceFiles
+          schema: public
+  - name: sourcesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Sources
+          schema: public
+  - name: statesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: State
+          schema: public
+  - name: suggestedDocumentsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: SuggestedDocuments
+          schema: public
+  - name: suggestionSourceMappingsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: SuggestionSourceMapping
+          schema: public
+  - name: suggestionsBySelectedbyuserid
+    using:
+      foreign_key_constraint_on:
+        column: selectedByUserId
+        table:
+          name: Suggestions
+          schema: public
+  - name: suggestionsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Suggestions
+          schema: public
+  - name: supplierAddressMappingsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: SupplierAddressMapping
+          schema: public
+  - name: taskRequestsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: TaskRequest
+          schema: public
+  - name: testEmails
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: testEmails
+          schema: public
+  - name: testEmailsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: testEmails
+          schema: public
+  - name: uomConversionMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: UomConversionMaster
+          schema: public
+  - name: uomMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: UomMaster
+          schema: public
+  - name: userOrganizationAddressMappingsByCreatedBy
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: UserOrganizationAddressMapping
+          schema: public
+  - name: userOrganizationAddressMappingsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: UserOrganizationAddressMapping
+          schema: public
+  - name: usermodulePermissionsByCreatedBy
+    using:
+      foreign_key_constraint_on:
+        column: created_by
+        table:
+          name: UsermodulePermission
+          schema: public
+  - name: usermodulePermissionsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: UsermodulePermission
+          schema: public
+  - name: validationWarningLogsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: ValidationWarningLogs
+          schema: public
+  - name: vehicleTypeMastersByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: VehicleTypeMaster
+          schema: public
+  - name: webCurationsByTriggeredbyuserid
+    using:
+      foreign_key_constraint_on:
+        column: triggeredByUserId
+        table:
+          name: WebCuration
+          schema: public
+  - name: webCurationsByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: WebCuration
+          schema: public
+  - name: zonesByUpdatedBy
+    using:
+      foreign_key_constraint_on:
+        column: updated_by
+        table:
+          name: Zone
+          schema: public

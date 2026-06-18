@@ -1,0 +1,62 @@
+table:
+  name: FormField
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+  - name: Question
+    using:
+      foreign_key_constraint_on: questionId
+  - name: Section
+    using:
+      foreign_key_constraint_on: sectionId
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: Answers
+    using:
+      foreign_key_constraint_on:
+        column: formFieldId
+        table:
+          name: Answer
+          schema: public
+  - name: AssesseeUserMappings
+    using:
+      foreign_key_constraint_on:
+        column: formFieldId
+        table:
+          name: AssesseeUserMapping
+          schema: public
+  - name: Interim_Answers
+    using:
+      foreign_key_constraint_on:
+        column: formFieldId
+        table:
+          name: Interim_Answer
+          schema: public
+  - name: InvitationComments
+    using:
+      foreign_key_constraint_on:
+        column: formFieldId
+        table:
+          name: InvitationComment
+          schema: public
+  - name: Suggestions
+    using:
+      foreign_key_constraint_on:
+        column: formFieldId
+        table:
+          name: Suggestions
+          schema: public
+  - name: ValidationWarningLogs
+    using:
+      foreign_key_constraint_on:
+        column: formFieldId
+        table:
+          name: ValidationWarningLogs
+          schema: public

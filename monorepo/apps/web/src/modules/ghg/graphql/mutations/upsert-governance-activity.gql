@@ -1,0 +1,38 @@
+mutation upsertESGGovernanceActivity(
+  $where: ESGGovernance_bool_exp!
+  $esgGovernanceData: [ESGGovernance_insert_input!]!
+) {
+  delete_ESGGovernance(where: $where) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      compliance_issues
+      stakeholder_category
+      total_number_of_issues
+      new_issues_reporting_period
+      issues_resolved_reporting_period
+      created_by
+      updated_by
+    }
+  }
+  insert_ESGGovernance(
+    objects: $esgGovernanceData
+    on_conflict: { constraint: ESGGovernance_pkey }
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      compliance_issues
+      stakeholder_category
+      total_number_of_issues
+      new_issues_reporting_period
+      issues_resolved_reporting_period
+      created_by
+      updated_by
+    }
+  }
+}

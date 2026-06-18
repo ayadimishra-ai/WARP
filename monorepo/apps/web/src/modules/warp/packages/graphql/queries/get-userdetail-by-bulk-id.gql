@@ -1,0 +1,6 @@
+query getUserDetailByBulkId($id: [uuid!]) {
+  User(where: { id: { _in: $id }, isActive: { _eq: true } }) {
+    id
+    name
+  }
+}

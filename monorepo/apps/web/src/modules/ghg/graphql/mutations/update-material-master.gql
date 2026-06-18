@@ -1,0 +1,18 @@
+mutation updateMaterialMaster($updates: [OrgMaterialMaster_updates!]!) {
+  update_OrgMaterialMaster_many(updates: $updates) {
+    returning {
+      id
+      name
+      code
+      type
+      Material_Weight_Per_Unit
+      UoM_Material_Weight
+      Material_Classification
+      Material_Description
+      Additional_Information
+      organization_id
+      created_at
+      updated_at
+    }
+  }
+}

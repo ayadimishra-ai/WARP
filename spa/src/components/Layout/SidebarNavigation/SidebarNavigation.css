@@ -1,0 +1,251 @@
+.new_sidebar {
+  box-shadow: 4px 0px 16px 0px rgba(0, 0, 0, 0.08);
+  height: 100%;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  background: #fff;
+  border-right: 1px solid #d9d9d9;
+}
+
+.new_sidebar ul {
+  padding-top: 8.5px;
+}
+
+.new_sidebar ul.slidebarclose li:first-child:hover div {
+  pointer-events: all;
+}
+
+/* .new_sidebar ul.slidebarclose li div {
+  pointer-events: none;
+  border-radius: 6px;
+} */
+
+.new_sidebar ul li>div {
+  display: flex;
+  align-items: center;
+  color: rgb(18, 47, 71) !important;
+  border-radius: 4px;
+  margin: 10px 18.5px;
+  cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 3px;
+  min-height: 42px;
+  height: 100%;
+}
+
+.slidebaropen li div {
+  padding: 0;
+}
+
+.new_sidebar ul li>div .menu_list {
+  display: flex;
+}
+
+.new_sidebar ul li>div span {
+  justify-content: unset;
+}
+
+.childMenuParent {
+  width: 100%;
+}
+
+.childMenuParent .child_menu {
+  width: 258px;
+  background: #fff;
+  position: absolute;
+  top: 0;
+  padding: 17px 5px 17px 7px;
+  left: 100%;
+  box-shadow: 4px 0px 20px 0px rgba(0, 0, 0, 0.15);
+  border-right: 1px solid rgba(201, 190, 190, 0.24);
+  border-left: 1px solid rgba(201, 190, 190,0.5);
+  display: none;
+}
+
+.childMenuParent .child_menu a {
+  padding: 0px 7px;
+  display: block;
+  font-family: Euclid Circular B;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-align: left;
+  text-underline-position: from-font;
+  -webkit-text-decoration-skip-ink: none;
+  text-decoration-skip-ink: none;
+  color: rgb(18, 47, 71);
+  margin-bottom: 6px;
+  padding: 11.8px 13px;
+}
+
+.childMenuParent .child_menu a:hover {
+  background: #f0f8fc;
+  color: #005c81;
+  border-radius: 4px;
+}
+
+.childActiveMenu {
+  background: #f0f8fc;
+  color: #005c81;
+}
+
+.new_sidebar button {
+  border-radius: 6px;
+  padding: 9px;
+}
+
+.new_sidebar_opened {
+  transition: 0.2s ease-in-out;
+  width: 256px;
+  padding: 0;
+  background-image: url(../../../assets/img/NavigationBG.png);
+  background-size: 85%;
+  background-repeat: no-repeat;
+  background-position: 0% 100%;
+}
+
+.new_sidebar_opened .logo {
+  padding: 13px 31px 0;
+  transition: 0.5 all;
+  height: 60px;
+}
+
+.new_sidebar_opened .logo img {
+    height: 24px;
+    width: 152px;
+    margin-left: -1px;
+    margin-top: 15px;
+}
+
+.new_sidebar_opened ul li:hover .child_menu {
+  display: block;
+  height: 100%;
+}
+
+.new_sidebar_opened ul li .menu_Text {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-left: 5px;
+}
+
+.new_sidebar_opened .childMenuParent .menuLink {
+  padding-left: 7px;
+}
+
+.new_sidebar_closed ul li:hover > div {
+  background: linear-gradient(91.49deg, #005c81 6.27%, #122f47 93.39%);
+  color: #fff;
+}
+
+.new_sidebar_closed ul li:hover > div.chatWithSnowkapAI {
+  background: linear-gradient(270.44deg, #00A7E3 0.03%, #AE41F6 99.96%);
+  color: #fff;
+}
+
+.new_sidebar_opened ul li:hover > div {
+  background: linear-gradient(91.49deg, #005c81 6.27%, #122f47 93.39%);
+  color: #fff;
+}
+
+.new_sidebar_opened ul li:hover > div.chatWithSnowkapAI {
+  background: linear-gradient(270.44deg, #00A7E3 0.03%, #AE41F6 99.96%);
+  color: #fff;
+}
+
+.new_sidebar_opened ul li:hover svg {
+  transform: rotate(90deg);
+}
+
+/* .new_sidebar_opened ul li:first-child>div  a {
+  pointer-events: none;
+  cursor: default;
+} */
+
+.new_sidebar_opened ul li:hover span {
+  color: #fff;
+}
+
+.new_sidebar_closed {
+  transition: 0.2s ease-in-out;
+  width: 80px;
+  padding: 0px;
+}
+
+.new_sidebar_closed .logo {
+  text-align: center;
+  padding: 17px 10px 0;
+  height: 60px;
+}
+
+.new_sidebar_closed .logo img {
+  width:37.41px;
+  height: 40px;
+}
+
+.new_sidebar_closed ul li .menu_Text {
+  display: none;
+}
+
+.activeMenu {
+  background: linear-gradient(91.49deg, #005c81 6.27%, #122f47 93.39%);
+}
+
+/* When ChatWithSnowkapAI is active, override active menu background */
+.activeMenu.chatWithSnowkapAI  {
+  background: linear-gradient(270.44deg, #00A7E3 0.03%, #AE41F6 99.96%);
+}
+
+/* Non-active menu requested gradient */
+.nonActiveMenu.chatWithSnowkapAI {
+  background: linear-gradient(129.57deg, #F9DAFF 6.66%, #DAF1FF 96.23%);
+}
+
+.activeMenu a , .activeMenu .menu_Text  {
+  color: #fff;
+}
+.menuLink {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+}
+.tooltipContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: max-content;
+}
+
+.customTooltip {
+  position: absolute;
+  left: 100%;
+  top: 0%;
+  background: #122F47;
+  color: white;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 3px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 0 4px 4px 0;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-left: -3px;
+}
+
+.customTooltip.chatWithSnowkapAI {
+  background: #1090d3;
+}
+
+.new_sidebar_closed .tooltipContainer:hover > .menuActiveLink {
+  border-radius: 4px 0 0 4px;
+  color: #fff;
+}

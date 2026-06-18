@@ -1,0 +1,11 @@
+query GetMappedCompanyGuid($DashboardType: String!) {
+  Tbl_CompanyDashboardMapping(
+    where: {
+      CompanyType: { _eq: "Portfolio Company" }
+      DashboardType: { _eq: $DashboardType }
+    }
+    limit: 1
+  ) {
+    CompanyGuid
+  }
+}

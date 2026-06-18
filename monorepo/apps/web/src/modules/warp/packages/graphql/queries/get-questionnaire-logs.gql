@@ -1,0 +1,31 @@
+query GetQuestionnaireLogs(
+  $formid: uuid!
+  $limit: Int!
+  $offset: Int!
+  $where: newformslogs_bool_exp!
+  $orderBy: [newformslogs_order_by!]
+) {
+  newformslogs(
+    limit: $limit
+    offset: $offset
+    where: { _and: [{ formid: { _eq: $formid } }, $where] }
+    order_by: $orderBy
+  ) {
+    id
+    event_type
+    form_title
+    number_of_questions
+    time_in_minutes
+    form_type
+    created_at
+    User {
+      name
+      email
+    }
+  }
+  newformslogs_aggregate(where: { _and: [{ formid: { _eq: $formid } }, $where] }) {
+    aggregate {
+      count
+    }
+  }
+}

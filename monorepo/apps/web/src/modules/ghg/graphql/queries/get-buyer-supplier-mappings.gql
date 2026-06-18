@@ -1,0 +1,9 @@
+query GetBuyerSupplierMappingData($where: BuyerSupplierMappings_bool_exp!) {
+  BuyerSupplierMappings(where: $where) {
+    metadata
+    buyerOrgid
+    id
+    supplierOrgid
+    buyerOrgid
+  }
+}

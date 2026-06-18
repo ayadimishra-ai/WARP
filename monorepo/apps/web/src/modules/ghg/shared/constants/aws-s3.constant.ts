@@ -1,0 +1,15 @@
+export const S3PathTypes = [
+  "exception_logs",
+  "activity_uploads",
+  "activity_uploads_failure",
+  "master_uploads",
+  "master_uploads_failure",
+  "ai-files-uploads",
+  "sku-bom-uploads",
+  "missing_master_details",
+  "waste-master",
+  "material-master-uploads",
+  "master-data-uploads-failure",
+  "activity_exports",
+  "email_attachments",
+] as const;

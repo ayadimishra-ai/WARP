@@ -1,0 +1,13 @@
+table:
+  name: AssessorConsultantMapping
+  schema: public
+object_relationships:
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+  - name: Organization
+    using:
+      foreign_key_constraint_on: assessorCompanyId
+  - name: organizationByConsultantcompanyid
+    using:
+      foreign_key_constraint_on: consultantCompanyId

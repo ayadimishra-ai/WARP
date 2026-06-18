@@ -1,0 +1,36 @@
+mutation updateRegistrationStatus(
+  $companyGuid: uuid!
+  $companyStatusGuid: uuid!
+  $userGuid: uuid!
+  $statusGuid: uuid!
+  $password: String!
+  $username: String!
+  $phone: String!
+) {
+  update_Tbl_CompanyRoleMapping(
+    where: { CompanyGuid: { _eq: $companyGuid } }
+    _set: { StatusGuid: $companyStatusGuid }
+  ) {
+    affected_rows
+    returning {
+      CompanyGuid
+    }
+  }
+  update_Tbl_UserRoleMapping(
+    where: { UserGuid: { _eq: $userGuid } }
+    _set: { StatusGuid: $statusGuid }
+  ) {
+    affected_rows
+  }
+  update_Tbl_Users(
+    where: { UserGuid: { _eq: $userGuid } }
+    _set: {
+      Password: $password
+      IsVerified: true
+      FirstName: $username
+      MobileNumber: $phone
+    }
+  ) {
+    affected_rows
+  }
+}

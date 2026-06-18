@@ -1,0 +1,14 @@
+query getDefaultUserPermissionsByRoleName($roleName: String) {
+  Tbl_Permissions(
+    where: {
+      Tbl_Role: { RoleName: { _ilike: $roleName } }
+      is_default: { _eq: true }
+    }
+  ) {
+    PermissionGuid
+    PageGuid
+    RoleGuid
+    is_default
+    workflow_key
+  }
+}

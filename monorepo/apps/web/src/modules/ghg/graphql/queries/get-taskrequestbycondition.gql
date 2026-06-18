@@ -1,0 +1,23 @@
+query getTaskRequestbycondition($where: TaskRequest_bool_exp!) {
+  TaskRequest(where: $where) {
+    id
+    organization_address_id
+    month
+    year
+    status
+    metadata
+    is_deleted
+    OrganizationAddress {
+      Address {
+        name
+        code
+        pincode
+        type
+        ownership_type
+        Country {
+          region_code
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+query getProductAndSkus(
+  $productMasterIdList: [String!]!
+  $skuMasterIdList: [String!]!
+) {
+  OrgProductMaster(
+    where: {
+      _and: {
+        client_master_id: { _in: $productMasterIdList }
+        is_deleted: { _eq: false }
+      }
+    }
+  ) {
+    id
+    name
+    code
+    organization_address_id
+    client_master_id
+    OrgSKUMasters(
+      where: {
+        _and: {
+          client_master_id: { _in: $skuMasterIdList }
+          is_deleted: { _eq: false }
+        }
+      }
+    ) {
+      id
+      name
+      code
+      weight
+      weight_uom
+      client_master_id
+      org_product_master_id
+      organization_id
+    }
+  }
+}

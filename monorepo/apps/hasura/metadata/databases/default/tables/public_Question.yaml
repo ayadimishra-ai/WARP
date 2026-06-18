@@ -1,0 +1,80 @@
+table:
+  name: Question
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: Question
+    using:
+      foreign_key_constraint_on: parentQuestionId
+  - name: Section
+    using:
+      foreign_key_constraint_on: sectionId
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: Answers
+    using:
+      foreign_key_constraint_on:
+        column: questionId
+        table:
+          name: Answer
+          schema: public
+  - name: AssesseeUserMappings
+    using:
+      foreign_key_constraint_on:
+        column: questionId
+        table:
+          name: AssesseeUserMapping
+          schema: public
+  - name: FormFields
+    using:
+      foreign_key_constraint_on:
+        column: questionId
+        table:
+          name: FormField
+          schema: public
+  - name: FormResults
+    using:
+      foreign_key_constraint_on:
+        column: questionId
+        table:
+          name: FormResult
+          schema: public
+  - name: InterimFormLogs
+    using:
+      foreign_key_constraint_on:
+        column: questionId
+        table:
+          name: InterimFormLogs
+          schema: public
+  - name: Interim_Answers
+    using:
+      foreign_key_constraint_on:
+        column: questionId
+        table:
+          name: Interim_Answer
+          schema: public
+  - name: Interim_Recommendations
+    using:
+      foreign_key_constraint_on:
+        column: questionId
+        table:
+          name: Interim_Recommendation
+          schema: public
+  - name: Questions
+    using:
+      foreign_key_constraint_on:
+        column: parentQuestionId
+        table:
+          name: Question
+          schema: public
+  - name: ValidationWarningLogs
+    using:
+      foreign_key_constraint_on:
+        column: QuestionId
+        table:
+          name: ValidationWarningLogs
+          schema: public

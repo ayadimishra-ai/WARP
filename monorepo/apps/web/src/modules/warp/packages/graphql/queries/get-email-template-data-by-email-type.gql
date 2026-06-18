@@ -1,0 +1,12 @@
+query GetEmailTemplateDataByEmailtype($emailType: [String!]) {
+  EmailTemplate(where: { type: { _in: $emailType } }) {
+    id
+    bccEmails
+    ccEmails
+    subject
+    template
+    companyId
+    formId
+    type
+  }
+}

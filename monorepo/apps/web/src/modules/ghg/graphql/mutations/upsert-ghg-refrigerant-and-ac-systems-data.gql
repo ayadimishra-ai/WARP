@@ -1,0 +1,38 @@
+mutation upsertGHGRefrigerantAndACSystemsActivity(
+  $where: GHGRefrigerantAndACSystems_bool_exp!
+  $ghgRefrigerantAndACSystemsData: [GHGRefrigerantAndACSystems_insert_input!]!
+) {
+  delete_GHGRefrigerantAndACSystems(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      type_of_refrigerant_used
+      quantity_of_refrigerant_filled
+      uom_refrigerant_and_ac_systems
+    }
+  }
+  insert_GHGRefrigerantAndACSystems(
+    objects: $ghgRefrigerantAndACSystemsData
+    on_conflict: { constraint: GHGRefrigerantAndACSystems_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      type_of_refrigerant_used
+      quantity_of_refrigerant_filled
+      uom_refrigerant_and_ac_systems
+    }
+  }
+}

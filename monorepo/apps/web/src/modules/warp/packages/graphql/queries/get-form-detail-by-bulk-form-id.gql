@@ -1,0 +1,12 @@
+query getFormDetailByBulkFormId($formId: [uuid!]) {
+  FormDetails(where: { formId: { _in: $formId } }) {
+    id
+    formId
+    bodyTemplate
+    framework
+    focusArea
+    timeInMinutes
+    notes
+    industry
+  }
+}

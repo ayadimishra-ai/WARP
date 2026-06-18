@@ -1,0 +1,12 @@
+# Try out GraphQL queries here
+mutation insertDataimport($input: DataImportHistory_insert_input!) {
+  insert_DataImportHistory_one(object: $input) {
+    id
+    organization_address_id
+    import_method
+    file_name
+    file_url
+    status
+    status_data
+  }
+}

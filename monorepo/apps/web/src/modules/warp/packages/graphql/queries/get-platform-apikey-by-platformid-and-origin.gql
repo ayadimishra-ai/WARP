@@ -1,0 +1,6 @@
+query getPlatformApikeyByPlatformIdAndOrigin($platformId: uuid!) {
+  Platform(where: { id: { _eq: $platformId } }) {
+    id
+    apiKey
+  }
+}

@@ -1,0 +1,222 @@
+.customImpactDashboardKPI,
+.chirataeReportRespHeight,
+.chirataeESGInvesteeCSS,
+.PCDashboardCSS,
+.ESGReportPostDeal,
+.ESGReportPreDeal,
+.ESGReportPreDealLive{
+    min-width: 100%;
+    min-height: 900px;
+}
+@media (min-width:1300px) and (max-width:1399px){
+    .customImpactDashboardKPI{
+        border: 0px;
+        min-height: 4670px !important;
+        min-width: 100% !important;
+        width: 100%;
+        height: 100%;
+    }
+    .chirataeReportRespHeight{
+      border: 0px;
+      min-height: 870px;
+      min-width: 100%;
+      width: 100%;
+      height: 100%;
+  }
+    .chirataeESGInvesteeCSS
+    {
+      border: 0px;
+        min-height: 5085px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .PCDashboardCSS{
+      border: 0px;
+        min-height: 1350px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPostDeal{
+      border: 0px;
+      min-height: 1800px !important;
+      min-width: 100% !important;
+      width: 100%;
+      height: 100%;
+    }
+    .ESGReportPreDeal{
+      border: 0px;
+      min-height: 5000px !important;
+      min-width: 100% !important;
+      width: 100%;
+      height: 100%;
+    }
+    .ESGReportPreDealLive{
+      border: 0px;
+        min-height: 1700px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+  }
+  }
+
+  @media (min-width:1400px) and (max-width:1499px){
+    .customImpactDashboardKPI{
+        border: 0px;
+        min-height: 4970px !important;
+        min-width: 100% !important;
+        width: 100%;
+        height: 100%;
+    }
+    .chirataeReportRespHeight{
+      border: 0px;
+      min-height: 940px;
+      min-width: 100%;
+      width: 100%;
+      height: 100%;
+  }
+    .chirataeESGInvesteeCSS
+    {
+      border: 0px;
+        min-height: 5380px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .PCDashboardCSS{
+      border: 0px;
+        min-height: 1470px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPostDeal{
+      border: 0px;
+      min-height: 1900px !important;
+      min-width: 100% !important;
+      width: 100%;
+      height: 100%;
+    }
+    .ESGReportPreDeal{
+      border: 0px;
+      min-height: 5950px !important;
+      min-width: 100% !important;
+      width: 100%;
+      height: 100%;
+    }
+    .ESGReportPreDealLive{
+      border: 0px;
+        min-height: 1820px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+  }
+
+  }
+@media (min-width:1500px) and (max-width:1600px){
+    .customImpactDashboardKPI{
+        border: 0px;
+        min-height: 5340px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .chirataeReportRespHeight{
+      border: 0px;
+      min-height: 1000px;
+      min-width: 100%;
+      width: 100%;
+      height: 100%;
+  }
+    .chirataeESGInvesteeCSS
+    {
+      border: 0px;
+        min-height: 5850px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .PCDashboardCSS{
+      border: 0px;
+        min-height: 1540px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPostDeal{
+      border: 0px;
+      min-height: 2000px  !important;
+      min-width: 100% !important;
+      width: 100%;
+      height: 100%;
+    }
+    .ESGReportPreDeal{
+      border: 0px;
+      min-height: 6450px !important;
+      min-width: 100% !important;
+      width: 100%;
+      height: 100%;
+    }
+    .ESGReportPreDealLive{
+      border: 0px;
+        min-height: 1940px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+  }
+
+  }
+  @media (min-width:1900px) and (max-width:2000px){
+    .customImpactDashboardKPI{
+        border: 0px;
+        min-height: 6880px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .chirataeReportRespHeight{
+      border: 0px;
+      min-height: 1280px;
+      min-width: 100%;
+      width: 100%;
+      height: 100%;
+  }
+    .chirataeESGInvesteeCSS
+    {
+      border: 0px;
+        min-height: 7490px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .PCDashboardCSS{
+      border: 0px;
+        min-height: 2010px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+    }
+    .ESGReportPostDeal{
+      border: 0px;
+      min-height: 2380px !important;
+      min-width: 100% !important;
+      width: 100%;
+      height: 100%;
+    }
+    .ESGReportPreDeal{
+      border: 0px;
+      min-height: 8160px !important;
+      min-width: 100% !important;
+      width: 100%;
+      height: 100%;
+    }
+    .ESGReportPreDealLive{
+      border: 0px;
+        min-height: 2460px !important;
+        min-width: 100%;
+        width: 100%;
+        height: 100%;
+  }
+
+  }

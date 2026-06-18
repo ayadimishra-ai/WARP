@@ -1,0 +1,21 @@
+table:
+  name: City
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: State
+    using:
+      foreign_key_constraint_on: state_id
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: Addresses
+    using:
+      foreign_key_constraint_on:
+        column: city_id
+        table:
+          name: Addresses
+          schema: public

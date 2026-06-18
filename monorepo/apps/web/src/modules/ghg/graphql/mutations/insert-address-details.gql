@@ -1,0 +1,40 @@
+mutation insertAddresses($AddressData: [Addresses_insert_input!]!) {
+  insert_Addresses(
+    objects: $AddressData
+    on_conflict: { constraint: Addresses_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+      name
+      code
+      client_master_id
+      full_address
+      pincode
+      country_id
+      state_id
+      city_id
+      type
+      metadata
+      is_wwtp
+      is_deleted
+      ownership_type
+      facility_type
+      created_at
+      updated_at
+      created_by
+      updated_by
+      OrganizationAddresses {
+        id
+        organization_id
+        address_id
+        metadata
+        is_deleted
+        created_at
+        updated_at
+        created_by
+        updated_by
+      }
+    }
+  }
+}

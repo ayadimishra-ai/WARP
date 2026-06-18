@@ -1,0 +1,31 @@
+query getFirstDeclinedQuestionId($invitationId: uuid!) {
+  ReviewerDetailsMappingDeclined: ReviewerDetailsMapping(
+    where: {
+      _and: [
+        { FormInvitationId: { _eq: $invitationId } }
+        { currentStatus: { _eq: "Declined" } }
+      ]
+    }
+    limit: 1
+    order_by: { Question: { key: asc } }
+  ) {
+    id
+    questionId
+    created_at
+  }
+
+  ReviewerDetailsMappingResubmitted: ReviewerDetailsMapping(
+    where: {
+      _and: [
+        { FormInvitationId: { _eq: $invitationId } }
+        { currentStatus: { _eq: "Re-Submitted" } }
+      ]
+    }
+    limit: 1
+    order_by: { Question: { key: asc } }
+  ) {
+    id
+    questionId
+    created_at
+  }
+}

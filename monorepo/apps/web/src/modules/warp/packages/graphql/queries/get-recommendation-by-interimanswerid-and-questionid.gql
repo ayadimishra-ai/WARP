@@ -1,0 +1,18 @@
+query getRecommendationByInterimAnswerIdAndQuestionId(
+  $interimAnswerId: uuid!
+  $questionId: uuid!
+) {
+  Interim_Recommendation(
+    where: {
+      interim_answer_id: { _eq: $interimAnswerId }
+      questionId: { _eq: $questionId }
+    }
+  ) {
+    id
+    interim_answer_id
+    questionId
+    status
+    recommendations
+    answeroption
+  }
+}

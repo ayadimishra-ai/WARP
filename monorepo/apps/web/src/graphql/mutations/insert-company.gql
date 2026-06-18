@@ -1,0 +1,12 @@
+mutation InsertCompany($companyInput: Tbl_Companies_insert_input!) {
+  insert_Tbl_Companies_one(
+    object: $companyInput
+  ) {
+    CompanyGuid
+    CompanyName
+    CountryGuid
+    IsActive
+    CreatedDate
+    CreatedBy
+  }
+}

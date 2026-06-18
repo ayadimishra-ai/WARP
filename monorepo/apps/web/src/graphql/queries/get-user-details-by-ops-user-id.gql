@@ -1,0 +1,15 @@
+query GetUserDetailsByOpsUserIds($OPSUserIds: [String!]!) {
+  Tbl_Users(where: { OPSUserId: { _in: $OPSUserIds } }) {
+    UserGuid
+    EmailId
+    MobileNumber
+    FirstName
+    LastName
+    IsActive
+    CompanyName
+    Password
+    CreatedDate
+    SetPasswordToken
+    OPSUserId
+  }
+}

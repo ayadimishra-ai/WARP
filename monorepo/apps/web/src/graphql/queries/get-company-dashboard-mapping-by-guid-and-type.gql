@@ -1,0 +1,38 @@
+query GetCompanyDashboardMappingByGuidAndType(
+  $companyGuid: uuid!
+  $dashboardType: String!
+) {
+  Tbl_CompanyDashboardMapping(
+    where: {
+      CompanyGuid: { _eq: $companyGuid }
+      DashboardType: { _eq: $dashboardType }
+      IsActive: { _eq: true }
+    }
+    order_by: { DisplayOrder: desc }
+  ) {
+    CompanyGuid
+    CompanyDashboardMappingGuid
+    DashboardType
+    Url
+    CreatedDate
+    CreatedBy
+    ModifiedDate
+    ModifiedBy
+    CompanyType
+    DisplayOrder
+    ColumnSize
+    IFrameStyle
+    IsActive
+    LocationUrl
+    ReportName
+    IsBorder
+    IsPowerBiReport
+    DashboardHeight
+    HideTabs
+    Tbl_Company {
+      CompanyGuid
+      CPanelCompanyId
+      CompanyName
+    }
+  }
+}

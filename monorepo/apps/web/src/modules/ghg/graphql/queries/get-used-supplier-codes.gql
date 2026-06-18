@@ -1,0 +1,21 @@
+query getUsedSupplierCodes(
+  $capitalGoodsWhere: GHGCapital_Goods_bool_exp!
+  $materialProcurementWhere: GHGMaterialProcurement_bool_exp!
+  $transportUpstreamWhere: GHGTransport_Upstream_bool_exp!
+) {
+  GHGCapital_Goods(where: $capitalGoodsWhere, distinct_on: [Supplier_Code]) {
+    Supplier_Code
+  }
+  GHGMaterialProcurement(
+    where: $materialProcurementWhere
+    distinct_on: [Supplier_Code]
+  ) {
+    Supplier_Code
+  }
+  GHGTransport_Upstream(
+    where: $transportUpstreamWhere
+    distinct_on: [Supplier_code]
+  ) {
+    Supplier_Code: Supplier_code
+  }
+}

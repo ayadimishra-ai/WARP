@@ -1,0 +1,24 @@
+table:
+  name: Sources
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: FormInvitation
+    using:
+      foreign_key_constraint_on: formInvitationId
+  - name: SourceFile
+    using:
+      foreign_key_constraint_on: sourceFilesId
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: SuggestionSourceMappings
+    using:
+      foreign_key_constraint_on:
+        column: sourceId
+        table:
+          name: SuggestionSourceMapping
+          schema: public

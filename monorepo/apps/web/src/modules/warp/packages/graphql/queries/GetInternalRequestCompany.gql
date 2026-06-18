@@ -1,0 +1,7 @@
+query GetInternalRequestCompany {
+  GlobalMaster(where: { type: { _eq: "InternalRequestCompany" } }) {
+    id
+    data
+    type
+  }
+}

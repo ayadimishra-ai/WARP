@@ -1,0 +1,9 @@
+query getactivityidfromcode($code: String!) {
+  Activity(where: { code: { _eq: $code } }) {
+    id
+    code
+    Activity {
+      id
+    }
+  }
+}

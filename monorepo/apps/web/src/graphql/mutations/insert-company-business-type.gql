@@ -1,0 +1,10 @@
+mutation createCompanyBusinessType($object: [Tbl_CompanyBusinessType_insert_input!]!) {
+  insert_Tbl_CompanyBusinessType(objects: $object) {
+    affected_rows
+    returning {
+      CompanyBusinessTypeGuid
+      CompanyGuid
+      BusinessTypeGuid
+    }
+  }
+}

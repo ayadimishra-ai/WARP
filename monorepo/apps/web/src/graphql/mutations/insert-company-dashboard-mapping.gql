@@ -1,0 +1,8 @@
+mutation InsertCompanyDashboardMapping($object: Tbl_CompanyDashboardMapping_insert_input!) {
+  insert_Tbl_CompanyDashboardMapping_one(object: $object) {
+    CompanyDashboardMappingGuid
+    DashboardType
+    CompanyGuid
+    CompanyType
+  }
+}

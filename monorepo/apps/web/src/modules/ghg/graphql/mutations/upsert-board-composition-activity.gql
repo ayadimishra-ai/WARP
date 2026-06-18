@@ -1,0 +1,46 @@
+mutation upsertESGBoardCompositionActivity(
+  $where: ESGBoardComposition_bool_exp!
+  $esgBoardCompositionData: [ESGBoardComposition_insert_input!]!
+) {
+  delete_ESGBoardComposition(where: $where) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      director_category
+      number_of_male_directors
+      number_of_female_directors
+      number_of_other_gender_directors
+      number_of_minority_group_directors
+      number_of_directors_under_30
+      number_of_directors_from_30_to_50
+      number_of_directors_above_50
+      is_the_board_chair_independent
+      created_by
+      updated_by
+    }
+  }
+  insert_ESGBoardComposition(
+    objects: $esgBoardCompositionData
+    on_conflict: { constraint: ESGBoardComposition_pkey }
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      director_category
+      number_of_male_directors
+      number_of_female_directors
+      number_of_other_gender_directors
+      number_of_minority_group_directors
+      number_of_directors_under_30
+      number_of_directors_from_30_to_50
+      number_of_directors_above_50
+      is_the_board_chair_independent
+      created_by
+      updated_by
+    }
+  }
+}

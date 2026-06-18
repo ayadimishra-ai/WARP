@@ -1,0 +1,10 @@
+mutation updateInvitationToDraftByInvitationId($invitationId: [uuid!]!) {
+  update_FormInvitation(
+    _set: { status: "Draft" }
+    where: {
+      _and: [{ id: { _in: $invitationId } }, { status: { _eq: "Invited" } }]
+    }
+  ) {
+    affected_rows
+  }
+}

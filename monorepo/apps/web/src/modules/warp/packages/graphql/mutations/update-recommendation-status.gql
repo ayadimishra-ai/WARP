@@ -1,0 +1,16 @@
+mutation updateRecommendationStatus(
+  $status: String
+  $recommendationId: uuid
+  $isApproved: Boolean
+) {
+  update_Interim_Recommendation(
+    _set: { status: $status, isApproved: $isApproved }
+    where: { id: { _eq: $recommendationId } }
+  ) {
+    affected_rows
+    returning {
+      id
+      status
+    }
+  }
+}

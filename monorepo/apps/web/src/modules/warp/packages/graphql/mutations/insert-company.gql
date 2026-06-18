@@ -1,0 +1,26 @@
+mutation InsertCompany(
+  $insertObject: [Company_insert_input!]!
+  $updateObject: [Company_updates!]!
+) {
+  insert_Company(
+    objects: $insertObject
+    on_conflict: { constraint: Company_pkey }
+  ) {
+    returning {
+      id
+      name
+      primaryContact
+      metadata
+    }
+  }
+
+  update_Company_many(updates: $updateObject) {
+    affected_rows
+    returning {
+      id
+      name
+      primaryContact
+      metadata
+    }
+  }
+}

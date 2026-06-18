@@ -1,0 +1,8 @@
+mutation updateFuelPurchasedParentUpdatedBy($id: uuid!, $updated_by: uuid!, $updated_at: timestamptz!) {
+  update_GHGEnergyConsumption_FuelPurchased_by_pk(
+    pk_columns: { id: $id }
+    _set: { updated_by: $updated_by, updated_at: $updated_at }
+  ) {
+    id
+  }
+}

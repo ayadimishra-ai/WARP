@@ -1,0 +1,23 @@
+query GetCompanyDashboardMapping($companyGuid: uuid!, $DashboardType: String!) {
+  Tbl_CompanyDashboardMapping(
+    where: {
+      CompanyType: { _eq: "Portfolio Company" }
+      DashboardType: { _eq: $DashboardType }
+      CompanyGuid: { _eq: $companyGuid }
+    }
+  ) {
+    CompanyGuid
+    CompanyType
+    DashboardType
+    Url
+    DisplayOrder
+    ColumnSize
+    IFrameStyle
+    IsActive
+    ReportName
+    DashboardHeight
+    IsBorder
+    LocationUrl
+    IsPowerBiReport
+  }
+}

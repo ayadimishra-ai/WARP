@@ -1,0 +1,90 @@
+table:
+  name: FormInvitation
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+  - name: Organization
+    using:
+      foreign_key_constraint_on: companyId
+  - name: ParentCompanyMapping
+    using:
+      foreign_key_constraint_on: ParentCompanyMappingId
+  - name: organizationByParentcompanyid
+    using:
+      foreign_key_constraint_on: parentcompanyId
+array_relationships:
+  - name: AIBulkDocumentProcessings
+    using:
+      foreign_key_constraint_on:
+        column: formInvitationId
+        table:
+          name: AIBulkDocumentProcessing
+          schema: public
+  - name: AssesseeUserMappings
+    using:
+      foreign_key_constraint_on:
+        column: InvitationId
+        table:
+          name: AssesseeUserMapping
+          schema: public
+  - name: FormSubmissions
+    using:
+      foreign_key_constraint_on:
+        column: invitationId
+        table:
+          name: FormSubmission
+          schema: public
+  - name: Interim_Comments
+    using:
+      foreign_key_constraint_on:
+        column: invitationId
+        table:
+          name: Interim_Comments
+          schema: public
+  - name: InvitationComments
+    using:
+      foreign_key_constraint_on:
+        column: invitationId
+        table:
+          name: InvitationComment
+          schema: public
+  - name: InvitationConsultantMappings
+    using:
+      foreign_key_constraint_on:
+        column: invitationId
+        table:
+          name: InvitationConsultantMapping
+          schema: public
+  - name: Sources
+    using:
+      foreign_key_constraint_on:
+        column: formInvitationId
+        table:
+          name: Sources
+          schema: public
+  - name: Suggestions
+    using:
+      foreign_key_constraint_on:
+        column: formInvitationId
+        table:
+          name: Suggestions
+          schema: public
+  - name: ValidationWarningLogs
+    using:
+      foreign_key_constraint_on:
+        column: InvitationId
+        table:
+          name: ValidationWarningLogs
+          schema: public
+  - name: WebCurations
+    using:
+      foreign_key_constraint_on:
+        column: formInvitationId
+        table:
+          name: WebCuration
+          schema: public

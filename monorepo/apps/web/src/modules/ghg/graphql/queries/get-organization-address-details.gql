@@ -1,0 +1,13 @@
+query getorganizationAddressDetails($where: OrganizationAddress_bool_exp!) {
+  OrganizationAddress(where: $where) {
+    id
+    organization_id
+    address_id
+    Address {
+      country_id
+      Country {
+        region_code
+      }
+    }
+  }
+}

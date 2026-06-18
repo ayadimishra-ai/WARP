@@ -1,0 +1,43 @@
+query CheckDuplicateMeterReading(
+  $meter_number: String!
+  $previous_reading_date: date!
+  $present_reading_date: date!
+  $organization_id: uuid!
+) {
+  AIFileData(
+    where: {
+      _and: [
+        { previous_reading_date: { _eq: $previous_reading_date } }
+        { present_reading_date: { _eq: $present_reading_date } }
+        { verified_at: { _is_null: false } }
+        { verified_by: { _is_null: false } }
+        {
+          MeterData: {
+            _and: [
+              { meter_number: { _ilike: $meter_number } }
+              {
+                OrganizationAddress: {
+                  organization_id: { _eq: $organization_id }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ) {
+    id
+    previous_reading_date
+    present_reading_date
+    verified_at
+    verified_by
+    MeterData {
+      id
+      meter_number
+      OrganizationAddress {
+        id
+        organization_id
+      }
+    }
+  }
+}

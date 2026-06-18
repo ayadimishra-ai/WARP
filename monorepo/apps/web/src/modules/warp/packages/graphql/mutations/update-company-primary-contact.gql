@@ -1,0 +1,14 @@
+mutation UpdateCompanyPrimaryContact(
+  $companyId: uuid
+  $primaryContact: jsonb!
+) {
+  update_Company(
+    _set: { primaryContact: $primaryContact }
+    where: { id: { _eq: $companyId } }
+  ) {
+    returning {
+      id
+      primaryContact
+    }
+  }
+}

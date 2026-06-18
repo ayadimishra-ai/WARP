@@ -1,0 +1,11 @@
+mutation updateTimestampAfterEmailSend(
+  $id: [uuid!]!
+  $reminderIntervalAfterDueDate: timestamp!
+) {
+  updateTimestampAfterEmailSend: update_Interim_Recommendation(
+    where: { id: { _in: $id } }
+    _set: { ReminderIntervalAfterDueDate: $reminderIntervalAfterDueDate }
+  ) {
+    affected_rows
+  }
+}

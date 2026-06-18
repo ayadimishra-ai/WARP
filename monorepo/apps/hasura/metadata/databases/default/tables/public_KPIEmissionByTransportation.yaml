@@ -1,0 +1,3 @@
+table:
+  name: KPIEmissionByTransportation
+  schema: public

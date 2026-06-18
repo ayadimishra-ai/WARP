@@ -1,0 +1,196 @@
+table:
+  name: TaskRequest
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: OrganizationAddress
+    using:
+      foreign_key_constraint_on: organization_address_id
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: ActivityTaskRequests
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: ActivityTaskRequest
+          schema: public
+  - name: ESGBoardCompositions
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: ESGBoardComposition
+          schema: public
+  - name: ESGCSRs
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: ESGCSR
+          schema: public
+  - name: ESGEmployeeDiversities
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: ESGEmployeeDiversity
+          schema: public
+  - name: ESGEmployeeTurnovers
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: ESGEmployeeTurnover
+          schema: public
+  - name: ESGGovernances
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: ESGGovernance
+          schema: public
+  - name: ESGGrievances
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: ESGGrievances
+          schema: public
+  - name: ESGHealthAndSafeties
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: ESGHealthAndSafety
+          schema: public
+  - name: ESGTrainingHours
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: ESGTrainingHours
+          schema: public
+  - name: GHGBuyer_Shares
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGBuyer_Share
+          schema: public
+  - name: GHGEnergyConsumption_FuelPurchased_Transportations
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGEnergyConsumption_FuelPurchased_Transportation
+          schema: public
+  - name: GHGEnergyConsumption_FuelPurchaseds
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGEnergyConsumption_FuelPurchased
+          schema: public
+  - name: GHGEnergyConsumption_GridPowers
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGEnergyConsumption_GridPower
+          schema: public
+  - name: GHGEnergy_CaptivePowers
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGEnergy_CaptivePower
+          schema: public
+  - name: GHGFreshWaters
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGFreshWater
+          schema: public
+  - name: GHGGeneralDetails
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGGeneralDetails
+          schema: public
+  - name: GHGHarvestedWaters
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGHarvestedWater
+          schema: public
+  - name: GHGMaterialProcurements
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGMaterialProcurement
+          schema: public
+  - name: GHGProductionDetails
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGProductionDetails
+          schema: public
+  - name: GHGTransport_BusinessTravels
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGTransport_BusinessTravel
+          schema: public
+  - name: GHGTransport_Downstreams
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGTransport_Downstream
+          schema: public
+  - name: GHGTransport_EmployeeTravels
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGTransport_EmployeeTravel
+          schema: public
+  - name: GHGTransport_Upstreams
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGTransport_Upstream
+          schema: public
+  - name: GHGWasteWaters
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGWasteWater
+          schema: public
+  - name: GHGWastes
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGWaste
+          schema: public
+  - name: GHGWaterWithdrawals
+    using:
+      foreign_key_constraint_on:
+        column: task_request_id
+        table:
+          name: GHGWaterWithdrawal
+          schema: public

@@ -1,0 +1,63 @@
+mutation upsertUseOfSoldProductsFuel(
+  $where: GHGUseOfSoldProducts_Fuel_bool_exp!
+  $fuelData: [GHGUseOfSoldProducts_Fuel_insert_input!]!
+  $fuelUpdate: [GHGUseOfSoldProducts_Fuel_updates!]!
+) {
+  delete_GHGUseOfSoldProducts_Fuel(where: $where) {
+    returning {
+      id
+      task_request_id
+      activity_task_request_id
+      organization_address_id
+      Date
+      Type_of_Fuel_Consumed
+      Product_Code
+      Lifetime_of_Product
+      Rationale
+      Quantity_of_Fuel_Consumed
+      UoM_of_Fuel_Consumed
+      Additional_comments
+      Remarks
+      metadata
+    }
+  }
+  insert_GHGUseOfSoldProducts_Fuel(
+    objects: $fuelData
+    on_conflict: { constraint: GHGUseOfSoldProducts_Fuel_pkey }
+  ) {
+    returning {
+      id
+      task_request_id
+      activity_task_request_id
+      organization_address_id
+      Date
+      Type_of_Fuel_Consumed
+      Product_Code
+      Lifetime_of_Product
+      Rationale
+      Quantity_of_Fuel_Consumed
+      UoM_of_Fuel_Consumed
+      Additional_comments
+      Remarks
+      metadata
+    }
+  }
+  update_GHGUseOfSoldProducts_Fuel_many(updates: $fuelUpdate) {
+    returning {
+      id
+      task_request_id
+      activity_task_request_id
+      organization_address_id
+      Date
+      Type_of_Fuel_Consumed
+      Product_Code
+      Lifetime_of_Product
+      Rationale
+      Quantity_of_Fuel_Consumed
+      UoM_of_Fuel_Consumed
+      Additional_comments
+      Remarks
+      metadata
+    }
+  }
+}

@@ -1,0 +1,10 @@
+mutation createCompanyRoleMapping($object: [Tbl_CompanyRoleMapping_insert_input!]!) {
+  insert_Tbl_CompanyRoleMapping(objects: $object) {
+    affected_rows
+    returning {
+      CompanyRoleMappingGuid
+      CompanyGuid
+      RoleGuid
+    }
+  }
+}

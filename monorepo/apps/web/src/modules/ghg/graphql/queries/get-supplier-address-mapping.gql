@@ -1,0 +1,15 @@
+query GetSupplierAddressMappings($orgId: uuid!) {
+  Organization(where: { id: { _eq: $orgId } }) {
+    id
+    name
+    OrganizationAddresses {
+      id
+      organization_id
+      Address {
+        id
+        name
+        code
+      }
+    }
+  }
+}

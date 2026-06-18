@@ -1,0 +1,34 @@
+query GetCompanyDashboardMappingByCpanelCompanyId($cpanelCompanyId: String!) {
+  Tbl_CompanyDashboardMapping(
+    where: {
+      IsActive: { _eq: true }
+      Tbl_Company: {
+        CPanelCompanyId: { _eq: $cpanelCompanyId }
+      }
+    }
+  ) {
+    CompanyGuid
+    CompanyDashboardMappingGuid
+    DashboardType
+    Url
+    CreatedDate
+    CreatedBy
+    ModifiedDate
+    ModifiedBy
+    CompanyType
+    DisplayOrder
+    ColumnSize
+    IFrameStyle
+    IsActive
+    LocationUrl
+    ReportName
+    IsBorder
+    IsPowerBiReport
+    DashboardHeight
+    Tbl_Company {
+      CompanyGuid
+      CPanelCompanyId
+      CompanyName
+    }
+  }
+}

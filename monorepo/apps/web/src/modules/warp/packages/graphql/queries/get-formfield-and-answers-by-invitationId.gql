@@ -1,0 +1,37 @@
+query getFormfieldAndAnswersByinvitationId($invitationId: uuid!) {
+  FormSubmission(
+    where: { invitationId: { _eq: $invitationId }, isActive: { _eq: true } }
+  ) {
+    Answers {
+      id
+      data
+      questionId
+      submissionId
+      formFieldId
+    }
+    FormInvitation {
+      Form {
+        FormFields {
+          id
+          field
+          type
+          fieldOptions
+          interface
+          interfaceOptions
+          display
+          displayOptions
+          displayRules
+          validationRules
+          seqIndex
+          groupField
+          recommendationCalc
+          subtheme
+          formId
+          warningRules
+        }
+      }
+      durationFrom
+      durationTo
+    }
+  }
+}

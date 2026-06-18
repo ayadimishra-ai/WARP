@@ -1,0 +1,17 @@
+query getUserroleMappingsByRoleGuid($roleguid: uuid) {
+  Tbl_UserRoleMapping(where: {RoleGuid: {_eq: $roleguid }}) {
+    RoleGuid
+    UserGuid
+    Tbl_Role {
+      RoleGuid
+      RoleName
+      IsActive
+      CreatedDateUtc
+      Priority
+    }
+    Tbl_UserStatusMaster {
+      StatusGuid
+      Status
+    }
+  }
+}

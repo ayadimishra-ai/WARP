@@ -1,0 +1,52 @@
+table:
+  name: Section
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: Form
+    using:
+      foreign_key_constraint_on: formId
+  - name: Section
+    using:
+      foreign_key_constraint_on: sectionId
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: FormFields
+    using:
+      foreign_key_constraint_on:
+        column: sectionId
+        table:
+          name: FormField
+          schema: public
+  - name: FormResults
+    using:
+      foreign_key_constraint_on:
+        column: sectionId
+        table:
+          name: FormResult
+          schema: public
+  - name: InterimFormLogs
+    using:
+      foreign_key_constraint_on:
+        column: sectionId
+        table:
+          name: InterimFormLogs
+          schema: public
+  - name: Questions
+    using:
+      foreign_key_constraint_on:
+        column: sectionId
+        table:
+          name: Question
+          schema: public
+  - name: Sections
+    using:
+      foreign_key_constraint_on:
+        column: sectionId
+        table:
+          name: Section
+          schema: public

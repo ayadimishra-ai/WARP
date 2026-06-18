@@ -1,0 +1,8 @@
+query GetUserRoleMappingByUserGuid($userGuid: uuid!) {
+  Tbl_UserRoleMapping(where: {UserGuid: {_eq: $userGuid}}) {
+    RoleGuid
+    Tbl_Role {
+      RoleName
+    }
+  }
+}

@@ -1,0 +1,9 @@
+mutation deleteFuelPurchasedParentBulk($ids: [uuid!]!) {
+  delete_GHGEnergyConsumption_FuelPurchased(where: { id: { _in: $ids } }) {
+    affected_rows
+    returning {
+      id
+      task_request_id
+    }
+  }
+}

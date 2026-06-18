@@ -1,0 +1,26 @@
+query getformInvitationdatabycustomwhere($where: FormInvitation_bool_exp!) {
+  FormInvitation(where: $where, order_by: { created_at: asc }) {
+    id
+    companyId
+    formId
+    email
+    Company {
+      name
+    }
+    Sources(order_by: { SourceFile: { created_at: desc } }) {
+      id
+      url
+      type
+      SourceFile {
+        id
+        fileName
+        filePath
+        originalFileName
+        originalFileUrl
+        fileSize
+        uploadedByUserId
+        error
+      }
+    }
+  }
+}

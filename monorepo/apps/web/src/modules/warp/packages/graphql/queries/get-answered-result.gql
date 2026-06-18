@@ -1,0 +1,33 @@
+query GetAnsweredResult($invitationId: uuid) {
+  FormInvitation(
+    where: {
+      _and: [{ id: { _eq: $invitationId } }, { isActive: { _eq: true } }]
+    }
+  ) {
+    Company {
+      id
+      name
+    }
+    email
+    Form {
+      id
+      name
+    }
+    status
+    FormSubmissions(where: { isActive: { _eq: true } }) {
+      id
+      FormResults {
+        id
+        Section {
+          id
+          content
+        }
+        Question {
+          id
+          content
+        }
+        score
+      }
+    }
+  }
+}

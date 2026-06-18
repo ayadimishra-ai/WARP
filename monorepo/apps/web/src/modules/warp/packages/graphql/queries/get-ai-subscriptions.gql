@@ -1,0 +1,11 @@
+query GetCompanyAISubscriptions($companyId: uuid!) {
+  AISubscriptions(where: { companyId: { _eq: $companyId } }) {
+    id
+    subscriptionPlan
+    isActive
+    Form {
+      id
+      name
+    }
+  }
+}

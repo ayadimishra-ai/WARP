@@ -1,0 +1,15 @@
+query getAssesseUserQuestionDetailByUserid($userId: uuid!) {
+  AssesseeUserMapping(where: { userId: { _eq: $userId } }) {
+    id
+    parentCompanyMappingId
+    userId
+    parentUserId
+    questionId
+    formFieldId
+    formId
+    reviewerUserId
+    InvitationId
+    roleId
+    IsActive
+  }
+}

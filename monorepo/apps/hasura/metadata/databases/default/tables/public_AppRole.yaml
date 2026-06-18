@@ -1,0 +1,35 @@
+table:
+  name: AppRole
+  schema: public
+object_relationships:
+  - name: AppRole
+    using:
+      foreign_key_constraint_on: parent_role_id
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: created_by
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: AppRoles
+    using:
+      foreign_key_constraint_on:
+        column: parent_role_id
+        table:
+          name: AppRole
+          schema: public
+  - name: AppUsers
+    using:
+      foreign_key_constraint_on:
+        column: role
+        table:
+          name: AppUser
+          schema: public
+  - name: AssesseeUserMappings
+    using:
+      foreign_key_constraint_on:
+        column: roleId
+        table:
+          name: AssesseeUserMapping
+          schema: public

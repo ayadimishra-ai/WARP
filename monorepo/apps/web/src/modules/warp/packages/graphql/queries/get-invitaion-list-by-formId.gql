@@ -1,0 +1,7 @@
+query getInvitaionListByFormId($formId: uuid!) {
+  FormInvitation(where: { formId: { _eq: $formId } }) {
+    id
+    parentcompanyId
+    companyId
+  }
+}

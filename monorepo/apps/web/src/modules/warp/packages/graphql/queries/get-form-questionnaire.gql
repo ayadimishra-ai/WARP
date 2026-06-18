@@ -1,0 +1,37 @@
+query getFormQuestionnaire($formId: uuid!) {
+  FormInvitation(where: { formId: { _eq: $formId } }) {
+    id
+    Form {
+      Sections {
+        id
+        key
+        content
+        tags
+        sectionId
+        weightage
+        calc
+        Questions {
+          id
+          key
+          content
+          tags
+          weightage
+          calc
+          Answers {
+            id
+            data
+            status
+            AnswerFiles {
+              id
+              name
+              type
+              path
+              sizeInBytes
+              provider
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+query GetCompanyDetails($companyGuid: uuid!) {
+  Tbl_Companies(where: {CompanyGuid: {_eq: $companyGuid}}) {
+    CompanyGuid
+    cpanelCompanyId: CPanelCompanyId
+    opsCompanyId: OPSCompanyId
+    CompanyName
+  }
+}

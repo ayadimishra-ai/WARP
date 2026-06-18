@@ -1,0 +1,8 @@
+query getUomMasters @cached(ttl: 3600) {
+  UomMaster {
+    key
+    code
+    label
+    alias: metadata(path: "$.alias")
+  }
+}

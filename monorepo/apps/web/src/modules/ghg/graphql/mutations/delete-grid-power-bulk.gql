@@ -1,0 +1,10 @@
+mutation deleteGridPowerBulk($ids: [uuid!]!) {
+  delete_GHGEnergyConsumption_GridPower(where: { id: { _in: $ids } }) {
+    affected_rows
+    returning {
+      id
+      organization_address_id
+      task_request_id
+    }
+  }
+}

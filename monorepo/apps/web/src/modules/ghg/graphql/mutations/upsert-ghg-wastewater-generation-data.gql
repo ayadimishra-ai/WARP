@@ -1,0 +1,32 @@
+mutation upsertGHGWastewaterGenerationActivity(
+  $where: GHGWastewaterGeneration_bool_exp!
+  $ghgWastewaterdenerationData: [GHGWastewaterGeneration_insert_input!]!
+) {
+  delete_GHGWastewaterGeneration(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      point_of_wastewater_disposal_Applicable
+      total_wastewater_generated_from_domestic_use
+      total_wastewater_generated_from_industrial_use
+      uom_wastewater
+     }
+  }
+  insert_GHGWastewaterGeneration(
+    objects: $ghgWastewaterdenerationData
+    on_conflict: { constraint: GHGWastewaterGeneration_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+     	point_of_wastewater_disposal_Applicable
+      total_wastewater_generated_from_domestic_use
+      total_wastewater_generated_from_industrial_use
+      uom_wastewater
+     }
+  }
+}

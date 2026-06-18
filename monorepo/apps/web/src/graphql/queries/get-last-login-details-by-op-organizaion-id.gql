@@ -1,0 +1,17 @@
+query getLastLoginDetailsByOrganizaionId(
+  $where: view_last_user_login_bool_exp!
+  $sortOrder: order_by = asc
+  $pageIndex: Int
+  $pageSize: Int
+) {
+  view_last_user_login(
+    where: $where
+    order_by: { login_timestamp: $sortOrder }
+    limit: $pageSize
+    offset: $pageIndex
+  ) {
+    op_organizaion_id
+    op_user_id
+    login_timestamp
+  }
+}

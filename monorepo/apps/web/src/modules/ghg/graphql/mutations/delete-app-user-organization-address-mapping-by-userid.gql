@@ -1,0 +1,14 @@
+mutation deleteUserOrganizationAddressMappingByUserId(
+  $deleteUserOrganizationAddressMapping: UserOrganizationAddressMapping_bool_exp!
+) {
+  delete_UserOrganizationAddressMapping(
+    where: $deleteUserOrganizationAddressMapping
+  ) {
+    returning {
+      id
+      organization_address_id
+      user_id
+      activities
+    }
+  }
+}

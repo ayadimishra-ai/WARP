@@ -1,0 +1,10 @@
+mutation DeleteMeterDatabyfileDataIds($fileDataIds: [uuid!]!) {
+          delete_MeterData(where: {filedata_id: {_in: $fileDataIds}}) {
+            affected_rows
+            returning {
+              id
+              meter_number
+              filedata_id
+            }
+          }
+        }

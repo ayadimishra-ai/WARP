@@ -1,0 +1,42 @@
+mutation InsertFormInvitation(
+  $object: [FormInvitation_insert_input!]!
+  $companyId: uuid! # $parentCompanyId: uuid!
+) {
+  insert_FormInvitation(
+    objects: $object
+    on_conflict: { constraint: FormInvitation_pkey }
+  ) {
+    returning {
+      id
+      companyId
+      email
+      formId
+      status
+      interimCheck
+      Form {
+        id
+        name
+      }
+    }
+  }
+
+  update_ParentCompanyMapping(
+    _set: { isActive: false }
+    where: {
+      _and: [
+        { CompanyId: { _eq: $companyId } }
+        { ParentCompanyId: { _is_null: true } }
+      ]
+    }
+  ) {
+    affected_rows
+  }
+
+  # insert_ParentCompanyMapping(
+  #   objects: { CompanyId: $companyId, ParentCompanyId: $parentCompanyId }
+  # ) {
+  #   returning {
+  #     Id
+  #   }
+  # }
+}

@@ -1,0 +1,12 @@
+mutation appendFormInvitationMetadata($invitationId: uuid!, $metadata: jsonb!) {
+  update_FormInvitation(
+    _append: { metadata: $metadata }
+    where: { id: { _eq: $invitationId } }
+  ) {
+    affected_rows
+    returning {
+      id
+      metadata
+    }
+  }
+}

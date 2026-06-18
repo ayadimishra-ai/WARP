@@ -1,0 +1,12 @@
+query GetPowerBiReportDetailsByReportName($rname: String!) {
+  Tbl_PowerBIReportDetails(where: {PowerBIReportName: {_eq: $rname}}) {
+    TokenExpirationTime
+    PowerBIReportFilters
+    PowerBIReportSections
+    PowerBIGuid
+    PowerBIReportTokenDetails
+    DashboardHeight
+    isBorder
+    isPowerBiReport
+  }
+}

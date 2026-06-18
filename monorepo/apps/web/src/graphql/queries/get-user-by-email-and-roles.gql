@@ -1,0 +1,19 @@
+query GetUserByEmailAndRoles($email: String!) {
+  Tbl_Users(where: { EmailId: { _eq: $email } }, distinct_on: [UserGuid]) {
+    UserGuid
+    IsActive
+    FirstName
+    LastName
+    EmailId
+    CpanelUserId
+    OPSUserId
+    Tbl_UserRoleMappings: Tbl_UserRoleMappings_userGuid {
+      Tbl_Role {
+        RoleName
+      }
+    }
+    Tbl_UserCompanyMappings {
+      CompanyGuid
+    }
+  }
+}

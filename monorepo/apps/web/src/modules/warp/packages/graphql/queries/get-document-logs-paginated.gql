@@ -1,0 +1,84 @@
+query GetDocumentLogsPaginated(
+  $companyId: uuid!
+  $limit: Int = 20
+  $cursor: timestamptz
+  $withCursor: Boolean = false
+  $searchTerm: String
+) {
+  DocumentLogs(
+    where: {
+      companyId: { _eq: $companyId }
+      status: { _in: ["Processing", "Processed"] }
+      extractionPercentage: { _is_null: false }
+      _and: [
+        { createdAt: { _lt: $cursor } }
+        {
+          _or: [
+            { originalFileName: { _ilike: $searchTerm } }
+            { fileName: { _ilike: $searchTerm } }
+            {
+              _and: [
+                { AISuggestedDocuments: { title: { _ilike: $searchTerm } } }
+                { AISuggestedDocuments: { isOther: { _neq: true } } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    order_by: [{ createdAt: desc }]
+    limit: $limit
+  ) @include(if: $withCursor) {
+    id
+    companyId
+    originalFileName
+    fileName
+    fileUrl
+    status
+    extractionPercentage
+    aiSuggestedDocumentId
+    createdAt
+    updatedAt
+    AISuggestedDocuments {
+      id
+      title
+      isOther
+    }
+  }
+
+  DocumentLogsAll: DocumentLogs(
+    where: {
+      companyId: { _eq: $companyId }
+      status: { _in: ["Processing", "Processed"] }
+      extractionPercentage: { _is_null: false }
+      _or: [
+        { originalFileName: { _ilike: $searchTerm } }
+        { fileName: { _ilike: $searchTerm } }
+        {
+          _and: [
+            { AISuggestedDocuments: { title: { _ilike: $searchTerm } } }
+            { AISuggestedDocuments: { isOther: { _neq: true } } }
+          ]
+        }
+      ]
+    }
+    order_by: [{ createdAt: desc }]
+    limit: $limit
+  ) @skip(if: $withCursor) {
+    id
+    companyId
+    originalFileName
+    fileName
+    fileUrl
+    status
+    extractionPercentage
+    aiSuggestedDocumentId
+    createdAt
+    updatedAt
+    AISuggestedDocuments {
+      id
+      title
+      isOther
+    }
+  }
+}

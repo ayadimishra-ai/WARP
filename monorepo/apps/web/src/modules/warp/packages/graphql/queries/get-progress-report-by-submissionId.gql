@@ -1,0 +1,59 @@
+query getProgressReportbySubmissionId($submissionId: uuid) {
+  CarryForwardInterimLogs: InterimFormLogs(
+    where: {
+      submissionId: { _eq: $submissionId }
+      Interim_Answer: {
+        Interim_Answer: {
+          Interim_Recommendations: { isApproved: { _eq: true } }
+        }
+      }
+    }
+    order_by: { created_at: asc }
+  ) {
+    created_at
+    score
+    submissionId
+    status
+    updated_at
+  }
+  InterimFormLogs(
+    where: {
+      submissionId: { _eq: $submissionId }
+      Interim_Answer: { Interim_Recommendations: { isApproved: { _eq: true } } }
+    }
+    order_by: { created_at: asc }
+  ) {
+    created_at
+    score
+    submissionId
+    status
+    updated_at
+  }
+  DefaultInterimLogs: InterimFormLogs(
+    where: { submissionId: { _eq: $submissionId } }
+    order_by: { created_at: asc }
+    limit: 1
+  ) {
+    created_at
+    score
+    submissionId
+    status
+    updated_at
+  }
+  Interim_Answer(limit: 1, where: { submissionId: { _eq: $submissionId } }) {
+    isViewOnly
+  }
+  Interim_Recommendation(
+    limit: 1
+    order_by: { updated_at: desc }
+    where: { isApproved: { _eq: true } }
+  ) {
+    id
+    interim_answer_id
+    created_at
+    updated_at
+    Interim_Answer {
+      id
+    }
+  }
+}

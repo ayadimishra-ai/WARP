@@ -1,0 +1,9 @@
+mutation softDeleteSupplierMaterialMapping($id: uuid!, $updatedBy: uuid!) {
+  update_SupplierMaterialMapping_by_pk(
+    pk_columns: { id: $id }
+    _set: { is_deleted: true, updated_by: $updatedBy }
+  ) {
+    id
+    is_deleted
+  }
+}

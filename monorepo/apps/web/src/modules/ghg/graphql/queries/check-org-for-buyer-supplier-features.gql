@@ -1,0 +1,10 @@
+query CheckOrgForBuyerSupplierFeatures($orgId: uuid!) {
+  BuyerSupplierMappings(
+    where: {
+      _or: [{ buyerOrgid: { _eq: $orgId } }, { supplierOrgid: { _eq: $orgId } }]
+    }
+  ) {
+    buyerOrgid
+    supplierOrgid
+  }
+}

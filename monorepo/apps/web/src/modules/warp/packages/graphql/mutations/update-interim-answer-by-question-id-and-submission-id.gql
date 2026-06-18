@@ -1,0 +1,31 @@
+mutation updateInterimAnswerByQuestionIdAndSubmissionId(
+  $Interim_AnswerUpdate: [Interim_Answer_updates!]!
+) {
+  update_Interim_Answer_many(updates: $Interim_AnswerUpdate) {
+    returning {
+      id
+      questionId
+      submissionId
+      status
+      data
+      interim_answer_id
+      FormField {
+        interface
+      }
+      Interim_Recommendations {
+        id
+        status
+        answeroption
+      }
+      Interim_Answer {
+        id
+        interim_answer_id
+        Interim_Recommendations {
+          id
+          status
+          answeroption
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+mutation UpsertAssessmentMapping($input: Tbl_AssessmentMapping_insert_input!) {
+  insert_Tbl_AssessmentMapping_one(
+    object: $input
+    on_conflict: {
+      constraint: Tbl_AssessmentMapping_pkey
+      update_columns: []
+    }
+  ) {
+    AssesseeCompanyGuid
+    AssessorCompanyGuid
+    CreatedDate
+  }
+}

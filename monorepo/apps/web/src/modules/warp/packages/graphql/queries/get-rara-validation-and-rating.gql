@@ -1,0 +1,12 @@
+query getvalidationandrating($invitationId: [uuid!]!) {
+  RaraValidationAndRating(where: { invitationId: { _in: $invitationId } }) {
+    data
+    formFieldId
+    id
+    type
+    submissionId
+    invitationId
+    created_at
+    fileId
+  }
+}

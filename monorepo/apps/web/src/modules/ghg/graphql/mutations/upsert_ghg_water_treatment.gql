@@ -1,0 +1,47 @@
+mutation upsertGHGWaterTreatmentActivity(
+  $where: GHGWaterTreatment_bool_exp!
+  $ghgWaterTreatmentData: [GHGWaterTreatment_insert_input!]!
+) {
+  delete_GHGWaterTreatment(where: $where) {
+    returning {
+      effluent_bod_concentration
+      effluent_cod_concentration
+      influent_bod_concentration
+      influent_cod_concentration
+      qty_influent
+      qty_treated_effluent
+      bod_effluent_umo
+      bod_influent_umo
+      cod_influent_umo
+      effluent_cod_umo
+      effluent_umo
+      influent_umo
+      activity_task_request_id
+      id
+      organization_address_id
+      task_request_id
+    }
+  }
+  insert_GHGWaterTreatment(
+    objects: $ghgWaterTreatmentData
+    on_conflict: { constraint: GHGWaterTreatment_pkey }
+  ) {
+    returning {
+      effluent_cod_concentration
+      influent_bod_concentration
+      influent_cod_concentration
+      qty_influent
+      qty_treated_effluent
+      bod_effluent_umo
+      bod_influent_umo
+      cod_influent_umo
+      effluent_cod_umo
+      effluent_umo
+      influent_umo
+      activity_task_request_id
+      id
+      organization_address_id
+      task_request_id
+    }
+  }
+}

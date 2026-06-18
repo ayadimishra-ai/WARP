@@ -1,0 +1,55 @@
+query getMaterialWithActivityUsage(
+  $where: OrgMaterialMaster_bool_exp!
+  $materialCodes: [String!]!
+  $orgAddressIds: [uuid!]!
+) {
+  # Get material master data
+  OrgMaterialMaster(where: $where) {
+    id
+    name
+    code
+    type
+    Material_Weight_Per_Unit
+    UoM_Material_Weight
+    Material_Classification
+    Material_Description
+    Additional_Information
+    organization_id
+  }
+  
+  # Check usage in Material Procurement
+  MaterialProcurement: GHGMaterialProcurement(
+    where: {
+      Material_Code: { _in: $materialCodes }
+      organization_address_id: { _in: $orgAddressIds }
+    }
+  ) {
+    Material_Code
+    Material_Quantity_Procured_uom
+    organization_address_id
+  }
+  
+  # Check usage in Capital Goods
+  CapitalGoods: GHGCapital_Goods(
+    where: {
+      Material_Code: { _in: $materialCodes }
+      organization_address_id: { _in: $orgAddressIds }
+    }
+  ) {
+    Material_Code
+    Quantity_Procured_uom
+    organization_address_id
+  }
+  
+  # Check usage in Upstream Transport
+  UpstreamTransport: GHGTransport_Upstream(
+    where: {
+      Material_ID: { _in: $materialCodes }
+      organization_address_id: { _in: $orgAddressIds }
+    }
+  ) {
+    Material_ID
+    Material_Quantity_Procured_uom
+    organization_address_id
+  }
+}

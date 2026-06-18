@@ -1,0 +1,17 @@
+query getCountryEmissionGeography($countryId: uuid!) {
+  EmissionFactorGeographyHierarchy(
+    where: { country_id: { _eq: $countryId } }
+    order_by: { sequence: asc }
+  ) {
+    Country {
+      name
+    }
+    id
+    geography
+    sequence
+  }
+  Country(where: { id: { _eq: $countryId } }) {
+    id
+    name
+  }
+}

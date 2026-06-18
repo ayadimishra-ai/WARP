@@ -1,0 +1,6 @@
+query getGHGWasteDataByUniqeTypeAndDisposalMech {
+  GHGWaste(distinct_on: [Types_of_Waste_Generated, Disposal_Mechanism]) {
+    Types_of_Waste_Generated
+    Disposal_Mechanism
+  }
+}

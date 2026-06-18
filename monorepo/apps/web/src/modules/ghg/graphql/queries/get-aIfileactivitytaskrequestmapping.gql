@@ -1,0 +1,6 @@
+query GetAIFileActivityTaskRequestMapping($aiFileUploadIds: [uuid!]!) {
+  AIFileActivityTaskRequestMapping(where: {aifileupload_id: {_in: $aiFileUploadIds}}) {
+    task_request_id
+    aifileupload_id
+  }
+}

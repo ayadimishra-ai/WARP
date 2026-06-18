@@ -1,0 +1,38 @@
+mutation upsertGHGWaterWithdrawalActivity(
+  $where: GHGWaterWithdrawal_bool_exp!
+  $ghgWaterWithdrawalData: [GHGWaterWithdrawal_insert_input!]!
+) {
+  delete_GHGWaterWithdrawal(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      total_fresh_water_withdrawal
+      uom_freshwater
+      source_of_fresh_water
+    }
+  }
+  insert_GHGWaterWithdrawal(
+    objects: $ghgWaterWithdrawalData
+    on_conflict: { constraint: GHGWaterWithdrawal_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      total_fresh_water_withdrawal
+      uom_freshwater
+      source_of_fresh_water
+    }
+  }
+}

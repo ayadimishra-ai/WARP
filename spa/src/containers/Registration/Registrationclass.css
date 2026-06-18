@@ -1,0 +1,29 @@
+.inputindent{
+    text-indent: 53px;
+}
+
+.maindivision{
+    position: absolute;
+    z-index: 9999;
+    top:5px;
+}
+
+.inputImage{
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    padding-top: 7px;
+    background-color: #FFFFFF;
+}
+
+.selectclass{
+    width: 51px !important;
+    max-height: 32px !important;
+    border:none !important;
+    background-color: #FFFFFF !important;
+    margin-top: 5px;
+}
+
+.selectclass:focus {
+    outline: none !important;
+}

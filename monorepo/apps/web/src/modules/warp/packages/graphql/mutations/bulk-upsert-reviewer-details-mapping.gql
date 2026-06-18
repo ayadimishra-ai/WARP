@@ -1,0 +1,19 @@
+mutation BulkUpsertReviewerDetailsMapping(
+  $objects: [ReviewerDetailsMapping_insert_input!]!
+) {
+  insert_ReviewerDetailsMapping(
+    objects: $objects
+    on_conflict: {
+      constraint: ReviewerDetailsMapping_pkey
+      update_columns: [currentStatus, updated_by]
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      currentStatus
+      questionId
+      FormInvitationId
+    }
+  }
+}

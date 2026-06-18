@@ -1,0 +1,11 @@
+query getAllActivities {
+  Activity(where: { is_deleted: { _eq: false } }) {
+    id
+    code
+    name
+    is_master
+    parent_code
+    is_master
+    metadata
+  }
+}

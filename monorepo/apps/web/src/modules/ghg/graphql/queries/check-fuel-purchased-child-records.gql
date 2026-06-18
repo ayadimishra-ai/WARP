@@ -1,0 +1,23 @@
+query checkFuelPurchasedChildRecords($fuelPurchasedId: uuid!) {
+  general: GHGEnergyConsumption_FuelPurchased_General_aggregate(
+    where: { GHGEnergyConsumption_FuelPurchased_id: { _eq: $fuelPurchasedId } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  auxiliary: GHGEnergyConsumption_FuelPurchased_Auxiliary_aggregate(
+    where: { GHGEnergyConsumption_FuelPurchased_id: { _eq: $fuelPurchasedId } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  heatingWater: GHGEnergyConsumption_FuelPurchased_HeatingWater_aggregate(
+    where: { GHGEnergyConsumption_FuelPurchased_id: { _eq: $fuelPurchasedId } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

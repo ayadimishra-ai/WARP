@@ -1,0 +1,21 @@
+query GetUserCompanyMappingsDetailsByEmail($email: String!) {
+  Tbl_Users(where: {EmailId: {_eq: $email}}) {
+    UserGuid
+    FirstName
+    EmailId
+    MobileNumber
+    Tbl_UserCompanyMappings{
+      CompanyGuid
+      Tbl_Company{
+        CPanelCompanyId
+        Tbl_CompanyRoleMappings{
+          Tbl_Role{
+            RoleName
+            RoleGuid
+          }
+        }
+      }
+    }
+  }
+}
+

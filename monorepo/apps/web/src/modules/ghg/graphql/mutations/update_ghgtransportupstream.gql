@@ -1,0 +1,47 @@
+mutation updateGhgTransportUpstream(
+  $GHGTransport_Upstream: [GHGTransport_Upstream_updates!]!
+) {
+  update_GHGTransport_Upstream_many(updates: $GHGTransport_Upstream) {
+    returning {
+      id
+      activity_task_request_id
+      organization_address_id
+      task_request_id
+      Material_ID
+      Material_Procured
+      Supplier_code
+      Supplier_Status
+      Locations_Procured_From
+      Transport_Managed_by
+      Mode_of_Transport
+      Third_Party_Suppliers_of_Material
+      Vehicle_Type_Used_for_Road_Transport
+      Fuel_Used
+      Location_pin_or_zip_code
+      Material_Quantity_Procured
+      Material_Quantity_Procured_uom
+      Distance_per_Trip
+      Distance_per_Trip_uom
+      Number_of_Trips
+      Quantity_of_Fuel_Consumed
+      Quantity_of_Fuel_Consumed_uom
+      kpi_Distance_Travelled_uom
+      kpi_em_EmissionBy_TravelledDistance
+      kpi_emf_EmissionBy_TravelledDistance
+      created_at
+      updated_at
+      created_by
+      updated_by
+      kpi_em_EmissionBy_MaterialProcured
+      kpi_emf_EmissionBy_MaterialProcured
+      Destination_Location_Pincode
+      Destination_Location_Country
+      total_distance_travelled
+      total_distance_travelled_uom
+      kpi_emf_EmissionBy_Transport
+      kpi_em_EmissionBy_Transport
+      kpi_Distance_Travelled
+      supporting_docs
+    }
+  }
+}

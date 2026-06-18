@@ -1,0 +1,16 @@
+query getGHGTransportDownstreamTransportDetails(
+  $activityFilter: GHGTransport_Downstream_bool_exp, $start: Int, $size: Int, $orderBy: [GHGTransport_Downstream_order_by
+!]) {
+  GHGTransport_Downstream(where: $activityFilter, offset: $start, limit: $size, order_by: $orderBy) {
+    Which_Products
+    Which_SKUs
+    Destination_Location_Name
+    Transport_Managed_by
+    Mode_of_Transport
+  }
+  totalCount: GHGTransport_Downstream_aggregate(where: $activityFilter) {
+    aggregate {
+      count
+    }
+  }
+}

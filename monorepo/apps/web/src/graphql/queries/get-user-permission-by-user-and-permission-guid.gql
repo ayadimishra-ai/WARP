@@ -1,0 +1,13 @@
+query GetUserPermissionsByUserAndPermissionGuid($userGuid: uuid!, $permissionGuids: [uuid!]!) {
+  Tbl_UserPermissions(
+    where: {
+      UserGuid: {_eq: $userGuid}, 
+      PermissionGuid: {_in: $permissionGuids}
+    }
+  ) {
+    UserPermissionGuid
+    UserGuid
+    PermissionGuid
+    Rights
+  }
+}

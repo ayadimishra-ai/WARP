@@ -1,0 +1,13 @@
+query GetFormFieldsWithSQLQuery($formId: uuid!) {
+  FormField(
+    where: {
+      formId: { _eq: $formId }
+      generatedSQLQuery: { _is_null: false }
+    }
+    limit: 1
+  ) {
+    id
+    formId
+    generatedSQLQuery
+  }
+}

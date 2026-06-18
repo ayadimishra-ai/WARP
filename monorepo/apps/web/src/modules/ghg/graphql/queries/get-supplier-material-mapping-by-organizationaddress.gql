@@ -1,0 +1,33 @@
+query getSupplierMaterialMappingsByOrganizationAddress(
+  $organizationAddressId: uuid!
+) {
+  SupplierMaterialMapping(
+    where: {
+      SupplierAddressMapping: {
+        supplier_organization_address_id: { _eq: $organizationAddressId }
+      }
+    }
+  ) {
+    org_material_master_id
+    From_Year
+    From_Month
+    To_Year
+    To_Month
+    SupplierAddressMapping {
+      OrganizationAddress {
+        id
+        address_id
+      }
+    }
+    Organization {
+      id
+      name
+    }
+    OrgMaterialMaster {
+      id
+      code
+      name
+      Material_Description
+    }
+  }
+}

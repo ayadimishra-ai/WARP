@@ -1,0 +1,41 @@
+mutation upsertKPIFugitiveGases(
+  $kpiFugitiveData: [KPIFugitiveGases_insert_input!]!
+  $deleteCondition: KPIFugitiveGases_bool_exp!
+) {
+  delete_KPIFugitiveGases(where: $deleteCondition) {
+    affected_rows
+    returning {
+      id
+      organization_id
+      region_id
+      address_id
+      year
+      month
+      kpi_em_refrigerant_and_ac_systems
+      kpi_em_fire_extinguisher
+      kpi_em_industrial_gas
+      kpi_consumption_refrigerant_and_ac_systems
+      kpi_consumption_fire_extinguisher
+      kpi_consumption_industrial_gas
+      metadata
+    }
+  }
+  insert_KPIFugitiveGases(objects: $kpiFugitiveData) {
+    affected_rows
+    returning {
+      id
+      organization_id
+      region_id
+      address_id
+      year
+      month
+      kpi_em_refrigerant_and_ac_systems
+      kpi_em_fire_extinguisher
+      kpi_em_industrial_gas
+      kpi_consumption_refrigerant_and_ac_systems
+      kpi_consumption_fire_extinguisher
+      kpi_consumption_industrial_gas
+      metadata
+    }
+  }
+}

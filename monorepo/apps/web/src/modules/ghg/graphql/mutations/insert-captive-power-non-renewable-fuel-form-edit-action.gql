@@ -1,0 +1,26 @@
+mutation insertCaptivePowerNonRenewableFuelFormEditAction(
+  $insertData: GHGEnergy_CaptivePower_NonRenewable_insert_input!
+) {
+  insert_GHGEnergy_CaptivePower_NonRenewable_one(
+    object: $insertData
+    on_conflict: {
+      constraint: GHGEnergy_CaptivePower_NonRenewable_pkey
+      update_columns: [
+        Type_of_Fuel_Used
+        Quantity_of_fuel_consumed
+        Quantity_of_fuel_consumed_uom
+        Quality_of_fuel
+        Unit_of_Energy_Generated_in_Kwh
+        updated_by
+        updated_at
+      ]
+    }
+  ) {
+    id
+    GHGEnergyConsumption_CaptivePower_id
+    GHGEnergy_CaptivePower {
+      id
+      task_request_id
+    }
+  }
+}

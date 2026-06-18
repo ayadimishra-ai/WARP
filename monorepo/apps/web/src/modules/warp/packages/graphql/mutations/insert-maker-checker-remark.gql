@@ -1,0 +1,21 @@
+mutation InsertMakerCheckerRemark(
+  $reviewerDetailsMappingId: uuid!
+  $remark: String!
+  $status: String!
+  $createdBy: uuid!
+  $Ismailsent: Boolean!
+) {
+  insert_MakerCheckerRemarks_one(
+    object: {
+      ReviewerDetailsMappingId: $reviewerDetailsMappingId
+      remark: $remark
+      status: $status
+      created_by: $createdBy
+      Ismailsent: $Ismailsent
+    }
+  ) {
+    id
+    remark
+    status
+  }
+}

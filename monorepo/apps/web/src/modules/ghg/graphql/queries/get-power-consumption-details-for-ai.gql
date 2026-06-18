@@ -1,0 +1,29 @@
+query getPowerConsumptionDetailsForAI(
+  $where: AIFileActivityTaskRequestMapping_bool_exp!
+) {
+  AIFileActivityTaskRequestMapping(where: $where) {
+    task_request_id
+    activity_task_request_id
+    aifileupload_id
+    AIFileUpload {
+      is_deleted
+      status
+      AIFileData {
+        edited_values
+        extracted_values
+        present_reading_date
+        previous_reading_date
+      }
+    }
+    TaskRequest {
+      year
+      month
+      organization_address_id
+      GHGEnergyConsumption_GridPowers {
+        id
+        PowerConsumed_through_Grid_Kwh
+        metadata
+      }
+    }
+  }
+}

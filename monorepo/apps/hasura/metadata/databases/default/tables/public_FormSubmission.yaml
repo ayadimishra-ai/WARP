@@ -1,0 +1,48 @@
+table:
+  name: FormSubmission
+  schema: public
+object_relationships:
+  - name: AppUser
+    using:
+      foreign_key_constraint_on: approvedBy
+  - name: FormInvitation
+    using:
+      foreign_key_constraint_on: invitationId
+  - name: appUserByCreatedBy
+    using:
+      foreign_key_constraint_on: created_by
+  - name: appUserBySubmittedby
+    using:
+      foreign_key_constraint_on: submittedBy
+  - name: appUserByUpdatedBy
+    using:
+      foreign_key_constraint_on: updated_by
+array_relationships:
+  - name: Answers
+    using:
+      foreign_key_constraint_on:
+        column: submissionId
+        table:
+          name: Answer
+          schema: public
+  - name: FormResults
+    using:
+      foreign_key_constraint_on:
+        column: submissionId
+        table:
+          name: FormResult
+          schema: public
+  - name: InterimFormLogs
+    using:
+      foreign_key_constraint_on:
+        column: submissionId
+        table:
+          name: InterimFormLogs
+          schema: public
+  - name: Interim_Answers
+    using:
+      foreign_key_constraint_on:
+        column: submissionId
+        table:
+          name: Interim_Answer
+          schema: public

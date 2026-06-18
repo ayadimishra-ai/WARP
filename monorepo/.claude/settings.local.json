@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add *)",
+      "Bash(cat \"D:\\\\Projects\\\\snowkap_warp\\\\package.json\" | grep -i \"react-pdf\\\\|@react-pdf\")",
+      "Bash(pnpm install *)",
+      "Bash(grep -n -A1 \"return \\($\" \"D:/Projects/snowkap-monorepo/apps/web/src/modules/warp/packages/client/hooks/use-download-assessment-pdf.tsx\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\Projects\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(ls -la \"D:/Projects/\" | head -20)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(start \"\" \"C:\\\\Users\\\\parth.desai\\\\Downloads\\\\Ather Materiality Assessment \\(Internal\\) \\(1\\).pdf\")",
+      "Bash(start \"\" \"C:\\\\Users\\\\parth.desai\\\\Downloads\\\\ESG Diligence Questionnaire.pdf\")"
+    ]
+  }
+}

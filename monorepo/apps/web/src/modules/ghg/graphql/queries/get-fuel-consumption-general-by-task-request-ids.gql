@@ -1,0 +1,20 @@
+query getFuelConsumptionGeneralByTaskRequestIds($taskRequestIds: [uuid!]!) {
+  GHGEnergyConsumption_FuelPurchased_General(
+    where: {
+      GHGEnergyConsumption_FuelPurchased: {
+        task_request_id: { _in: $taskRequestIds }
+      }
+    }
+  ) {
+    id
+    Type_of_Fuel_Purchased
+    Quantity_of_fuel_Consumed
+    Quantity_of_fuel_Consumed_uom
+    Quality_of_fuel
+    Point_of_Consumption
+    GHGEnergyConsumption_FuelPurchased_id
+    GHGEnergyConsumption_FuelPurchased {
+      task_request_id
+    }
+  }
+}

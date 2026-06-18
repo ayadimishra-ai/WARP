@@ -1,0 +1,7 @@
+export const MESSAGE_BULK_UPLOAD_SUPPLIER_MASTER = "bulk-upload-supplier-master"
+export const MESSAGE_BULK_UPLOAD_PRODUCT_MASTER = "bulk-upload-product-master"
+export const MESSAGE_BULK_UPLOAD_SUPPLIER_MATERIAL_MAPPING = "bulk-upload-supplier-material-mapping"
+export const MESSAGE_CONFIRM_DELETE_SUPPLIER_MATERIAL_MAPPING = "confirm-delete-supplier-material-mapping"
+export const MESSAGE_SUPPLIER_MATERIAL_MAPPING_DATA_CHANGED = "supplier-material-mapping-data-changed"
+export const MESSAGE_BULK_UPLOAD_SUPPLIER_LOCATION_MASTER = "bulk-upload-supplier-location-master"
+export const MESSAGE_BULK_UPLOAD_MATERIAL_MASTER = "bulk-upload-material"

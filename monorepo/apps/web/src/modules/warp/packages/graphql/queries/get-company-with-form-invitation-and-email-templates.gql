@@ -1,0 +1,14 @@
+query GetCompanyWithFormInvitationAndEmailTemplates {
+  Company {
+    id
+    name
+    FormInvitations {
+      id
+    }
+    Platform {
+      EmailTemplates {
+        type
+      }
+    }
+  }
+}

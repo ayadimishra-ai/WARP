@@ -1,0 +1,26 @@
+mutation updateCaptivePowerNonRenewableFuelFormEditAction(
+  $editId: uuid
+  $editData: GHGEnergy_CaptivePower_NonRenewable_set_input
+) {
+  update_GHGEnergy_CaptivePower_NonRenewable(
+    where: { id: { _eq: $editId } }
+    _set: $editData
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      GHGEnergy_CaptivePower {
+        id
+        task_request_id
+      }
+      Type_of_Fuel_Used
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      Quality_of_fuel
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+    }
+  }
+}

@@ -1,0 +1,14 @@
+query GetEmailTemplateByName($templateName: String!) {
+  Tbl_EmailTemplate(where: {EmailTemplateName: {_eq: $templateName}}) {
+    EmailTemplateName
+    CCEmailId
+    BCCEmailId
+    EmailTemplateGUID
+    FromEmailId
+    ToEmailId
+    Subject
+    Body
+    EmailHeaderFooterGUID
+    IsActive
+  }
+}

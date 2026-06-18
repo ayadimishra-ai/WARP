@@ -1,0 +1,38 @@
+mutation upsertGHGIndustrialGasActivity(
+  $where: GHGIndustrialGas_bool_exp!
+  $ghgIndustrialGasData: [GHGIndustrialGas_insert_input!]!
+) {
+  delete_GHGIndustrialGas(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      type_of_industrial_gas_used
+      quantity_of_industrial_gas_filled
+      uom_industrial_gas
+    }
+  }
+  insert_GHGIndustrialGas(
+    objects: $ghgIndustrialGasData
+    on_conflict: { constraint: GHGIndustrialGas_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      type_of_industrial_gas_used
+      quantity_of_industrial_gas_filled
+      uom_industrial_gas
+    }
+  }
+}

@@ -1,0 +1,44 @@
+query getSourceFilesByInvitationId($invitationId: uuid) {
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    AIBulkDocumentProcessings {
+      id
+    }
+    id
+    formId
+    companyId
+    Form {
+      name
+    }
+    FormSubmissions(where: { isActive: { _eq: true } }) {
+      id
+    }
+    created_by
+    ParentUser {
+      UserRoles {
+        roleName
+      }
+    }
+    status
+    Company {
+      name
+    }
+  }
+  Sources(where: { formInvitationId: { _eq: $invitationId } }) {
+    id
+    sourceFilesId
+    type
+    SourceFile {
+      totalDataPointsAdded
+      id
+      status
+      currentPage
+      totalPages
+      originalFileUrl
+      originalFileName
+      filePath
+      fileSize
+      currentDataPointsCurated
+      error
+    }
+  }
+}

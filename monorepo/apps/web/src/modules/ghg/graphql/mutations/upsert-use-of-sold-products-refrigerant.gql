@@ -1,0 +1,63 @@
+mutation upsertUseOfSoldProductsRefrigerant(
+  $where: GHGUseOfSoldProducts_Refrigerant_bool_exp!
+  $refrigerantData: [GHGUseOfSoldProducts_Refrigerant_insert_input!]!
+  $refrigerantUpdate: [GHGUseOfSoldProducts_Refrigerant_updates!]!
+) {
+  delete_GHGUseOfSoldProducts_Refrigerant(where: $where) {
+    returning {
+      id
+      task_request_id
+      activity_task_request_id
+      organization_address_id
+      Date
+      Product_Code
+      Lifetime_of_Product
+      Rationale
+      Refrigerant_type_used_in_sold_product
+      Quantity_of_Refrigerant_consumed
+      UoM_of_Refrigerant_consumed
+      Additional_comments
+      Remarks
+      metadata
+    }
+  }
+  insert_GHGUseOfSoldProducts_Refrigerant(
+    objects: $refrigerantData
+    on_conflict: { constraint: GHGUseOfSoldProducts_Refrigerant_pkey }
+  ) {
+    returning {
+      id
+      task_request_id
+      activity_task_request_id
+      organization_address_id
+      Date
+      Product_Code
+      Lifetime_of_Product
+      Rationale
+      Refrigerant_type_used_in_sold_product
+      Quantity_of_Refrigerant_consumed
+      UoM_of_Refrigerant_consumed
+      Additional_comments
+      Remarks
+      metadata
+    }
+  }
+  update_GHGUseOfSoldProducts_Refrigerant_many(updates: $refrigerantUpdate) {
+    returning {
+      id
+      task_request_id
+      activity_task_request_id
+      organization_address_id
+      Date
+      Product_Code
+      Lifetime_of_Product
+      Rationale
+      Refrigerant_type_used_in_sold_product
+      Quantity_of_Refrigerant_consumed
+      UoM_of_Refrigerant_consumed
+      Additional_comments
+      Remarks
+      metadata
+    }
+  }
+}

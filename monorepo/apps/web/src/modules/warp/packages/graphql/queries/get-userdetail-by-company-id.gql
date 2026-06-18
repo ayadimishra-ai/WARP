@@ -1,0 +1,25 @@
+query getUserDetailByCompanyId($companyId: uuid) {
+  User(
+    where: {
+      companyId: { _eq: $companyId }
+      isActive: { _eq: true }
+      UserRoles: { roleName: { _nin: ["Inviter", "Analytics", "Consultant"] } }
+    }
+    order_by: { name: asc }
+  ) {
+    id
+    name
+    email
+    details
+    companyId
+    UserRoles {
+      userId
+      roleName
+      # IsActive
+      Role {
+        id
+        isActive
+      }
+    }
+  }
+}

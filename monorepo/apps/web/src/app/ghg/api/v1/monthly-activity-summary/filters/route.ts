@@ -1,0 +1,27 @@
+import { NextRequest, NextResponse } from "next/server";
+import { TUserSession } from "@/modules/ghg/lib/auth/auth.client";
+import { apiExceptionGuard } from "@/modules/ghg/lib/guards/api-exception-guard";
+import { apiAuthGuard } from "@/modules/ghg/lib/guards/api-user-auth-guard";
+import { getFilters } from "@/modules/ghg/lib/monthly-activity-summary/service";
+import { withEmailOrIpRateLimitWithProgressiveDelay } from "@/modules/ghg/lib/rate-limiter/progressive-delay-rate-limit";
+
+// Let apiExceptionGuard catch and surface real errors — no inner try/catch.
+async function GET_Handler(req: NextRequest, userSession: TUserSession) {
+  const { searchParams } = new URL(req.url);
+  const yearParam = searchParams?.get("year");
+  const yearOverride = yearParam ? parseInt(yearParam, 10) : undefined;
+  const locationIdsParam = searchParams?.get("locationIds");
+  const locationIds = locationIdsParam
+    ? locationIdsParam.split(",").map((s) => s.trim()).filter(Boolean)
+    : undefined;
+  const data = await getFilters(userSession, yearOverride, locationIds);
+  return NextResponse.json({ success: true, data });
+}
+
+export const GET = apiExceptionGuard(
+  withEmailOrIpRateLimitWithProgressiveDelay(apiAuthGuard(GET_Handler), {
+    limitInterval: 1,
+    maxRequestCount: 60,
+    progressiveDelay: true,
+  })
+);

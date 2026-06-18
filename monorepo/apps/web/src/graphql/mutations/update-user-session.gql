@@ -1,0 +1,15 @@
+mutation updateUserSession($input: [Tbl_UserSessions_updates!]!) {
+  update_Tbl_UserSessions_many(updates: $input) {
+    affected_rows
+    returning {
+			id
+      UserId
+      PlatformToken
+      WarpToken
+      OpsToken
+      BrowserToken
+      Metadata
+      StatusMetadata
+    }
+  }
+}

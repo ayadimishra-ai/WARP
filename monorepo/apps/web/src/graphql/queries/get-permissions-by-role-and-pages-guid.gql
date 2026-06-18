@@ -1,0 +1,25 @@
+query GetPermissionsByRoleAndPagesGuid($roleGuid: uuid!, $pageGuid: uuid!) {
+  Tbl_Permissions(
+    where: {
+      RoleGuid: { _eq: $roleGuid },
+      PageGuid: { _eq: $pageGuid } ,
+      IsActive: { _eq: true }
+    }
+  ) {
+    PermissionGuid
+    RoleGuid
+    PageGuid
+    IsActive
+    CreatedDate
+    Tbl_Page {
+      PageKey
+      URL
+      ParentPageGuid
+    }
+    Tbl_Role {
+      RoleGuid
+      RoleName
+      IsActive
+    }
+  }
+}

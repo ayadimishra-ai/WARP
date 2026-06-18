@@ -1,0 +1,19 @@
+mutation BulkInsertSections($objects: [Section_insert_input!]!) {
+  insert_Section(
+    objects: $objects
+    on_conflict: {
+      constraint: Section_pkey
+      update_columns: [key, content, tags, sectionId, formId]
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      key
+      content
+      tags
+      sectionId
+      formId
+    }
+  }
+}

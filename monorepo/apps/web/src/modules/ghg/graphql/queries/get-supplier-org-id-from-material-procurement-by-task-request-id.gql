@@ -1,0 +1,13 @@
+query GetSupplierOrgIdFromMaterialProcurementByTaskRequestIds(
+  $task_request_ids: [uuid!]
+) {
+  TaskRequest(where: { id: { _in: $task_request_ids } }) {
+    year
+    month
+    organization_address_id
+    GHGMaterialProcurements {
+      organization_address_id
+      Supplier_Code
+    }
+  }
+}

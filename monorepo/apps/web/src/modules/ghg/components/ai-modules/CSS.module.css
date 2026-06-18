@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+.tableStyling {
+  box-shadow:
+    rgba(159, 162, 191, 0.18) 0px 9px 16px,
+    rgba(159, 162, 191, 0.32) 0px 2px 2px;
+}
+.tableStyling table tbody tr:last-child td:first-of-type {
+  border-bottom-left-radius: 10px;
+}
+.tableStyling table tbody tr:last-child td:last-of-type {
+  border-bottom-right-radius: 10px;
+}
+#rpp-label {
+  font-size: 14px !important;
+}
+.tableStyling .MRT_TopToolbar-module_actions-container-stack-alert__OYDL6 {
+  align-items: baseline !important;
+}
+.tableStyling .listing-page-topper-title button span {
+  font-size: 16px !important;
+  line-height: 24px !important;
+  font-weight: 500 !important;
+}
+.tableStyling tbody tr.mantine-Table-tr:hover {
+  background-color: #f1f3f6 !important;
+}
+
+/* Multiple selectors to ensure hover color is applied */
+.tableStyling [data-hover] tr:hover,
+.tableStyling tbody tr:hover,
+.tableStyling table tbody tr:hover,
+.tableStyling :global(.mantine-Table-tr):hover,
+.tableStyling :global(tbody tr):hover {
+  background-color: #f1f3f6 !important;
+}
+
+/* Override any Mantine CSS variables */
+.tableStyling {
+  --table-highlight-on-hover-color: #f1f3f6 !important;
+  --mantine-table-hover-color: #f1f3f6 !important;
+}
+
+/* Force tooltip positioning for table headers */
+.tableStyling
+  thead
+  th:hover
+  + :global([data-mantine-portal])
+  :global(.mantine-Tooltip-tooltip),
+.tableStyling
+  :global([data-floating-ui-portal])
+  :global(.mantine-Tooltip-tooltip) {
+  transform: translate(
+    var(--floating-ui-transform-x, 0),
+    calc(var(--floating-ui-transform-y, 0) + 30px)
+  ) !important;
+}

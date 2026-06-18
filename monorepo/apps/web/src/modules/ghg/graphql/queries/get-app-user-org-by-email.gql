@@ -1,0 +1,11 @@
+query getAppUserOrgByEmail($emails: [String!]!) {
+  AppUser(where: { email: { _in: $emails }, is_deleted: { _eq: false } }) {
+    email
+    id
+    organization_id
+    Organization {
+      name
+      metadata
+    }
+  }
+}

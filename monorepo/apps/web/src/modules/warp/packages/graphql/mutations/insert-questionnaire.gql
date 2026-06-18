@@ -1,0 +1,28 @@
+mutation InsertQuestionnaire(
+  $title: String!
+  $description: String!
+  $type: String!
+  $formtype: String!
+) {
+  insert_Form_one(
+    object: {
+      title: $title
+      name: $title
+      description: $description
+      type: $type
+      created_at: "now()"
+      updated_at: "now()"
+      formtype: $formtype
+    }
+  ) {
+    id
+    name
+    title
+    description
+    type
+    tags
+    created_at
+    updated_at
+    __typename
+  }
+}

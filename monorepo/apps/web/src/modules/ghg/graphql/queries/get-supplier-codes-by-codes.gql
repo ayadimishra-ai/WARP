@@ -1,0 +1,6 @@
+query getSupplierCodesByCodes($where: OrgSupplierMaster_bool_exp!) {
+  OrgSupplierMaster(where: $where, order_by: { updated_at: desc }) {
+    id
+    code
+  }
+}

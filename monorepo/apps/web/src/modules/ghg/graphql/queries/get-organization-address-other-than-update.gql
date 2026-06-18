@@ -1,0 +1,17 @@
+query getOrganizationAddressOtherThanUpdate(
+  $organizationId: uuid!
+  $addressId: uuid!
+  $updateAddressName: String!
+) {
+  OrganizationAddress(
+    where: {
+      organization_id: { _eq: $organizationId }
+      address_id: { _neq: $addressId }
+      Address: { name: { _like: $updateAddressName } }
+    }
+  ) {
+    Address {
+      id
+    }
+  }
+}

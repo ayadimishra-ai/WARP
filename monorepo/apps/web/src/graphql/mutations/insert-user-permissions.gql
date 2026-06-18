@@ -1,0 +1,16 @@
+mutation insertUserPermissions($input: [Tbl_UserPermissions_insert_input!]!) {
+  insert_Tbl_UserPermissions(objects: $input) {
+    returning {
+      UserPermissionGuid
+      UserGuid
+      PermissionGuid
+      Rights
+      Tbl_Permission{
+        Tbl_Page {
+      		PageKey
+			PlatformType
+    	}
+      }
+    }
+  }
+}

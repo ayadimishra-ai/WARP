@@ -1,0 +1,21 @@
+query getExistingCompaniesOrUsersRecordById(
+  $companyId: [uuid!]
+  $usersId: [uuid!]
+) {
+  Company(
+    where: {
+      id: { _in: $companyId }
+      ParentCompanyMappings: { isActive: { _eq: true } }
+    }
+  ) {
+    id
+    name
+    ParentCompanyMappings {
+      ParentCompanyId
+    }
+  }
+  User(where: { id: { _in: $usersId } }) {
+    id
+    email
+  }
+}

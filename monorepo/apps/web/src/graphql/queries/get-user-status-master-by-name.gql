@@ -1,0 +1,6 @@
+query GetUserStatusMasterByName($status: String!) {
+  Tbl_UserStatusMaster(where: {Status: {_ilike: $status}}) {
+    StatusGuid
+    Status
+  }
+}

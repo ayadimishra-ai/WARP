@@ -1,0 +1,7 @@
+query GetCountryMasterByCountryGuid($countryGuid: uuid!) {
+  Tbl_CountryMaster(where: { CountryGuid: { _eq: $countryGuid } }) {
+   	CountryGuid
+    CountryName
+    CountryCode
+  }
+}

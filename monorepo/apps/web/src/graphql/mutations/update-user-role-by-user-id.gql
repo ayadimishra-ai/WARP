@@ -1,0 +1,13 @@
+mutation updateUserRoleByUserId($userGuid: uuid!, $roleGuid: uuid!) {
+  update_Tbl_UserRoleMapping(
+    where: { UserGuid: { _eq: $userGuid } }
+    _set: { RoleGuid: $roleGuid }
+  ) {
+    affected_rows
+    returning {
+      UserRoleMappingGuid
+      UserGuid
+      RoleGuid
+    }
+  }
+}

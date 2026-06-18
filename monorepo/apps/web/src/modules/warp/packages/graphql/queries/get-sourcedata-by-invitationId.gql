@@ -1,0 +1,36 @@
+query getSourceDataByInvitationId($invitationId: uuid!) {
+  Sources(where: { formInvitationId: { _eq: $invitationId } }) {
+    id
+    sourceFilesId
+    type
+    documentLogsId
+    SourceFile {
+      id
+      status
+      currentPage
+      totalPages
+      originalFileUrl
+      originalFileName
+      filePath
+      fileName
+      fileSize
+      created_at
+    }
+  }
+  FormInvitation(where: { id: { _eq: $invitationId } }) {
+    id
+    companyId
+    parentcompanyId
+    formId
+    metadata
+    FormSubmissions {
+      id
+    }
+    durationFrom
+    durationTo
+    Form{
+      name
+      isAIDataPointsAdded
+    }
+  }
+}

@@ -1,0 +1,22 @@
+mutation InsertReviewerDetailsMapping(
+  $questionId: uuid!
+  $currentStatus: String!
+  $createdBy: uuid!
+  $updatedBy: uuid!
+  $formInvitationId: uuid!
+) {
+  insert_ReviewerDetailsMapping_one(
+    object: {
+      questionId: $questionId
+      currentStatus: $currentStatus
+      created_by: $createdBy
+      updated_by: $updatedBy
+      FormInvitationId: $formInvitationId
+    }
+  ) {
+    id
+    currentStatus
+    questionId
+    FormInvitationId
+  }
+}

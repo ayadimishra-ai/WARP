@@ -1,0 +1,9 @@
+query GetMeterDataByFileId($filedata_id: uuid!) {
+  MeterData(where: { filedata_id: { _eq: $filedata_id } }) {
+    id
+    meter_number
+    filedata_id
+    organization_address_id
+    average_units_consumed
+  }
+}

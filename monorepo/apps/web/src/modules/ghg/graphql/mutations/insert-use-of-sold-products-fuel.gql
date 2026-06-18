@@ -1,0 +1,10 @@
+mutation insertUseOfSoldProductsFuel(
+  $objects: [GHGUseOfSoldProducts_Fuel_insert_input!]!
+) {
+  insert_GHGUseOfSoldProducts_Fuel(objects: $objects) {
+    returning {
+      id
+      task_request_id
+    }
+  }
+}

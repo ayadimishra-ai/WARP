@@ -1,0 +1,37 @@
+query getInvitaionListByFormIdandDate(
+  $formId: uuid!
+  $expectedDaterecomm: timestamp!
+  $recommendationStatus: [String!]
+) {
+  Interim_Recommendation(
+    where: {
+      _or: [
+        { expectedDate: { _eq: $expectedDaterecomm } }
+        { ReminderIntervalAfterDueDate: { _eq: $expectedDaterecomm } }
+      ]
+      status: { _in: $recommendationStatus }
+      Interim_Answer: {
+        FormSubmission: { FormInvitation: { formId: { _eq: $formId } } }
+      }
+    }
+  ) {
+    id
+    interim_answer_id
+    expectedDate
+    ReminderIntervalAfterDueDate
+    recommendations
+    Interim_Answer {
+      id
+      submissionId
+      FormSubmission {
+        id
+        invitationId
+        FormInvitation {
+          id
+          parentcompanyId
+          companyId
+        }
+      }
+    }
+  }
+}
