@@ -73,12 +73,70 @@ Client Platform (3rd party)
 
 ## WARP Documentation
 
-> Source: `/tmp/warp_live/uigw-snowkap_warp-911d40f4a302/`
-> Branch: `live_migration`
+> Source: `apps/` + `packages/` (monorepo root)
+
+### Architecture & Reference
 
 | Document | What it covers |
 |---|---|
-| [`docs/warp/WARP-DOCUMENTATION.md`](warp/WARP-DOCUMENTATION.md) | Complete WARP technical reference: monorepo architecture, full database schema, RBAC permission matrix, event triggers, computed fields, end-to-end data flows, frontend architecture patterns, environment variables, Docker & deployment |
+| [`docs/warp/ARCHITECTURE.md`](warp/ARCHITECTURE.md) | System architecture overview, auth flow, key patterns |
+| [`docs/warp/FILE-INDEX.md`](warp/FILE-INDEX.md) | Every source file with one-line purpose |
+| [`docs/warp/WARP-DOCUMENTATION.md`](warp/WARP-DOCUMENTATION.md) | Complete technical reference: monorepo, DB schema, RBAC, event triggers, computed fields, data flows, frontend patterns, env vars, deployment |
+| [`docs/warp/apps.md`](warp/apps.md) | `apps/web` and `apps/hasura` layout and purpose |
+| [`docs/warp/packages.md`](warp/packages.md) | All `packages/*` — client, server, graphql, shared, secrets |
+| [`docs/warp/database-schema.md`](warp/database-schema.md) | Full PostgreSQL schema with table relationships |
+| [`docs/warp/hasura-metadata.md`](warp/hasura-metadata.md) | Hasura permissions, event triggers, computed fields |
+| [`docs/warp/config.md`](warp/config.md) | next.config, turbo.json, ESLint, Prettier, env management |
+| [`docs/warp/workflows.md`](warp/workflows.md) | CI/CD workflows |
+
+### QA Fix Logs — API Routes
+
+| Document | What it covers |
+|---|---|
+| [`docs/warp/api/AI/AI-routes.md`](warp/api/AI/AI-routes.md) | AI curation endpoints — fixes applied |
+| [`docs/warp/api/AI/AI-routes-extended.md`](warp/api/AI/AI-routes-extended.md) | Extended AI route analysis |
+| [`docs/warp/api/auth/nextauth.md`](warp/api/auth/nextauth.md) | NextAuth route — backdoor removal, JWT fix |
+| [`docs/warp/api/awss3/download.md`](warp/api/awss3/download.md) | S3 download route — no-auth issue |
+| [`docs/warp/api/awss3/upload.md`](warp/api/awss3/upload.md) | S3 upload route — no-auth issue |
+| [`docs/warp/api/awss3/get-upload-url.md`](warp/api/awss3/get-upload-url.md) | S3 presign upload URL |
+| [`docs/warp/api/awss3/get-download-url.md`](warp/api/awss3/get-download-url.md) | S3 presign download URL |
+| [`docs/warp/api/awss3/move-file.md`](warp/api/awss3/move-file.md) | S3 move file |
+| [`docs/warp/api/calculate-score/index.md`](warp/api/calculate-score/index.md) | ESG score engine — shared-state fix |
+| [`docs/warp/api/calculate-score/calculate-score-email-routes.md`](warp/api/calculate-score/calculate-score-email-routes.md) | Score email routes |
+| [`docs/warp/api/carry-forward/carry-forward.md`](warp/api/carry-forward/carry-forward.md) | Carry-forward routes — JWT, method guard |
+| [`docs/warp/api/email-routes/email-routes.md`](warp/api/email-routes/email-routes.md) | All 12+ email routes — null crash, auth bypass |
+| [`docs/warp/api/bulk-email-routes/bulk-email-routes.md`](warp/api/bulk-email-routes/bulk-email-routes.md) | Bulk email routes |
+| [`docs/warp/api/rara/rara-routes.md`](warp/api/rara/rara-routes.md) | RARA routes — SSRF fix |
+| [`docs/warp/api/recommendation/recommendation-routes.md`](warp/api/recommendation/recommendation-routes.md) | Recommendation routes |
+| [`docs/warp/api/saveAnswers/saveAnswers.md`](warp/api/saveAnswers/saveAnswers.md) | Save answers route |
+| [`docs/warp/api/submit-form/submit-form.md`](warp/api/submit-form/submit-form.md) | Form submission route |
+| [`docs/warp/api/misc-routes/misc-routes.md`](warp/api/misc-routes/misc-routes.md) | interiam, progress-report routes |
+| [`docs/warp/api/misc-routes/debug-endpoints.md`](warp/api/misc-routes/debug-endpoints.md) | Debug/test endpoints |
+| [`docs/warp/api/misc-routes/progress-report-and-interiam.md`](warp/api/misc-routes/progress-report-and-interiam.md) | Progress report + interiam detail |
+| [`docs/warp/api/webhooks/document-expiry-notifications.md`](warp/api/webhooks/document-expiry-notifications.md) | Document expiry webhook |
+| [`docs/warp/api/v1/internal/post-form-submission.md`](warp/api/v1/internal/post-form-submission.md) | Internal form submission endpoint |
+| [`docs/warp/api/v1/ops/check-company-eligibility.md`](warp/api/v1/ops/check-company-eligibility.md) | OPS→WARP eligibility check |
+| [`docs/warp/api/v1/platform/auth/signin.md`](warp/api/v1/platform/auth/signin.md) | Platform sign-in |
+| [`docs/warp/api/v1/platform/company/company-crud.md`](warp/api/v1/platform/company/company-crud.md) | Company CRUD |
+| [`docs/warp/api/v1/platform/company/bulk.md`](warp/api/v1/platform/company/bulk.md) | Bulk company operations |
+| [`docs/warp/api/v1/platform/company/send-invitation.md`](warp/api/v1/platform/company/send-invitation.md) | Send company invitation |
+| [`docs/warp/api/v1/platform/user/user-crud.md`](warp/api/v1/platform/user/user-crud.md) | User CRUD |
+| [`docs/warp/api/v1/platform/platform-routes.md`](warp/api/v1/platform/platform-routes.md) | Platform routes overview |
+
+### QA Fix Logs — Pages & Packages
+
+| Document | What it covers |
+|---|---|
+| [`docs/warp/pages/core-pages.md`](warp/pages/core-pages.md) | Core pages QA |
+| [`docs/warp/pages/embed-pages.md`](warp/pages/embed-pages.md) | Embed pages QA |
+| [`docs/warp/pages/embed-popup-and-common-components.md`](warp/pages/embed-popup-and-common-components.md) | Embed popup + AI chat components — XSS fixes |
+| [`docs/warp/pages/form-pages.md`](warp/pages/form-pages.md) | Form pages — missing return fix |
+| [`docs/warp/pages/invitation-query-pages.md`](warp/pages/invitation-query-pages.md) | Invitation query pages |
+| [`docs/warp/pages/document-repository-page.md`](warp/pages/document-repository-page.md) | Document repository page |
+| [`docs/warp/pages/test-temp-learn-pages.md`](warp/pages/test-temp-learn-pages.md) | Test/temp/learn pages |
+| [`docs/warp/packages/client-packages.md`](warp/packages/client-packages.md) | Client package QA — postMessage wildcard fix |
+| [`docs/warp/packages/server-guards.md`](warp/packages/server-guards.md) | Server guards — webhook secret, timing-safe compare |
+| [`docs/warp/packages/notification-service.md`](warp/packages/notification-service.md) | Notification service — debugger removal |
 
 ### WARP Quick Reference
 
