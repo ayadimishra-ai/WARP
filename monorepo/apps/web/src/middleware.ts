@@ -155,8 +155,20 @@ export async function middleware(request: NextRequest) {
             requestLogger?.end(200, undefined);
             return NextResponse.next();
         }
-        // Handle hardcoded Authorization value
-        else if (authHeader === "EzqUt3IXQxidMdRA") {
+        // Handle static service-to-service Authorization token
+        // The expected value is stored in env (AI_SERVICES_AUTHORIZATION) and
+        // compared via a constant-time helper to prevent timing attacks.
+        // Note: Edge Runtime does not expose crypto.timingSafeEqual, so we use
+        // a character-by-character constant-time comparison instead.
+        else if ((() => {
+            const expected = process.env.AI_SERVICES_AUTHORIZATION ?? "";
+            if (!expected || authHeader.length !== expected.length) return false;
+            let diff = 0;
+            for (let i = 0; i < expected.length; i++) {
+                diff |= authHeader.charCodeAt(i) ^ expected.charCodeAt(i);
+            }
+            return diff === 0;
+        })()) {
             requestLogger?.end(200, undefined);
             return NextResponse.next();
         }

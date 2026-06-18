@@ -1,9 +1,9 @@
 import { getSdkInstance } from "@/graphql/server/sdk";
 import { Order_By } from "@/graphql/types";
+import { getServerEnv } from "@/lib/env/env.server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-
-const authToken = "EzqUt3IXQxidMdRA";
+import crypto from "crypto";
 
 const ValSchema = z.object({
   op_organization_id: z.string().min(1).max(100),
@@ -19,9 +19,17 @@ const ValSchema = z.object({
 
 const POST = async (req: Request) => {
   try {
-    const token = req.headers.get("Authorization");
+    const env = await getServerEnv();
+    const token = req.headers.get("Authorization") ?? "";
+    const expected = env.AI_SERVICES_AUTHORIZATION;
 
-    if (token !== authToken) {
+    const tokenBuf = Buffer.from(token.padEnd(expected.length));
+    const expectedBuf = Buffer.from(expected);
+    const match =
+      tokenBuf.length === expectedBuf.length &&
+      crypto.timingSafeEqual(tokenBuf, expectedBuf);
+
+    if (!match) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

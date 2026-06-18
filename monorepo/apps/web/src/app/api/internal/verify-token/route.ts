@@ -2,19 +2,28 @@ import { getServerEnv } from "@/lib/env/env.server";
 import { NextRequest, NextResponse } from "next/server";
 import * as jose from "jose";
 import { INTERNAL_AUTH_TOKEN } from "@/constants/auth.constants";
+import crypto from "crypto";
 
 /**
  * Internal API route for token verification
  * This runs in Node.js runtime and can access AWS Secrets Manager
- * 
- * Protected by hardcoded authentication token to prevent external access
+ *
+ * Protected by a shared internal token (stored in auth.constants.ts, sourced
+ * from env at build time) to prevent external access.
  */
 export async function POST(request: NextRequest) {
     try {
-        // Verify internal authentication
-        const internalAuth = request.headers.get("x-internal-auth");
+        // Verify internal authentication using constant-time comparison
+        const internalAuth = request.headers.get("x-internal-auth") ?? "";
+        const expected = INTERNAL_AUTH_TOKEN;
 
-        if (internalAuth !== INTERNAL_AUTH_TOKEN) {
+        const internalAuthBuf = Buffer.from(internalAuth.padEnd(expected.length));
+        const expectedBuf = Buffer.from(expected);
+        const isAuthorized =
+            internalAuthBuf.length === expectedBuf.length &&
+            crypto.timingSafeEqual(internalAuthBuf, expectedBuf);
+
+        if (!isAuthorized) {
             return NextResponse.json(
                 {
                     isValid: false,
@@ -47,10 +56,10 @@ export async function POST(request: NextRequest) {
 
         const secret = new TextEncoder().encode(env.JWT_SECRET);
 
-        // Verify the JWT token
+        // Verify the JWT token — issuer/audience match the Better-Auth JWT plugin config
         const { payload } = await jose.jwtVerify(token, secret, {
-            issuer: "DemoIssuer",
-            audience: "DemoAudience"
+            issuer: env.NEXT_PUBLIC_API_BASE_URL,
+            audience: env.NEXT_PUBLIC_API_BASE_URL
         });
 
         return NextResponse.json({

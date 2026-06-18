@@ -6,8 +6,6 @@ import { parseHasuraClaims } from "@/modules/warp/packages/shared/utils/auth-ses
 import jwt from "jsonwebtoken";
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
-const internalSharedKey = "uvmscwvFeptiTkYwdoch+51xxWo4dEKYBVX7Hj4JrIU=";
-
 const appurl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const handler = async (
@@ -138,11 +136,11 @@ const documentratingHandler = async (
       ? authHeader.slice(7)
       : authHeader;
     accessTokenValue = accessToken;
-    const decodedToken: any = jwt.decode(accessToken);
+    const decodedToken: any = jwt.verify(accessToken, process.env.HASURA_GRAPHQL_JWT_SECRET!);
     session = parseHasuraClaims(decodedToken, accessToken);
   }
   if (!session) {
-    return res.status(500).json({
+    return res.status(401).json({
       error: {
         message: "Unauthorized",
       },
