@@ -13,7 +13,7 @@ const handler: NextApiHandler = async (
   if (!!responseData) {
     res.status(200).send({ data: responseData, error: null });
   } else {
-    res.status(400).send({ data: null, error: "Failed to send email" });
+    res.status(400).send({ data: null, error: "Failed to calculate completion percentage" });
   }
 };
 

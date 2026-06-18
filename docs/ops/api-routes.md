@@ -16,10 +16,18 @@ apiExceptionGuard(
 
 ---
 
+## QA Status Legend
+
+- ✅ QA'd — clean or fixed
+- 🔧 QA'd — bugs fixed (see CHANGELOG.md)
+- ⚠️ QA'd — accepted-risk finding, not fixed
+
+---
+
 ## Auth Routes
 
-### `POST /api/v1/auth/access-token`
-No auth guard (public).
+### `POST /api/v1/auth/access-token` ✅
+No auth guard (public — this IS the auth endpoint).
 
 **Request body:**
 ```json
@@ -37,33 +45,38 @@ Rate limit: 60/min, no progressive delay.
 
 ---
 
-### `POST /api/v1/auth/refresh-token`
-[QA: Stub — handler calls `NextResponse.json(...)` but does NOT return it. Always returns `undefined`. Not functional.]
+### `POST /api/v1/auth/refresh-token` 🔧
+Auth: none (public stub). Fixed: handler was not returning the `NextResponse.json(...)` result — always returned `undefined`. Added `return`.
 
 ---
 
-### `POST /api/v1/auth/revoke-token`
-[QA: Same stub issue as refresh-token. Not functional.]
+### `POST /api/v1/auth/revoke-token` 🔧
+Auth: none (public stub). Fixed: same missing `return` as refresh-token.
 
 ---
 
 ## Activity Routes
 
-### `GET /api/v1/activity`
-Fetches all activities for the authenticated organisation.
+### `GET /api/v1/activity` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min progressive delay. Fixed: removed inner try/catch that swallowed errors and called `console.error`.
 
 **Response:**
 ```json
 { "success": true, "data": [ /* Activity[] from Hasura */ ] }
 ```
 
-**Downstream:** `sdk.getActivities({ organizationId })` via Hasura GraphQL.
+---
+
+### `GET /api/v1/activity-form/mode` 🔧
+Auth: `apiAuthGuard`. Fixed: added missing rate limiting (`withEmailOrIpRateLimitWithProgressiveDelay`).
 
 ---
 
 ## Monthly Activity Summary Routes
 
-### `POST /api/v1/monthly-activity-summary`
+### `POST /api/v1/monthly-activity-summary` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min progressive delay.
+
 Dual-path route controlled by `is_export` flag.
 
 **Request body (summary path):**
@@ -82,264 +95,305 @@ Dual-path route controlled by `is_export` flag.
 }
 ```
 
-**Request body (export path):**
-```json
-{
-  "is_export": true,
-  "activityCode": "string (alphanumeric+underscore only)",
-  "activityName": "string",
-  "year": number,
-  "yearType": "financial" | "calendar",
-  "locationIds": string[],
-  "months": string[],
-  "statusFilter": "pending" | "approved" | null,
-  "clientDateTime": "ISO datetime string"
-}
-```
-
-**Response (summary):**
-```json
-{
-  "success": true,
-  "data": {
-    "summary": { "total": 0, "pending": 0, "approved": 0, "rejected": 0 },
-    "rows": [ /* TActivityRow[] or TLocationRow[] */ ],
-    "totalCount": number
-  }
-}
-```
-
-**Response (export):**
-```json
-{ "success": true, "data": { "downloadUrl": "string (S3 presigned)" } }
-```
-
-**Downstream:** `getSummaryData()` or `exportActivityData()` in `lib/monthly-activity-summary/service.ts`. Uses raw SQL via `GetOPSDBContext()`. Results cached with Next.js `unstable_cache`.
-
-Rate limit: 60/min, progressive delay.
+**Downstream:** `getSummaryData()` or `exportActivityData()` in `lib/monthly-activity-summary/service.ts`.
 
 ---
 
-### `POST /api/v1/monthly-activity-summary/approve`
-OrganizationAdmin only (HTTP 403 for other roles).
-
-**Request body:**
-```json
-{
-  "activityCode": "string",
-  "year": number,
-  "yearType": "financial" | "calendar",
-  "locationIds": string[],
-  "months": string[]
-}
-```
-
-**Response:**
-```json
-{ "success": true, "data": { "approvedCount": number, "approvedLocationIds": string[] } }
-```
-
-**Downstream:** `approveActivity()` in `lib/monthly-activity-summary/service.ts`. On success:
-- Calls `revalidateTag()` to bust summary and filters cache
-- Fires `notifyLocationExecutivesOnApproval()` email via `after()` (post-response)
-
-Rate limit: 30/min, progressive delay.
+### `POST /api/v1/monthly-activity-summary/approve` ✅
+Auth: `apiAuthGuard`. Rate limit: 30/min progressive delay. OrganizationAdmin only (HTTP 403 for other roles).
 
 ---
 
-### `GET /api/v1/monthly-activity-summary/filters`
-Returns filter metadata for the data-log-summary UI.
-
-**Query params:** `year` (optional), `locationIds` (comma-separated, optional)
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "locations": [{ "id": "uuid", "name": "string" }],
-    "years": [{ "value": "string", "label": "string" }],
-    "financialYearStartMonth": number,
-    "yearType": "financial" | "calendar",
-    "defaultYear": number,
-    "defaultMonth": "string | null",
-    "monthsWithData": ["string"]
-  }
-}
-```
-
-**Downstream:** `getFilters()` in `lib/monthly-activity-summary/service.ts`.
+### `GET /api/v1/monthly-activity-summary/filters` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min progressive delay.
 
 ---
 
-## Excel Import Routes (GHG Transactions)
+## Monthly Activity Data
 
-All follow the same pipeline. Example: `POST /api/v1/ghg-data-import/transaction/energy-fuel-purchased/excel`
+### `POST /api/v1/monthly-activity-data` 🔧
+Auth: `apiAuthGuard`. **CRITICAL FIX:** SQL injection — `organizationId` from request body was interpolated directly into raw SQL without UUID validation. Fixed by adding Zod `.uuid()` validation before interpolation.
 
-**Request body:**
-```json
-{ "fileUrl": "string (S3 URL)", "organizationAddressId": "uuid" }
-```
+---
 
-**Response (success):**
-```json
-{ "success": true, "data": { /* DataImportHistory record */ } }
-```
+## AI File Processing
 
-**Response (failure — template or data validation error):**
-```json
-{ "success": false, "data": { "file_url": "string (error Excel S3 URL)" } }
-```
+### `POST /api/v1/ai-monthly-activity-data` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min progressive delay.
 
-**Downstream pipeline:**
-1. `validateUserActivityAndOrganizationAddressPermissions()` — checks user has permission for this location and activity
-2. `sdk.getAddressDetail()` — fetch location ownership type and address type
-3. `readDataFromURL(fileUrl)` — read Excel from S3
-4. Filter sheets by address type, trim columns and trailing blank rows
-5. `validateExcelTemplate()` — check sheet names and required columns
-6. `validateExcelTemplateData()` — check lookup values, date ranges, baseline constraints; checks approval lock
-7. If validation passes: `saveFuelPurchasedSheetEntries()` (or equivalent per activity)
-8. `insertNewDataImportHistory()` — record import event
-9. `calculateEmission()` — run emission calculation engine
-10. `saveEmissionDashboard()` — write to KPI tables
-11. `emissionCalculationForBuyer()` — propagate to buyer organisations
-12. `calculatePCFEmissionFromSupplierData()` — PCF calculation
+### `POST /api/v1/ai-file-processing-webhook` 🔧
+Auth: **Affinda webhook — HMAC-SHA256 signature** (not user JWT).
+**CRITICAL FIX:** No authentication existed on actual event payloads — any caller could trigger AI file processing. Added HMAC-SHA256 signature verification using `AFFINDA_WEBHOOK_SIGNATURE_KEY` and `timingSafeEqual`.
 
-Activities covered by Excel import routes:
-- `energy-fuel-purchased` (general, heating-water, auxiliary, transportation sub-types)
-- `energy-grid-power`
-- `energy-captive-power`
-- `transport-upstream`
-- `transport-downstream`
-- `transport-employee-travel`
-- `transport-business-travel`
-- `waste`
-- `water-withdrawal`
-- `water-consumption`
-- `wastewater-generation`
-- `wastewater-treatment`
-- `fugitive`
-- `general`
-- `production`
-- `material-procurement`
-- `capital-goods`
-- `use-of-sold-products`
-- `buyer-share`
-- `product-share-allocation`
+---
+
+## Emission / Calculation Routes
+
+### `POST /api/v1/webhook/internal/calculate-emission` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min progressive delay.
+
+### `POST /api/v1/distance-matrix-calculation` 🔧
+Auth: **CRON secret** (not user JWT). **CRITICAL FIX:** Hardcoded secret `"EzqUt3IXQxidMdRA"` in `input.constant.ts`; string `==` comparison (timing attack); no `apiExceptionGuard`. Fixed: use `env.CRON_SECRET` via `timingSafeEqual`; wrapped in `apiExceptionGuard`.
+
+### `POST /api/v1/update-business-travel-data` 🔧
+Auth: **CRON secret** (not user JWT). Same CRITICAL fix as `distance-matrix-calculation`.
+
+---
+
+## Email Route
+
+### `POST /api/v1/email` 🔧
+Auth: `apiAuthGuard`. Rate limit: 60/min progressive delay. Fixed: removed `console.log("success")` / `console.log("fail")` — these leaked email send outcome to server logs.
+
+---
+
+## Emission Factor
+
+### `POST /api/v1/emission-factor/get-emission-factor` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min progressive delay.
+
+---
+
+## ESG Data Import Routes (all ✅)
+
+All ESG routes follow the standard guard pattern:
+
+- `POST /api/v1/esg-data-import/transaction/csr/excel`
+- `POST /api/v1/esg-data-import/transaction/governance-and-board-composition/excel`
+- `POST /api/v1/esg-data-import/transaction/grievances/excel`
+- `POST /api/v1/esg-data-import/transaction/health-and-safety/excel`
+- `POST /api/v1/esg-data-import/transaction/human-resources/excel`
+
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+---
+
+## GHG Data Import Routes (all ✅ unless noted)
+
+All GHG routes use `apiExceptionGuard(apiAuthGuard(...))` at minimum:
+
+- `POST /api/v1/ghg-data-import/transaction/buyer-share/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/capital-goods/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/clickhouse` ✅
+- `POST /api/v1/ghg-data-import/transaction/energy-captive-power/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/energy-fuel-purchased/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/energy-grid-power/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/fugitive/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/general/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/material-procurement/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/product-share-allocation/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/product-share-allocation/template` ✅
+- `POST /api/v1/ghg-data-import/transaction/production/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/production` ✅
+- `POST /api/v1/ghg-data-import/transaction/transport-business-travel/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/transport-downstream/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/transport-downstream` ✅
+- `POST /api/v1/ghg-data-import/transaction/transport-employee-travel/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/transport-upstream/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/transport-upstream` ✅
+- `POST /api/v1/ghg-data-import/transaction/use-of-sold-products/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/waste/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/wastewater-generation/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/wastewater-treatment/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/water-consumption/excel` ✅
+- `POST /api/v1/ghg-data-import/transaction/water-withdrawal/excel` ✅
+
+---
+
+## File System Routes
+
+### `POST /api/v1/file-system/get-s3-upload-url/activity-excel-import` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `POST /api/v1/file-system/get-s3-upload-url/master-data-excel-import` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `POST /api/v1/file-system/get-s3-upload-url/material-master-import` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `POST /api/v1/file-system/get-s3-upload-url/supplier-master-import` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+---
+
+## Internal Routes
+
+### `POST /api/v1/internal/generate-link/set-new-password` 🔧
+Auth: **SK_SERVICES_AUTH_TOKEN** (service-to-service, not user JWT). Fixed: changed `!== ` string comparison to `timingSafeEqual` to prevent timing attacks.
+
+### `POST /api/v1/internal/kpi-calculation` 🔧
+Auth: `apiAuthGuard`. Previously fixed: no auth guard existed.
 
 ---
 
 ## Master Data Routes
 
-### `GET /api/v1/master-data/organization-locations/form`
-Header: `address_id: uuid`
+### `GET /api/v1/master-data/activity/[code]/download-template` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
 
-Returns location detail for editing.
+### `GET /api/v1/master-data/activity/supplier-master/download-template` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
 
-**Downstream:** `GetAddressDetail(addressId, organizationId)`
+### `GET|POST /api/v1/master-data/materials/excel` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
 
-### `POST /api/v1/master-data/organization-locations/form`
-**Request body:** Location form fields (name, code, city, state, country, ownership_type, type, etc.)
+### `GET /api/v1/master-data/materials/listing` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
 
-Validates org activities to determine if WWTP is enabled, then inserts via `SaveAddressDetail()`.
+### `GET /api/v1/master-data/org-master-data/city` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
 
-**Response:** `{ "success": true, "data": [Address] }`
+### `GET /api/v1/master-data/org-master-data/country` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
 
-### `PUT /api/v1/master-data/organization-locations/form`
-Updates existing location via `UpdateAddressDetail()`.
+### `GET /api/v1/master-data/org-master-data/state` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `GET|POST|PUT /api/v1/master-data/org-supplier-location-master/excel` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `GET /api/v1/master-data/org-supplier-location-master/listing` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min. OrganizationAdmin only.
+
+### `GET /api/v1/master-data/org-supplier-location-master/template` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min. OrganizationAdmin only.
+
+### `POST /api/v1/master-data/org-supplier-master-enterprise-setup/excel` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `POST /api/v1/master-data/org-supplier-master-enterprise-setup/export` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `GET /api/v1/master-data/org-supplier-master-enterprise-setup/listing` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `GET|PUT /api/v1/master-data/organization-details/form` ✅ ⚠️
+Auth: `apiAuthGuard`. Rate limit: 60/min. Note: role check returns HTTP 200 with `status: 403` in body instead of actual HTTP 403 — accepted risk.
+
+### `GET /api/v1/master-data/organization-locations/excel` ✅ (empty stub)
+
+### `GET|POST|PUT /api/v1/master-data/organization-locations/form` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `GET /api/v1/master-data/organization-locations/listing` 🔧
+Auth: `apiAuthGuard`. Rate limit: 60/min. Fixed: `organizationId` was read from client-supplied header instead of JWT session.
+
+### `GET /api/v1/master-data/supplier-material-mapping/counts` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min. OrganizationAdmin only.
+
+### `POST /api/v1/master-data/supplier-material-mapping/excel` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `GET|POST|PUT|DELETE /api/v1/master-data/supplier-material-mapping/form` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min. OrganizationAdmin only.
+
+### `GET /api/v1/master-data/supplier-material-mapping/listing` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `GET /api/v1/master-data/supplier-material-mapping/template` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+### `GET|POST|PUT /api/v1/master-data/users/form` 🔧
+Auth: `apiAuthGuard`. Rate limit: 60/min. Fixed: POST and PUT handlers read `organization_id`/`userId` from client-supplied headers instead of JWT session — privilege escalation risk. Changed to use session values.
+
+### `GET /api/v1/master-data/users/listing` 🔧
+Auth: `apiAuthGuard`. Rate limit: 60/min. Fixed: `organization_id` and `userId` read from client-supplied headers. Changed to use session values.
+
+### `GET|POST /api/v1/master-data/users/user-activity-permission` 🔧
+Auth: `apiAuthGuard`. Rate limit: 60/min. Fixed: POST handler ignored session, read `organization_id`/`sessionUserId` from client-supplied headers. Changed to use session values.
 
 ---
 
-### `POST /api/v1/master-data/users/form`
-Creates a user. Multi-step:
-1. Schema + data validation
-2. Checks SPA API `GetUserDetailsByEmailId` — if "New User", creates in Hasura then calls SPA `CreateUser`
-3. If "OP Permissions Updated", inserts with `isRegistered: true`
-4. Sends `Welcome_Email` template to new OrganizationAdmin users
+## Net Zero Target Year
 
-**Request body:** Array of user objects `[{ name, email, mobile, role, ... }]`
+### `POST /api/v1/net-zero-target-year/form` 🔧
+Auth: `apiAuthGuard`. Fixed: missing rate limiting; 403 returned as HTTP 200 with status field in body — changed to throw `CustomError({ statusCode: 403 })`.
 
-[QA: Email is encrypted with `choosemethod(email, "encrypt")` before sending to SPA but stored as plaintext in Hasura. Inconsistency risk.]
+### `POST /api/v1/net-zero-target-year` 🔧
+Auth: `apiAuthGuard`. Fixed: missing rate limiting.
 
-### `PUT /api/v1/master-data/users/form`
-Updates existing user. Calls SPA `CreateUser` with `process: "UPDATE"`. Sends welcome email for role changes.
+---
 
-[QA: PUT handler does NOT use `apiAuthGuard` — session extracted manually from headers. Auth inconsistency.]
+## Organization Routes
+
+### `GET /api/v1/organization-address` 🔧
+Auth: `apiAuthGuard`. Rate limit: 60/min. Fixed: removed inner try/catch that swallowed errors and called `console.error`.
+
+### `POST /api/v1/org-buyer-supplier-mapping` 🔧
+Auth: `apiAuthGuard`. Rate limit: 60/min. Fixed: hardcoded buyer org UUID `"cb3a1243-c11b-4eb5-ae3d-061ff9178b6b"` (Daimler) replaced with validated `buyerOrgId` from request body (Zod UUID validation). Added missing rate limiting.
+
+### `POST /api/v1/org-buyersuppliermethod-data` ✅
+Auth: `apiAuthGuard`. Rate limit: 60/min.
+
+---
+
+## Platform Sync Routes (Internal Service-to-Service)
+
+All four routes previously had **no authentication** and echoed `req.body` (which is a `ReadableStream`, not parsed data). Fixed by adding `SK_SERVICES_AUTH_TOKEN` verification via `timingSafeEqual` and wrapping in `apiExceptionGuard`.
+
+### `POST /api/v1/platform-sync/organization/remove` 🔧
+Auth: **SK_SERVICES_AUTH_TOKEN** (service-to-service). Previously: no auth, stub only.
+
+### `POST /api/v1/platform-sync/organization/upsert` 🔧
+Auth: **SK_SERVICES_AUTH_TOKEN** (service-to-service). Previously: no auth, stub only.
+
+### `POST /api/v1/platform-sync/users/remove` 🔧
+Auth: **SK_SERVICES_AUTH_TOKEN** (service-to-service). Previously: no auth, stub only.
+
+### `POST /api/v1/platform-sync/users/upsert` 🔧
+Auth: **SK_SERVICES_AUTH_TOKEN** (service-to-service). Previously: no auth, stub only.
+
+---
+
+## Sample/Test Routes
+
+### `GET|POST /api/v1/sample-route` 🔧
+**CRITICAL FIX:** Was publicly accessible with no auth; contained SQL injection (raw string interpolation of user-supplied `organizationId`); no `apiExceptionGuard`. Replaced with a safe stub — `apiAuthGuard`, `apiExceptionGuard`, and rate limiting added; raw SQL and hardcoded org UUID removed.
+
+### `GET /api/v1/test` 🔧
+Auth: `apiAuthGuard` (previously fixed). Rate limit: 60/min.
+
+---
+
+## Users Routes
+
+### `POST /api/v1/users/activity-permissions` 🔧
+Auth: `apiAuthGuard`. Rate limit: 60/min. Fixed: handler ignored JWT session and read `organizationId`/`userId` from request body (cross-tenant access risk); inner try/catch swallowed errors bypassing `apiExceptionGuard`; missing `TUserSession` import. All fixed.
+
+### `POST /api/v1/users/buyer-supplier-role` 🔧
+Auth: `apiAuthGuard`. Rate limit: 60/min. Fixed: handler ignored JWT session and read `organizationId` from request body; inner try/catch with `console.error` swallowed errors; missing `TUserSession` import. All fixed.
 
 ---
 
 ## Webhook Routes
 
-### `POST /api/v1/webhook/data-flow`
-[QA: Uses a hardcoded static token `sk-op-test-token-123456` in the `x-sk-op-authorization` header. Not suitable for production.]
+### `POST /api/v1/webhook/data-flow` 🔧
+Auth: **DATA_FLOW_WEBHOOK_SECRET** (previously fixed). Uses `timingSafeEqual`.
 
-**Request body:**
-```json
-{
-  "organization_id": "uuid",
-  "period_from": { "year": number, "month": number },
-  "period_to": { "year": number, "month": number },
-  "data_keys": ["EM_SCOPE1" | "EM_SCOPE2" | "EM_SCOPE3" | "HR_EMPLOYEE_TURNOVER" | "GRIEVANCES" | "GOVERNANCE_BOARD_COPMPOSITION" | "HEALTH_AND_SAFETY" | "RENEWABLE_ELECTRICITY_CONSUMPTION"]
-}
-```
+### `POST /api/v1/webhooks/reminders/upload-pending-first` 🔧
+Auth: **CRON_SECRET** (previously fixed). Uses `timingSafeEqual`.
 
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "EM_SCOPE1": [],
-    "EM_SCOPE2": [],
-    /* ... other requested keys ... */
-  }
-}
-```
-
-**Downstream:** `getDataFlowResult()` dispatches to Hasura GraphQL SDK queries per `data_key`:
-- `EM_SCOPE1/2/3` → `getESGScopeXEmission()`
-- `GRIEVANCES` → `getESGGrievancesByPeriod()`
-- `GOVERNANCE_BOARD_COPMPOSITION` → `getESGBoardCompositionByPeriod()` [QA: typo "COPMPOSITION"]
-- `HEALTH_AND_SAFETY` → `getESGHealthAndSafetyByPeriod()`
-- `HR_EMPLOYEE_TURNOVER` → `getESGEmployeeTurnoverByPeriod()`
-- `RENEWABLE_ELECTRICITY_CONSUMPTION` → `getESGRenewableElectricityConsumption()`
+### `POST /api/v1/webhooks/reminders/upload-pending-tenth` 🔧
+Auth: **CRON_SECRET** (previously fixed). Uses `timingSafeEqual`.
 
 ---
 
-## S3 Upload URL Routes
+## Library / Utility Files
 
-### `POST /api/v1/file-system/get-s3-upload-url/activity-excel-import`
-Returns a presigned S3 PUT URL for Excel activity data uploads.
+### `ops/lib/guards/api-exception-guard.ts` 🔧
+**HIGH:** Full error object (including `query`, `parameters`, `driverError`, DB schema/table/column/constraint fields) was spread into the API response. Fixed: explicit deletion of all DB-internal and sensitive fields before responding.
 
-**Response:** `{ "success": true, "data": { "uploadUrl": "string", "fileUrl": "string" } }`
+### `ops/lib/guards/api-user-auth-guard.ts` ✅
+Clean. Validates JWT via `getUserSession()` which calls `jwt.verify()` with the HASURA_JWT_SECRET. Returns 401 on any failure.
 
----
+### `ops/lib/rate-limiter/progressive-delay-rate-limit.ts` ✅
+Clean. In-memory store (resets on server restart — acceptable for serverless/edge). Per-endpoint composite key prevents global rate sharing. Serial queue prevents race conditions.
 
-## Admin Routes
+### `ops/lib/auth/auth.client.ts` ✅ ⚠️
+`decodeToken()` uses `jwt.decode()` (no signature verification) — intentional for client-side claim reading. Server-side auth in `auth.server.ts` uses `jwt.verify()`. `getOrgIdFromAccessToken` is a duplicate of `getUserOrganizationId` — dead code but not harmful.
 
-### `GET /admin/api/emission-factor`
-Lists emission factors. Super-admin only via `api-super-admin.guard.ts`.
+### `ops/utils/drizzle/schema.ts` ⚠️
+`SupplierInvitations.id` defined with `.defaultRandom()` but no `.primaryKey()` — should be a PK. Requires DB migration; out of QA scope.
 
-### `POST /admin/api/emission-factor`
-Creates or updates an emission factor.
-
-### `GET /admin/api/uom-conversion`
-Lists UOM conversion factors.
-
-### `POST /admin/api/uom-conversion`
-Creates or updates a UOM conversion.
-
----
-
-## Embed Form Routes (Data Import Forms)
-
-Routes under `app/[organizationId]/embed/v1/[accessToken]/data-import/forms/` handle per-entry CRUD for manual data entry. Each route:
-
-- Validates the JWT from the URL `accessToken` parameter
-- Checks approval lock via `assertNoApprovalLock()` before writes
-- Calls `getTaskRequestActvityTaskRequestId()` for INSERT (includes lock check)
-- For UPDATE/DELETE: fetches DB record first, then checks lock using DB values (not client input)
-
-Example: `POST/PUT/DELETE /[orgId]/embed/v1/[token]/data-import/forms/energy-fuel-consumption/general-purpose`
-
-**Request:** Energy consumption entry fields (month, year, fuel_type, quantity, uom, etc.)
-**Response:** `{ "success": true, "data": { /* saved record */ } }`
+### `ops/utils/file-storage/server.service.ts` 🔧
+`console.log(fileMetadata)` logged S3 object metadata (may contain org IDs, user emails) to server stdout. Removed.

@@ -6,11 +6,11 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  const responseData = await webCurationForProcessing(req.body[0].invitationId);
+  const responseData = await webCurationForProcessing(req.body?.[0]?.invitationId);
   if (!!responseData) {
     res.status(200).send({ data: responseData, error: null });
   } else {
-    res.status(400).send({ data: null, error: "Failed to send email" });
+    res.status(400).send({ data: null, error: "Failed to process web curation" });
   }
 };
 

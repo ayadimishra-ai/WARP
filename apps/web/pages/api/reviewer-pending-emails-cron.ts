@@ -4,8 +4,11 @@ import { NextApiHandler } from "next";
 
 const handler: NextApiHandler = async (req, res) => {
     try {
-        const sharedKey = String(req.headers["x-warp-shared-key"]);
-        // Assuming sendReviewerPendingEmailsCron handles its own validation or doesn't strictly need the key for logic but for security
+        const incomingKey = req.headers["x-warp-shared-key"];
+        if (!incomingKey || String(incomingKey) !== process.env.WARP_CRON_SHARED_KEY) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        const sharedKey = String(incomingKey);
         await sendReviewerPendingEmailsCron(sharedKey);
         res.status(200).send({ data: "Cron job executed successfully", error: null });
     } catch (error: any) {

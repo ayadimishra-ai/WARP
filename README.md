@@ -76,18 +76,26 @@ yarn codegen    # regenerate GraphQL types
 
 ## Security Fixes Applied (this branch)
 
-All critical bugs found during QA were fixed directly in the source files. Key fixes:
+All critical bugs found during QA were fixed directly in the source files. See `docs/warp/CHANGELOG.md` for the complete per-file change log and `docs/warp/qa-security-fixes.md` for full status of every audited file.
 
 | Area | Fix |
 |------|-----|
 | ESG score calculation | Module-level shared state removed — was corrupting scores across concurrent users |
-| AI routes (5 files) | `JSON.parse(req.body)` → `req.body`; wildcard CORS removed |
-| JWT verification | `jwt.decode()` → `jwt.verify()` with `HASURA_GRAPHQL_JWT_SECRET` |
+| AI routes (wildcard CORS) | `Access-Control-Allow-Origin: *` removed from 5 AI route handlers |
+| AI routes (JSON.parse) | `JSON.parse(req.body)` → `req.body`; Next.js already parses JSON bodies |
+| JWT verification (6 files) | `jwt.decode()` → `jwt.verify()` with `HASURA_GRAPHQL_JWT_SECRET` across all RARA + submit routes |
 | Auth backdoor | Hardcoded `admin@warp.com / 1234` login removed from NextAuth |
+| S3 download/upload auth | No-auth S3 download and upload routes now require valid JWT (401 if missing) |
+| Hardcoded secret in RARA | `internalSharedKey = "uvmscw..."` literal → `process.env["WARP_INTERNAL_SHARED_KEY"]` |
+| Secrets disclosure | `test/secrets-check.ts` was fully public; now requires `x-warp-shared-key` header |
+| Cron auth bypass | `String(undefined)` shared-key pattern fixed in `sending-email-from-db`, `reviewer-pending-emails-cron`, `migrate-existing-invitations-stats` |
+| Developer endpoint exposed | `migrate-existing-invitations-stats` had zero auth and no size limit; now guarded + capped at 100 items |
+| HTTP status codes | 500 used for 400 (client errors) and 401 (unauthorized) conditions across 12+ routes |
 | Interim answers | `ApiMethodGuard("GET")` on POST route → `"POST"` |
 | Questionnaire render | Missing `return` in JSX branch — form never displayed |
 | Global data storage | `typeof !== undefined` (always true) → `!== "undefined"` |
-| Email routes | `response?.indexOf("OK")` crash on null → safe `.includes()` |
+| Email routes | `response?.indexOf("OK")` crash on null → safe `.includes()` check |
+| Recommendation emails | No method guard — accepted GET/DELETE/etc; now POST-only; success check fixed |
 | XSS | `dangerouslySetInnerHTML` raw HTML → `domSanitiseValue()` wrapper |
 | postMessage | Wildcard `"*"` origin → `NEXT_PUBLIC_PARENT_ORIGIN` env var |
 | Webhook secret | Hardcoded hex key → `HASURA_WEBHOOK_SECRET` env var + timing-safe compare |
@@ -96,3 +104,8 @@ All critical bugs found during QA were fixed directly in the source files. Key f
 | OPS webhook token | Hardcoded `"sk-op-test-token-123456"` → `DATA_FLOW_WEBHOOK_SECRET` env var |
 | OPS cron auth | `String(undefined)` bypass → timing-safe `crypto.timingSafeEqual` |
 | AWS credentials | Hardcoded keys removed from `organization-configs.server.ts` |
+| Error serialization | `{ error: error \|\| "..." }` serializes Error objects to `{}` → fixed to `error?.message` across 8 routes |
+| Silent no-response | PUT accepted but never handled in 3 routes (saveAnswers, carry-forward x2) — now POST-only |
+| Null-safe body access | `req.body[0].field` → `req.body?.[0]?.field` in 2 routes to prevent TypeError crashes |
+| Auth failure status | 500 returned for unauthorized access → 401 in all fixed RARA routes |
+| Sensitive header logging | `req.headers.authorization` logged at INFO level in `document-processing-completed` — removed |

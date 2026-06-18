@@ -3,6 +3,9 @@ import { emailOnManuallyRaisingTheRecommendations } from "@warp/server/services/
 import { NextApiHandler } from "next";
 
 const handler: NextApiHandler = async (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
   const response: any = await emailOnManuallyRaisingTheRecommendations(
     req.body.id,
     req.body.questionId,

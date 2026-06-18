@@ -6,21 +6,12 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // Handle OPTIONS preflight requests
   const { submissionId, invitationId } = req.body;
   const responseData = await suggestionAnswerEntry(invitationId, submissionId);
   if (!!responseData) {
     res.status(200).send({ data: responseData, error: null });
   } else {
-    res.status(400).send({ data: null, error: "Failed to send email" });
+    res.status(400).send({ data: null, error: "Failed to process suggestion answer entry" });
   }
 };
 

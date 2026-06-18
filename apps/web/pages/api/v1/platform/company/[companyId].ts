@@ -26,7 +26,7 @@ export default async function handler(
       id: req.query.companyId,
     });
     if (!companyDetail.Company.length) {
-      res.status(409).send({
+      res.status(404).send({
         data: null,
         error: {
           code: res.statusCode,
@@ -52,6 +52,6 @@ export default async function handler(
       stack: error.stack
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 }

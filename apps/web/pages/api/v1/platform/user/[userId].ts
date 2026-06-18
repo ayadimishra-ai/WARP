@@ -14,7 +14,7 @@ export default async function handler(
         data: null,
         error: {
           code: res.statusCode,
-          message: `${req.method} not Request allowed.`,
+          message: `${req.method} method not allowed.`,
           stack: null,
         },
       });
@@ -26,7 +26,7 @@ export default async function handler(
       id: req.query.userId,
     });
     if (!userDetail.User.length) {
-      res.status(409).send({
+      res.status(404).send({
         data: null,
         error: {
           code: res.statusCode,
@@ -52,6 +52,6 @@ export default async function handler(
       stack: error.stack
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 }

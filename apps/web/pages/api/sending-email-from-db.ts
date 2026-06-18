@@ -11,7 +11,11 @@ const handler: NextApiHandler = async (req, res) => {
 
     // const dateWithStartTime = new Date("2024-05-17T00:00:00.001Z");
     // const dateWithEndTime = new Date("2024-05-17T23:59:59.999Z");
-    const sharedKey = String(req.headers["x-warp-shared-key"]);
+    const incomingKey = req.headers["x-warp-shared-key"];
+    if (!incomingKey || String(incomingKey) !== process.env.WARP_CRON_SHARED_KEY) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const sharedKey = String(incomingKey);
     const response: any = await sendingEmailFromDb(
       dateWithStartTime,
       dateWithEndTime,
@@ -27,7 +31,7 @@ const handler: NextApiHandler = async (req, res) => {
       stack: error.stack,
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 };
 

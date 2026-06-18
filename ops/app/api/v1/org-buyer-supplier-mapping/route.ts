@@ -1,14 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { TUserSession } from "~/lib/auth/auth.client";
 import { apiExceptionGuard } from "~/lib/guards/api-exception-guard";
 import { apiAuthGuard } from "~/lib/guards/api-user-auth-guard";
 import { Buyersuppliermappingsdata } from "~/lib/master-data/organization-buyer-supplier-mappingcheck";
+import { withEmailOrIpRateLimitWithProgressiveDelay } from "~/lib/rate-limiter/progressive-delay-rate-limit";
+import { CustomError } from "~/shared/error/custom-error";
+
+const BodySchema = z.object({
+  buyerOrgId: z.string().uuid("Invalid buyer org id"),
+});
 
 async function POST_handler(req: NextRequest, userSession: TUserSession) {
-  userSession.organizationId;
+  const body = await req.json();
+  const parsed = BodySchema.safeParse(body);
+  if (!parsed.success) {
+    throw CustomError({ statusCode: 400, message: "Invalid buyer org id." });
+  }
   const response = await Buyersuppliermappingsdata(
     userSession.organizationId,
-    "cb3a1243-c11b-4eb5-ae3d-061ff9178b6b" // Buyer Org Id diamler
+    parsed.data.buyerOrgId
   );
   return NextResponse.json({
     statusCode: 200,
@@ -16,4 +27,10 @@ async function POST_handler(req: NextRequest, userSession: TUserSession) {
   });
 }
 
-export const POST = apiExceptionGuard(apiAuthGuard(POST_handler));
+export const POST = apiExceptionGuard(
+  withEmailOrIpRateLimitWithProgressiveDelay(apiAuthGuard(POST_handler), {
+    limitInterval: 1,
+    maxRequestCount: 60,
+    progressiveDelay: true,
+  })
+);

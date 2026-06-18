@@ -11,10 +11,6 @@ const handler: NextApiHandler = async (
     timestamp: new Date().toISOString(),
     method: req.method,
     url: req.url,
-    headers: {
-      // avoid logging sensitive headers in production
-      authorization: req.headers.authorization,
-    },
   });
 
   try {
@@ -46,7 +42,7 @@ const handler: NextApiHandler = async (
       return res.status(200).json({ data: responseData, error: null });
     }
 
-    return res.status(400).json({ data: null, error: serviceError || "Failed to send email" });
+    return res.status(400).json({ data: null, error: serviceError || "Processing failed" });
   } catch (error: any) {
     const durationMs = Date.now() - start;
     console.error("document-processing-completed API ERROR", {

@@ -14,7 +14,7 @@ export const config = {
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // Request Method Validation
-    if (req.method !== "POST" && req.method !== "PUT") {
+    if (req.method !== "POST") {
       res.status(405).send({
         data: null,
         error: {
@@ -28,10 +28,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     // Request Body Validation
     if (!req.body) {
-      res.status(405).send({
+      res.status(400).send({
         data: null,
         error: {
-          code: res.statusCode,
+          code: 400,
           message: "Request body is required.",
           stack: null,
         },
@@ -55,7 +55,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       stack: error.stack,
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 }
 

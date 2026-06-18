@@ -3,6 +3,9 @@ import { emailAfterActionsBeenTakenByThePortfolioCompanyOrAssessee } from "@warp
 import { NextApiHandler } from "next";
 
 const handler: NextApiHandler = async (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
   const response: any =
     await emailAfterActionsBeenTakenByThePortfolioCompanyOrAssessee(
       req.body.id,
@@ -13,7 +16,7 @@ const handler: NextApiHandler = async (req, res) => {
       req.body.comments,
       req.body.platformId
     );
-  if (!!response) {
+  if (!!response && response.includes("OK")) {
     res.status(200).send({ data: response, error: null });
   } else {
     res.status(400).send({ data: null, error: "Failed to send email" });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGraphQlServerSDK } from "~/graphql/server";
+import { TUserSession } from "~/lib/auth/auth.client";
 import { apiExceptionGuard } from "~/lib/guards/api-exception-guard";
 import { apiAuthGuard } from "~/lib/guards/api-user-auth-guard";
 import { getUserRole } from "~/lib/op-database/op-service.server";
@@ -219,15 +220,17 @@ function appendMissingActivities(
   return [...response, ...missing];
 }
 
-async function postHandler(req: NextRequest) {
+async function postHandler(req: NextRequest, userSession: TUserSession) {
   try {
     const body = await req.json();
     const isMasterActivityRequired =
       typeof body?.isMasterActivityRequired === "boolean"
         ? body.isMasterActivityRequired
         : String(body?.isMasterActivityRequired).toLowerCase() === "true";
-    const orgId = String(body.organizationId);
-    const userId = String(body.userId);
+    // Use session values from the validated JWT — do NOT trust client-supplied
+    // organizationId/userId to prevent cross-tenant data access.
+    const orgId = userSession.organizationId;
+    const userId = userSession.userId;
     const isPCFActivity =
       typeof body?.isPCFActivity === "boolean"
         ? body.isPCFActivity
@@ -348,11 +351,8 @@ async function postHandler(req: NextRequest) {
       PCF: hasPCFActivity,
     });
   } catch (error) {
-    console.error("Error in postHandler:", error); // Log the error for debugging
-    return NextResponse.json(
-      { error: "An error occurred while processing your request." },
-      { status: 500 }
-    );
+    // Re-throw so apiExceptionGuard can handle and sanitise the error response.
+    throw error;
   }
 }
 

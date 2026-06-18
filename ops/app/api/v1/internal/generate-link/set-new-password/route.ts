@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getGraphQlServerSDK } from "~/graphql/server";
 import { generateUserPasswordSetNewPasswordLink } from "~/lib/auth/auth.server";
@@ -14,10 +15,21 @@ const POSTHandler = async (req: NextRequest) => {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  // Validate with auth token
-  const authToken = req.headers.get("authorization");
+  // Validate with auth token using constant-time comparison to prevent timing attacks.
+  const authToken = req.headers.get("authorization") ?? "";
   const env = await getServerEnv();
-  if (!authToken || authToken !== env.SK_SERVICES_AUTH_TOKEN) {
+
+  let authorized = false;
+  try {
+    authorized = timingSafeEqual(
+      Buffer.from(authToken),
+      Buffer.from(env.SK_SERVICES_AUTH_TOKEN)
+    );
+  } catch {
+    authorized = false;
+  }
+
+  if (!authorized) {
     return NextResponse.json(
       { error: "Unauthorized request" },
       { status: 401 }

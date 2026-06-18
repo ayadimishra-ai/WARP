@@ -1,8 +1,6 @@
-import { encryptionDecryption } from "@warp/client/hooks/encryption-decryption";
 import { uploadError } from "@warp/server/services/aws-s3.service";
 import { updateEmailSubscribed } from "@warp/server/services/isemailsubscribed.service";
 import { NextApiRequest, NextApiResponse } from "next";
-const { choosemethod } = encryptionDecryption();
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -22,10 +20,10 @@ export default async function handler(
     }
     // Request Body Validation
     if (!req.body) {
-      res.status(405).send({
+      res.status(400).send({
         data: null,
         error: {
-          code: res.statusCode,
+          code: 400,
           message: "Request body is required.",
           stack: null,
         },
@@ -46,6 +44,6 @@ export default async function handler(
       stack: error.stack,
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 }

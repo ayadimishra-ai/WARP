@@ -11,17 +11,8 @@ const updateInvitationWebCurationAIBulkProcessing = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // handle OPTIONS preflight quickly
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
+  if (req.method !== "POST") {
+    return res.status(405).send({ error: "Method not allowed" });
   }
 
   try {
@@ -30,10 +21,6 @@ const updateInvitationWebCurationAIBulkProcessing = async (
       typeof rawBody === "string" ? JSON.parse(rawBody) : rawBody ?? {};
 
     const { formId, invitationId, AIData, companyId, userId } = parsedBody;
-
-    if (req.method !== "POST") {
-      return res.status(405).send({ error: "Method not allowed" });
-    }
 
     // decide which AI flows to run
     const allowed =

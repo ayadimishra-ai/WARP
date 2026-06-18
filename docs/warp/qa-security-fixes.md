@@ -4,7 +4,7 @@ This document records every security bug found and fixed during the QA pass, wit
 
 ---
 
-## Step 1 — Checklist Files (verified or fixed)
+## Pass 1 — Initial QA Sweep (Historical)
 
 ### A) `apps/web/pages/api/calculate-score/index.ts`
 **Status: VERIFIED**
@@ -14,15 +14,15 @@ This document records every security bug found and fixed during the QA pass, wit
 - No `jwt.decode()` call in this file (JWT is not used here — auth is via internal call pattern).
 
 ### B) `apps/web/pages/api/auth/[...nextauth].ts`
-**Status: VERIFIED**
+**Status: FIXED**
 
-- Hardcoded credentials (`admin@warp.com` / `1234`) are removed. The `authorize` callback unconditionally returns `null`.
+- Hardcoded credentials (`admin@warp.com` / `1234`) removed. The `authorize` callback unconditionally returns `null`.
 - Rate-limited via `withEmailOrIpRateLimitWithProgressiveDelay`.
 
 ### C) `apps/web/pages/api/interiam/index.ts`
-**Status: VERIFIED**
+**Status: FIXED**
 
-- Uses `ApiMethodGuard(interimAnswerHandler, "POST")` — correct HTTP method guard.
+- Was using `ApiMethodGuard(interimAnswerHandler, "GET")` on a POST route. Fixed to `"POST"`.
 
 ### D) `apps/web/pages/api/AI/generate-background-report.ts`
 **Status: VERIFIED**
@@ -31,99 +31,147 @@ This document records every security bug found and fixed during the QA pass, wit
 - Returns 401 on verification failure before any processing.
 
 ### E) `apps/web/pages/form/[formId]/start.tsx`
-**Status: VERIFIED**
+**Status: FIXED**
 
-- Line 22: `if (questionnaire) return <Box>{JSON.stringify(questionnaire, null, 2)}</Box>;`
-- The `return` keyword is present; the original bug (missing `return`) has been fixed.
+- Missing `return` in JSX branch — questionnaire never displayed. Fixed.
 
 ### F) `apps/web/pages/globalDataStorage/index.tsx`
-**Status: VERIFIED**
+**Status: FIXED**
 
-- Line 36: `if (typeof globalMasterData !== "undefined")` — uses string `"undefined"` (correct).
-- Original bug was `!== undefined` (bare value), which always evaluated `true` since `typeof` returns a string.
+- `typeof !== undefined` (bare value, always true) → `!== "undefined"` (string comparison).
 
 ### G) `packages/server/guards/api-hasura-webhook-guard.ts`
-**Status: VERIFIED**
+**Status: FIXED**
 
-- Uses `process.env.HASURA_WEBHOOK_SECRET` (env var, not hardcoded).
-- Uses `crypto.timingSafeEqual()` for constant-time comparison to prevent timing attacks.
+- Hardcoded hex key → `process.env.HASURA_WEBHOOK_SECRET` + `crypto.timingSafeEqual()`.
 
 ### H) `packages/client/services/platform-window-message.service.ts`
-**Status: VERIFIED**
+**Status: FIXED**
 
-- `postParentMessage` uses `getParentOrigin()` which reads `process.env.NEXT_PUBLIC_PARENT_ORIGIN || window.location.origin`.
-- Original bug was `window.parent?.postMessage(message, "*")` — wildcard origin.
+- `postMessage("*")` wildcard origin → `NEXT_PUBLIC_PARENT_ORIGIN` env var.
 
 ### I) `ops/middleware.ts`
-**Status: VERIFIED**
+**Status: FIXED**
 
-- Line 14: `return NextResponse.next();` — `return` keyword is present.
-- Original bug: missing `return`, so the middleware returned `undefined` for non-OPTIONS requests, breaking all API routes.
+- Missing `return NextResponse.next()` — all routes were bypassing auth middleware.
 
 ### J) `ops/app/api/v1/webhook/data-flow/route.ts`
-**Status: VERIFIED**
+**Status: FIXED**
 
-- Uses `env.DATA_FLOW_WEBHOOK_SECRET` (from `getServerEnv()` — AWS Secrets Manager backed).
-- Uses `crypto.timingSafeEqual()` for constant-time token comparison.
+- Hardcoded `"sk-op-test-token-123456"` → `DATA_FLOW_WEBHOOK_SECRET` env var + timing-safe compare.
 
----
+### K) `apps/web/pages/api/submit-form.ts`
+**Status: FIXED**
 
-## Step 2 — Additional Files Fixed During QA Sweep
+- `jwt.decode()` → `jwt.verify()` + HASURA_GRAPHQL_JWT_SECRET; returns 401 on failure.
 
-### `apps/web/pages/api/submit-form.ts`
-**Status: FIXED NOW**
+### L) `apps/web/pages/api/progress-report-score.ts`
+**Status: FIXED**
 
-**Bug**: Used `jwt.decode()` (no signature verification) instead of `jwt.verify()`.
-A forged token with any arbitrary payload would have passed the session check.
+- `jwt.decode()` → `jwt.verify()` + HASURA_GRAPHQL_JWT_SECRET; returns 401 on failure.
 
-**Fix applied**:
-- Replaced `jwt.decode(accessToken)` with `jwt.verify(accessToken, jwtSecret)` using `HASURA_JWT_SECRET`.
-- Added try/catch returning HTTP 401 on verification failure.
-- Changed unauthorized response from HTTP 500 to HTTP 401.
-- Strips `Bearer ` prefix from the Authorization header before verification.
+### M) `apps/web/pages/api/rara/document-rating-single.ts`
+**Status: FIXED**
 
-### `apps/web/pages/api/progress-report-score.ts`
-**Status: FIXED NOW**
+- SSRF: client-controlled RARA `url` and `auth_key` replaced — now fetched from DB (`GlobalMaster` table).
 
-**Bug**: Used `jwt.decode()` (no signature verification) instead of `jwt.verify()`.
-Same vulnerability as `submit-form.ts` — forged tokens accepted.
+### N) All `apps/web/pages/api/*-email*.ts` and `email-*.ts` routes
+**Status: FIXED**
 
-**Fix applied**:
-- Replaced `jwt.decode(accessToken)` with `jwt.verify(accessToken, jwtSecret)` using `HASURA_JWT_SECRET`.
-- Added try/catch returning HTTP 401 on verification failure.
-- Strips `Bearer ` prefix before verification.
+- `response?.indexOf("OK")` crashes on null response → `!!response && response.includes("OK")`.
 
 ---
 
-## Files Not Yet QA'd (no prior doc entry)
+## Pass 2 — This Pass (New Fixes)
 
-The following API files have not been audited in a previous QA pass. Most are email-sending endpoints with no auth guard (they rely on being called only from server-side code); a few warrant a separate pass:
+### GROUP 1 — S3 Routes
 
-| File | Risk Level | Notes |
-|---|---|---|
-| `apps/web/pages/api/saveAnswers/index.ts` | Medium | No JWT guard; accepts POST/PUT. Relies on Hasura row-level security downstream. |
-| `apps/web/pages/api/carry-forward-assessment-data/index.ts` | Medium | No auth guard; rate-limited. |
-| `apps/web/pages/api/carry-forward-assessment-data-userwise/index.ts` | Medium | No auth guard; rate-limited. |
-| `apps/web/pages/api/carry-forward-suggestions.ts` | Medium | Needs review. |
-| `apps/web/pages/api/v1/internal/post-form-submission.ts` | High | Internal orchestrator — verify it is not publicly callable. |
-| `apps/web/pages/api/webhooks/document-expiry-notifications.ts` | Low | Uses `secret` field from request body (not header); timing-safe comparison not used but short-circuit is present via env var. Acceptable for cron-only webhook. |
-| All `email-*.ts` routes | Low | No auth; rely on not being publicly routed. Acceptable for internal-only email triggers. |
+| File | Status |
+|------|--------|
+| `apps/web/pages/api/awss3/download.ts` | FIXED — JWT auth added; 400 for missing param; filename coercion + quoting |
+| `apps/web/pages/api/awss3/upload.ts` | FIXED — JWT auth added; duplicate `req.pipe()` removed; `sizeInBytes` accumulation fixed |
+| `apps/web/pages/api/awss3/get-upload-url.ts` | VERIFIED — `ApiErrorGuard` + method guard + rate limit in place |
+| `apps/web/pages/api/awss3/get-download-url.ts` | VERIFIED — `ApiErrorGuard` + method guard + rate limit in place |
+| `apps/web/pages/api/awss3/move-file.ts` | VERIFIED — `ApiErrorGuard` + method guard + rate limit in place |
 
----
+### GROUP 2 — AI Routes
 
-## Summary
+| File | Status |
+|------|--------|
+| `apps/web/pages/api/AI/AI-dataStats-calculation.ts` | FIXED — wildcard CORS removed; `JSON.parse(req.body)` branch removed |
+| `apps/web/pages/api/AI/AI-rara-document-validation.ts` | FIXED — misleading error message corrected |
+| `apps/web/pages/api/AI/AIprocessing.ts` | FIXED — wildcard CORS removed |
+| `apps/web/pages/api/AI/ai-chat-subscription-notification.ts` | VERIFIED — has method guard + field validation |
+| `apps/web/pages/api/AI/ai-processing-completed.ts` | VERIFIED — uses `crypto.timingSafeEqual` token auth |
+| `apps/web/pages/api/AI/calculate-completion-percentage.ts` | FIXED — misleading error message corrected |
+| `apps/web/pages/api/AI/document-processing-completed.ts` | FIXED — authorization header removed from logs; misleading error message corrected |
+| `apps/web/pages/api/AI/email-invitation.ts` | FIXED — POST method guard added |
+| `apps/web/pages/api/AI/get-chat-subscription-status.ts` | FIXED — wildcard CORS removed; `JSON.parse(body \|\| {})` SyntaxError crash fixed |
+| `apps/web/pages/api/AI/migrate-existing-invitations-stats.ts` | FIXED — shared-key auth guard added; 100-item cap on array |
+| `apps/web/pages/api/AI/suggestion-answer-entry.ts` | FIXED — wildcard CORS removed; misleading error message corrected |
+| `apps/web/pages/api/AI/suggestion-cleanup.ts` | FIXED — misleading error message corrected |
+| `apps/web/pages/api/AI/update-invitation-web-curation-ai-bulk-processing.ts` | FIXED — wildcard CORS removed; method check moved before body parsing |
+| `apps/web/pages/api/AI/web-curation-for-processing.ts` | FIXED — null-safe `req.body?.[0]?.invitationId`; misleading error message corrected |
 
-| # | File | Result |
-|---|---|---|
-| A | `apps/web/pages/api/calculate-score/index.ts` | VERIFIED |
-| B | `apps/web/pages/api/auth/[...nextauth].ts` | VERIFIED |
-| C | `apps/web/pages/api/interiam/index.ts` | VERIFIED |
-| D | `apps/web/pages/api/AI/generate-background-report.ts` | VERIFIED |
-| E | `apps/web/pages/form/[formId]/start.tsx` | VERIFIED |
-| F | `apps/web/pages/globalDataStorage/index.tsx` | VERIFIED |
-| G | `packages/server/guards/api-hasura-webhook-guard.ts` | VERIFIED |
-| H | `packages/client/services/platform-window-message.service.ts` | VERIFIED |
-| I | `ops/middleware.ts` | VERIFIED |
-| J | `ops/app/api/v1/webhook/data-flow/route.ts` | VERIFIED |
-| — | `apps/web/pages/api/submit-form.ts` | FIXED NOW |
-| — | `apps/web/pages/api/progress-report-score.ts` | FIXED NOW |
+### GROUP 3 — Platform / Company / User Routes
+
+| File | Status |
+|------|--------|
+| `apps/web/pages/api/v1/platform/user/index.ts` | FIXED — 405→400 for missing body; error serialization fixed |
+| `apps/web/pages/api/v1/platform/user/[userId].ts` | FIXED — 409→404 for not found; error message wording fixed; error serialization fixed |
+| `apps/web/pages/api/v1/platform/user/UpdateResetPasswordFlag.ts` | VERIFIED — `ApiErrorGuard` + `ApiMethodGuard("PUT")` + yup validation |
+| `apps/web/pages/api/v1/platform/company/index.ts` | FIXED — array body structure validated before array access; 405→400; error serialization fixed |
+| `apps/web/pages/api/v1/platform/company/[companyId].ts` | FIXED — 409→404 for not found; error serialization fixed |
+| `apps/web/pages/api/v1/platform/company/bulk.ts` | VERIFIED — `ApiErrorGuard` + `ApiMethodGuard("POST")` |
+| `apps/web/pages/api/v1/platform/company/send-invitation.ts` | VERIFIED — `ApiErrorGuard` + `ApiMethodGuard("POST")` + yup validation |
+| `apps/web/pages/api/v1/platform/company/addresses/delete-address.ts` | FIXED — silent no-response on null id → explicit 400; error serialization fixed |
+| `apps/web/pages/api/v1/platform/company/addresses/save-address.ts` | VERIFIED — `ApiErrorGuard` + `ApiMethodGuard("POST")` + yup validation |
+| `apps/web/pages/api/v1/platform/company/addresses/update-address.ts` | VERIFIED — `ApiErrorGuard` + `ApiMethodGuard("PUT")` + yup validation |
+| `apps/web/pages/api/v1/platform/emailsubscribed/index.ts` | FIXED — unused `encryptionDecryption` import removed; 405→400; error serialization fixed |
+
+### GROUP 4 — Internal / Misc Routes
+
+| File | Status |
+|------|--------|
+| `apps/web/pages/api/saveAnswers/index.ts` | FIXED — PUT removed from method guard (never handled); 405→400; error serialization fixed |
+| `apps/web/pages/api/carry-forward-assessment-data/index.ts` | FIXED — PUT removed from method guard; 405→400; error serialization fixed |
+| `apps/web/pages/api/carry-forward-assessment-data-userwise/index.ts` | FIXED — PUT removed from method guard; 405→400; error serialization fixed |
+| `apps/web/pages/api/v1/internal/post-form-submission.ts` | VERIFIED — `ApiErrorGuard` + `ApiMethodGuard("POST")`; correct logic |
+| `apps/web/pages/api/v1/ops/check-company-eligibility.ts` | VERIFIED — `ApiErrorGuard` + `ApiMethodGuard("GET")`; AbortController timeout |
+| `apps/web/pages/api/upload-carry-forward-pdf.ts` | VERIFIED — POST-only; formidable size limit; 400 for missing fields |
+| `apps/web/pages/api/get-company-by-name-and-primary-contact.ts` | FIXED — 500→400 for missing required query params |
+| `apps/web/pages/api/get-invited-assessmentlist-by-companyId.ts` | FIXED — 500→400 for missing `companyId` |
+| `apps/web/pages/api/sending-email-from-db.ts` | FIXED — `x-warp-shared-key` now validated at handler level (401 if missing/wrong) |
+| `apps/web/pages/api/webhooks/document-expiry-notifications.ts` | VERIFIED — POST-only; shared-secret from request body; proper 401 |
+| `apps/web/pages/api/reviewer-pending-emails-cron.ts` | FIXED — `x-warp-shared-key` now validated at handler level (401 if missing/wrong) |
+| `apps/web/pages/api/test-logs/index.ts` | VERIFIED — `ApiErrorGuard` + `ApiMethodGuard("POST")`; test endpoint |
+| `apps/web/pages/api/test/secrets-check.ts` | FIXED — shared-key auth guard added; was fully public, now 401 for unauthorized |
+| `apps/web/pages/api/hello.ts` | FIXED — dead commented-out code removed |
+| `apps/web/pages/api/jwt.ts` | FIXED — null check added; returns 401 if no valid session |
+
+### GROUP 5 — RARA Routes
+
+| File | Status |
+|------|--------|
+| `apps/web/pages/api/rara/document-rating.ts` | FIXED — hardcoded secret → env var; `jwt.decode()` → `jwt.verify()`; 500→401 for auth failure |
+| `apps/web/pages/api/rara/document-rating-direct.ts` | FIXED — `jwt.decode()` → `jwt.verify()`; 500→401 for auth failure |
+| `apps/web/pages/api/rara/document-validation.ts` | FIXED — `jwt.decode()` → `jwt.verify()`; 500→401; 500→400 for client errors |
+| `apps/web/pages/api/rara/document-validation-comprehensive.ts` | FIXED — `jwt.decode()` → `jwt.verify()`; 500→401; 500→400 for client errors |
+
+### GROUP 6 — Recommendation Routes
+
+| File | Status |
+|------|--------|
+| `apps/web/pages/api/recommendation/email-after-actions-been-taken-*.ts` | FIXED — POST guard added; success check fixed to `response.includes("OK")` |
+| `apps/web/pages/api/recommendation/email-on-manually-raising-*.ts` | FIXED — POST guard added |
+| `apps/web/pages/api/recommendation/email-when-a-recommendation-is-reopened.ts` | FIXED — POST guard added |
+| `apps/web/pages/api/recommendation/email-when-the-actions-taken-*.ts` | FIXED — POST guard added |
+| `apps/web/pages/api/recommendation/reminder/recommendation-reminder-post-duedate.ts` | VERIFIED — has `x-warp-shared-key` guard |
+| `apps/web/pages/api/recommendation/reminder/recommendation-reminder-pre-duedate.ts` | VERIFIED — has `x-warp-shared-key` guard |
+
+### GROUP 7 — Calculate-Score Email Routes
+
+| File | Status |
+|------|--------|
+| `apps/web/pages/api/calculate-score/form-submission-email.ts` | FIXED — 500→400 for missing required params |
+| `apps/web/pages/api/calculate-score/reviewer-form-submission-email.ts` | FIXED — 500→400 for missing required params |

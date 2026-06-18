@@ -1,4 +1,5 @@
-// File: /app/api/affinda/webhook/route.ts
+// File: /app/api/ai-file-processing-webhook/route.ts
+import { createHmac, timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getGraphQlServerSDK } from "~/graphql/server";
 import { InsertFormattedAIFileData } from "~/lib/ai-files-upload/ai-files-processing.service";
@@ -8,9 +9,38 @@ import { affindaGetFileDetails } from "~/utils/affinda/affinda.config";
 import { getServerEnv } from "~/utils/env/env.server";
 import { logger } from "~/utils/logger";
 
+/**
+ * Verify the Affinda HMAC-SHA256 webhook signature.
+ * Affinda signs the raw body with HMAC-SHA256 using AFFINDA_WEBHOOK_SIGNATURE_KEY
+ * and sends it in the X-Hook-Signature header as "sha256=<hex>".
+ */
+async function verifyAffindaSignature(
+  req: NextRequest,
+  rawBody: string
+): Promise<boolean> {
+  const signatureHeader = req.headers.get("X-Hook-Signature");
+  if (!signatureHeader) return false;
+
+  const env = await getServerEnv();
+  const expected = "sha256=" + createHmac("sha256", env.AFFINDA_WEBHOOK_SIGNATURE_KEY)
+    .update(rawBody, "utf8")
+    .digest("hex");
+
+  try {
+    return timingSafeEqual(
+      Buffer.from(signatureHeader, "utf8"),
+      Buffer.from(expected, "utf8")
+    );
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
   logger.info("Received Affinda webhook notification.");
-  // Confirm subscribe intention if hookSecret is present
+
+  // Confirm subscribe intention if hookSecret is present.
+  // This is the one-time subscription handshake — no signature to verify yet.
   const hookSecret = req.headers.get("X-Hook-Secret");
   if (hookSecret) {
     try {
@@ -39,18 +69,33 @@ export async function POST(req: NextRequest) {
     } catch (error) {
       logger.error("Error during Affinda activation:", error);
       return NextResponse.json(
-        { success: false, error: String(error) },
+        { success: false, error: "Activation error" },
         { status: 500 }
       );
     }
   }
 
-  // Handle actual webhook notification (data processing)
-  // Run the processing in the background and immediately return 200
+  // Verify HMAC-SHA256 signature for actual event payloads.
+  const rawBody = await req.text();
+  const signatureValid = await verifyAffindaSignature(req, rawBody);
+  if (!signatureValid) {
+    logger.warn("Affinda webhook: invalid or missing signature — rejecting.");
+    return NextResponse.json({ success: false }, { status: 401 });
+  }
+
+  // Parse body from the already-consumed text.
+  let webhookResponse: any;
+  try {
+    webhookResponse = JSON.parse(rawBody);
+  } catch {
+    return NextResponse.json({ success: false, error: "Invalid JSON payload" }, { status: 400 });
+  }
+
+  // Handle actual webhook notification (data processing) in background.
+  // Return 200 immediately so Affinda does not retry.
   (async () => {
     try {
       const sdk = await getGraphQlServerSDK();
-      const webhookResponse = await req.json();
       logger.info("Webhook notification received from Affinda:");
 
       let status: keyof typeof AIFileUploadStatus =
@@ -79,10 +124,7 @@ export async function POST(req: NextRequest) {
             const insertRes = await InsertFormattedAIFileData(fileDetails);
             if (insertRes.status === "skipped") {
               logger.info("Skipping insert as AIFileData already exists.");
-              return NextResponse.json({
-                success: true,
-                message: "Already processed",
-              });
+              return;
             }
             logger.info("Affinda extracted data saved in DB");
             status = AIFileUploadStatus.VerificationPending;
@@ -193,23 +235,9 @@ export async function POST(req: NextRequest) {
         }
       } catch (updateErr) {
         logger.error("Failed to update AIFileUploads:", updateErr);
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Failed to update AIFileUploads record",
-          },
-          { status: 500 }
-        );
       }
     } catch (err) {
-      logger.error("Failed to parse webhook body:", err);
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid JSON payload",
-        },
-        { status: 400 }
-      );
+      logger.error("Failed to process webhook body:", err);
     }
   })();
 

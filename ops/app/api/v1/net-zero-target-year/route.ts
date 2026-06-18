@@ -3,6 +3,7 @@ import { getGraphQlServerSDK } from "~/graphql/server";
 import { TUserSession } from "~/lib/auth/auth.client";
 import { apiExceptionGuard } from "~/lib/guards/api-exception-guard";
 import { apiAuthGuard } from "~/lib/guards/api-user-auth-guard";
+import { withEmailOrIpRateLimitWithProgressiveDelay } from "~/lib/rate-limiter/progressive-delay-rate-limit";
 import { CustomError } from "~/shared/error/custom-error";
 
 async function postHandler(req: NextRequest, userSession: TUserSession) {
@@ -27,4 +28,10 @@ async function postHandler(req: NextRequest, userSession: TUserSession) {
   }
 }
 
-export const POST = apiExceptionGuard(apiAuthGuard(postHandler));
+export const POST = apiExceptionGuard(
+  withEmailOrIpRateLimitWithProgressiveDelay(apiAuthGuard(postHandler), {
+    limitInterval: 1,
+    maxRequestCount: 60,
+    progressiveDelay: true,
+  })
+);

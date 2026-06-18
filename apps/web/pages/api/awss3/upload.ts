@@ -1,5 +1,6 @@
 import { upload } from "@warp/server/services/aws-s3.service";
 import { default as Busboy } from "busboy";
+import jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
@@ -18,6 +19,18 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
+    const HASURA_GRAPHQL_JWT_SECRET = process.env["HASURA_GRAPHQL_JWT_SECRET"];
+    const rawAuth = String(req.headers.authorization ?? "");
+    const accessToken = rawAuth.startsWith("Bearer ") ? rawAuth.slice(7) : rawAuth;
+    if (!accessToken || !HASURA_GRAPHQL_JWT_SECRET) {
+      return res.status(401).send([]);
+    }
+    try {
+      jwt.verify(accessToken, HASURA_GRAPHQL_JWT_SECRET);
+    } catch {
+      return res.status(401).send([]);
+    }
+
     const busboy = Busboy({ headers: req.headers });
 
     let ArrayData: any[] = [];
@@ -26,23 +39,19 @@ export default async function handler(
     let FileStream: Stream;
     let ArrayAcount = 0;
 
-    busboy.on("file", (file: Stream, info: Busboy.FileInfo) => {
-      busboy.on("error", (error: any) => {
-        res.status(500).send([]);
-      });
-      ArrayAcount = ArrayAcount + 1;
-    });
-    req.pipe(busboy);
-
     busboy.on(
       "file",
       async function (name: String, file: Stream, info: Busboy.FileInfo) {
+        ArrayAcount = ArrayAcount + 1;
+        busboy.on("error", (error: any) => {
+          res.status(500).send([]);
+        });
         const { filename, encoding, mimeType } = info;
         FileStream = file;
         filename1 = filename;
 
         file.on("data", function (data) {
-          sizeInBytes = data.length;
+          sizeInBytes += data.length;
         });
         file.on("end", function () {});
         try {

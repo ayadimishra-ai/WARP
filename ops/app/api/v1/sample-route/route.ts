@@ -1,28 +1,33 @@
-import { sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import { GetOPSDBContext } from "~/utils/database/db-context";
+import { apiExceptionGuard } from "~/lib/guards/api-exception-guard";
+import { apiAuthGuard } from "~/lib/guards/api-user-auth-guard";
+import { TUserSession } from "~/lib/auth/auth.client";
+import { withEmailOrIpRateLimitWithProgressiveDelay } from "~/lib/rate-limiter/progressive-delay-rate-limit";
 
-const SQL_QUERY_GET_ORGANIZATION_DETAILS_BY_ID = (organizationId: string) => {
-  return sql.raw(`
-    select * from "Organization"
-    where id = '${organizationId}'
-  `);
-};
+// NOTE: This is a sample/placeholder route. The previous implementation contained a
+// SQL injection vulnerability (user-supplied organizationId interpolated into raw SQL)
+// and was unauthenticated. It has been replaced with a safe stub.
+async function GETHandler(req: NextRequest, userSession: TUserSession) {
+  return NextResponse.json({ message: "Sample GET route", organizationId: userSession.organizationId });
+}
 
-export const GET = async (req: NextRequest) => {
-  // const data = await serverSDK.getActivities();
-  const orgId = "cfe37694-341f-4ff7-afe4-97e0e77eaf7e";
-
-  const dbContext = await GetOPSDBContext();
-
-  const result = await dbContext.execute(
-    SQL_QUERY_GET_ORGANIZATION_DETAILS_BY_ID(orgId)
-  );
-
-  return NextResponse.json({ message: "This is GET request", result });
-};
-
-export const POST = async (req: NextRequest) => {
+async function POSTHandler(req: NextRequest, userSession: TUserSession) {
   const data = await req.json();
-  return NextResponse.json({ message: "This is POST request", data });
-};
+  return NextResponse.json({ message: "Sample POST route", data });
+}
+
+export const GET = apiExceptionGuard(
+  withEmailOrIpRateLimitWithProgressiveDelay(apiAuthGuard(GETHandler), {
+    limitInterval: 1,
+    maxRequestCount: 60,
+    progressiveDelay: true,
+  })
+);
+
+export const POST = apiExceptionGuard(
+  withEmailOrIpRateLimitWithProgressiveDelay(apiAuthGuard(POSTHandler), {
+    limitInterval: 1,
+    maxRequestCount: 60,
+    progressiveDelay: true,
+  })
+);

@@ -9,7 +9,7 @@ async function GetInvitedAssessmentListByCompanyIdHandler(
 ) {
   const body = req.body;
   if (!body.companyId) {
-    res.status(500).send("company is required");
+    res.status(400).send("company is required");
     return;
   }
 

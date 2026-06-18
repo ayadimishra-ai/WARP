@@ -6,6 +6,7 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
+  if (req.method !== "POST") { return res.status(405).json({ data: null, error: "Method Not Allowed" }); }
   const responseData = await sendCompanyAIInvitationEmail(req.body);
   if (!!responseData) {
     res.status(200).send({ data: responseData, error: null });

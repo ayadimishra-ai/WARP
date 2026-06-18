@@ -56,12 +56,13 @@ const GET_Handler = async (req: NextRequest, userSession: TUserSession) => {
   });
 };
 
-const POST_Handler = async (req: NextRequest) => {
+const POST_Handler = async (req: NextRequest, session: TUserSession) => {
   const env = await getServerEnv();
   const snowkapServicesApiClient = await getSnowkapServicesApiClient();
-  const accessToken = String(req.headers.get("x-sk-op-authorization"));
-  const organization_id = String(req.headers.get("organization_id"));
-  const sessionUserId = String(req.headers.get("sessionUserId"));
+  // Use session values from the validated JWT to prevent privilege escalation
+  // via client-supplied headers.
+  const organization_id = session.organizationId;
+  const sessionUserId = session.userId;
   const requestBody = await req.json();
   try {
     //schema validation

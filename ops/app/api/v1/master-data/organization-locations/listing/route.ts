@@ -7,7 +7,9 @@ import { withEmailOrIpRateLimitWithProgressiveDelay } from "~/lib/rate-limiter/p
 import { CustomError } from "~/shared/error/custom-error";
 
 const GET_Handler = async (req: NextRequest, userSession: TUserSession) => {
-  const organizationId = req.headers.get("organization_id");
+  // Use organizationId from the validated JWT session instead of a client-supplied
+  // header to prevent privilege escalation.
+  const organizationId = userSession.organizationId;
   if (!organizationId) {
     throw new Error("Invalid input data");
   }

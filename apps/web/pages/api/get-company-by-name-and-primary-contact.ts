@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!req?.query?.companyName || !req?.query?.primaryContactEmail) {
-    res.status(500).send("Company name and primary contact email is required");
+    res.status(400).send("Company name and primary contact email is required");
     return;
   }
 

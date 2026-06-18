@@ -5,27 +5,8 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  // Handle OPTIONS preflight requests
-  let formId = "";
-  let invitationId = "";
-  let isAIUser = "";
-  if (typeof req.body == "object") {
-    formId = req.body.formId;
-    invitationId = req.body.invitationId;
-    isAIUser = req.body.isAIUser;
-  } else {
-    formId = JSON.parse(req.body).formId;
-    invitationId = JSON.parse(req.body).invitationId;
-    isAIUser = JSON.parse(req.body).isAIUser;
-  }
+  const formId = req.body?.formId ?? "";
+  const invitationId = req.body?.invitationId ?? "";
   const responseData = await getCachedAIDataStatistics(formId, invitationId);
   if (!!responseData) {
     res.status(200).send({ data: responseData, error: null });

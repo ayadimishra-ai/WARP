@@ -24,7 +24,7 @@ const documentvalidationHandler: NextApiHandler = async (req, res) => {
       isvaliddate === undefined
     )
       return res
-        .status(500)
+        .status(400)
         .json({ error: { message: "Required details missing" } });
 
     let session;
@@ -34,11 +34,15 @@ const documentvalidationHandler: NextApiHandler = async (req, res) => {
         accessToken.indexOf("Bearer") === -1
           ? accessToken
           : accessToken.replaceAll("Bearer ", "").trim();
-      const decodedToken: any = jwt.decode(accessToken);
-      session = parseHasuraClaims(decodedToken, accessToken);
+      try {
+        const decodedToken: any = jwt.verify(accessToken, process.env["HASURA_GRAPHQL_JWT_SECRET"] ?? "");
+        session = parseHasuraClaims(decodedToken, accessToken);
+      } catch {
+        return res.status(401).json({ error: { message: "Unauthorized" } });
+      }
     }
     if (!session) {
-      return res.status(500).json({
+      return res.status(401).json({
         error: {
           message: "Unauthorized",
         },
@@ -56,7 +60,7 @@ const documentvalidationHandler: NextApiHandler = async (req, res) => {
     const isValidUrl = urlCheck(document_url);
     if (!isValidUrl) {
       return res
-        .status(500)
+        .status(400)
         .json({ error: { message: "Document url is not valid" } });
     }
     const responseData = await sdk.getGlobalMasterByType({

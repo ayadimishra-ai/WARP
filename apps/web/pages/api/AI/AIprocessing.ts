@@ -479,21 +479,8 @@ const triggerOPSToIQCurationForInvitation = async (invitation: {
 
 // existing handler
 const AIprocessing: NextApiHandler = async (req, res) => {
-  // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  let processType = req.body.process;
-  let requestBody = req.body.body;
-  if (typeof req.body === "string") {
-    const { process, data } = JSON.parse(req.body);
-    processType = process;
-    requestBody = data;
-  }
+  const processType = req.body?.process;
+  const requestBody = req.body?.body;
 
   let response: any = null;
 

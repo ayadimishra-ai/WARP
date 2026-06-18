@@ -214,8 +214,6 @@ export const getFileNameFromS3FileUrl = async (
       s3FileUrl
     ).then((res) => res?.Metadata);
 
-    console.log(fileMetadata);
-
     if (fileMetadata) {
       const fileNameKey = Object.keys(fileMetadata).find((key) =>
         key.toLowerCase().includes("filename")

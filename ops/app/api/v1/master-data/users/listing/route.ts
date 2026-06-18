@@ -19,8 +19,10 @@ import { logger } from "~/utils/logger";
 const GET_Handler = async (req: NextRequest, userSession: TUserSession) => {
   try {
     const snowkapServicesApiClient = await getSnowkapServicesApiClient();
-    const organization_id = String(req.headers.get("organization_id"));
-    const userId = String(req.headers.get("userId"));
+    // Use session values from the validated JWT to prevent privilege escalation
+    // via client-supplied headers.
+    const organization_id = userSession.organizationId;
+    const userId = userSession.userId;
 
     // Extract pagination, search, and sorting parameters from query string
     const { searchParams } = new URL(req.url);

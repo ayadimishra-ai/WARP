@@ -3,6 +3,10 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { serverEnv } from "../../../env/env";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+    const incomingKey = req.headers["x-warp-shared-key"];
+    if (!incomingKey || String(incomingKey) !== process.env.WARP_CRON_SHARED_KEY) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
     try {
         // Check if critical secrets are loaded
         const secretsStatus = {

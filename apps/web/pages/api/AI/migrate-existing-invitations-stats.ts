@@ -11,6 +11,11 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
+  const incomingKey = req.headers["x-warp-shared-key"];
+  if (!incomingKey || String(incomingKey) !== process.env.WARP_CRON_SHARED_KEY) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -23,6 +28,10 @@ const handler: NextApiHandler = async (
       return res.status(400).json({
         error: "invitationIds array is required",
       });
+    }
+
+    if (invitationIds.length > 100) {
+      return res.status(400).json({ error: "invitationIds array must not exceed 100 items" });
     }
 
     const results = [];

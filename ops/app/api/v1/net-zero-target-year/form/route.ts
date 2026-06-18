@@ -5,6 +5,7 @@ import { apiAuthGuard } from "~/lib/guards/api-user-auth-guard";
 import { INetZeroTargetYearInput } from "~/lib/net-zero-target-year/net-zero-target-year.interface";
 import { updateNetZeroTargetYearDetails } from "~/lib/net-zero-target-year/net-zero-target-year.service";
 import { validateNetZeroTargetFormInput } from "~/lib/net-zero-target-year/net-zero-target-year.validation";
+import { withEmailOrIpRateLimitWithProgressiveDelay } from "~/lib/rate-limiter/progressive-delay-rate-limit";
 import { CustomError } from "~/shared/error/custom-error";
 
 const POST_Handler = async (req: NextRequest, session: TUserSession) => {
@@ -13,10 +14,9 @@ const POST_Handler = async (req: NextRequest, session: TUserSession) => {
   const payload: INetZeroTargetYearInput = await req.json();
 
   if (session?.userRole !== "OrganizationAdmin") {
-    return NextResponse.json({
-      success: false,
-      status: 403,
-      message: "Only admin user can access proceed this request.",
+    throw CustomError({
+      statusCode: 403,
+      message: "Only an Organisation Admin can perform this action.",
     });
   }
 
@@ -58,4 +58,10 @@ const POST_Handler = async (req: NextRequest, session: TUserSession) => {
   }
 };
 
-export const POST = apiExceptionGuard(apiAuthGuard(POST_Handler));
+export const POST = apiExceptionGuard(
+  withEmailOrIpRateLimitWithProgressiveDelay(apiAuthGuard(POST_Handler), {
+    limitInterval: 1,
+    maxRequestCount: 60,
+    progressiveDelay: true,
+  })
+);

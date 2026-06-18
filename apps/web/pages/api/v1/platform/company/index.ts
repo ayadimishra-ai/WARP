@@ -26,14 +26,18 @@ export default async function handler(
 
     // Request Body Validation
     if (!req.body) {
-      res.status(405).send({
+      res.status(400).send({
         data: null,
         error: {
-          code: res.statusCode,
+          code: 400,
           message: "Request body is required.",
           stack: null,
         },
       });
+      return;
+    }
+    if (!Array.isArray(req.body) || req.body.length === 0 || !req.body[0]?.primaryContact?.email) {
+      res.status(400).send({ data: null, error: { code: 400, message: "Invalid request body structure.", stack: null } });
       return;
     }
     req.body[0].primaryContact.email = await choosemethod(
@@ -62,6 +66,6 @@ export default async function handler(
       stack: error.stack
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 }

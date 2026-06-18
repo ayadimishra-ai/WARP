@@ -3,6 +3,7 @@ import { getActivityFormMode } from "~/lib/activity-form/activity-form-mode.serv
 import { TUserSession } from "~/lib/auth/auth.client";
 import { apiExceptionGuard } from "~/lib/guards/api-exception-guard";
 import { apiAuthGuard } from "~/lib/guards/api-user-auth-guard";
+import { withEmailOrIpRateLimitWithProgressiveDelay } from "~/lib/rate-limiter/progressive-delay-rate-limit";
 import { CustomError } from "~/shared/error/custom-error";
 
 /**
@@ -62,4 +63,10 @@ async function getHandler(
   }
 }
 
-export const GET = apiExceptionGuard(apiAuthGuard(getHandler));
+export const GET = apiExceptionGuard(
+  withEmailOrIpRateLimitWithProgressiveDelay(apiAuthGuard(getHandler), {
+    limitInterval: 1,
+    maxRequestCount: 60,
+    progressiveDelay: true,
+  })
+);

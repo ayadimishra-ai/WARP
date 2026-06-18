@@ -48,9 +48,10 @@ const POST_Handler = async (req: NextRequest, session: TUserSession) => {
   const sdk = await getGraphQlServerSDK();
   const env = await getServerEnv();
   try {
-    const accessToken = String(req.headers.get("x-sk-op-authorization"));
-    const organization_id = String(req.headers.get("organization_id"));
-    const userId = String(req.headers.get("sessionUserId"));
+    // Use session values from the validated JWT to avoid privilege escalation via
+    // client-supplied headers.
+    const organization_id = session.organizationId;
+    const userId = session.userId;
     let requestBody = await req.json();
 
     requestBody = requestBody.map((item: userDetailsType) => {
@@ -376,14 +377,15 @@ const POST_Handler = async (req: NextRequest, session: TUserSession) => {
   });
 };
 
-const PUT_Handler = async (req: NextRequest) => {
+const PUT_Handler = async (req: NextRequest, session: TUserSession) => {
   try {
     const snowkapServicesApiClient = await getSnowkapServicesApiClient();
     const env = await getServerEnv();
-    const accessToken = String(req.headers.get("x-sk-op-authorization"));
-    const organization_id = String(req.headers.get("organization_id"));
-    const userId = String(req.headers.get("userId"));
-    const sessionUserId = String(req.headers.get("sessionUserId"));
+    // Use session values from the validated JWT instead of client-supplied headers
+    // to prevent privilege escalation.
+    const organization_id = session.organizationId;
+    const userId = session.userId;
+    const sessionUserId = session.userId;
     const requestBody = await req.json();
     // const requestBody = sanitiseServerSideValues<userDetailsType>(bodyData);
     //schema validation

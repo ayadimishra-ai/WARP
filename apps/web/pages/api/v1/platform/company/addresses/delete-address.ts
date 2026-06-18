@@ -31,13 +31,13 @@ export default async function deleteaddresshandler(
       });
       return;
     }
-    const input = req.body[0].id;
-    if (req.method === "DELETE" && input !== null) {
-      const responseData = await deleteAddresses(req.body);
-
-      res.status(200).send({ data: responseData, error: null });
-      return;
+    const input = req.body?.[0]?.id;
+    if (!input) {
+      return res.status(400).send({ data: null, error: { code: 400, message: "Address id is required.", stack: null } });
     }
+    const responseData = await deleteAddresses(req.body);
+    res.status(200).send({ data: responseData, error: null });
+    return;
   } catch (error: any) {
     const currentDate = new Date();
     const errorContent = JSON.stringify({
@@ -46,7 +46,7 @@ export default async function deleteaddresshandler(
       stack: error.stack,
     });
     await uploadError("exception-logs", "exception-logs", errorContent);
-    res.status(500).json({ error: error || "Internal Server Error" });
+    res.status(500).json({ error: error?.message || "Internal Server Error" });
   }
 }
 //export default ApiErrorGuard(ApiMethodGuard(updateaddresshandler, "Delete"));

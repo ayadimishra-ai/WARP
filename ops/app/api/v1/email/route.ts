@@ -53,11 +53,7 @@ async function postHandler(req: NextRequest, userSession: any) {
     bcc: formData.bcc as string[],
     preparedEmaiTemplate: preparedEmailTemplate,
   });
-  if (result?.success) {
-    console.log("success");
-  } else {
-    console.log("fail");
-  }
+  // Result intentionally not logged to avoid leaking email content in server logs.
 
   return NextResponse.json({
     data: {

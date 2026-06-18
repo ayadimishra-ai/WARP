@@ -16,7 +16,7 @@ export async function processFormSubmissionEmail(
   try {
     if (!formId || !submissionId || !invitationId || !companyId)
       return {
-        status: 500,
+        status: 400,
         result: { error: { message: "Required details missing" } },
       };
 
