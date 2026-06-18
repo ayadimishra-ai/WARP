@@ -1,0 +1,20 @@
+mutation insertGHGEnergyCaptivePower(
+  $insertData: [GHGEnergy_CaptivePower_insert_input!]!
+) {
+  insert_GHGEnergy_CaptivePower(
+    objects: $insertData
+    on_conflict: { constraint: GHGEnergy_CaptivePower_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Do_You_Generate_Captive_Power_for_Own_Use
+      Type_of_Captive_Power
+      supporting_docs
+      id
+    }
+  }
+}

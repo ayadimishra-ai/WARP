@@ -1,0 +1,25 @@
+query getGHGProductionDetails(
+  $activityFilter: GHGProductionDetails_bool_exp
+  $start: Int
+  $size: Int
+  $orderBy: [GHGProductionDetails_order_by!]
+) {
+  GHGProductionDetails(
+    where: $activityFilter
+    offset: $start
+    limit: $size
+    order_by: $orderBy
+  ) {
+    Processes_Employed
+    Product_ID
+    Products_Manufactured_This_Month
+    SKUs_Manufactured
+    SKU_ID
+    Total_Weight
+  }
+  totalCount: GHGProductionDetails_aggregate(where: $activityFilter) {
+    aggregate {
+      count
+    }
+  }
+}

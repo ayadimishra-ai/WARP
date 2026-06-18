@@ -1,0 +1,7 @@
+mutation insertGridPowerDetailsFormEditAction(
+  $insertData: GHGEnergyConsumption_GridPower_insert_input!
+) {
+  insert_GHGEnergyConsumption_GridPower_one(object: $insertData) {
+    id
+  }
+}

@@ -1,0 +1,50 @@
+mutation insertGHGGeneralDetailsData(
+  $year: Int!
+  $month: String!
+  $organizationAddressId: uuid!
+  $GHGData: [GHGGeneralDetails_insert_input!]!
+) {
+  delete_GHGGeneralDetails(
+    where: {
+      TaskRequest: {
+        _and: [
+          { year: { _eq: $year } }
+          { month: { _eq: $month } }
+          { organization_address_id: { _eq: $organizationAddressId } }
+        ]
+      }
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Location_Name
+      Location_ID_Code
+      Location_Pincode
+      Location_Type
+      Month_Year
+      Number_Employees
+      Number_Operational_Days
+      supporting_docs
+    }
+  }
+  insert_GHGGeneralDetails(objects: $GHGData) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Location_Name
+      Location_ID_Code
+      Location_Pincode
+      Location_Type
+      Month_Year
+      Number_Employees
+      Number_Operational_Days
+      supporting_docs
+    }
+  }
+}

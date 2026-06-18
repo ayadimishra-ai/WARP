@@ -1,0 +1,38 @@
+mutation upsertOrgSupplierMaster(
+  $insert: [OrgSupplierMaster_insert_input!]!
+  $updates: [OrgSupplierMaster_updates!]!
+) {
+  insert_OrgSupplierMaster(
+    objects: $insert
+    on_conflict: { constraint: OrgSupplierMaster_pkey }
+  ) {
+    returning {
+      id
+      client_master_id
+      name
+      code
+      category
+      organization_id
+      supplier_admin_email_id
+      supplier_admin_name
+      onboarding_date
+      supplier_gst_or_license_number
+      metadata
+    }
+  }
+  update_OrgSupplierMaster_many(updates: $updates) {
+    returning {
+      id
+      client_master_id
+      name
+      code
+      category
+      organization_id
+      supplier_admin_email_id
+      supplier_admin_name
+      onboarding_date
+      supplier_gst_or_license_number
+      metadata
+    }
+  }
+}

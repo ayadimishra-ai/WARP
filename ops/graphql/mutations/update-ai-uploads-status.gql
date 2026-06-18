@@ -1,0 +1,24 @@
+mutation UpdateAIFileUploads(
+  $where: AIFileUploads_bool_exp!
+  $set: AIFileUploads_set_input!
+) {
+  update_AIFileUploads(where: $where, _set: $set) {
+    affected_rows
+    returning {
+      id
+      file_name
+      file_url
+      status
+      updated_at
+      updated_by
+      file_metadata
+      email_send_at
+      errors
+      is_deleted
+      identifier
+      activity_code
+      created_by
+      created_at
+    }
+  }
+}

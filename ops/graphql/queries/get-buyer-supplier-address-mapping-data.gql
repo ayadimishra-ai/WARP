@@ -1,0 +1,19 @@
+query GetBuyerSupplierAddressMappingData(
+  $where: BuyerSupplierAddressMappings_bool_exp!
+) {
+  BuyerSupplierAddressMappings(where: $where) {
+    metadata
+    status
+    buyerOrgid
+    id
+    supplierOrgid
+    supplierOrgAddresId
+    BuyerSupplierAddresId
+    Organization {
+      name
+    }
+    organizationBySupplierorgid {
+      name
+    }
+  }
+}

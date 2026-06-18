@@ -1,0 +1,10 @@
+mutation deleteUseOfSoldProductsFuel(
+  $where: GHGUseOfSoldProducts_Fuel_bool_exp!
+) {
+  delete_GHGUseOfSoldProducts_Fuel(where: $where) {
+    returning {
+      id
+      task_request_id
+    }
+  }
+}

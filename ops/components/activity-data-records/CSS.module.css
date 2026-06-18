@@ -1,0 +1,31 @@
+.searchInputClass {
+  background-color: black;
+}
+
+.aiTab {
+  position: relative;
+  border: 1px solid #d2d2d2 !important;
+  background-color: #efefef !important;
+  font-size: 12px !important;
+  font-weight: 600;
+  color: #666 !important;
+  height: 30px;
+}
+.aiTab:first-of-type {
+  border-radius: 5px 0 0 5px;
+}
+.aiTab:last-of-type {
+  border-radius: 0 5px 5px 0;
+}
+.aiTab:only-of-type {
+  border-radius: 5px;
+}
+.aiTab + .aiTab {
+  border-left-width: 0;
+}
+.aiTab[data-active] {
+  z-index: 1;
+  background: linear-gradient(157.6deg, #005c81 14.59%, #122f47 94.33%);
+  border-color: transparent !important;
+  color: #fff !important;
+}/*# sourceMappingURL=CSS.module.css.map */

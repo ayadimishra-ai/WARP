@@ -1,0 +1,21 @@
+mutation deleteFuelConsumptionGeneralDetails($id: uuid!) {
+  delete_GHGEnergyConsumption_FuelPurchased_General(
+    where: { id: { _eq: $id } }
+  ) {
+    returning {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Type_of_Fuel_Purchased
+      Quantity_of_fuel_Consumed
+      Quantity_of_fuel_Consumed_uom
+      Quality_of_fuel
+      Point_of_Consumption
+      supporting_docs
+      kpi_em_Emission_QuantityOfFuelConsumed
+      kpi_emf_Emission_QuantityOfFuelConsumed
+      GHGEnergyConsumption_FuelPurchased {
+        task_request_id
+      }
+    }
+  }
+}

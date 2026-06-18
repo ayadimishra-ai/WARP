@@ -1,0 +1,20 @@
+query getMaterialProcurementDataByOrgId($organizationId: uuid!){
+ GHGMaterialProcurement(
+	where: {
+      OrganizationAddress: { organization_id: { _eq: $organizationId } }
+    }
+	){
+    id
+    task_request_id
+    Material_Code
+    Mode_of_Transport
+    Vehicle_Type_Used_for_Road_Transport
+    Material_Quantity_Procured
+    Material_Quantity_Procured_uom
+    Fuel_Used
+    TaskRequest{
+      year
+      month
+    }
+	}
+}

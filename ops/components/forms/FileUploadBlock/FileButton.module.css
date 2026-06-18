@@ -1,0 +1,27 @@
+.label {
+    font-size: 12px;
+}
+
+.item {
+    list-style: none !important;
+}
+
+.itemWrapper {
+    width: 100% !important;
+}
+
+.itemLabel {
+    width: 100% !important
+}
+
+.cardRoot {
+    background-color: #F7F9FB !important;
+}
+
+.StackRoot {
+    flex: 1 1 auto;
+}
+
+.FileuploadBlockCardRoot {
+    border: 1px dotted #E4E4E4 !important;
+}

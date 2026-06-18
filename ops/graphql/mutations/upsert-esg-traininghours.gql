@@ -1,0 +1,38 @@
+mutation upsertESGTrainingHoursActivity(
+  $where: ESGTrainingHours_bool_exp!
+  $esgTrainingHoursData: [ESGTrainingHours_insert_input!]!
+) {
+  delete_ESGTrainingHours(where: $where) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      employment_type
+      employee_category
+      total_employees
+      number_of_employees_trained
+      total_training_hours
+      training_type
+      percentage_employees_certified
+    }
+  }
+  insert_ESGTrainingHours(
+    objects: $esgTrainingHoursData
+    on_conflict: { constraint: ESGTrainingHours_pkey }
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      employment_type
+      employee_category
+      total_employees
+      number_of_employees_trained
+      total_training_hours
+      training_type
+      percentage_employees_certified
+    }
+  }
+}

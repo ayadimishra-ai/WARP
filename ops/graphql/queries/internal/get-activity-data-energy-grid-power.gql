@@ -1,0 +1,37 @@
+query getActivityDataEnergyGridPower($organization_address_id: uuid!) {
+  TaskRequest(
+    where: { organization_address_id: { _eq: $organization_address_id } }
+  ) {
+    month
+    year
+    energy_grid_power: GHGEnergyConsumption_GridPowers {
+      grid_provider: Name_of_Distribution_Company
+      grid_kwh: PowerConsumed_through_Grid_Kwh
+      ppa_renewable_provider: NameOfCompany_PPA_Renewable
+      ppa_renewable_kwh: PowerPurchased_through_PPA_Kwh_Renewable
+      ppa_nonrenewable_provider: NameOfCompany_PPA_NonRenewable
+      ppa_nonrenewable_kwh: PowerPurchased_through_PPA_Kwh_NonRenewable
+      rec_provider: Name_of_company_for_REC
+      rec_kwh: PowerPurchased_through_REC_Kwh
+    }
+  }
+  emission_factors: CO2EmissionFactorMaster(
+    where: {
+      _and: [
+        { category: { _ilike: "energy" } }
+        { activity: { _ilike: "grid" } }
+      ]
+    }
+  ) {
+    year
+    Region {
+      name
+    }
+    activity
+    sub_activity
+    activity_specific: metadata(path: "$.[0].['Activity Specific']")
+    factor
+    factor_uom
+    is_default: metadata(path: "$.[0].['Default']")
+  }
+}

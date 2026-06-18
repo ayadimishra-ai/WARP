@@ -1,0 +1,86 @@
+query getActivityDataEnergyFuelConsumptionGeneralPaginated(
+  $organization_address_ids: [uuid!]!
+  $limit: Int
+  $offset: Int
+  $order_by: [GHGEnergyConsumption_FuelPurchased_General_order_by!]
+  $activityFilter: GHGEnergyConsumption_FuelPurchased_General_bool_exp = {}
+  $uploadTypeFilter: GHGEnergyConsumption_FuelPurchased_General_bool_exp = {}
+) {
+  GHGEnergyConsumption_FuelPurchased_General(
+    where: {
+      GHGEnergyConsumption_FuelPurchased: {
+        TaskRequest: {
+          organization_address_id: { _in: $organization_address_ids }
+        }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter, $uploadTypeFilter]
+    }
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    id
+    updated_at
+    Type_of_Fuel_Purchased
+    Quantity_of_fuel_Consumed
+    Quantity_of_fuel_Consumed_uom
+    Quality_of_fuel
+    Point_of_Consumption
+    GHGEnergyConsumption_FuelPurchased {
+      id
+      task_request_id
+      created_by
+      updated_at
+      status
+      CreatedByUser: AppUser {
+        id
+        name
+        email
+      }
+      UpdatedByUser: appUserByUpdatedBy {
+        id
+        name
+        email
+      }
+      TaskRequest {
+        id
+        month
+        year
+        organization_address_id
+        metadata
+        OrganizationAddress {
+          Address {
+            name
+          }
+        }
+      }
+    }
+  }
+  totalCount: GHGEnergyConsumption_FuelPurchased_General(
+    where: {
+      GHGEnergyConsumption_FuelPurchased: {
+        TaskRequest: {
+          organization_address_id: { _in: $organization_address_ids }
+        }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter, $uploadTypeFilter]
+    }
+  ) {
+    id
+  }
+  allCount: GHGEnergyConsumption_FuelPurchased_General(
+    where: {
+      GHGEnergyConsumption_FuelPurchased: {
+        TaskRequest: {
+          organization_address_id: { _in: $organization_address_ids }
+        }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter]
+    }
+  ) {
+    id
+  }
+}

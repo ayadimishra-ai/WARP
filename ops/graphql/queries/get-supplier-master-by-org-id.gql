@@ -1,0 +1,26 @@
+query getsupplierMasterByOrganizationId($organizationId: uuid!) {
+  OrgSupplierMaster(
+    where: {
+      organization_id: { _eq: $organizationId }
+      is_deleted: { _eq: false }
+    }
+    order_by: { updated_at: desc }
+  ) {
+    id
+    code
+    name
+    category
+    client_master_id
+    organization_id
+    supplier_gst_or_license_number
+    supplier_admin_email_id
+    supplier_admin_name
+    updated_at
+  }
+  Organization(
+    where: { id: { _eq: $organizationId }, is_deleted: { _eq: false } }
+  ) {
+    id
+    name
+  }
+}

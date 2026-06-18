@@ -1,0 +1,18 @@
+mutation insertKPIWasteManagement(
+  $kpiwastemanagementdata: [KPIWasteManagement_insert_input!]!
+  $deletekpiwastemanagementdata: KPIWasteManagement_bool_exp!
+) {
+  delete_KPIWasteManagement(where: $deletekpiwastemanagementdata) {
+    returning {
+      id
+    }
+  }
+  insert_KPIWasteManagement(
+    objects: $kpiwastemanagementdata
+    on_conflict: { constraint: KPIWasteManagement_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+}

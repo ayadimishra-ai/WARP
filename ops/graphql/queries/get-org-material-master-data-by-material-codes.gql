@@ -1,0 +1,19 @@
+query getOrgMaterialMasterByMaterialCodes(
+  $materialCodes: [String!]!
+  $organizationId: uuid!
+) {
+  OrgMaterialMaster(
+    where: {
+      code: { _in: $materialCodes }
+      organization_id: { _eq: $organizationId }
+      is_deleted: { _eq: false }
+    }
+  ) {
+    id
+    client_master_id
+    name
+    code
+    type
+    organization_id
+  }
+}

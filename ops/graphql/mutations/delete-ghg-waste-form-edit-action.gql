@@ -1,0 +1,8 @@
+mutation deleteGHGWasteFormEditAction($deleteId: uuid!) {
+  delete_GHGWaste(where: { id: { _eq: $deleteId } }) {
+    returning {
+      id
+      task_request_id
+    }
+  }
+}

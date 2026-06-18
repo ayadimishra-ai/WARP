@@ -1,0 +1,30 @@
+query getViewAppUserDataWithPagination(
+  $where: view_app_user_bool_exp!
+  $limit: Int
+  $offset: Int
+  $order_by: [view_app_user_order_by!]
+) {
+  view_app_user(
+    where: $where
+    order_by: $order_by
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    name
+    email
+    organization_id
+    role
+    metadata
+    mobile
+    created_by
+    updated_by
+    is_deleted
+    created_at
+  }
+  totalUsersCount: view_app_user_aggregate(where: $where) {
+    aggregate {
+      totalRows: count
+    }
+  }
+}

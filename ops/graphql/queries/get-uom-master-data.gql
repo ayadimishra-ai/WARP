@@ -1,0 +1,8 @@
+query getUOMMasterdata {
+  UomMaster {
+    id
+    label
+    code
+    metadata
+  }
+}

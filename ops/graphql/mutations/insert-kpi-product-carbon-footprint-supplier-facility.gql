@@ -1,0 +1,44 @@
+mutation insertKPIProductCarbonFootprintSupplierFacility(
+  $kpiSupplierFacilityData: [KPIProductCarbonFootprintSupplierFacility_insert_input!]!
+  $deleteKpiSupplierFacilityData: KPIProductCarbonFootprintSupplierFacility_bool_exp!
+) {
+  delete_KPIProductCarbonFootprintSupplierFacility(
+    where: $deleteKpiSupplierFacilityData
+  ) {
+    returning {
+      id
+    }
+  }
+  insert_KPIProductCarbonFootprintSupplierFacility(
+    objects: $kpiSupplierFacilityData
+    on_conflict: {
+      constraint: KPIProductCarbonFootprintSupplierFacility_pkey
+      update_columns: [
+        organization_id
+        address_id
+        region_id
+        year
+        month
+        timestamp
+        supplier_code
+        buyer_material_code
+        buyer_material_procurement_quantity
+        buyer_material_procurement_uom
+        allocation_percentage
+        kpi_allocated_em_Grid_Power
+        kpi_allocated_em_Captive_Power
+        kpi_allocated_em_Fuel_Purchased
+        kpi_allocated_em_Waste_Generation
+        kpi_em_pcf_per_unit
+        kpi_em_pcf_per_unit_uom
+        metadata
+        updated_by
+        supplier_organization_address_id
+      ]
+    }
+  ) {
+    returning {
+      id
+    }
+  }
+}

@@ -1,0 +1,25 @@
+query getGHGEnergyFuelPurchasedGeneral(
+  $activityFilter: GHGEnergyConsumption_FuelPurchased_General_bool_exp
+  $start: Int
+  $size: Int
+  $orderBy: [GHGEnergyConsumption_FuelPurchased_General_order_by!]
+) {
+  GHGEnergyConsumption_FuelPurchased_General(
+    where: $activityFilter
+    offset: $start
+    limit: $size
+    order_by: $orderBy
+  ) {
+    Type_of_Fuel_Purchased
+    Quantity_of_fuel_Consumed
+    Quality_of_fuel
+    Point_of_Consumption
+  }
+  totalCount: GHGEnergyConsumption_FuelPurchased_General_aggregate(
+    where: $activityFilter
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

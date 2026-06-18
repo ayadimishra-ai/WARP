@@ -1,0 +1,8 @@
+query getUOMconversionFactor($where: UomConversionMaster_bool_exp!) {
+  UomConversionMaster(where: $where) {
+    id
+    from_key
+    to_key
+    factor
+  }
+}

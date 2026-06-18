@@ -1,0 +1,18 @@
+query getValidationDataForTransportDownstreamExcel($organizationId: uuid!, $skucode: [String!]!, $distributer_code: [String!]!) {
+  products_skus: OrgSKUMaster(where: {code: {_in: $skucode}, organization_id: {_eq: $organizationId}}) {
+    id
+    client_master_id
+    code
+    weight
+    weight_uom
+    OrgProductMaster {
+      id
+      client_master_id
+      code
+    }
+  }
+  distributer_code: OrgSupplierMaster(where: {_and: [{organization_id: {_eq: $organizationId}}, {code: {_in: $distributer_code}}, {category: {_eq: "Finished Goods"}}]}) {
+    code
+    category
+  }
+}

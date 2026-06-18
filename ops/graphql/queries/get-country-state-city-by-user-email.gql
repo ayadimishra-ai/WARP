@@ -1,0 +1,23 @@
+query getCountryStateCityByUserEmail($email: String!) {
+  AppUser(where: { email: { _eq: $email } }) {
+    id
+    name
+    email
+    Addresses {
+      id
+      name
+      Country {
+        id
+        name
+      }
+      State {
+        id
+        name
+      }
+      City {
+        id
+        name
+      }
+    }
+  }
+}

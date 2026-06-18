@@ -1,0 +1,18 @@
+mutation deleteCaptivePowerRenewableFormEditAction($deleteId: uuid!) {
+  delete_GHGEnergy_CaptivePower_Renewable(where: { id: { _eq: $deleteId } }) {
+    returning {
+      id
+      GHGEnergyConsumption_CaptivePower_id
+      Type_of_Technology_Used
+      Year_of_installation
+      Unit_of_Energy_Generated_in_Kwh
+      supporting_docs
+      kpi_em_Emission_EnergyGenerated_kwh
+      kpi_emf_Emission_EnergyGenerated_kwh
+      GHGEnergy_CaptivePower {
+        id
+        task_request_id
+      }
+    }
+  }
+}

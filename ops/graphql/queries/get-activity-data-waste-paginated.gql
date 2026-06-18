@@ -1,0 +1,71 @@
+query getActivityDataWastePaginated(
+  $organization_address_ids: [uuid!]!
+  $limit: Int
+  $offset: Int
+  $order_by: [GHGWaste_order_by!]
+  $activityFilter: GHGWaste_bool_exp = {}
+) {
+  GHGWaste(
+    where: {
+      TaskRequest: {
+        organization_address_id: { _in: $organization_address_ids }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter]
+    }
+    limit: $limit
+    offset: $offset
+    order_by: $order_by
+  ) {
+    id
+    Types_of_Waste_Generated
+    Waste_Disposal_Managed_by
+    Name_of_Third_Party
+    Quantity_of_Waste
+    Quantity_of_Waste_UoM
+    Disposal_Mechanism
+    Location_of_Waste_Disposal
+    Who_Managed_Transportation_of_Waste
+    Mode_of_Transport
+    Vehicle_Type_Used_for_Road_Transport
+    Fuel_Used
+    DistOf_WasteDisposalLoction_from_FacilityLocation
+    DistOf_WasteDisposalLoction_from_FacilityLocation_UoM
+    status
+    task_request_id
+    created_by
+    updated_at
+    CreatedByUser: AppUser {
+      id
+      name
+      email
+    }
+    UpdatedByUser: appUserByUpdatedBy {
+      id
+      name
+      email
+    }
+    TaskRequest {
+      id
+      month
+      year
+      organization_address_id
+      OrganizationAddress {
+        Address {
+          name
+        }
+      }
+    }
+  }
+  totalCount: GHGWaste(
+    where: {
+      TaskRequest: {
+        organization_address_id: { _in: $organization_address_ids }
+      }
+      id: { _is_null: false }
+      _and: [$activityFilter]
+    }
+  ) {
+    id
+  }
+}

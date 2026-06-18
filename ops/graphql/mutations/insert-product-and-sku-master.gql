@@ -1,0 +1,39 @@
+mutation insertProductAndSkuMaster(
+  $productInput: [OrgProductMaster_insert_input!]!
+  $skuInput: [OrgSKUMaster_insert_input!]!
+) {
+  insert_OrgProductMaster(objects: $productInput) {
+    returning {
+      id
+      name
+      code
+      client_master_id
+      created_at
+      OrgSKUMasters {
+        id
+        name
+        code
+        client_master_id
+        weight
+        created_at
+      }
+    }
+  }
+  insert_OrgSKUMaster(objects: $skuInput) {
+    returning {
+      id
+      name
+      code
+      client_master_id
+      weight
+      created_at
+      OrgProductMaster {
+        id
+        name
+        code
+        client_master_id
+        created_at
+      }
+    }
+  }
+}

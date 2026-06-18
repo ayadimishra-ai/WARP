@@ -1,0 +1,12 @@
+query GetOrgDetailsByAIFileUploadsIdentifier($identifier: String) {
+  AIFileUploads(where: { identifier: { _eq: $identifier } }) {
+    id
+    file_name
+    status
+    AppUser {
+      name
+      email
+      organization_id
+    }
+  }
+}

@@ -1,0 +1,15 @@
+query getUomConversionAndVehicleTypeMasterData(
+  $where: UomConversionMaster_bool_exp!
+) {
+  UomConversionMaster(where: $where) {
+    from_key
+    to_key
+    factor
+  }
+  VehicleTypeMaster {
+    name
+    configuration
+    capacity_tons
+    configuration_value
+  }
+}

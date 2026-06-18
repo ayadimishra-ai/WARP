@@ -1,0 +1,36 @@
+mutation upsertGHGCapitalGoodsActivity(
+  $where: GHGCapital_Goods_bool_exp!
+  $capitalGoodsData: [GHGCapital_Goods_insert_input!]!
+) {
+  delete_GHGCapital_Goods(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Material_Code
+      Supplier_Code
+      Quantity_Procured
+      Quantity_Procured_uom
+      supporting_docs
+      kpi_material_weight_kg
+    }
+  }
+  insert_GHGCapital_Goods(
+    objects: $capitalGoodsData
+    on_conflict: { constraint: GHGCapital_Goods_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Material_Code
+      Supplier_Code
+      Quantity_Procured
+      Quantity_Procured_uom
+      supporting_docs
+      kpi_material_weight_kg
+    }
+  }
+}

@@ -1,0 +1,13 @@
+query getDataImportHistoryCountsView(
+  $where: view_page_data_import_history_bool_exp
+) {
+  view_page_data_import_history_aggregate(where: $where) {
+    nodes {
+      activity_code
+    }
+  }
+  Activity {
+    code
+    name
+  }
+}

@@ -1,0 +1,25 @@
+query getValidationDataForTransportUpstream(
+  $organizationId: uuid!
+  $activityLocationMasterIds: [String!]!
+  $activityMasterIds: [String!]!
+) {
+  activity_locations: Addresses(
+    where: {
+      _and: [
+        { client_master_id: { _in: $activityLocationMasterIds } }
+        { OrganizationAddresses: { organization_id: { _eq: $organizationId } } }
+        { type: { _eq: "Manufacturing" } }
+      ]
+    }
+  ) {
+    id
+    client_master_id
+  }
+
+  activity_masters: ActivityMaster(
+    where: { master_key: { _in: $activityMasterIds } }
+  ) {
+    master_key
+    master_data
+  }
+}

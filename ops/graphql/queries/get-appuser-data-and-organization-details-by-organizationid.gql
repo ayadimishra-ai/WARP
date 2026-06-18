@@ -1,0 +1,27 @@
+query GetAppUserDataAndOrganizationById($id: uuid!) {
+  AppUser(where: { id: { _eq: $id } }) {
+    is_deleted
+    metadata
+    email
+    name
+    first_name
+    last_name
+    role
+    created_at
+    updated_at
+    created_by
+    id
+    organization_id
+    is_spoc
+    Organization {
+      name
+      metadata
+      Baselineyear
+      FinancialYearMonth
+      industryType
+      hasWasteWaterTreatmentPlant
+      is_review_saved
+    }
+    updated_by
+  }
+}

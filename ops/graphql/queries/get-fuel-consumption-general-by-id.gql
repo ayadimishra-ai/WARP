@@ -1,0 +1,24 @@
+query getFuelConsumptionGeneralById($id: uuid!) {
+  GHGEnergyConsumption_FuelPurchased_General(where: { id: { _eq: $id } }) {
+    id
+    Type_of_Fuel_Purchased
+    Quantity_of_fuel_Consumed
+    Quantity_of_fuel_Consumed_uom
+    Quality_of_fuel
+    Point_of_Consumption
+    GHGEnergyConsumption_FuelPurchased_id
+    GHGEnergyConsumption_FuelPurchased {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      TaskRequest {
+        id
+        month
+        year
+        organization_address_id
+        metadata
+      }
+    }
+  }
+}

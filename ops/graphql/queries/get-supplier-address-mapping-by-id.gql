@@ -1,0 +1,16 @@
+query GetSupplierAddressMapping($id: [uuid!]!) {
+  SupplierAddressMapping(where: { id: { _in: $id } }) {
+    id
+    org_supplier_master_id
+    OrgSupplierMaster {
+      id
+      client_master_id
+    }
+    address_id
+    Address {
+      pincode
+      client_master_id
+      code
+    }
+  }
+}

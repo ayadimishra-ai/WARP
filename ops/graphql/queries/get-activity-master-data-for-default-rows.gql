@@ -1,0 +1,24 @@
+query getActivityMasterDataForDefaultRows(
+  $organizationId: uuid
+  $organizationAddressIds: [uuid!]
+  $masterKeys: [String!]!
+) {
+  ActivityMaster(where: { master_key: { _in: $masterKeys } }) {
+    master_key
+    master_data
+  }
+  OrgActivityMaster(
+    where: {
+      master_key: { _in: $masterKeys }
+      _or: [
+        { organization_id: { _eq: $organizationId } }
+        { organization_address_id: { _in: $organizationAddressIds } }
+      ]
+    }
+  ) {
+    organization_id
+    organization_address_id
+    master_key
+    master_data
+  }
+}

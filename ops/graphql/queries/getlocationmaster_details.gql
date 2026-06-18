@@ -1,0 +1,55 @@
+query getlocationmasterid(
+  $activitylocationmasterid: [String!]!
+  $procuredlocationmasterid: [String!]!
+  $supplierid: [String!]!
+  $activitycode: String
+  $userid: uuid
+) {
+  activitylocationaddress: Addresses(
+    where: { client_master_id: { _in: $activitylocationmasterid } }
+  ) {
+    id
+    client_master_id
+    OrganizationAddresses {
+      UserOrganizationAddressMappings(
+        where: {
+          _and: {
+            user_id: { _eq: $userid }
+            activities: { _has_key: $activitycode }
+          }
+        }
+      ) {
+        id
+        activities
+      }
+    }
+  }
+  procuredlocationaddress: Addresses(
+    where: { client_master_id: { _in: $procuredlocationmasterid } }
+  ) {
+    id
+    client_master_id
+    ownership_type
+    type
+    SupplierAddressMappings(
+      where: { OrgSupplierMaster: { client_master_id: { _in: $supplierid } } }
+    ) {
+      OrgSupplierMaster {
+        id
+        client_master_id
+      }
+    }
+  }
+  OrgSupplierMaster(where: { client_master_id: { _in: $supplierid } }) {
+    id
+    client_master_id
+    category
+    SupplierAddressMappings {
+      id
+      Address {
+        id
+        client_master_id
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+query gettaskRequest($where: TaskRequest_bool_exp!, $activityId: uuid) {
+  TaskRequest(where: $where) {
+    id
+    organization_address_id
+    month
+    year
+    status
+    metadata
+    is_deleted
+    ActivityTaskRequests(
+      where: { is_deleted: { _eq: false }, activity_id: { _eq: $activityId } }
+    ) {
+      id
+    }
+    OrganizationAddress {
+      Address {
+        name
+        code
+        pincode
+        type
+        ownership_type
+      }
+    }
+  }
+}

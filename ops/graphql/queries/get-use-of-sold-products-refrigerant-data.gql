@@ -1,0 +1,18 @@
+query getUseOfSoldProductsRefrigerantData($task_request_id: [uuid!]) {
+  GHGUseOfSoldProducts_Refrigerant(
+    where: { task_request_id: { _in: $task_request_id } }
+  ) {
+    id
+    task_request_id
+    Date
+    Product_Code
+    Lifetime_of_Product
+    Rationale
+    Refrigerant_type_used_in_sold_product
+    Quantity_of_Refrigerant_consumed
+    UoM_of_Refrigerant_consumed
+    Additional_comments
+    Remarks
+    metadata
+  }
+}

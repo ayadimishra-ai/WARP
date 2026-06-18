@@ -1,0 +1,14 @@
+query getActivityMasterDataByKeyAndOrganizationAddressId(
+  $master_key: [String!]!
+  $organizationAddressId: uuid
+) {
+  ActivityMaster(
+    where: {
+      master_key: { _in: $master_key }
+      organization_address_id: { _eq: $organizationAddressId }
+    }
+  ) {
+    master_key
+    master_data
+  }
+}

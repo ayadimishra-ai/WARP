@@ -1,0 +1,25 @@
+query getGHGEnergyCaptivePowerNonRenewable(
+  $activityFilter: GHGEnergy_CaptivePower_NonRenewable_bool_exp
+  $start: Int
+  $size: Int
+  $orderBy: [GHGEnergy_CaptivePower_NonRenewable_order_by!]
+) {
+  GHGEnergy_CaptivePower_NonRenewable(
+    where: $activityFilter
+    offset: $start
+    limit: $size
+    order_by: $orderBy
+  ) {
+    Type_of_Fuel_Used
+    Quantity_of_fuel_consumed
+    Quality_of_fuel
+    Unit_of_Energy_Generated_in_Kwh
+  }
+  totalCount: GHGEnergy_CaptivePower_NonRenewable_aggregate(
+    where: $activityFilter
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

@@ -1,0 +1,12 @@
+query getSupplierCodesByOrgId($organizationId: uuid!) {
+  OrgSupplierMaster(
+    where: {
+      organization_id: { _eq: $organizationId }
+      is_deleted: { _eq: false }
+    }
+    order_by: { updated_at: desc }
+  ) {
+    id
+    code
+  }
+}

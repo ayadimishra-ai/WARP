@@ -1,0 +1,31 @@
+query getDataImportHistoryView(
+  $where: view_page_data_import_history_bool_exp
+  $orderBy: [view_page_data_import_history_order_by!]
+  $size: Int
+  $start: Int
+) {
+  view_page_data_import_history(
+    where: $where
+    order_by: $orderBy
+    limit: $size
+    offset: $start
+  ) {
+    data_import_history_id
+    organization_id
+    location_name
+    activity_code
+    activity_name
+    file_url
+    file_name
+    status_file_url
+    status
+    uploader_user_id
+    uploader_name
+    created_at
+  }
+  view_page_data_import_history_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}

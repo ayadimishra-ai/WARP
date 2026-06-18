@@ -1,0 +1,14 @@
+query getMaterialMasterByOrgId($organizationId: uuid!){
+ 	OrgMaterialMaster(where: {organization_id: {_eq: $organizationId}}){
+  	id
+    client_master_id
+    name
+    type
+    organization_id
+    code
+    created_at
+    updated_at
+    Material_Weight_Per_Unit
+    UoM_Material_Weight
+  }
+}

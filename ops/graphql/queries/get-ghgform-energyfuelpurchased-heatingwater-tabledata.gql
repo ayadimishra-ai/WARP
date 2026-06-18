@@ -1,0 +1,25 @@
+query getGHGEnergyFuelPurchasedHeatingWater(
+  $activityFilter: GHGEnergyConsumption_FuelPurchased_HeatingWater_bool_exp
+  $start: Int
+  $size: Int
+  $orderBy: [GHGEnergyConsumption_FuelPurchased_HeatingWater_order_by!]
+) {
+  GHGEnergyConsumption_FuelPurchased_HeatingWater(
+    where: $activityFilter
+    offset: $start
+    limit: $size
+    order_by: $orderBy
+  ) {
+    Type_of_Fuel_Purchased
+    Quality_of_fuel
+    Used_for_Which_SKUs
+    Quantity_of_fuel_consumed
+  }
+  totalCount: GHGEnergyConsumption_FuelPurchased_HeatingWater_aggregate(
+    where: $activityFilter
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

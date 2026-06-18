@@ -1,0 +1,28 @@
+query getCapitalGoodsByTaskRequestIds($where: GHGCapital_Goods_bool_exp!) {
+  GHGCapital_Goods(where: $where) {
+    id
+    organization_address_id
+    task_request_id
+    activity_task_request_id
+    Supplier_Code
+    Material_Code
+    Quantity_Procured
+    Quantity_Procured_uom
+    kpi_material_weight_kg
+    supporting_docs
+    meta_data
+    created_at
+    updated_at
+    created_by
+    updated_by
+    OrganizationAddress {
+      Address {
+        country_id
+      }
+    }
+    TaskRequest {
+      month
+      year
+    }
+  }
+}

@@ -1,0 +1,40 @@
+query getActivityRecordsForEmissionReset($material_codes: [String!]!, $org_address_ids: [uuid!]!) {
+  # Fetch ALL activity records using these material codes
+  # Used for resetting emissions when Material Master UoM changes
+  
+  # Capital Goods records
+  CapitalGoods: GHGCapital_Goods(
+    where: {
+      Material_Code: { _in: $material_codes }
+      organization_address_id: { _in: $org_address_ids }
+    }
+  ) {
+    id
+    Material_Code
+    organization_address_id
+  }
+  
+  # Material Procurement records
+  MaterialProcurement: GHGMaterialProcurement(
+    where: {
+      Material_Code: { _in: $material_codes }
+      organization_address_id: { _in: $org_address_ids }
+    }
+  ) {
+    id
+    Material_Code
+    organization_address_id
+  }
+  
+  # Upstream Transport records
+  UpstreamTransport: GHGTransport_Upstream(
+    where: {
+      Material_ID: { _in: $material_codes }
+      organization_address_id: { _in: $org_address_ids }
+    }
+  ) {
+    id
+    Material_ID
+    organization_address_id
+  }
+}

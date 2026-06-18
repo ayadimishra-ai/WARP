@@ -1,0 +1,42 @@
+mutation resetEmissionsForUoMMismatch(
+  $capitalGoodsUpdates: [GHGCapital_Goods_updates!]!
+  $materialProcurementUpdates: [GHGMaterialProcurement_updates!]!
+  $transportUpstreamUpdates: [GHGTransport_Upstream_updates!]!
+) {
+  # Reset Capital Goods emissions
+  resetCapitalGoods: update_GHGCapital_Goods_many(updates: $capitalGoodsUpdates) {
+    returning {
+      id
+      Material_Code
+      kpi_em_EmissionBy_CapitalGoods
+      kpi_emf_EmissionBy_CapitalGoods
+      updated_at
+    }
+  }
+
+  # Reset Material Procurement emissions
+  resetMaterialProcurement: update_GHGMaterialProcurement_many(
+    updates: $materialProcurementUpdates
+  ) {
+    returning {
+      id
+      Material_Code
+      kpi_em_EmissionBy_MaterialProcured
+      kpi_emf_EmissionBy_MaterialProcured
+      updated_at
+    }
+  }
+
+  # Reset Transport Upstream emissions
+  resetTransportUpstream: update_GHGTransport_Upstream_many(
+    updates: $transportUpstreamUpdates
+  ) {
+    returning {
+      id
+      Material_ID
+      kpi_em_EmissionBy_MaterialProcured
+      kpi_emf_EmissionBy_MaterialProcured
+      updated_at
+    }
+  }
+}

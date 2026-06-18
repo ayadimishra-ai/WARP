@@ -1,0 +1,18 @@
+query getSuppliersForMappingDropdown($organizationId: uuid!) {
+  SupplierAddressMapping(
+    where: {
+      OrgSupplierMaster: { organization_id: { _eq: $organizationId } }
+    }
+    order_by: { OrgSupplierMaster: { name: asc } }
+  ) {
+    id
+    OrgSupplierMaster {
+      id
+      name
+      code
+    }
+    Address {
+      code
+    }
+  }
+}

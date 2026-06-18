@@ -1,0 +1,10 @@
+mutation insertUseOfSoldProductsRefrigerant(
+  $objects: [GHGUseOfSoldProducts_Refrigerant_insert_input!]!
+) {
+  insert_GHGUseOfSoldProducts_Refrigerant(objects: $objects) {
+    returning {
+      id
+      task_request_id
+    }
+  }
+}

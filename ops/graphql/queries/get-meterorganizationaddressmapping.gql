@@ -1,0 +1,15 @@
+query GetMeterOrganizationAddressMapping(
+  $where: MeterOrganizationAddressMapping_bool_exp!
+) {
+  MeterOrganizationAddressMapping(where: $where) {
+    id
+    meter_number
+    organization_address_id
+    MeterData {
+      id
+      filedata_id
+      meter_number
+      organization_address_id
+    }
+  }
+}

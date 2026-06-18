@@ -1,0 +1,14 @@
+query getUseOfSoldProductsElectricityByOrgId($organizationId: uuid!) {
+  GHGUseOfSoldProducts_Electricity(
+    where: {
+      OrganizationAddress: { organization_id: { _eq: $organizationId } }
+    }
+  ) {
+    id
+    Region
+    TaskRequest {
+      year
+      month
+    }
+  }
+}

@@ -1,0 +1,30 @@
+.ghgemissiontablestyle table {
+    box-shadow:
+        rgba(159, 162, 191, 0.18) 0px 9px 16px,
+        rgba(159, 162, 191, 0.32) 0px 2px 2px !important;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+.ghgemissiontablestyle .mrt-table-container {
+    padding: 0 10px 10px 10px !important;
+}
+
+.ghgemissiontablestyle .MRT_TopToolbar-module_actions-container__-uL0u {
+    padding: 7px 22px 7px 7px !important;
+}
+.ghgemissiontablestyle table tbody tr:last-child td:first-of-type {
+    border-bottom-left-radius: 10px;
+}
+.ghgemissiontablestyle table tbody tr:last-child td:last-of-type {
+    border-bottom-right-radius: 10px;
+}
+.ghgemissiontablestyle {
+    table {
+        thead {
+            th {
+                background-color: #f6f8fb !important;
+                color: #1a1a1a !important;
+            }
+        }
+    }
+}

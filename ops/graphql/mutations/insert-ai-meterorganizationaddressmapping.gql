@@ -1,0 +1,11 @@
+mutation InsertMeterOrganizationAddressMappingData(
+  $input: [MeterOrganizationAddressMapping_insert_input!]!
+) {
+  insert_MeterOrganizationAddressMapping(objects: $input) {
+    returning {
+      id
+      meter_number
+      organization_address_id
+    }
+  }
+}

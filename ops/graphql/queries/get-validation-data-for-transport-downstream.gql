@@ -1,0 +1,85 @@
+query getValidationDataForTransportDownstream(
+  $organizationId: uuid!
+  $userId: uuid!
+  $skuClientMasterIds: [String!]!
+  $activityLocationMasterIds: [String!]!
+  $destinationLocationMasterIds: [String!]!
+) {
+  products_skus: OrgSKUMaster(
+    where: { client_master_id: { _in: $skuClientMasterIds } }
+  ) {
+    id
+    client_master_id
+    OrgProductMaster {
+      id
+      client_master_id
+    }
+  }
+  activity_locations: Addresses(
+    where: {
+      _and: [
+        { client_master_id: { _in: $activityLocationMasterIds } }
+        {
+          OrganizationAddresses: {
+            _and: [
+              { organization_id: { _eq: $organizationId } }
+              {
+                UserOrganizationAddressMappings: {
+                  user_id: { _eq: $userId }
+                  activities: { _contains: ["transport"] }
+                }
+              }
+            ]
+          }
+        }
+        { type: { _eq: "Manufacturing" } }
+      ]
+    }
+  ) {
+    id
+    client_master_id
+  }
+  destination_locations: Addresses(
+    where: {
+      _and: [
+        { client_master_id: { _in: $destinationLocationMasterIds } }
+        {
+          _or: [
+            {
+              SupplierAddressMappings: {
+                OrgSupplierMaster: {
+                  organization_id: { _eq: $organizationId }
+                  category: { _eq: "Finished Goods" }
+                }
+              }
+            }
+            {
+              OrganizationAddresses: {
+                organization_id: { _eq: $organizationId }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ) {
+    id
+    client_master_id
+  }
+  activity_masters: ActivityMaster(
+    where: {
+      master_key: {
+        _in: [
+          "transport_downstream_quantity_of_fuel_consumed_UOM"
+          "transport_downstream_transport_managed_by"
+          "transport_downstream_mode_of_transport"
+          "transport_downstream_road_vehicle_type"
+          "transport_downstream_fuel_used"
+        ]
+      }
+    }
+  ) {
+    master_key
+    master_data
+  }
+}

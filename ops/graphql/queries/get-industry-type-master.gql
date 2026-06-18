@@ -1,0 +1,6 @@
+query getIndustryTypeMaster {
+  IndustryTypeMaster(order_by: { name: asc }) {
+    id
+    name
+  }
+}

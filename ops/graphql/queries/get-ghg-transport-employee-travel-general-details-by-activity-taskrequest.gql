@@ -1,0 +1,89 @@
+query getGHGEmployeeTravelGeneralDetailsByActivityTaskRequest(
+  $task_request_id: [uuid!]!
+) {
+  GHGGeneralDetails(where: { task_request_id: { _in: $task_request_id } }) {
+    id
+    organization_address_id
+    task_request_id
+    activity_task_request_id
+    supporting_docs
+    updated_at
+    updated_by
+    created_at
+    created_by
+    Location_ID_Code
+    Location_Name
+    Location_Pincode
+    Location_Type
+    Month_Year
+    Number_Employees
+    Number_Operational_Days
+  }
+  GHGTransport_EmployeeTravel(
+    where: { task_request_id: { _in: $task_request_id } }
+  ) {
+    AvgDailyDist_TravBy_CompOwned_Bus
+    AvgDailyDist_TravBy_CompOwned_Bus_UoM
+    AvgDailyDist_TravBy_PubTrans_3Wheeler
+    AvgDailyDist_TravBy_PubTrans_3Wheeler_UoM
+    AvgDailyDist_TravBy_PubTrans_4Wheeler
+    AvgDailyDist_TravBy_PubTrans_4Wheeler_UoM
+    AvgDailyDist_TravBy_PubTrans_or_CompContracted_Bus
+    AvgDailyDist_TravBy_PubTrans_or_CompContracted_Bus_UoM
+    AvgDailyDist_TravBy_PvtVehicle_2Wheeler
+    AvgDailyDist_TravBy_PvtVehicle_2Wheeler_UoM
+    AvgDailyDist_TravBy_PvtVehicle_4Wheeler
+    AvgDailyDist_TravBy_PvtVehicle_4Wheeler_UoM
+    AvgDailyDist_TravBy_RailSuburban
+    AvgDailyDist_TravBy_RailSuburban_UoM
+    PercOfEmp_TravBy_CompOwned_Bus
+    PercOfEmp_TravBy_PublicTrans_3Wheeler
+    PercOfEmp_TravBy_PublicTrans_4Wheeler
+    PercOfEmp_TravBy_PublicTrans_or_CompContracted_Bus
+    PercOfEmp_TravBy_PvtVehicle_2Wheeler
+    PercOfEmp_TravBy_PvtVehicle_4Wheeler
+    PercOfEmp_TravBy_RailSuburban
+    activity_task_request_id
+    created_at
+    created_by
+    id
+    kpi_NoOf_Emp_TravBy_CompOwned_Bus
+    kpi_NoOf_Emp_TravBy_PublicTrans_3Wheeler
+    kpi_NoOf_Emp_TravBy_PublicTrans_4Wheeler
+    kpi_NoOf_Emp_TravBy_PvtVehicle_2Wheeler
+    kpi_NoOf_Emp_TravBy_PublicTrans_or_CompContracted_Bus
+    kpi_NoOf_Emp_TravBy_PvtVehicle_4Wheeler
+    kpi_NoOf_Emp_TravBy_RailSuburban
+    kpi_em_Emp_TravBy_CompOwned_Bus
+    kpi_em_Emp_TravBy_PublicTransOrCompContractedBus
+    kpi_em_Emp_TravBy_PublicTrans_3Wheeler
+    kpi_em_Emp_TravBy_PublicTrans_4Wheeler
+    kpi_em_Emp_TravBy_PvtVehicle_2Wheeler
+    kpi_em_Emp_TravBy_PvtVehicle_4Wheeler
+    kpi_em_Emp_TravBy_RailSuburban
+    kpi_emf_Emp_TravBy_CompOwned_Bus
+    kpi_emf_Emp_TravBy_PublicTransOrCompContractedBus
+    kpi_emf_Emp_TravBy_PublicTrans_3Wheeler
+    kpi_emf_Emp_TravBy_PublicTrans_4Wheeler
+    kpi_emf_Emp_TravBy_PvtVehicle_2Wheeler
+    kpi_emf_Emp_TravBy_PvtVehicle_4Wheeler
+    kpi_emf_Emp_TravBy_RailSuburban
+    organization_address_id
+    supporting_docs
+    task_request_id
+    updated_at
+    updated_by
+    TaskRequest {
+      month
+      year
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+  }
+}

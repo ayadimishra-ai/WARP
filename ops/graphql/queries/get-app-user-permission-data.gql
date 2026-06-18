@@ -1,0 +1,22 @@
+query getAppUserPermissionData(
+  $where: UserOrganizationAddressMapping_bool_exp!
+) {
+  UserOrganizationAddressMapping(where: $where, order_by: { user_id: asc }) {
+    id
+    organization_id
+    AppUser {
+      id
+      name
+    }
+    OrganizationAddress {
+      id
+      Address {
+        id
+        type
+        ownership_type
+        name
+      }
+    }
+    activities
+  }
+}

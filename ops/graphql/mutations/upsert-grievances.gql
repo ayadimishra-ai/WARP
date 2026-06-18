@@ -1,0 +1,42 @@
+mutation upsertESGGrievancesActivity(
+  $where: ESGGrievances_bool_exp!
+  $esgGrievancesData: [ESGGrievances_insert_input!]!
+) {
+  delete_ESGGrievances(where: $where) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      grievance_category
+      stakeholder_category
+      total_number_of_complaints
+      new_complaints
+      complaints_resolved
+      created_at
+      updated_at
+      created_by
+      updated_by
+    }
+  }
+  insert_ESGGrievances(
+    objects: $esgGrievancesData
+    on_conflict: { constraint: ESGGrievances_pkey }
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      grievance_category
+      stakeholder_category
+      total_number_of_complaints
+      new_complaints
+      complaints_resolved
+      created_at
+      updated_at
+      created_by
+      updated_by
+    }
+  }
+}

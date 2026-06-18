@@ -1,0 +1,11 @@
+mutation insertWasteMaster($WasteMasterData: [WasteMaster_insert_input!]!) {
+  insert_WasteMaster(
+    objects: $WasteMasterData
+    on_conflict: { constraint: WasteMaster_pkey }
+  ) {
+    returning {
+      id
+      name
+    }
+  }
+}

@@ -1,0 +1,5 @@
+query getUniqueMaterialType {
+  OrgMaterialMaster(distinct_on: type, where: { is_deleted: { _eq: false } }) {
+    type
+  }
+}

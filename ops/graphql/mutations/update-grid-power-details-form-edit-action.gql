@@ -1,0 +1,13 @@
+mutation updateGridPowerDetailsFormEditAction(
+  $editId: uuid
+  $editData: GHGEnergyConsumption_GridPower_set_input
+) {
+  update_GHGEnergyConsumption_GridPower(
+    where: { id: { _eq: $editId } }
+    _set: $editData
+  ) {
+    returning {
+      id
+    }
+  }
+}

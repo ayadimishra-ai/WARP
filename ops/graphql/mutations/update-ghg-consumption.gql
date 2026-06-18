@@ -1,0 +1,20 @@
+mutation UpdateGHGEnergyConsumption(
+  $where: GHGEnergyConsumption_GridPower_bool_exp!
+  $set: GHGEnergyConsumption_GridPower_set_input!
+) {
+  update_GHGEnergyConsumption_GridPower(where: $where, _set: $set) {
+    affected_rows
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      metadata
+      supporting_docs
+      updated_at
+      updated_by
+      created_at
+      created_by
+    }
+  }
+}

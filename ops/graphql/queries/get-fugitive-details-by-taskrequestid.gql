@@ -1,0 +1,64 @@
+query getFugitiveDataByTaskRequestIds($taskRequestId: [uuid!]!) {
+  GHGRefrigerantAndACSystems(
+    where: { task_request_id: { _in: $taskRequestId } }
+  ) {
+    id
+    TaskRequest {
+      year
+      month
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+    task_request_id
+    organization_address_id
+    type_of_refrigerant_used
+    quantity_of_refrigerant_filled
+    uom_refrigerant_and_ac_systems
+  }
+  GHGIndustrialGas(where: { task_request_id: { _in: $taskRequestId } }) {
+    id
+    TaskRequest {
+      year
+      month
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+    task_request_id
+    organization_address_id
+    type_of_industrial_gas_used
+    quantity_of_industrial_gas_filled
+    uom_industrial_gas
+  }
+  GHGFireExtinguisher(where: { task_request_id: { _in: $taskRequestId } }) {
+    id
+    TaskRequest {
+      year
+      month
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+    task_request_id
+    organization_address_id
+    gas_used_in_fire_extinguisher
+    quantity_of_gas_filled
+    uom_fire_extinguisher
+  }
+}

@@ -1,0 +1,42 @@
+# Try out GraphQL queries here
+query getTaskRequestghgData($where: TaskRequest_bool_exp!) {
+  TaskRequest(where: $where) {
+    id
+    month
+    year
+    organization_address_id
+
+    ActivityTaskRequests {
+      id
+      task_request_id
+      Activity {
+        name
+        code
+      }
+      GHGTransport_Upstreams {
+        id
+      }
+      GHGTransport_Downstreams {
+        id
+      }
+      GHGWastes {
+        id
+      }
+      GHGTransport_BusinessTravels {
+        id
+      }
+      GHGTransport_EmployeeTravels {
+        id
+      }
+      GHGEnergy_CaptivePowers {
+        id
+      }
+      GHGEnergyConsumption_FuelPurchaseds {
+        id
+      }
+      GHGEnergyConsumption_GridPowers {
+        id
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+query getDefaultFuelQualitybyfuelcode($fuelcode: [String!]!) {
+  FuelQualityMaster(
+    where: {
+      _and: { code: { _in: $fuelcode }, _and: { is_deleted: { _eq: false } } }
+    }
+  ) {
+    name
+    value
+    uom
+    code
+  }
+}

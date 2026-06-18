@@ -1,0 +1,72 @@
+query GetSupplierKPIDataByMonthYear(
+  $whereTransportation: KPIEmissionByTransportation_bool_exp!
+  $whereMaterialConsumption: KPIEmissionByMaterialConsumption_bool_exp!
+  $wherePowerConsumption: KPIEmissionByPowerConsumption_bool_exp!
+  $whereFuelConsumption: KPIEmissionByFuelConsumption_bool_exp!
+  $whereWasteGeneration: KPIEmissionByWasteGeneration_bool_exp!
+  $whereKpiMain: KPIMain_bool_exp!
+) {
+  kpiEmissionByTransportation: KPIEmissionByTransportation(
+    where: $whereTransportation
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    address_id
+    year
+    month
+    kpi_em_UpstreamTransport
+  }
+
+  kpiEmissionByMaterialConsumption: KPIEmissionByMaterialConsumption(
+    where: $whereMaterialConsumption
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    address_id
+    year
+    month
+    kpi_em_TotalEmission_MaterialProcurement
+  }
+
+  kpiEmissionByPowerConsumption: KPIEmissionByPowerConsumption(
+    where: $wherePowerConsumption
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    address_id
+    year
+    month
+    kpi_em_TotalPowerPurchased
+    kpi_em_CaptivePower
+  }
+
+  kpiEmissionByFuelConsumption: KPIEmissionByFuelConsumption(
+    where: $whereFuelConsumption
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    address_id
+    year
+    month
+    kpi_em_TotalEmission_FuelConsumption
+  }
+
+  kpiEmissionByWasteGeneration: KPIEmissionByWasteGeneration(
+    where: $whereWasteGeneration
+    order_by: { year: asc, month: asc }
+  ) {
+    organization_id
+    address_id
+    year
+    month
+    kpi_em_TotalEmission_WasteGeneration
+  }
+
+  kpiMain: KPIMain(where: $whereKpiMain, order_by: { year: asc, month: asc }) {
+    organization_id
+    address_id
+    year
+    month
+    kpi_em_CurrentEmissionIntensity_Scope1_Scope2_PerTonProduction
+  }
+}

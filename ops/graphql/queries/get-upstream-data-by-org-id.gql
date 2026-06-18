@@ -1,0 +1,20 @@
+query getUpstreamDataByOrgId($organizationId: uuid!){
+ GHGTransport_Upstream(
+	where: {
+      OrganizationAddress: { organization_id: { _eq: $organizationId } }
+    }
+	){
+        id
+        task_request_id
+        total_distance_travelled
+        total_distance_travelled_uom
+        Material_ID
+        Mode_of_Transport
+        Vehicle_Type_Used_for_Road_Transport
+        Fuel_Used
+        TaskRequest{
+        year
+        month
+        }
+	}
+}

@@ -1,0 +1,11 @@
+query getOrgData($organizationId: uuid) {
+  Organization(where: { id: { _eq: $organizationId } }) {
+    id
+    name
+    Baselineyear
+    FinancialYearMonth
+    metadata
+    logo_metadata
+    net_zero_metadata
+  }
+}

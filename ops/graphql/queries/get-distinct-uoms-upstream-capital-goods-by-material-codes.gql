@@ -1,0 +1,25 @@
+query getDistinctUOMsUpstreamCapitalGoodsByMaterialCodes(
+  $whereUpstream: GHGTransport_Upstream_bool_exp!
+  $whereCapitalGoods: GHGCapital_Goods_bool_exp!
+  $whereMaterialMaster: OrgMaterialMaster_bool_exp!
+) {
+  GHGTransport_Upstream(
+    where: $whereUpstream
+    distinct_on: [Material_Quantity_Procured_uom]
+  ) {
+    Material_ID
+    Material_Quantity_Procured_uom
+  }
+  GHGCapital_Goods(
+    where: $whereCapitalGoods
+    distinct_on: [Quantity_Procured_uom]
+  ) {
+    Material_Code
+    Quantity_Procured_uom
+  }
+  OrgMaterialMaster(where: $whereMaterialMaster) {
+    code
+    Material_Weight_Per_Unit
+    UoM_Material_Weight
+  }
+}

@@ -1,0 +1,47 @@
+.SupplierMaterialMappingTableStyle {
+  padding: 0 0 60px 0 !important;
+}
+
+.SupplierMaterialMappingTableStyle table {
+  box-shadow:
+    rgba(159, 162, 191, 0.18) 0px 9px 16px,
+    rgba(159, 162, 191, 0.32) 0px 2px 2px !important;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+.SupplierMaterialMappingTableStyle table thead th {
+  background-color: #122f47 !important;
+  color: #fff !important;
+}
+
+.SupplierMaterialMappingTableStyle table tbody tr:last-child td:first-of-type {
+  border-bottom-left-radius: 10px;
+}
+
+.SupplierMaterialMappingTableStyle table tbody tr:last-child td:last-of-type {
+  border-bottom-right-radius: 10px;
+}
+
+.SupplierMaterialMappingTableStyle :global(.mantine-Pagination-control[data-active="true"]) {
+  background-color: #122f47 !important;
+  color: #fff !important;
+  border-color: #122f47 !important;
+}
+
+.SupplierMaterialMappingTableStyle
+  :global(.mantine-Pagination-control[data-active="true"]):hover {
+  background-color: #0d2234 !important;
+  border-color: #0d2234 !important;
+}
+
+.SupplierMaterialMappingTableStyle :global(.mantine-Pagination-control) {
+  color: #666666 !important;
+  border-color: #ddd !important;
+}
+
+.SupplierMaterialMappingTableStyle
+  :global(.mantine-Pagination-control):hover:not([data-active="true"]) {
+  background-color: #f8f9fa !important;
+  color: #122f47 !important;
+}

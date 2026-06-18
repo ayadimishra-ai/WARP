@@ -1,0 +1,27 @@
+mutation updateAddressByPk(
+  $addressId: uuid!
+  $updateAddress: Addresses_set_input!
+) {
+  update_Addresses_by_pk(pk_columns: { id: $addressId }, _set: $updateAddress) {
+    id
+    name
+    code
+    client_master_id
+    full_address
+    pincode
+    country_id
+    state_id
+    city_id
+    type
+    ownership_type
+    facility_type
+    is_wwtp
+    latitude
+    longitude
+    metadata
+    is_deleted
+    created_by
+    updated_by
+    updated_at
+  }
+}

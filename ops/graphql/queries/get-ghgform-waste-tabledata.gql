@@ -1,0 +1,24 @@
+query getGHGWaste(
+  $activityFilter: GHGWaste_bool_exp
+  $start: Int
+  $size: Int
+  $orderBy: [GHGWaste_order_by!]
+) {
+  GHGWaste(
+    where: $activityFilter
+    offset: $start
+    limit: $size
+    order_by: $orderBy
+  ) {
+    Types_of_Waste_Generated
+    Waste_Disposal_Managed_by
+    Name_of_Third_Party
+    Quantity_of_Waste
+    Disposal_Mechanism
+  }
+  totalCount: GHGWaste_aggregate(where: $activityFilter) {
+    aggregate {
+      count
+    }
+  }
+}

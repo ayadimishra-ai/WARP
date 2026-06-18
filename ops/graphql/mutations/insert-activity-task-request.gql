@@ -1,0 +1,18 @@
+mutation InsertActivityTaskRequest(
+  $input: [ActivityTaskRequest_insert_input!]!
+) {
+  insert_ActivityTaskRequest(objects: $input) {
+    returning {
+      id
+      task_request_id
+      activity_id
+      organization_address_id
+      OrganizationAddress {
+        Address {
+          name
+          pincode
+        }
+      }
+    }
+  }
+}

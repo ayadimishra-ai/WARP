@@ -1,0 +1,6 @@
+mutation insertGHGWasteFormEditAction($insertData: GHGWaste_insert_input!) {
+  insert_GHGWaste_one(object: $insertData) {
+    id
+    task_request_id
+  }
+}

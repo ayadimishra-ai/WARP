@@ -1,0 +1,21 @@
+mutation upsertKPISuplierEmissionsBSF(
+  $where: KPISuplierEmissionsBSF_bool_exp!
+  $SupplierEmissionData: [KPISuplierEmissionsBSF_insert_input!]!
+) {
+  delete_KPISuplierEmissionsBSF(where: $where) {
+    returning {
+      id
+    }
+  }
+  insert_KPISuplierEmissionsBSF(objects: $SupplierEmissionData) {
+    returning {
+      id
+      supplier_code
+      kpi_em_TotalPowerPurchased
+      kpi_em_TotalEmission_MaterialProcurement
+      kpi_em_TotalEmission_FuelConsumption
+      kpi_em_UpstreamTransport
+      kpi_em_TotalEmission_WasteGeneration
+    }
+  }
+}

@@ -1,0 +1,10 @@
+query getGHGTransportBusinessTravelData(
+  $where: GHGTransport_BusinessTravel_bool_exp!
+) {
+  GHGTransport_BusinessTravel(where: $where) {
+    task_request_id
+    organization_address_id
+    id
+    activity_task_request_id
+  }
+}

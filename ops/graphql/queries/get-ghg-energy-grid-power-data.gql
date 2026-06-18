@@ -1,0 +1,11 @@
+query getGHGEnergyGridPowerData(
+  $where: GHGEnergyConsumption_GridPower_bool_exp!
+) {
+  GHGEnergyConsumption_GridPower(where: $where) {
+    task_request_id
+    organization_address_id
+    id
+    activity_task_request_id
+    metadata
+  }
+}

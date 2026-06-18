@@ -1,0 +1,6 @@
+query getActivityMasterDataByKey($master_key: [String!]!) {
+  ActivityMaster(where: { master_key: { _in: $master_key } }) {
+    master_key
+    master_data
+  }
+}

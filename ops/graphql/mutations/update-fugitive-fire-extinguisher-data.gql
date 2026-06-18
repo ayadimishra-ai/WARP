@@ -1,0 +1,12 @@
+mutation updateFugitiveFireExtinguisherData(
+  $GhgGHGFireExtinguisherUpdation: [GHGFireExtinguisher_updates!]!
+) {
+  update_GHGFireExtinguisher_many(updates: $GhgGHGFireExtinguisherUpdation) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+    }
+  }
+}

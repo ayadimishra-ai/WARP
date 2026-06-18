@@ -1,0 +1,37 @@
+mutation updateGHGEnergyConsumption_FuelPurchasedData(
+  $GHGEnergyConsumption_FuelPurchased_General: [GHGEnergyConsumption_FuelPurchased_General_updates!]!
+  $GHGEnergyConsumption_FuelPurchased_HeatingWater: [GHGEnergyConsumption_FuelPurchased_HeatingWater_updates!]!
+  $GHGEnergyConsumption_FuelPurchased_Auxiliary: [GHGEnergyConsumption_FuelPurchased_Auxiliary_updates!]!
+  $GHGEnergyConsumption_FuelPurchased_Transportation: [GHGEnergyConsumption_FuelPurchased_Transportation_updates!]!
+) {
+  update_GHGEnergyConsumption_FuelPurchased_General_many(
+    updates: $GHGEnergyConsumption_FuelPurchased_General
+  ) {
+    returning {
+      id
+      kpi_em_Scope3_Category3
+      kpi_emf_Scope3_Category3
+    }
+  }
+  update_GHGEnergyConsumption_FuelPurchased_HeatingWater_many(
+    updates: $GHGEnergyConsumption_FuelPurchased_HeatingWater
+  ) {
+    returning {
+      id
+    }
+  }
+  update_GHGEnergyConsumption_FuelPurchased_Auxiliary_many(
+    updates: $GHGEnergyConsumption_FuelPurchased_Auxiliary
+  ) {
+    returning {
+      id
+    }
+  }
+  update_GHGEnergyConsumption_FuelPurchased_Transportation_many(
+    updates: $GHGEnergyConsumption_FuelPurchased_Transportation
+  ) {
+    returning {
+      id
+    }
+  }
+}

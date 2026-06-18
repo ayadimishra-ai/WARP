@@ -1,0 +1,14 @@
+query getMaterialsForMappingDropdown($organizationId: uuid!) {
+  OrgMaterialMaster(
+    where: {
+      organization_id: { _eq: $organizationId }
+      is_deleted: { _eq: false }
+    }
+    order_by: { name: asc }
+  ) {
+    id
+    name
+    code
+    type
+  }
+}

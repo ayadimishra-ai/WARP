@@ -1,0 +1,26 @@
+query getOrganizationActivitiesAndAddress(
+  $organizationId: uuid!
+  $organizationAddressId: uuid!
+) {
+  OrganizationActivityMapping(
+    where: { organization_id: { _eq: $organizationId } }
+  ) {
+    Activity {
+      id
+      code
+    }
+  }
+  Organization(where: { id: { _eq: $organizationId } }) {
+    OrganizationAddresses(where: { id: { _eq: $organizationAddressId } }) {
+      id
+      Address {
+        id
+        name
+        code
+        pincode
+        type
+        ownership_type
+      }
+    }
+  }
+}

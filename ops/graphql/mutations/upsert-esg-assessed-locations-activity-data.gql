@@ -1,0 +1,40 @@
+mutation upsertESGAssessedLocationsActivity(
+  $where: ESGAssessedLocations_bool_exp!
+  $esgAssessedLocationsData: [ESGAssessedLocations_insert_input!]!
+) {
+  delete_ESGAssessedLocations(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      assessed_by
+      number_of_locations_assessed_on_health_and_safety_practices
+      number_of_locations_assessed_on_working_conditions
+      total_locations
+    }
+  }
+  insert_ESGAssessedLocations(
+    objects: $esgAssessedLocationsData
+    on_conflict: { constraint: ESGAssessedLocations_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      assessed_by
+      number_of_locations_assessed_on_health_and_safety_practices
+      number_of_locations_assessed_on_working_conditions
+      total_locations
+    }
+  }
+}

@@ -1,0 +1,41 @@
+query getLocationTransportDownstream(
+  $destinationLocationMasterIds: [String!]!
+  $activitylocationmasterid: [String!]!
+) {
+  destination_locations: Addresses(
+    where: { client_master_id: { _in: $destinationLocationMasterIds } }
+  ) {
+    id
+    name
+    code
+    client_master_id
+    pincode
+    full_address
+    latitude
+    longitude
+  }
+  activitylocationaddress: Addresses(
+    where: { client_master_id: { _in: $activitylocationmasterid } }
+  ) {
+    id
+    name
+    code
+    client_master_id
+    pincode
+    full_address
+    latitude
+    longitude
+  }
+  VehicleTypeMaster {
+    category
+    name
+    code
+    configuration_value
+  }
+  UomConversionMaster {
+    from_key
+    to_key
+    factor
+    metadata
+  }
+}

@@ -1,0 +1,15 @@
+query getSKUWeight($orgId: uuid!, $filters: [OrgSKUMaster_bool_exp!]!) {
+  OrgSKUMaster(where: { organization_id: { _eq: $orgId }, _or: $filters }) {
+    id
+    client_master_id
+    code
+    weight
+    weight_uom
+    OrgSkuBomMasters {
+      id
+      org_sku_master_id
+      material_quantity
+      material_quantity_uom
+    }
+  }
+}

@@ -1,0 +1,43 @@
+query getRegionLocationAndAppGlobalMasterData(
+  $key: String!
+  $type: String!
+  $organizationId: uuid!
+  $userId: uuid!
+) {
+  Region {
+    id
+    name
+    code
+  }
+
+  AppGlobalMaster(
+    where: { _and: [{ type: { _eq: $type } }, { key: { _eq: $key } }] }
+  ) {
+    key
+    data
+  }
+  Organization(where: { id: { _eq: $organizationId } }) {
+    id
+    Baselineyear
+    FinancialYearMonth
+    metadata
+  }
+  UserOrganizationAddressMapping(
+    where: {
+      organization_id: { _eq: $organizationId }
+      user_id: { _eq: $userId }
+    }
+  ) {
+    organization_address_id
+    OrganizationAddress {
+      id
+      Address {
+        id
+        name
+        City {
+          name
+        }
+      }
+    }
+  }
+}

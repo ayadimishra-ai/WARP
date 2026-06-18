@@ -1,0 +1,40 @@
+mutation upsertGHGFuelPurchasedTransportation_Activity(
+  $where: GHGEnergyConsumption_FuelPurchased_Transportation_bool_exp!
+  $fuelpurchasedtransportation: [GHGEnergyConsumption_FuelPurchased_Transportation_insert_input!]!
+) {
+  delete_GHGEnergyConsumption_FuelPurchased_Transportation(where: $where) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      Vehicle_Type_Used_for_Road_Transport
+      Type_of_Fuel_Purchased
+      Quantity_of_fuel_purchased
+      UoM_for_fuel_purchased
+      Distance_travelled
+      Transportation_Type
+      supporting_docs
+    }
+  }
+  insert_GHGEnergyConsumption_FuelPurchased_Transportation(
+    objects: $fuelpurchasedtransportation
+    on_conflict: {
+      constraint: GHGEnergyConsumption_FuelPurchased_Transportation_pkey
+    }
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      Vehicle_Type_Used_for_Road_Transport
+      Type_of_Fuel_Purchased
+      Quantity_of_fuel_purchased
+      UoM_for_fuel_purchased
+      Distance_travelled
+      Transportation_Type
+      supporting_docs
+    }
+  }
+}

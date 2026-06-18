@@ -1,0 +1,10 @@
+mutation insertUseOfSoldProductsElectricity(
+  $objects: [GHGUseOfSoldProducts_Electricity_insert_input!]!
+) {
+  insert_GHGUseOfSoldProducts_Electricity(objects: $objects) {
+    returning {
+      id
+      task_request_id
+    }
+  }
+}

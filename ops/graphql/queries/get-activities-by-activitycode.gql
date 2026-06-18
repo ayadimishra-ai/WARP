@@ -1,0 +1,10 @@
+query getActivitiesbyactivitycode($activitycode: String) {
+  Activity(
+    where: {
+      _and: { code: { _eq: $activitycode }, is_deleted: { _eq: false } }
+    }
+  ) {
+    id
+    code
+  }
+}

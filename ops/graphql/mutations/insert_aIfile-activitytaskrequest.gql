@@ -1,0 +1,19 @@
+mutation AIFileActivityInsertTaskRequest(
+  $input: [AIFileActivityTaskRequestMapping_insert_input!]!
+  $where: AIFileActivityTaskRequestMapping_bool_exp!
+) {
+  delete_AIFileActivityTaskRequestMapping(where: $where) {
+    returning {
+      id
+      aifileupload_id
+    }
+  }
+  insert_AIFileActivityTaskRequestMapping(objects: $input) {
+    returning {
+      id
+      activity_task_request_id
+      aifileupload_id
+      task_request_id
+    }
+  }
+}

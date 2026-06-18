@@ -1,0 +1,61 @@
+mutation updateGhgTransportEmployeeTravel(
+  $GhgTransportEmployeeTravel: [GHGTransport_EmployeeTravel_updates!]!
+) {
+  update_GHGTransport_EmployeeTravel_many(
+    updates: $GhgTransportEmployeeTravel
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      PercOfEmp_TravBy_CompOwned_Bus
+      AvgDailyDist_TravBy_CompOwned_Bus
+      AvgDailyDist_TravBy_CompOwned_Bus_UoM
+      PercOfEmp_TravBy_PublicTrans_or_CompContracted_Bus
+      AvgDailyDist_TravBy_PubTrans_or_CompContracted_Bus
+      AvgDailyDist_TravBy_PubTrans_or_CompContracted_Bus_UoM
+      PercOfEmp_TravBy_PublicTrans_4Wheeler
+      AvgDailyDist_TravBy_PubTrans_4Wheeler
+      AvgDailyDist_TravBy_PubTrans_4Wheeler_UoM
+      PercOfEmp_TravBy_PublicTrans_3Wheeler
+      AvgDailyDist_TravBy_PubTrans_3Wheeler
+      AvgDailyDist_TravBy_PubTrans_3Wheeler_UoM
+      PercOfEmp_TravBy_PvtVehicle_4Wheeler
+      AvgDailyDist_TravBy_PvtVehicle_4Wheeler
+      AvgDailyDist_TravBy_PvtVehicle_4Wheeler_UoM
+      PercOfEmp_TravBy_PvtVehicle_2Wheeler
+      AvgDailyDist_TravBy_PvtVehicle_2Wheeler
+      AvgDailyDist_TravBy_PvtVehicle_2Wheeler_UoM
+      PercOfEmp_TravBy_RailSuburban
+      AvgDailyDist_TravBy_RailSuburban
+      AvgDailyDist_TravBy_RailSuburban_UoM
+      supporting_docs
+      kpi_NoOf_Emp_TravBy_CompOwned_Bus
+      kpi_NoOf_Emp_TravBy_PublicTrans_or_CompContracted_Bus
+      kpi_NoOf_Emp_TravBy_PublicTrans_4Wheeler
+      kpi_NoOf_Emp_TravBy_PublicTrans_3Wheeler
+      kpi_NoOf_Emp_TravBy_PvtVehicle_4Wheeler
+      kpi_NoOf_Emp_TravBy_PvtVehicle_2Wheeler
+      kpi_NoOf_Emp_TravBy_RailSuburban
+      kpi_em_Emp_TravBy_CompOwned_Bus
+      kpi_emf_Emp_TravBy_CompOwned_Bus
+      kpi_em_Emp_TravBy_PublicTransOrCompContractedBus
+      kpi_emf_Emp_TravBy_PublicTransOrCompContractedBus
+      kpi_em_Emp_TravBy_PublicTrans_4Wheeler
+      kpi_emf_Emp_TravBy_PublicTrans_4Wheeler
+      kpi_em_Emp_TravBy_PublicTrans_3Wheeler
+      kpi_emf_Emp_TravBy_PublicTrans_3Wheeler
+      kpi_em_Emp_TravBy_PvtVehicle_4Wheeler
+      kpi_emf_Emp_TravBy_PvtVehicle_4Wheeler
+      kpi_em_Emp_TravBy_PvtVehicle_2Wheeler
+      kpi_emf_Emp_TravBy_PvtVehicle_2Wheeler
+      kpi_em_Emp_TravBy_RailSuburban
+      kpi_emf_Emp_TravBy_RailSuburban
+      created_at
+      updated_at
+      created_by
+      updated_by
+    }
+  }
+}

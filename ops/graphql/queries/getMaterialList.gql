@@ -1,0 +1,16 @@
+query getMaterialList($materialMasterIdList: [String!]!) {
+  OrgMaterialMaster(
+    where: {
+      _and: {
+        client_master_id: { _in: $materialMasterIdList }
+        is_deleted: { _eq: false }
+      }
+    }
+  ) {
+    id
+    name
+    code
+    client_master_id
+    type
+  }
+}

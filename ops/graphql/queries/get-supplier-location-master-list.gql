@@ -1,0 +1,43 @@
+query getSupplierLocationMasterList(
+  $where: SupplierAddressMapping_bool_exp!
+  $order_by: [SupplierAddressMapping_order_by!]
+  $limit: Int!
+  $offset: Int!
+) {
+  SupplierAddressMapping(
+    where: $where
+    order_by: $order_by
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    org_supplier_master_id
+    address_id
+    OrgSupplierMaster {
+      id
+      code
+      name
+    }
+    Address {
+      id
+      name
+      code
+      full_address
+      pincode
+      Country {
+        name
+      }
+      State {
+        name
+      }
+      City {
+        name
+      }
+    }
+  }
+  SupplierAddressMapping_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}

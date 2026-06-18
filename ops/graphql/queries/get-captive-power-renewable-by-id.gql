@@ -1,0 +1,25 @@
+query getCaptivePowerRenewableById($id: uuid!) {
+  GHGEnergy_CaptivePower_Renewable(where: { id: { _eq: $id } }) {
+    id
+    Type_of_Technology_Used
+    Year_of_installation
+    Unit_of_Energy_Generated_in_Kwh
+    supporting_docs
+    kpi_em_Emission_EnergyGenerated_kwh
+    kpi_emf_Emission_EnergyGenerated_kwh
+    GHGEnergyConsumption_CaptivePower_id
+    created_by
+    updated_by
+    GHGEnergy_CaptivePower {
+      id
+      task_request_id
+      Type_of_Captive_Power
+      TaskRequest {
+        id
+        year
+        month
+        organization_address_id
+      }
+    }
+  }
+}

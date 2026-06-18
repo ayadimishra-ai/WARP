@@ -1,0 +1,38 @@
+mutation upsertGHGFireExtinguisherActivity(
+  $where: GHGFireExtinguisher_bool_exp!
+  $ghgFireExtinguisherData: [GHGFireExtinguisher_insert_input!]!
+) {
+  delete_GHGFireExtinguisher(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      gas_used_in_fire_extinguisher
+      quantity_of_gas_filled
+      uom_fire_extinguisher
+    }
+  }
+  insert_GHGFireExtinguisher(
+    objects: $ghgFireExtinguisherData
+    on_conflict: { constraint: GHGFireExtinguisher_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      gas_used_in_fire_extinguisher
+      quantity_of_gas_filled
+      uom_fire_extinguisher
+    }
+  }
+}

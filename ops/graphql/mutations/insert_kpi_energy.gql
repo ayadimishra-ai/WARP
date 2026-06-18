@@ -1,0 +1,19 @@
+mutation insertKPIEnergy(
+  $kpienergydata: [KPIEnergy_insert_input!]!
+  $deletekpienergydata: KPIEnergy_bool_exp!
+) {
+  delete_KPIEnergy(where: $deletekpienergydata) {
+    returning {
+      id
+    }
+  }
+
+  insert_KPIEnergy(
+    objects: $kpienergydata
+    on_conflict: { constraint: KPIEnergy_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+}

@@ -1,0 +1,64 @@
+query getGHGEnergyConsumption_FuelPurchased($task_request_id: [uuid!]) {
+  GHGEnergyConsumption_FuelPurchased(
+    where: { task_request_id: { _in: $task_request_id } }
+  ) {
+    TaskRequest {
+      month
+      year
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+    GHGEnergyConsumption_FuelPurchased_Generals {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Type_of_Fuel_Purchased
+      Quantity_of_fuel_Consumed
+      Quantity_of_fuel_Consumed_uom
+      Quality_of_fuel
+      Point_of_Consumption
+      supporting_docs
+      kpi_em_Emission_QuantityOfFuelConsumed
+      kpi_emf_Emission_QuantityOfFuelConsumed
+    }
+    GHGEnergyConsumption_FuelPurchased_HeatingWaters {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Type_of_Fuel_Purchased
+      Quantity_of_fuel_consumed
+      Quantity_of_fuel_consumed_uom
+      Quality_of_fuel
+    }
+    GHGEnergyConsumption_FuelPurchased_Auxiliaries {
+      id
+      GHGEnergyConsumption_FuelPurchased_id
+      Quantity_of_fuel_consumed
+      Type_of_Auxiliary_Fuel_Purchased
+      Quantity_of_fuel_consumed_uom
+    }
+  }
+
+  GHGEnergyConsumption_FuelPurchased_Transportation(
+    where: { task_request_id: { _in: $task_request_id } }
+  ) {
+    TaskRequest {
+      month
+      year
+    }
+    id
+    task_request_id
+    organization_address_id
+    activity_task_request_id
+    Vehicle_Type_Used_for_Road_Transport
+    Type_of_Fuel_Purchased
+    Quantity_of_fuel_purchased
+    UoM_for_fuel_purchased
+    Distance_travelled
+    Transportation_Type
+  }
+}

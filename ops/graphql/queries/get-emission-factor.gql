@@ -1,0 +1,26 @@
+query getemissionfactor($region: String) {
+  Region(where: { code: { _eq: $region } }) {
+    CO2EmissionFactorMasters(where: { category: { _eq: "Material" } }) {
+      year
+      category
+      activity
+      sub_activity
+      type
+      factor
+      factor_uom
+      metadata
+    }
+  }
+  globalregion: CO2EmissionFactorMaster(
+    where: { region: { _is_null: true }, category: { _eq: "Material" } }
+  ) {
+    year
+    category
+    activity
+    sub_activity
+    type
+    factor
+    factor_uom
+    metadata
+  }
+}

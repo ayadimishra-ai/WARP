@@ -1,0 +1,77 @@
+.list {
+  position: relative;
+  margin-bottom: var(--mantine-spacing-md);
+  border-bottom: none !important;
+}
+
+.list::before {
+  display: none !important;
+}
+
+.list::after {
+  display: none !important;
+}
+
+.tab {
+  z-index: 1;
+  font-weight: 500;
+  transition: all 200ms ease;
+  color: var(--mantine-color-gray-7);
+  background-color: var(--mantine-color-gray-2);
+  border-radius: 5px;
+  padding: 10px 16px;
+  margin: 0 4px;
+  border: none;
+
+  &[data-active] {
+    color: white;
+    background-color: #ffa93c;
+  }
+
+  &:hover:not([data-active]) {
+    background-color: var(--mantine-color-gray-3);
+  }
+}
+
+/* Table styling matching CommonTable */
+.FormTablestyle {
+  /* box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px; */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.FormTablestyle table {
+  border-radius: 10px;
+}
+
+.FormTablestyle thead tr {
+  background-color: #003b52;
+  color: #fff;
+}
+
+.FormTablestyle thead th {
+  background-color: #003b52 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border: none !important;
+}
+
+.FormTablestyle tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.FormTablestyle .mantine-Pagination-root {
+  justify-content: center;
+  padding: 10px;
+}
+
+.FormTablestyle .mantine-Pagination-control {
+  border: none;
+  background-color: transparent;
+  color: #666;
+}
+
+.FormTablestyle .mantine-Pagination-control[data-active] {
+  background-color: #003b52;
+  color: white;
+}

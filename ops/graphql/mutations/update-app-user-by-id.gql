@@ -1,0 +1,11 @@
+mutation updateAppUserById($id: uuid!, $data: AppUser_set_input!) {
+  update_AppUser(where: { id: { _eq: $id } }, _set: $data) {
+    affected_rows
+    returning {
+      id
+      first_name
+      last_name
+      name
+    }
+  }
+}

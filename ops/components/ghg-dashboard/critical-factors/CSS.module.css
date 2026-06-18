@@ -1,0 +1,56 @@
+.emissionTableStyling {
+  box-shadow:
+    rgba(159, 162, 191, 0.18) 0px 9px 16px,
+    rgba(159, 162, 191, 0.32) 0px 2px 2px;
+}
+.emissionTableStyling .MRT_TableContainer-module_root__JIsGB {
+  padding: 0 !important;
+}
+.emissionTableStyling table tbody tr:last-child td:first-of-type {
+  border-bottom-left-radius: 10px;
+}
+.emissionTableStyling table tbody tr:last-child td:last-of-type {
+  border-bottom-right-radius: 10px;
+}
+.emissionTableStyling > div div:nth-of-type(2) {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  flex-direction: row-reverse;
+}
+.emissionTableStyling .MRT_TableHeadCell-module_content__-pzSK {
+  color: #fff !important;
+}
+.emissionTableStyling table thead th {
+  background-color: #7c8d9e !important;
+  color: #fff !important;
+}
+.emissionTableStyling table thead th:first-of-type {
+  background-color: #7c8d9e !important;
+  color: #fff !important;
+}
+.emissionTableStyling table thead th:last-of-type {
+  background-color: #7c8d9e !important;
+  color: #fff !important;
+  padding: 0 10px !important;
+}
+.emissionTableStyling table tbody td {
+  color: black !important;
+  max-height: 26px !important;
+  height: 26px !important;
+}
+.emissionTableStyling table tbody tr:hover {
+  background-color: #f7f9fb !important;
+  background: #f7f9fb !important;
+}
+.emissionTableStyling table tbody tr:nth-of-type(even) {
+  background-color: #f7f9fb !important;
+  background: #f7f9fb !important;
+}
+.emissionTableStyling table thead th svg path {
+  fill: #fff !important;
+}
+
+.emissionTableStyling table thead th .MRT_TableHeadCell-module_content__-pzSK {
+  color: #fff !important;
+}

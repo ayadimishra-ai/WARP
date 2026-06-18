@@ -1,0 +1,42 @@
+mutation upsertGHGHarvestedWaterActivity(
+  $where: GHGHarvestedWater_bool_exp!
+  $ghgHarvestedWaterData: [GHGHarvestedWater_insert_input!]!
+) {
+  delete_GHGHarvestedWater(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      total_harvested_water_used_for_domestic_use
+      total_harvested_water_used_for_industrial_use
+      total_harvested_water_used_for_landscaping
+      total_harvested_water_used_for_miscellaneous_uses
+      uom_harvested_water
+    }
+  }
+  insert_GHGHarvestedWater(
+    objects: $ghgHarvestedWaterData
+    on_conflict: { constraint: GHGHarvestedWater_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      total_harvested_water_used_for_domestic_use
+      total_harvested_water_used_for_industrial_use
+      total_harvested_water_used_for_landscaping
+      total_harvested_water_used_for_miscellaneous_uses
+      uom_harvested_water
+    }
+  }
+}

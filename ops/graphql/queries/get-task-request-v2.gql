@@ -1,0 +1,39 @@
+query getTaskRequestV2(
+  $organizationAddressId: uuid!
+  $month: String!
+  $year: Int!
+) {
+  TaskRequest(
+    where: {
+      _and: [
+        { is_deleted: { _eq: false } }
+        { organization_address_id: { _eq: $organizationAddressId } }
+        { year: { _eq: $year } }
+        { month: { _ilike: $month } }
+      ]
+    }
+  ) {
+    id
+    organization_address_id
+    status
+    month
+    year
+    ActivityTaskRequests(where: { is_deleted: { _eq: false } }) {
+      id
+      activity_id
+      Activity {
+        code
+      }
+      status
+    }
+    OrganizationAddress {
+      Address {
+        name
+        code
+        pincode
+        type
+        ownership_type
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+mutation InsertAddressDistance($input: [AddressDistance_insert_input!]!) {
+  insert_AddressDistance(objects: $input) {
+    returning {
+      id
+    }
+  }
+}

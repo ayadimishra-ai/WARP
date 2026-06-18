@@ -1,0 +1,28 @@
+query getSupplierFeatures($Code: [String!]!, $buyerOrgId: [uuid!]!) {
+  OrgSupplierMaster(
+    where: {
+      organization_id: { _in: $buyerOrgId }
+      buyer_features: { _is_null: false }
+      SupplierAddressMappings: {
+        OrganizationAddress: { Address: { code: { _in: $Code } } }
+      }
+    }
+  ) {
+    id
+    organization_id
+    code
+    buyer_features
+
+    SupplierAddressMappings {
+      id
+      OrganizationAddress {
+        id
+        Address {
+          id
+          code
+          name
+        }
+      }
+    }
+  }
+}

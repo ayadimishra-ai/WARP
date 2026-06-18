@@ -1,0 +1,6 @@
+query GetAIFileDataByFileId($file_id: uuid!) {
+  AIFileData(where: { file_id: { _eq: $file_id } }) {
+    id
+    file_id
+  }
+}

@@ -1,0 +1,51 @@
+query getghgTransportDownStreamByActivityTaskRequest(
+  $task_request_id: [uuid!]!
+) {
+  GHGTransport_Downstream(
+    where: { task_request_id: { _in: $task_request_id } }
+  ) {
+    id
+    organization_address_id
+    task_request_id
+    activity_task_request_id
+    Which_Products
+    Which_SKUs
+    Destination_Location_Name
+    Destination_pin_or_zip_code
+    Transport_Managed_by
+    Mode_of_Transport
+    Vehicle_Type_Used_for_Road_Transport
+    Fuel_Used
+    Distance_per_trip
+    Distance_per_trip_UoM
+    Quantity_of_Fuel_Consumed
+    Quantity_of_Fuel_Consumed_UoM
+    supporting_docs
+    kpi_Distance_Travelled
+    kpi_Distance_Travelled_uom
+    kpi_em_EmissionBy_TravelledDistance
+    kpi_emf_EmissionBy_TravelledDistance
+    updated_at
+    updated_by
+    Number_of_Trips
+    Number_of_Skus_Transported
+    created_at
+    created_by
+    total_distance_travelled
+    total_distance_travelled_uom
+    kpi_total_weight_transported
+    kpi_total_weight_transported_uom
+    TaskRequest {
+      month
+      year
+    }
+    OrganizationAddress {
+      Address {
+        country_id
+        Country {
+          region_code
+        }
+      }
+    }
+  }
+}

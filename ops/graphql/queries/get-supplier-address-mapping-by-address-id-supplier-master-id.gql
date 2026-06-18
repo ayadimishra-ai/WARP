@@ -1,0 +1,12 @@
+query GetSupplierAddressMappingByAddressIdSupplierMasterId(
+  $supplierMasterIds: [uuid!]
+) {
+  SupplierAddressMapping(
+    where: { org_supplier_master_id: { _in: $supplierMasterIds } }
+  ) {
+    id
+    org_supplier_master_id
+    address_id
+    metadata
+  }
+}

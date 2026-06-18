@@ -1,0 +1,14 @@
+mutation updateNetZeroTargetYear($id: uuid!, $net_zero_metadata: jsonb) {
+  update_Organization(
+    where: { id: { _eq: $id } }
+    _set: { net_zero_metadata: $net_zero_metadata }
+  ) {
+    affected_rows
+    returning {
+      id
+      name
+      Baselineyear
+      net_zero_metadata
+    }
+  }
+}

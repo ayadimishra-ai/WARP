@@ -1,0 +1,9 @@
+query getUOMconversionFactordata {
+  UomConversionMaster {
+    id
+    from_key
+    to_key
+    factor
+    metadata
+  }
+}

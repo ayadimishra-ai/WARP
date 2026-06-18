@@ -1,0 +1,71 @@
+query getValidationDataForTransportupstreamExcel(
+  $organizationaddressId: uuid!
+  $procuredlocationmasterid: [String!]!
+  $supplierid: [String!]!
+) {
+  activity_locations: OrganizationAddress(
+    where: { id: { _eq: $organizationaddressId } }
+  ) {
+    id
+    address_id
+    Address {
+      id
+      pincode
+      name
+      latitude
+      longitude
+      client_master_id
+      Country {
+        name
+      }
+    }
+  }
+  procuredlocationaddress: Addresses(
+    where: { name: { _in: $procuredlocationmasterid } }
+  ) {
+    id
+    client_master_id
+    name
+    ownership_type
+    latitude
+    longitude
+    pincode
+    type
+    SupplierAddressMappings(
+      where: { OrgSupplierMaster: { code: { _in: $supplierid } } }
+    ) {
+      OrgSupplierMaster {
+        id
+        client_master_id
+      }
+    }
+  }
+  OrgSupplierMaster(where: { code: { _in: $supplierid } }) {
+    id
+    client_master_id
+    category
+    code
+    SupplierAddressMappings {
+      id
+      Address {
+        id
+        client_master_id
+        Country {
+          name
+        }
+      }
+    }
+  }
+
+  VehicleTypeMaster {
+    category
+    name
+    code
+    configuration_value
+  }
+  UomConversionMaster {
+    from_key
+    to_key
+    factor
+  }
+}

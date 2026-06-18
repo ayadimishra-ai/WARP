@@ -1,0 +1,51 @@
+mutation upsertGHGWasteWaterTreatmentActivity(
+  $where: GHGWasteWaterTreatment_bool_exp!
+  $ghgWasteWaterTreatmentData: [GHGWasteWaterTreatment_insert_input!]!
+) {
+  delete_GHGWasteWaterTreatment(where: $where) {
+    returning {
+      created_at
+      created_by
+      id
+      activity_task_request_id
+      influent_bod_concentration
+      influent_cod_concentration
+      organization_address_id
+      task_request_id
+      total_influent
+      total_treated_effluent
+      treated_effluent_cod_concentration
+      treated_effluent_bod_concentration
+      uom_bod
+      uom_cod
+      uom_influent_effluent
+      updated_at
+      updated_by
+    }
+  }
+
+  insert_GHGWasteWaterTreatment(
+    objects: $ghgWasteWaterTreatmentData
+    on_conflict: { constraint: GHGWasteWaterTreatment_pkey }
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      total_influent
+      total_treated_effluent
+      uom_influent_effluent
+      influent_bod_concentration
+      treated_effluent_bod_concentration
+      uom_bod
+      influent_cod_concentration
+      treated_effluent_cod_concentration
+      uom_cod
+      created_at
+      updated_at
+      created_by
+      updated_by
+    }
+  }
+}

@@ -1,0 +1,34 @@
+mutation updateAddress(
+  $organizationId: uuid!
+  $addressId: uuid!
+  $updateAddress: Addresses_set_input!
+) {
+  update_Addresses(
+    where: {
+      id: { _eq: $addressId }
+      OrganizationAddresses: {
+        organization_id: { _eq: $organizationId }
+        address_id: { _eq: $addressId }
+      }
+    }
+    _set: $updateAddress
+  ) {
+    returning {
+      id
+      name
+      code
+      full_address
+      pincode
+      country_id
+      state_id
+      city_id
+      type
+      metadata
+      ownership_type
+      facility_type
+      updated_at
+      updated_by
+      is_deleted
+    }
+  }
+}

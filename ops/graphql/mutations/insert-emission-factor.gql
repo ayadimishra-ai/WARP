@@ -1,0 +1,13 @@
+mutation insertEmissionFactor(
+  $insertData: [CO2EmissionFactorMaster_insert_input!]!
+) {
+  insert_CO2EmissionFactorMaster(
+    objects: $insertData
+    on_conflict: { constraint: CO2EmissionFactorMaster_pkey }
+  ) {
+    affected_rows
+    returning {
+      id
+    }
+  }
+}

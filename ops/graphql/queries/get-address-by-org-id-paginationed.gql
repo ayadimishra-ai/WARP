@@ -1,0 +1,27 @@
+query GetAddressByOrgIdPaginated(
+  $limit: Int
+  $offset: Int
+  $where: OrganizationAddress_bool_exp!
+  $orderBy: [OrganizationAddress_order_by!] = []
+) {
+  OrganizationAddress(where: $where, limit: $limit, offset: $offset, order_by: $orderBy) {
+    id
+    organization_id
+    address_id
+    Address {
+      id
+      name
+      code
+      full_address
+      ownership_type
+      facility_type
+      is_wwtp
+      type
+    }
+  }
+  totalCount: OrganizationAddress_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}

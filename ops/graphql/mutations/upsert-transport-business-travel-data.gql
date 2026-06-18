@@ -1,0 +1,61 @@
+mutation upsertGHGTransport_BusinessTravelActivity(
+  $where: GHGTransport_BusinessTravel_bool_exp!
+  $businessTraveldata: [GHGTransport_BusinessTravel_insert_input!]!
+  $TravelDistanceData: [TravelDistance_insert_input!]!
+) {
+  delete_GHGTransport_BusinessTravel(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Mode_of_Transport
+      Vehicle_Type_Used_for_Road_Transport
+      Fuel_Used
+      Trip_From_Pincode
+      Trip_To_Pincode
+      Trip_Distance
+      Trip_From_Country
+      Trip_To_Country
+      Trip_No_of_Employees_Travelled
+      supporting_docs
+      kpi_Distance_Travelled
+      kpi_Distance_Travelled_uom
+      kpi_em_EmissionBy_TravelledDistance
+      kpi_emf_EmissionBy_TravelledDistance
+    }
+  }
+  insert_GHGTransport_BusinessTravel(
+    objects: $businessTraveldata
+    on_conflict: { constraint: GHGTransport_BusinessTravel_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      Mode_of_Transport
+      Vehicle_Type_Used_for_Road_Transport
+      Fuel_Used
+      Trip_From_Pincode
+      Trip_To_Pincode
+      Trip_Distance
+      Trip_From_Country
+      Trip_To_Country
+      Trip_No_of_Employees_Travelled
+      supporting_docs
+      kpi_Distance_Travelled
+      kpi_Distance_Travelled_uom
+      kpi_em_EmissionBy_TravelledDistance
+      kpi_emf_EmissionBy_TravelledDistance
+    }
+  }
+  insert_TravelDistance(
+    objects: $TravelDistanceData
+    on_conflict: { constraint: TravelDistance_pkey }
+  ) {
+    returning {
+      id
+    }
+  }
+}

@@ -1,0 +1,54 @@
+mutation saveemissonFactorMaterialData(
+  $insertData: [CO2EmissionFactorMaster_Material_insert_input!]!
+  $updateData: [CO2EmissionFactorMaster_Material_updates!]!
+) {
+  insert_CO2EmissionFactorMaster_Material(
+    on_conflict: { constraint: CO2EmissionFactorMaster_Material_pkey }
+    objects: $insertData
+  ) {
+    returning {
+      id
+      geography
+      organization_id
+      year
+      month
+      region
+      category
+      activity
+      sub_activity
+      type
+      sub_type
+      configuration
+      fuel_type
+      factor
+      factor_uom
+      metadata
+      group
+      created_by
+      updated_by
+    }
+  }
+  update_CO2EmissionFactorMaster_Material_many(updates: $updateData) {
+    returning {
+      id
+      geography
+      organization_id
+      year
+      month
+      region
+      category
+      activity
+      sub_activity
+      type
+      sub_type
+      configuration
+      fuel_type
+      factor
+      factor_uom
+      metadata
+      group
+      created_by
+      updated_by
+    }
+  }
+}

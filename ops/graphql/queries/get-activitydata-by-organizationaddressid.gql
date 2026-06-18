@@ -1,0 +1,53 @@
+query GetActivityDataByOrganizationAddressID($organization_address_id: uuid!) {
+  ActivityTaskRequest(
+    where: { organization_address_id: { _eq: $organization_address_id } }
+  ) {
+    is_deleted
+    metadata
+    status
+    created_at
+    updated_at
+    activity_id
+    created_by
+    id
+    organization_address_id
+    task_request_id
+    updated_by
+  }
+
+  DataImportHistory(
+    where: { organization_address_id: { _eq: $organization_address_id } }
+  ) {
+    is_deleted
+    file_metadata
+    metadata
+    status_data
+    activity_code
+    file_name
+    file_url
+    import_method
+    status
+    created_at
+    updated_at
+    created_by
+    id
+    organization_address_id
+    updated_by
+  }
+
+  TaskRequest(
+    where: { organization_address_id: { _eq: $organization_address_id } }
+  ) {
+    is_deleted
+    year
+    metadata
+    month
+    status
+    created_at
+    updated_at
+    created_by
+    id
+    organization_address_id
+    updated_by
+  }
+}

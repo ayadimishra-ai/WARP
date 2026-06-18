@@ -1,0 +1,36 @@
+query GetGHGTransportUpstreamForSpecificSupplier(
+  $month: String
+  $year: Int
+  $addressId: uuid
+  $pincode: String
+  $supplierCode: String
+) {
+  GHGTransport_Upstream(
+    where: {
+      Location_pin_or_zip_code: { _eq: $pincode }
+      Supplier_code: { _eq: $supplierCode }
+      TaskRequest: {
+        month: { _eq: $month }
+        year: { _eq: $year }
+        OrganizationAddress: { address_id: { _eq: $addressId } }
+      }
+    }
+  ) {
+    id
+    Location_pin_or_zip_code
+    Supplier_code
+    Destination_Location_Pincode
+    TaskRequest {
+      id
+      month
+      year
+      OrganizationAddress {
+        address_id
+        Address {
+          name
+          pincode
+        }
+      }
+    }
+  }
+}

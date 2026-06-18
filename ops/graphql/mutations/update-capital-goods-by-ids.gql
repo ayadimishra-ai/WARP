@@ -1,0 +1,14 @@
+mutation updateCapitalGoodsByIds($updates: [GHGCapital_Goods_updates!]!) {
+  update_GHGCapital_Goods_many(updates: $updates) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      Material_Code
+      Quantity_Procured
+      Quantity_Procured_uom
+      Supplier_Code
+      kpi_material_weight_kg
+    }
+  }
+}

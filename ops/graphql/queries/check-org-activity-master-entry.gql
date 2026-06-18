@@ -1,0 +1,13 @@
+query checkOrgActivityMasterEntry($organizationId: uuid!, $masterKey: String!) {
+  OrgActivityMaster(
+    where: {
+      organization_id: { _eq: $organizationId }
+      master_key: { _eq: $masterKey }
+    }
+    limit: 1
+  ) {
+    id
+    master_key
+    organization_id
+  }
+}

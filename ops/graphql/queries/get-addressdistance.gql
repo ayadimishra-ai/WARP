@@ -1,0 +1,14 @@
+query getaddressdistance($where: AddressDistance_bool_exp!) {
+  AddressDistance(where: $where) {
+    id
+    from_address_id
+    from_address_latitude
+    from_address_longitude
+    to_address_id
+    to_address_latitude
+    to_address_longitude
+    distance
+    uom
+    mode_of_transport
+  }
+}

@@ -1,0 +1,36 @@
+query getCaptivePowerRenewableByYearMonthOrgAddressId(
+  $orgAddressId: uuid!
+  $month: String!
+  $year: Int!
+) {
+  GHGEnergy_CaptivePower_Renewable(
+    where: {
+      GHGEnergy_CaptivePower: {
+        TaskRequest: {
+          organization_address_id: { _eq: $orgAddressId }
+          month: { _eq: $month }
+          year: { _eq: $year }
+        }
+      }
+    }
+  ) {
+    id
+    Type_of_Technology_Used
+    Year_of_installation
+    Unit_of_Energy_Generated_in_Kwh
+    GHGEnergyConsumption_CaptivePower_id
+    created_by
+    updated_by
+    GHGEnergy_CaptivePower {
+      id
+      task_request_id
+      Type_of_Captive_Power
+      TaskRequest {
+        id
+        year
+        month
+        organization_address_id
+      }
+    }
+  }
+}

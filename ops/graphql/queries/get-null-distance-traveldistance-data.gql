@@ -1,0 +1,19 @@
+query getNullDistanceTravelDdistanceData(
+  $fromdate: timestamptz!
+  $todate: timestamptz!
+) {
+  TravelDistance(
+    where: {
+      created_at: { _gte: $fromdate, _lte: $todate }
+      distance: { _is_null: true }
+    }
+    limit: 500
+  ) {
+    id
+    from_location_country
+    from_location_pincode
+    to_location_country
+    to_location_pincode
+    mode_of_transport
+  }
+}

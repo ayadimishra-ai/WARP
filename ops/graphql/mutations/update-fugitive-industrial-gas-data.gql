@@ -1,0 +1,12 @@
+mutation updateFugitiveIndustrialGasData(
+  $GHGIndustrialGasUpdation: [GHGIndustrialGas_updates!]!
+) {
+  update_GHGIndustrialGas_many(updates: $GHGIndustrialGasUpdation) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+    }
+  }
+}

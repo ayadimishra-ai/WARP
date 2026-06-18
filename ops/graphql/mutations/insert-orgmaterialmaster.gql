@@ -1,0 +1,33 @@
+mutation insertOrgMaterialAndSOrguuplierMaster(
+  $materialMasterData: [OrgMaterialMaster_insert_input!]!,
+  $supplierMasterData: [OrgSupplierMaster_insert_input!]!
+  ){
+  insert_OrgMaterialMaster(
+    objects: $materialMasterData
+    on_conflict: { constraint: OrgMaterialMaster_pkey}
+  ){
+    returning{
+      id
+      name
+      code
+      type
+      client_master_id
+      organization_id
+    }
+  }
+
+  insert_OrgSupplierMaster(
+    objects: $supplierMasterData
+    on_conflict: { constraint: OrgSupplierMaster_pkey}
+  ){
+    returning{
+      id
+      name
+      code
+      category
+      client_master_id
+      organization_id
+    }
+  }
+
+}

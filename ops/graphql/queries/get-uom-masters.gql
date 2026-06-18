@@ -1,0 +1,12 @@
+query getUomMasters @cached(ttl: 3600) {
+  UomMaster {
+    key
+    code
+    label
+    alias: metadata(path: "$.alias")
+  }
+  FuelTypeMaster(where: {is_deleted: {_neq: true}}) {
+    code
+    label
+  }
+}

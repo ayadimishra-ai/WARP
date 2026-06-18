@@ -1,0 +1,16 @@
+query getsupplierMasterByCodesAndOrganizationId($supplierCodes: [String!]!, $organizationId: uuid!) {
+  OrgSupplierMaster(
+    where: {
+      code: {_in: $supplierCodes}, 
+      organization_id: {_eq: $organizationId}, 
+      is_deleted: {_eq: false}
+    }
+  ) {
+    id
+    code
+    name
+    category
+    client_master_id
+    organization_id
+  }
+}

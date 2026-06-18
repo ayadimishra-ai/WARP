@@ -1,0 +1,41 @@
+mutation upsertESG_CSR_Activity(
+  $where: ESGCSR_bool_exp!
+  $esgcsr: [ESGCSR_insert_input!]!
+) {
+  delete_ESGCSR(where: $where) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      project_name
+      theme_of_the_project
+      number_of_beneficiaries_impact_created
+      target_beneficiary_group_impact_category
+      related_sdgs
+      annual_spend_on_the_project
+      target_specified_in_terms_of_impact_beneficiaries
+
+      funds_earmarked_for_the_project_for_the_year
+      currency
+    }
+  }
+  insert_ESGCSR(objects: $esgcsr, on_conflict: { constraint: ESGCSR_pkey }) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      project_name
+      theme_of_the_project
+      number_of_beneficiaries_impact_created
+      target_beneficiary_group_impact_category
+      related_sdgs
+      annual_spend_on_the_project
+      target_specified_in_terms_of_impact_beneficiaries
+
+      funds_earmarked_for_the_project_for_the_year
+      currency
+    }
+  }
+}

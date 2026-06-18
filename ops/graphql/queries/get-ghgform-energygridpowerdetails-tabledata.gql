@@ -1,0 +1,27 @@
+query getGHGEnergyGridPowerDetails(
+  $activityFilter: GHGEnergyConsumption_GridPower_bool_exp
+  $start: Int
+  $size: Int
+  $orderBy: [GHGEnergyConsumption_GridPower_order_by!]
+) {
+  GHGEnergyConsumption_GridPower(
+    where: $activityFilter
+    offset: $start
+    limit: $size
+    order_by: $orderBy
+  ) {
+    Name_of_Distribution_Company
+    PowerConsumed_through_Grid_Kwh
+    PowerPurchased_through_PPA_Kwh_Renewable
+    PowerPurchased_through_PPA_Kwh_NonRenewable
+    NameOfCompany_PPA_Renewable
+    NameOfCompany_PPA_NonRenewable
+    PowerPurchased_through_REC_Kwh
+    PowerPurchased_through_REC_Kwh
+  }
+  totalCount: GHGEnergyConsumption_GridPower_aggregate(where: $activityFilter) {
+    aggregate {
+      count
+    }
+  }
+}

@@ -1,0 +1,24 @@
+mutation insertCaptivePowerRenewableFormEditAction(
+  $insertData: GHGEnergy_CaptivePower_Renewable_insert_input!
+) {
+  insert_GHGEnergy_CaptivePower_Renewable_one(
+    object: $insertData
+    on_conflict: {
+      constraint: GHGEnergy_CaptivePower_Renewable_pkey
+      update_columns: [
+        Type_of_Technology_Used
+        Year_of_installation
+        Unit_of_Energy_Generated_in_Kwh
+        updated_by
+        updated_at
+      ]
+    }
+  ) {
+    id
+    GHGEnergyConsumption_CaptivePower_id
+    GHGEnergy_CaptivePower {
+      id
+      task_request_id
+    }
+  }
+}

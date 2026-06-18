@@ -1,0 +1,60 @@
+query getDistinctUOMsMaterialProcurementByMaterialCodes(
+  $organizationId: uuid!
+  $mpOr: [GHGMaterialProcurement_bool_exp!]
+  $tuOr: [GHGTransport_Upstream_bool_exp!]
+  $cgOr: [GHGCapital_Goods_bool_exp!]
+  $mmOr: [OrgMaterialMaster_bool_exp!]
+) {
+  GHGMaterialProcurement(
+    where: {
+      OrganizationAddress: { organization_id: { _eq: $organizationId } }
+      _and: [
+        { Material_Quantity_Procured_uom: { _is_null: false } }
+        { _or: $mpOr }
+      ]
+    }
+    distinct_on: [Material_Quantity_Procured_uom]
+    order_by: { Material_Quantity_Procured_uom: asc }
+  ) {
+    organization_address_id
+    Material_Code
+    Material_Quantity_Procured_uom
+  }
+
+  GHGTransport_Upstream(
+    where: {
+      OrganizationAddress: { organization_id: { _eq: $organizationId } }
+      _and: [
+        { Material_Quantity_Procured_uom: { _is_null: false } }
+        { _or: $tuOr }
+      ]
+    }
+    distinct_on: [Material_Quantity_Procured_uom]
+    order_by: { Material_Quantity_Procured_uom: asc }
+  ) {
+    organization_address_id
+    Material_Code: Material_ID
+    Material_Quantity_Procured_uom
+  }
+
+  GHGCapital_Goods(
+    where: {
+      OrganizationAddress: { organization_id: { _eq: $organizationId } }
+      _and: [{ Quantity_Procured_uom: { _is_null: false } }, { _or: $cgOr }]
+    }
+    distinct_on: [Quantity_Procured_uom]
+    order_by: { Quantity_Procured_uom: asc }
+  ) {
+    organization_address_id
+    Material_Code
+    Material_Quantity_Procured_uom: Quantity_Procured_uom
+  }
+  OrgMaterialMaster(
+    where: { organization_id: { _eq: $organizationId }, _and: [{ _or: $mmOr }] }
+  ) {
+    Material_Code: code
+    Material_Weight_Per_Unit
+    Material_Quantity_Procured_uom: UoM_Material_Weight
+    Material_Weight_Per_Unit
+  }
+}

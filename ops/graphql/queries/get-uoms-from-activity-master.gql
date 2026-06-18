@@ -1,0 +1,5 @@
+query getUomFromActivityMaster {
+  ActivityMaster(where: { master_key: { _ilike: "%uom%" } }) {
+    master_data
+  }
+}

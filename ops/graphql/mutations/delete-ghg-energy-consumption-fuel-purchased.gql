@@ -1,0 +1,14 @@
+mutation deleteGHGEnergyConsumptionFuelPurchased($id: uuid!) {
+  delete_GHGEnergyConsumption_FuelPurchased(
+    where: {
+      id: { _eq: $id }
+      _and: [
+        { _not: { GHGEnergyConsumption_FuelPurchased_Generals: {} } }
+        { _not: { GHGEnergyConsumption_FuelPurchased_Auxiliaries: {} } }
+        { _not: { GHGEnergyConsumption_FuelPurchased_HeatingWaters: {} } }
+      ]
+    }
+  ) {
+    affected_rows
+  }
+}

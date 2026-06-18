@@ -1,0 +1,9 @@
+query getFuelTypeMasterData {
+  FuelTypeMaster {
+    id
+    label
+    code
+    description
+    metadata
+  }
+}

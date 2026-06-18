@@ -1,0 +1,7 @@
+query GetWasteMaster {
+  WasteMaster(where: { is_deleted: { _eq: false } }) {
+    id
+    name
+    is_deleted
+  }
+}

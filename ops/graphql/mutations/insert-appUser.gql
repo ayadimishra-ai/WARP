@@ -1,0 +1,19 @@
+mutation insertAppUser($userData: [AppUser_insert_input!]!) {
+  insert_AppUser(
+    objects: $userData
+    on_conflict: { constraint: AppUser_pkey }
+  ) {
+    returning {
+      id
+      name
+      email
+      organization_id
+      role
+      metadata
+      isRegistered
+      Organization {
+        name
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+query ManageCommonEmissionFactorData(
+  $limit: Int
+  $offset: Int
+  $orderBy: [CO2EmissionFactorMaster_order_by!]
+  $where: CO2EmissionFactorMaster_bool_exp
+) {
+  CO2EmissionFactorMaster(
+    where: $where
+    order_by: $orderBy
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    year
+    region
+    category
+    activity
+    sub_activity
+    type
+    sub_type
+    geography
+    factor
+    factor_uom
+    metadata
+    month
+  }
+  CO2EmissionFactorMaster_aggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+  Region {
+    id
+    name
+    code
+  }
+  Activity(
+    where: { parent_code: { _is_null: true } }
+    order_by: { name: asc }
+  ) {
+    id
+    name
+    code
+    metadata
+  }
+  EmissionFactorGeographyHierarchy {
+    Country {
+      name
+    }
+    id
+    country_id
+    geography
+    sequence
+    geography_type
+  }
+}

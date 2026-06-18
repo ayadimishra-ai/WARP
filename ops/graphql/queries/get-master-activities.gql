@@ -1,0 +1,16 @@
+query getMasterActivities {
+  Activity(where: { is_master: { _eq: true }, is_deleted: { _eq: false } }) {
+    id
+    code
+    name
+    metadata
+    parent_code
+    is_master
+    Activities(where: { is_deleted: { _eq: false } }) {
+      code
+      name
+      metadata
+      is_AI_enabled
+    }
+  }
+}

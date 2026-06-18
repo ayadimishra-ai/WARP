@@ -1,0 +1,15 @@
+query GetEmailTemplateByCode($code: String!) {
+  EmailTemplates(where: { code: { _eq: $code } }) {
+    id
+    code
+    subject
+    template
+    cc_emails
+    bcc_emails
+    created_at
+    updated_at
+    created_by
+    updated_by
+    to
+  }
+}

@@ -1,0 +1,302 @@
+.FormTablestyle table {
+  box-shadow:
+    rgba(159, 162, 191, 0.18) 0px 9px 16px,
+    rgba(159, 162, 191, 0.32) 0px 2px 2px !important;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+.FormTablestyle .mrt-table-container {
+  padding: 0 10px 10px 10px !important;
+}
+
+.FormTablestyle .MRT_TopToolbar-module_actions-container__-uL0u {
+  padding: 7px 22px 7px 7px !important;
+}
+.FormTablestyle table thead th:last-of-type {
+  padding: 0 10px !important;
+}
+.FormTablestyle table tbody tr:last-child td:first-of-type {
+  border-bottom-left-radius: 10px;
+}
+.FormTablestyle table tbody tr:last-child td:last-of-type {
+  border-bottom-right-radius: 10px;
+}
+.FormTablestyle {
+  .smallFont {
+    font-size: 11px !important;
+  }
+  table {
+    thead {
+      th {
+        background-color: #003b52 !important;
+        color: #fff !important;
+        &:first-of-type {
+          min-width: 10px !important;
+          width: 10px !important;
+          padding: 0 !important;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          &:first-of-type {
+            min-width: 10px !important;
+            width: 10px !important;
+            padding: 0 !important;
+            span {
+              opacity: 0;
+              width: 0;
+              display: block;
+            }
+          }
+        }
+      }
+    }
+  }
+  div[data-position="right"] {
+    margin-right: 15px;
+  }
+
+  // Pagination styles
+  :global(.mantine-Pagination-control[data-active="true"]) {
+    background-color: #005c81 !important;
+    color: #fff !important;
+    border-color: #005c81 !important;
+
+    &:hover {
+      background-color: #004a6b !important;
+      border-color: #004a6b !important;
+    }
+  }
+
+  :global(.mantine-Pagination-control) {
+    color: #666666 !important;
+    border-color: #ddd !important;
+
+    &:hover:not([data-active="true"]) {
+      background-color: #f8f9fa !important;
+      color: #005c81 !important;
+    }
+  }
+}
+.textFontSize {
+  font-size: 18px !important;
+}
+
+.UserActivityMappingTable {
+  // Fix sticky header transparency issue
+  :global(.mantine-Table-thead) {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background-color: #003b52 !important;
+  }
+
+  :global(.mantine-Table-th) {
+    background-color: #003b52 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 101 !important;
+  }
+
+  // Ensure first 3 columns have proper background in sticky mode
+  :global(.mantine-Table-th:nth-child(1)),
+  :global(.mantine-Table-th:nth-child(2)),
+  :global(.mantine-Table-th:nth-child(3)) {
+    background-color: #003b52 !important;
+    z-index: 102 !important;
+  }
+
+  .UserActivityMappingTable
+    :global(.mantine-Pagination-control[data-active="true"]):hover {
+    background-color: #004a6b !important;
+    border-color: #004a6b !important;
+  }
+
+  table {
+    thead {
+      th {
+        user-select: none;
+        height: 43px;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: bold;
+        line-height: 20px;
+        color: #fff !important;
+        background-color: #003b52 !important;
+        padding: 0 10px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 100 !important;
+
+        div {
+          justify-content: center !important;
+        }
+
+        &:nth-child(1) div,
+        &:nth-child(2) div,
+        &:nth-child(3) div {
+          justify-content: flex-start !important;
+        }
+
+        &:nth-child(n + 4) {
+          min-width: max-content !important;
+          width: max-content !important;
+        }
+      }
+    }
+    tbody {
+      tr {
+        height: 43px !important;
+        td:first-child {
+          padding-left: 20px !important;
+        }
+      }
+    }
+  }
+}
+.LocationListingStyle {
+  padding: 0 0 60px 0 !important;
+  table {
+    box-shadow:
+      rgba(159, 162, 191, 0.18) 0px 9px 16px,
+      rgba(159, 162, 191, 0.32) 0px 2px 2px !important;
+    margin-bottom: 10px;
+    border-radius: 10px;
+
+    thead {
+      th {
+        background-color: #003b52 !important;
+        color: #fff !important;
+
+        &:first-of-type {
+          min-width: 60px !important;
+          width: 60px !important;
+          padding: 14px !important;
+          text-align: center;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          &:first-of-type {
+            min-width: 60px !important;
+            width: 60px !important;
+            padding: 12px 20px !important;
+            text-align: left;
+          }
+        }
+      }
+    }
+  }
+
+  // Pagination styles
+  :global(.mantine-Pagination-control[data-active="true"]) {
+    background-color: #005c81 !important;
+    color: #fff !important;
+    border-color: #005c81 !important;
+
+    &:hover {
+      background-color: #004a6b !important;
+      border-color: #004a6b !important;
+    }
+  }
+
+  :global(.mantine-Pagination-control) {
+    color: #666666 !important;
+    border-color: #ddd !important;
+
+    &:hover:not([data-active="true"]) {
+      background-color: #f8f9fa !important;
+      color: #005c81 !important;
+    }
+  }
+}
+
+.noAnimationButton {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+  -o-transform: none !important;
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+  -webkit-animation: none !important;
+  -moz-animation: none !important;
+  -ms-animation: none !important;
+  -o-animation: none !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  will-change: auto !important;
+  scale: 1 !important;
+  translate: 0 !important;
+  rotate: 0 !important;
+  --mantine-scale: 1 !important;
+  --mantine-translate-x: 0 !important;
+  --mantine-translate-y: 0 !important;
+
+  &:active,
+  &:hover,
+  &:focus,
+  &:focus-visible,
+  &.mantine-active,
+  &[data-active="true"],
+  &[data-pressed="true"] {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    -webkit-transform: none !important;
+    -moz-transform: none !important;
+    -ms-transform: none !important;
+    -o-transform: none !important;
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -ms-transition: none !important;
+    -o-transition: none !important;
+    -webkit-animation: none !important;
+    -moz-animation: none !important;
+    -ms-animation: none !important;
+    -o-animation: none !important;
+  }
+
+  &.m_77c9d27d {
+    &,
+    &:active,
+    &:hover,
+    &:focus {
+      transform: none !important;
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+
+  &[class*="mantine-Button"] {
+    &,
+    &:active,
+    &:hover,
+    &:focus {
+      transform: none !important;
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+
+  * {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+.UserActivityMappingTable {
+  padding: 0 0 190px 0 !important;
+}

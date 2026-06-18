@@ -1,0 +1,35 @@
+query getAuthUserDetails($organizationId: uuid!, $email: String!) {
+  AppUser(
+    where: {
+      _and: [
+        { organization_id: { _eq: $organizationId } }
+        { email: { _eq: $email } }
+      ]
+    }
+  ) {
+    id
+    email
+    role
+    is_AI_enabled
+  }
+  UserOrganizationAddressMapping(
+    where: {
+      _and: [
+        { organization_id: { _eq: $organizationId } }
+        { AppUser: { email: { _eq: $email } } }
+      ]
+    }
+  ) {
+    user_id
+    AppUser {
+      email
+      role
+      is_AI_enabled
+    }
+    OrganizationAddress {
+      id
+      address_id
+    }
+    activities
+  }
+}

@@ -1,0 +1,6 @@
+query getOrganizationList {
+  Organization(where: { is_deleted: { _eq: false } }, order_by: { name: asc }) {
+    id
+    name
+  }
+}

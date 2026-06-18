@@ -1,0 +1,11 @@
+query getStatesWithCountry{
+  State{
+    id
+    name
+    Country{
+      id
+      name
+    }
+  }
+}
+

@@ -1,0 +1,24 @@
+query getGHGEnergyFuelPurchasedAuxillary(
+  $activityFilter: GHGEnergyConsumption_FuelPurchased_Auxiliary_bool_exp
+  $start: Int
+  $size: Int
+  $orderBy: [GHGEnergyConsumption_FuelPurchased_Auxiliary_order_by!]
+) {
+  GHGEnergyConsumption_FuelPurchased_Auxiliary(
+    where: $activityFilter
+    offset: $start
+    limit: $size
+    order_by: $orderBy
+  ) {
+    Type_of_Auxiliary_Fuel_Purchased
+    Used_for_Which_SKUs
+    Quantity_of_fuel_consumed
+  }
+  totalCount: GHGEnergyConsumption_FuelPurchased_Auxiliary_aggregate(
+    where: $activityFilter
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

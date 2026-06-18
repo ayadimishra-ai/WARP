@@ -1,0 +1,17 @@
+query GetAddressByOrgAddressId($organizationId: uuid!) {
+  OrganizationAddress(where: { organization_id: { _eq: $organizationId } }) {
+    id
+    organization_id
+    address_id
+    Address {
+      id
+      name
+      code
+      full_address
+      ownership_type
+      facility_type
+      is_wwtp
+      type
+    }
+  }
+}

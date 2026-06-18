@@ -1,0 +1,46 @@
+mutation upsertESGHealthAndSafetyTrainingActivity(
+  $where: ESGHealthAndSafetyTraining_bool_exp!
+  $esgHealthAndSafetyTrainingData: [ESGHealthAndSafetyTraining_insert_input!]!
+) {
+  delete_ESGHealthAndSafetyTraining(where: $where) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      agency
+      category_of_workforce_trained
+      number_of_workforce_trained
+      total_training_hours
+      training_category
+      training_type
+      type_of_workforce_trained
+    }
+  }
+  insert_ESGHealthAndSafetyTraining(
+    objects: $esgHealthAndSafetyTrainingData
+    on_conflict: { constraint: ESGHealthAndSafetyTraining_pkey }
+  ) {
+    returning {
+      id
+      organization_address_id
+      task_request_id
+      activity_task_request_id
+      created_at
+      updated_at
+      created_by
+      updated_by
+      agency
+      category_of_workforce_trained
+      number_of_workforce_trained
+      total_training_hours
+      training_category
+      training_type
+      type_of_workforce_trained
+    }
+  }
+}

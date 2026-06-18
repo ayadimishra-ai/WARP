@@ -1,0 +1,10 @@
+query getGHGProductionDetailsByProductIds($product_id: [String!]!) {
+  GHGProductionDetails(
+    where: { Products_Manufactured_This_Month: { _in: $product_id } }
+  ) {
+    id
+    Products_Manufactured_This_Month
+    SKU_ID
+    Total_Weight
+  }
+}

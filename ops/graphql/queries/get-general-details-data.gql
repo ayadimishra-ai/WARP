@@ -1,0 +1,7 @@
+query getGHGGeneralDetailsData($where: GHGGeneralDetails_bool_exp!) {
+  GHGGeneralDetails(where: $where) {
+    task_request_id
+    Month_Year
+    Number_Employees
+  }
+}

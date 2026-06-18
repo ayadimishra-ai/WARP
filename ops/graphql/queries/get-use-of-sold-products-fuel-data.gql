@@ -1,0 +1,18 @@
+query getUseOfSoldProductsFuelData($task_request_id: [uuid!]) {
+  GHGUseOfSoldProducts_Fuel(
+    where: { task_request_id: { _in: $task_request_id } }
+  ) {
+    id
+    task_request_id
+    Date
+    Type_of_Fuel_Consumed
+    Product_Code
+    Lifetime_of_Product
+    Rationale
+    Quantity_of_Fuel_Consumed
+    UoM_of_Fuel_Consumed
+    Additional_comments
+    Remarks
+    metadata
+  }
+}

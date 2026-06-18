@@ -1,0 +1,22 @@
+mutation updateAppUserByEmail(
+  $email: String!
+  $orgId: uuid!
+  $data: AppUser_set_input!
+) {
+  update_AppUser_many(
+    updates: {
+      where: {
+        _and: [{ email: { _eq: $email }, organization_id: { _eq: $orgId } }]
+      }
+      _set: $data
+    }
+  ) {
+    affected_rows
+    returning {
+      id
+      first_name
+      last_name
+      name
+    }
+  }
+}

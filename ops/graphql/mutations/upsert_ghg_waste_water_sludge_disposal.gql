@@ -1,0 +1,39 @@
+mutation upsertGHGSludgeDisposal(
+  $where: GHGSludgeDisposal_bool_exp!
+  $GHGSludgeDisposalData: [GHGSludgeDisposal_insert_input!]!
+) {
+  delete_GHGSludgeDisposal(where: $where) {
+    returning {
+      activity_task_request_id
+      created_at
+      created_by
+      id
+      organization_address_id
+      point_of_sludge_disposal
+      task_request_id
+      total_sludge_disposed_off
+      uom_sludge_disposed_off
+      updated_at
+      updated_by
+    }
+  }
+
+  insert_GHGSludgeDisposal(
+    objects: $GHGSludgeDisposalData
+    on_conflict: { constraint: GHGSludgeDisposal_pkey }
+  ) {
+    returning {
+      total_sludge_disposed_off
+      point_of_sludge_disposal
+      uom_sludge_disposed_off
+      created_at
+      updated_at
+      activity_task_request_id
+      created_by
+      id
+      organization_address_id
+      task_request_id
+      updated_by
+    }
+  }
+}

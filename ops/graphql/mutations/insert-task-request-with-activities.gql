@@ -1,0 +1,41 @@
+mutation insertTaskRequestWithActivities(
+  $organizationAddressId: uuid!
+  $month: String!
+  $year: Int!
+  $activityTaskRequests: ActivityTaskRequest_arr_rel_insert_input
+  $userId: uuid!
+) {
+  insert_TaskRequest_one(
+    object: {
+      organization_address_id: $organizationAddressId
+      month: $month
+      year: $year
+      ActivityTaskRequests: $activityTaskRequests
+      created_by: $userId
+      updated_by: $userId
+    }
+  ) {
+    id
+    organization_address_id
+    status
+    month
+    year
+    ActivityTaskRequests(where: { is_deleted: { _eq: false } }) {
+      id
+      activity_id
+      Activity {
+        code
+      }
+      status
+    }
+    OrganizationAddress {
+      Address {
+        name
+        code
+        pincode
+        type
+        ownership_type
+      }
+    }
+  }
+}

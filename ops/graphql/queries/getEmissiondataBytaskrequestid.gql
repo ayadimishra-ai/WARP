@@ -1,0 +1,161 @@
+query getEmissiondataBytaskrequestid($Month: String, $year: Int) {
+  TaskRequest(
+    where: { year: { _eq: $year }, _and: { month: { _eq: $Month } } }
+  ) {
+    month
+    year
+    id
+    OrganizationAddress {
+      Address {
+        Country {
+          region_code
+        }
+      }
+    }
+    GHGWastes {
+      id
+      Disposal_Mechanism
+      Name_of_Third_Party
+      Waste_Disposal_Managed_by
+      Who_Managed_Transportation_of_Waste
+      kpi_DistanceTravlled_For_WasteManagement
+      kpi_em_EmissionBy_TransportFor_WasteManagement
+      kpi_emf_EmissionBy_TransportFor_WasteManagement
+      kpi_em_EmissionBy_Generation_of_Waste_Type
+      kpi_emf_EmissionBy_Generation_of_Waste_Type
+      kpi_em_EmissionBy_TransportFor_Waste_Scope3
+      kpi_em_EmissionBy_TransportFor_Waste_Scope1
+    }
+
+    GHGTransport_Upstreams {
+      id
+      Material_Procured
+      Material_ID
+      kpi_em_EmissionBy_TravelledDistance
+      kpi_emf_EmissionBy_TravelledDistance
+      kpi_em_EmissionBy_MaterialProcured
+      kpi_emf_EmissionBy_MaterialProcured
+      kpi_em_EmissionBy_Transport_scope3
+      kpi_em_EmissionBy_Transport_scope1
+      Supplier_code
+      Supplier_Status
+    }
+    GHGTransport_Downstreams {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      Which_Products
+      Which_SKUs
+      Destination_Location_Name
+      Destination_pin_or_zip_code
+      kpi_Distance_Travelled
+      kpi_Distance_Travelled_uom
+      kpi_em_EmissionBy_TravelledDistance
+      kpi_emf_EmissionBy_TravelledDistance
+      kpi_em_EmissionBy_Transport_scope3
+      kpi_em_EmissionBy_Transport_scope1
+    }
+    GHGTransport_BusinessTravels {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      kpi_Distance_Travelled
+      kpi_Distance_Travelled_uom
+      kpi_em_EmissionBy_TravelledDistance
+      kpi_emf_EmissionBy_TravelledDistance
+      kpi_em_EmissionBy_Travel_Scope3
+    }
+    GHGTransport_EmployeeTravels {
+      kpi_NoOf_Emp_TravBy_CompOwned_Bus
+      kpi_NoOf_Emp_TravBy_PublicTrans_or_CompContracted_Bus
+      kpi_NoOf_Emp_TravBy_PublicTrans_4Wheeler
+      kpi_NoOf_Emp_TravBy_PublicTrans_3Wheeler
+      kpi_NoOf_Emp_TravBy_PvtVehicle_4Wheeler
+      kpi_NoOf_Emp_TravBy_PvtVehicle_2Wheeler
+      kpi_NoOf_Emp_TravBy_RailSuburban
+      kpi_em_Emp_TravBy_CompOwned_Bus
+      kpi_emf_Emp_TravBy_CompOwned_Bus
+      kpi_em_Emp_TravBy_PublicTransOrCompContractedBus
+      kpi_emf_Emp_TravBy_PublicTransOrCompContractedBus
+      kpi_em_Emp_TravBy_PublicTrans_4Wheeler
+      kpi_emf_Emp_TravBy_PublicTrans_4Wheeler
+      kpi_em_Emp_TravBy_PublicTrans_3Wheeler
+      kpi_emf_Emp_TravBy_PublicTrans_3Wheeler
+      kpi_em_Emp_TravBy_PvtVehicle_4Wheeler
+      kpi_emf_Emp_TravBy_PvtVehicle_4Wheeler
+      kpi_em_Emp_TravBy_PvtVehicle_2Wheeler
+      kpi_emf_Emp_TravBy_PvtVehicle_2Wheeler
+      kpi_em_Emp_TravBy_RailSuburban
+      kpi_emf_Emp_TravBy_RailSuburban
+      kpi_TotalDist_TravBy_CompOwned_Bus
+      kpi_TotalDist_TravBy_PublicTrans_or_CompContracted_Bus
+      kpi_TotalDist_TravBy_PublicTrans_4Wheeler
+      kpi_TotalDist_TravBy_PublicTrans_3Wheeler
+      kpi_TotalDist_TravBy_PvtVehicle_4Wheeler
+      kpi_TotalDist_TravBy_PvtVehicle_2Wheeler
+      kpi_TotalDist_TravBy_RailSuburban
+      kpi_em_EmissionBy_Travel
+      kpi_em_EmissionBy_Travel_Scope1
+      kpi_em_EmissionBy_Travel_Scope3
+    }
+    GHGEnergy_CaptivePowers {
+      id
+      Type_of_Captive_Power
+      GHGEnergy_CaptivePower_Renewables {
+        Type_of_Technology_Used
+        Unit_of_Energy_Generated_in_Kwh
+        kpi_em_Emission_EnergyGenerated_kwh
+        kpi_emf_Emission_EnergyGenerated_kwh
+      }
+      GHGEnergy_CaptivePower_NonRenewables {
+        Type_of_Fuel_Used
+        Unit_of_Energy_Generated_in_Kwh
+        kpi_em_Emission_EnergyGenerated_kwh
+        kpi_emf_Emission_EnergyGenerated_kwh
+      }
+    }
+
+    GHGEnergyConsumption_FuelPurchaseds {
+      GHGEnergyConsumption_FuelPurchased_Generals {
+        Type_of_Fuel_Purchased
+        kpi_em_Emission_QuantityOfFuelConsumed
+        kpi_emf_Emission_QuantityOfFuelConsumed
+      }
+      GHGEnergyConsumption_FuelPurchased_Auxiliaries {
+        Type_of_Auxiliary_Fuel_Purchased
+        kpi_em_Emission_QuantityOfFuelConsumed
+        kpi_emf_Emission_QuantityOfFuelConsumed
+      }
+      GHGEnergyConsumption_FuelPurchased_HeatingWaters {
+        Type_of_Fuel_Purchased
+        kpi_em_Emission_QuantityOfFuelConsumed
+        kpi_emf_Emission_QuantityOfFuelConsumed
+      }
+    }
+
+    GHGEnergyConsumption_GridPowers {
+      id
+      kpi_em_Emission_PowerPurchased_PPA_Renewable
+      kpi_emf_Emission_PowerPurchased_PPA_Renewable
+      kpi_em_Emission_PowerPurchased_REC
+      kpi_emf_Emission_PowerPurchased_REC
+      kpi_em_Emission_PowerPurchased_RenewableSources
+      kpi_emf_Emission_PowerPurchased_RenewableSources
+      kpi_em_Emission_PowerPurchased_NonRenewableSources
+      kpi_emf_Emission_PowerPurchased_NonRenewableSources
+      kpi_em_Emission_TotalPowerPurchased
+      kpi_em_Emission_PowerPurchased_PPA_NonRenewable
+      kpi_emf_Emission_PowerPurchased_PPA_NonRenewable
+      Name_of_Distribution_Company
+      PowerConsumed_through_Grid_Kwh
+      PowerPurchased_through_PPA_Kwh_Renewable
+      NameOfCompany_PPA_Renewable
+      PowerPurchased_through_PPA_Kwh_NonRenewable
+      NameOfCompany_PPA_NonRenewable
+      PowerPurchased_through_REC_Kwh
+      Name_of_company_for_REC
+    }
+  }
+}

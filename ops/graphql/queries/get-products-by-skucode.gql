@@ -1,0 +1,31 @@
+query getProductbyskucode($organizationId: uuid!) {
+  OrgSKUMaster(where: { organization_id: { _eq: $organizationId } }) {
+    id
+    name
+    code
+    weight
+    weight_uom
+    client_master_id
+    org_product_master_id
+    organization_id
+    created_at
+    OrgProductMaster {
+      id
+      code
+      name
+      client_master_id
+    }
+    OrgSkuBomMasters_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+  OrgProductMaster(where: { organization_id: { _eq: $organizationId } }) {
+    id
+    code
+    name
+    created_at
+    client_master_id
+  }
+}

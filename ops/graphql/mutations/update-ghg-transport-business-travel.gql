@@ -1,0 +1,29 @@
+mutation updateGhgTransportBusinessTravel(
+  $GhgTransportBusinessTravel: [GHGTransport_BusinessTravel_updates!]!
+) {
+  update_GHGTransport_BusinessTravel_many(
+    updates: $GhgTransportBusinessTravel
+  ) {
+    returning {
+      id
+      task_request_id
+      organization_address_id
+      activity_task_request_id
+      Mode_of_Transport
+      Vehicle_Type_Used_for_Road_Transport
+      Fuel_Used
+      supporting_docs
+      kpi_Distance_Travelled
+      kpi_Distance_Travelled_uom
+      kpi_em_EmissionBy_TravelledDistance
+      kpi_emf_EmissionBy_TravelledDistance
+      Trip_From_Pincode
+      Trip_To_Pincode
+      Trip_Distance
+      Trip_From_Country
+      Trip_To_Country
+      Trip_No_of_Employees_Travelled
+      created_by
+    }
+  }
+}

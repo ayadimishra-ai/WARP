@@ -1,0 +1,22 @@
+query getOrganizationAddressAndActivityMapping($userId: uuid!) {
+  UserOrganizationAddressMapping(where: { user_id: { _eq: $userId } }) {
+    id
+    activities
+    Organization {
+      id
+      hasWasteWaterTreatmentPlant
+    }
+    OrganizationAddress {
+      address_id
+      id
+      Address {
+        id
+        client_master_id
+        ownership_type
+        type
+        name
+        is_wwtp
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+query getTravelDistanceDetail($where: TravelDistance_bool_exp!) {
+  TravelDistance(where: $where) {
+    from_location_pincode
+    from_location_country
+    to_location_pincode
+    to_location_country
+    mode_of_transport
+    distance
+  }
+}
