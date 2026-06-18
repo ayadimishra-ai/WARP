@@ -8,13 +8,19 @@ import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 
 const submitFormHandler: NextApiHandler = async (req, res) => {
   let session;
-  if (!!req?.headers?.authorization) {
-    const accessToken = String(req.headers.authorization);
-    const decodedToken: any = jwt.decode(accessToken);
-    session = parseHasuraClaims(decodedToken, accessToken);
+  const jwtSecret = process.env.HASURA_JWT_SECRET;
+  if (!!req?.headers?.authorization && jwtSecret) {
+    const rawHeader = String(req.headers.authorization);
+    const accessToken = rawHeader.startsWith("Bearer ") ? rawHeader.slice(7) : rawHeader;
+    try {
+      const decodedToken: any = jwt.verify(accessToken, jwtSecret);
+      session = parseHasuraClaims(decodedToken, accessToken);
+    } catch {
+      return res.status(401).json({ error: { message: "Unauthorized" } });
+    }
   }
   if (!session) {
-    return res.status(500).json({
+    return res.status(401).json({
       error: {
         message: "Unauthorized",
       },
