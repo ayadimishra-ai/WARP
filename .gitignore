@@ -60,3 +60,5 @@ __pycache__/
 *.pyo
 .venv/
 .pytest_cache/
+# sklite legacy internal data path
+frontend/streamlit/streamlit_app/data/*.sqlite
