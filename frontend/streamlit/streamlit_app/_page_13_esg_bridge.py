@@ -157,18 +157,30 @@ CROSSMAP = {
     },
 }
 
-_PILLAR_COLOR = {"E": "#16a34a", "S": "#2563eb", "G": "#f59e0b"}
+# ── Snowkap IQ design tokens ──────────────────────────────────────────────────
+_SK_ORANGE  = "#DF5900"   # primary accent (CDP, brand CTAs)
+_SK_INK     = "#0A2233"   # product navy (ESRS, headings, primary buttons)
+_SK_DARK    = "#222222"   # body text
+_SK_OFFWHITE = "#FFF4E0"  # secondary warm surface
+_SK_MINT    = "#58CFAB"   # success / complete
+_SK_AMBER   = "#F5B25C"   # warning / in-progress
+_SK_RED     = "#D34B4B"   # danger / anomaly
+_SK_SKY     = "#4DA9C9"   # info / selected
+_SK_VIOLET  = "#9B8AD8"   # TCFD / chart accent
+_SK_FONT    = '"Neue Haas Grotesk Text Pro", "Trebuchet MS", "Open Sans", system-ui, -apple-system, sans-serif'
+
+_PILLAR_COLOR = {"E": "#0A6E54", "S": "#1E5A7A", "G": "#663800"}
 _FW_COLOR = {
-    "ESRS": "#7c3aed", "BRSR": "#059669", "CDP": "#0284c7",
-    "GRI": "#0891b2", "TCFD": "#6366f1", "SASB": "#f59e0b", "IFRS": "#0f4c81",
-    "IFRS S1": "#0f4c81", "IFRS S2": "#1a5c9a",
+    "ESRS":   _SK_INK,    "BRSR":   "#0A6E54", "CDP":  _SK_ORANGE,
+    "GRI":    "#1E5A7A",  "TCFD":   _SK_VIOLET, "SASB": "#663800",
+    "IFRS":   "#14405A",  "IFRS S1": "#14405A", "IFRS S2": "#1a5c9a",
 }
 
 _STATUS_COLORS = {
-    "Not Started": "#6b7280",
-    "In Progress": "#d97706",
-    "Complete": "#16a34a",
-    "N/A": "#94a3b8",
+    "Not Started": "#8B8B8B",
+    "In Progress": _SK_AMBER,
+    "Complete": _SK_MINT,
+    "N/A": "#B7B7B7",
 }
 
 _STATUS_ICONS = {
@@ -177,6 +189,176 @@ _STATUS_ICONS = {
     "Complete": "✅",
     "N/A": "—",
 }
+
+
+# ── Page CSS (Snowkap IQ design system) ──────────────────────────────────────
+
+def _inject_bridge_css() -> None:
+    """Inject ESG Bridge page-scoped CSS using the Snowkap IQ design tokens."""
+    st.markdown(f"""
+<style>
+/* ESG Bridge — Snowkap IQ design system alignment */
+
+/* Global font override for this page */
+.stApp [data-testid="stMainBlockContainer"] *,
+.stApp [data-testid="stVerticalBlock"] * {{
+    font-family: {_SK_FONT} !important;
+}}
+
+/* Page header strip */
+.sk-bridge-header {{
+    background: {_SK_INK};
+    color: #ffffff;
+    padding: 20px 24px 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-family: {_SK_FONT};
+}}
+.sk-bridge-header h2 {{
+    color: #ffffff !important;
+    margin: 0 0 4px 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}}
+.sk-bridge-header .sk-sub {{
+    color: rgba(255,255,255,0.72);
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+}}
+.sk-bridge-header .sk-accent-bar {{
+    display: inline-block;
+    width: 28px;
+    height: 3px;
+    background: {_SK_ORANGE};
+    border-radius: 2px;
+    margin-bottom: 8px;
+}}
+
+/* Metric cards — Snowkap style */
+.sk-metrics {{
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 12px 0 16px;
+}}
+.sk-metric {{
+    background: #ffffff;
+    border: 1px solid #ECECEC;
+    border-top: 3px solid {_SK_ORANGE};
+    border-radius: 4px;
+    padding: 10px 14px;
+    min-width: 96px;
+    flex: 1;
+    font-family: {_SK_FONT};
+}}
+.sk-metric-val {{
+    font-size: 24px;
+    font-weight: 700;
+    color: {_SK_INK};
+    line-height: 1;
+    margin-bottom: 2px;
+}}
+.sk-metric-lbl {{
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8B8B8B;
+}}
+
+/* Section heading */
+.sk-section-label {{
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: {_SK_ORANGE};
+    margin: 16px 0 6px;
+}}
+
+/* DP row cards */
+.sk-dp-row {{
+    background: #ffffff;
+    border: 1px solid #ECECEC;
+    border-left: 3px solid {_SK_INK};
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    font-family: {_SK_FONT};
+}}
+.sk-dp-row.sk-always {{
+    border-left-color: {_SK_ORANGE};
+}}
+.sk-dp-row.sk-phased {{
+    border-left-color: {_SK_AMBER};
+}}
+
+/* Status pill variant */
+.sk-pill {{
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}}
+.sk-pill-complete  {{ background: #E4F7EF; color: #0A6E54; }}
+.sk-pill-inprog    {{ background: #FDF1DE; color: #663800; }}
+.sk-pill-notstarted {{ background: #ECECEC; color: #5C5C5C; }}
+.sk-pill-na        {{ background: #F5F5F5; color: #8B8B8B; }}
+
+/* Framework chip */
+.sk-fw-chip {{
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    margin: 1px;
+    color: #ffffff;
+}}
+
+/* Progress bar */
+.sk-progress-bar {{
+    height: 6px;
+    background: #ECECEC;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 8px 0;
+}}
+.sk-progress-fill {{
+    height: 100%;
+    background: linear-gradient(90deg, {_SK_MINT}, {_SK_ORANGE});
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}}
+
+/* Expander title styling fix */
+.streamlit-expanderHeader p {{
+    font-family: {_SK_FONT} !important;
+    font-size: 14px !important;
+}}
+
+/* Tab bar styling */
+[data-baseweb="tab-list"] {{
+    gap: 0 !important;
+    border-bottom: 2px solid #ECECEC !important;
+}}
+[data-baseweb="tab"] {{
+    font-family: {_SK_FONT} !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #5C5C5C !important;
+    padding: 8px 14px !important;
+}}
+[aria-selected="true"][data-baseweb="tab"] {{
+    color: {_SK_INK} !important;
+    border-bottom: 2px solid {_SK_ORANGE} !important;
+}}
+</style>
+""", unsafe_allow_html=True)
 
 
 # ── Data loading ──────────────────────────────────────────────────────────────
@@ -220,36 +402,36 @@ def _topic_covered(topic: dict, covered_cats: set, covered_scopes: set) -> tuple
 
 # ── Colour helpers ────────────────────────────────────────────────────────────
 
-def _fw_badge(fw: str, is_light: bool) -> str:
-    color = _FW_COLOR.get(fw, "#64748b")
+def _fw_badge(fw: str, is_light: bool = True) -> str:
+    color = _FW_COLOR.get(fw, "#5C5C5C")
     return (
-        f"<span style='background:{color};color:white;padding:2px 8px;"
-        f"border-radius:99px;font-size:11px;font-weight:700;margin:1px'>{fw}</span>"
+        f"<span class='sk-fw-chip' style='background:{color}'>{fw}</span>"
     )
 
 
 def _pillar_badge(pillar: str) -> str:
     mapping = {
-        "Environmental": ("E", "#16a34a"),
-        "Social": ("S", "#2563eb"),
-        "Governance": ("G", "#f59e0b"),
-        "Cross-cutting": ("✕", "#6366f1"),
+        "Environmental": ("E", "#0A6E54", "#D8F1E5"),
+        "Social":        ("S", "#1E5A7A", "#E6F1F6"),
+        "Governance":    ("G", "#663800", "#FDF1DE"),
+        "Cross-cutting": ("✕", _SK_VIOLET, "#ECE7F8"),
     }
-    code, color = mapping.get(pillar, ("?", "#6b7280"))
+    code, fg, bg = mapping.get(pillar, ("?", "#5C5C5C", "#ECECEC"))
     return (
-        f"<span style='background:{color};color:white;padding:2px 8px;"
-        f"border-radius:99px;font-size:11px;font-weight:700'>{code}</span>"
+        f"<span style='background:{bg};color:{fg};padding:2px 8px;"
+        f"border-radius:999px;font-size:11px;font-weight:700'>{code}</span>"
     )
 
 
 def _status_badge(status: str) -> str:
-    color = _STATUS_COLORS.get(status, "#6b7280")
+    css_class = {
+        "Complete":    "sk-pill sk-pill-complete",
+        "In Progress": "sk-pill sk-pill-inprog",
+        "Not Started": "sk-pill sk-pill-notstarted",
+        "N/A":         "sk-pill sk-pill-na",
+    }.get(status, "sk-pill sk-pill-notstarted")
     icon = _STATUS_ICONS.get(status, "?")
-    return (
-        f"<span style='background:{color}22;color:{color};border:1px solid {color}55;"
-        f"padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600'>"
-        f"{icon} {status}</span>"
-    )
+    return f"<span class='{css_class}'>{icon} {status}</span>"
 
 
 # ── DP detail expander ────────────────────────────────────────────────────────
@@ -381,22 +563,47 @@ def _render_dp_card(row: dict, org_key: str, show_status: bool = True) -> None:
 # ── Summary bar ───────────────────────────────────────────────────────────────
 
 def _render_summary(rows: list[dict], org_key: str) -> None:
-    """Show status distribution metrics."""
+    """Show status distribution using Snowkap IQ metric cards."""
     total = len(rows)
-    statuses = [_get_status(r["DP ID"], org_key) for r in rows]
-    complete   = statuses.count("Complete")
-    in_prog    = statuses.count("In Progress")
+    statuses = [_get_status(r["DP ID"], org_key) for r in rows if r.get("DP ID")]
+    complete    = statuses.count("Complete")
+    in_prog     = statuses.count("In Progress")
     not_started = statuses.count("Not Started")
-    na_count   = statuses.count("N/A")
+    na_count    = statuses.count("N/A")
     pct = int(complete / max(total, 1) * 100)
 
-    m1, m2, m3, m4, m5, m6 = st.columns(6)
-    m1.metric("Total DPs", total)
-    m2.metric("✅ Complete", complete)
-    m3.metric("🟡 In Progress", in_prog)
-    m4.metric("⭕ Not Started", not_started)
-    m5.metric("— N/A", na_count)
-    m6.metric("Coverage", f"{pct}%")
+    bar_w = pct
+    st.markdown(f"""
+<div class="sk-metrics">
+  <div class="sk-metric">
+    <div class="sk-metric-val">{total}</div>
+    <div class="sk-metric-lbl">Total DPs</div>
+  </div>
+  <div class="sk-metric" style="border-top-color:{_SK_MINT}">
+    <div class="sk-metric-val" style="color:{_SK_MINT}">{complete}</div>
+    <div class="sk-metric-lbl">Complete</div>
+  </div>
+  <div class="sk-metric" style="border-top-color:{_SK_AMBER}">
+    <div class="sk-metric-val" style="color:{_SK_AMBER}">{in_prog}</div>
+    <div class="sk-metric-lbl">In Progress</div>
+  </div>
+  <div class="sk-metric">
+    <div class="sk-metric-val">{not_started}</div>
+    <div class="sk-metric-lbl">Not Started</div>
+  </div>
+  <div class="sk-metric">
+    <div class="sk-metric-val">{na_count}</div>
+    <div class="sk-metric-lbl">N/A</div>
+  </div>
+  <div class="sk-metric" style="border-top-color:{_SK_ORANGE}">
+    <div class="sk-metric-val" style="color:{_SK_ORANGE}">{pct}%</div>
+    <div class="sk-metric-lbl">Coverage</div>
+  </div>
+</div>
+<div class="sk-progress-bar">
+  <div class="sk-progress-fill" style="width:{bar_w}%"></div>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ── Shared sidebar filters ────────────────────────────────────────────────────
@@ -426,14 +633,20 @@ def _apply_filters(rows: list[dict], prefix: str) -> list[dict]:
 # ── Main render ───────────────────────────────────────────────────────────────
 
 def render() -> None:
-    st.title("🌉 ESG Bridge — Cross-Framework Disclosure Intelligence")
-    st.caption(
-        "251 canonical disclosure points mapped across ESRS · GRI · BRSR · TCFD · "
-        "IFRS S1/S2 · CDP. Start with **Conditionals & Triggers** to scope your "
-        "obligations, then use the **Canonical Checklist** as your collection to-do list."
-    )
-
+    _inject_bridge_css()
     _is_light = st.session_state.get("_sk_theme", "light") == "light"
+
+    st.markdown("""
+<div class="sk-bridge-header">
+  <div class="sk-accent-bar"></div>
+  <h2>ESG Bridge — Cross-Framework Disclosure Intelligence</h2>
+  <p class="sk-sub">
+    251 canonical disclosure points mapped across ESRS · GRI · BRSR · TCFD · IFRS S1/S2 · CDP.
+    Start with <strong>Conditionals &amp; Triggers</strong> to scope your obligations,
+    then use the <strong>Canonical Checklist</strong> as your collection to-do list.
+  </p>
+</div>
+""", unsafe_allow_html=True)
 
     profile  = st.session_state.get("org_profile", {})
     org_id   = profile.get("org_uuid") or profile.get("org_id") or "default"
@@ -464,8 +677,9 @@ def render() -> None:
     # Tab 0: Conditionals & Triggers
     # ─────────────────────────────────────────────────────────────────────────
     with tabs[0]:
+        st.markdown('<div class="sk-section-label">Step 1 of 3 — Scope your obligations</div>', unsafe_allow_html=True)
         st.markdown(
-            "**Start here.** Use the trigger condition and phasing columns to determine "
+            "Use the trigger condition and phasing columns to determine "
             "which disclosure points apply to your company — based on sector, size, and "
             "materiality. For BRSR, distinguish Essential vs Leadership Indicators. "
             "For ESRS, identify phased-in deferrals available to you."
@@ -532,9 +746,9 @@ def render() -> None:
     # Tab 1: Canonical Collection Checklist
     # ─────────────────────────────────────────────────────────────────────────
     with tabs[1]:
+        st.markdown('<div class="sk-section-label">Step 2 of 3 — Collect data (deduplicated)</div>', unsafe_allow_html=True)
         st.markdown(
-            "**Your deduplicated data collection to-do list.** Each row here represents "
-            "one data collection exercise. Tick Completion Status as you go. "
+            "Each row here represents one data collection exercise. Tick Completion Status as you go. "
             "Collecting the canonical version satisfies all mapped frameworks."
         )
 
@@ -561,9 +775,9 @@ def render() -> None:
     # Tab 2: Cross-Framework Bridges
     # ─────────────────────────────────────────────────────────────────────────
     with tabs[2]:
+        st.markdown('<div class="sk-section-label">Step 3 of 3 — Reformat for each framework</div>', unsafe_allow_html=True)
         st.markdown(
-            "**Canonical records with multi-framework equivalents.** "
-            "Each row here maps one data collection exercise to the frameworks that use it. "
+            "Each row maps one data collection exercise to the frameworks that use it. "
             "Collect once → reformat for each framework in the *Mapped Frameworks* column."
         )
 
@@ -824,12 +1038,31 @@ def _render_ghg_esg_coverage(org_id: str, inv_year: int, _is_light: bool) -> Non
     partial_topics = sum(1 for fc, cc, gc in _topic_results.values() if cc and gc)
     gap_topics     = sum(1 for fc, cc, gc in _topic_results.values() if not cc)
 
-    m1, m2, m3, m4, m5 = st.columns(5)
-    m1.metric("ESG topics mapped",    total_topics)
-    m2.metric("✅ Fully covered",      covered_topics)
-    m3.metric("🟡 Partial coverage",  partial_topics)
-    m4.metric("⭕ No data (gap)",      gap_topics)
-    m5.metric("Inventory records",    n_records)
+    # m1, m2, m3, m4, m5 — five metric columns (Snowkap IQ card layout below)
+    st.markdown(f"""
+<div class="sk-metrics">
+  <div class="sk-metric">
+    <div class="sk-metric-val">{total_topics}</div>
+    <div class="sk-metric-lbl">ESG Topics Mapped</div>
+  </div>
+  <div class="sk-metric" style="border-top-color:{_SK_MINT}">
+    <div class="sk-metric-val" style="color:{_SK_MINT}">{covered_topics}</div>
+    <div class="sk-metric-lbl">Fully Covered</div>
+  </div>
+  <div class="sk-metric" style="border-top-color:{_SK_AMBER}">
+    <div class="sk-metric-val" style="color:{_SK_AMBER}">{partial_topics}</div>
+    <div class="sk-metric-lbl">Partial Coverage</div>
+  </div>
+  <div class="sk-metric" style="border-top-color:{_SK_RED}">
+    <div class="sk-metric-val" style="color:{_SK_RED}">{gap_topics}</div>
+    <div class="sk-metric-lbl">No Data (Gap)</div>
+  </div>
+  <div class="sk-metric">
+    <div class="sk-metric-val">{n_records}</div>
+    <div class="sk-metric-lbl">Inventory Records</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
     if gap_topics > 0:
         st.error(f"⭕ **{gap_topics} ESG topics have no GHG data.** Enter missing inventory data.")
