@@ -1,0 +1,25 @@
+constant_id,factor_set_version,constant_type,fuel_item,country,year_start,year_end,property_name,property_value,unit,source_name,notes
+NCV_JET_FUEL_GLOBAL,v0.2.0,NCV (energy content),jet_fuel,GLOBAL,,,ncv_tj_per_gg,44.1,TJ/Gg,IPCC 2006 Table 2.2,Jet kerosene NCV. Same as kerosene per IPCC 2006
+NCV_AVIATION_GAS_GLOBAL,v0.2.0,NCV (energy content),aviation_gasoline,GLOBAL,,,ncv_tj_per_gg,44.3,TJ/Gg,IPCC 2006 Table 2.2,Aviation gasoline (avgas) NCV
+NCV_CHARCOAL_GLOBAL,v0.2.0,NCV (energy content),charcoal,GLOBAL,,,ncv_tj_per_gg,29.5,TJ/Gg,IPCC 2006 Table 2.2,Charcoal NCV
+NCV_ETHANOL_GLOBAL,v0.2.0,NCV (energy content),ethanol,GLOBAL,,,ncv_tj_per_gg,26.7,TJ/Gg,IPCC 2006 Table 2.2,Ethanol (anhydrous) NCV
+NCV_ETHANOL_DENSITY,v0.2.0,density,ethanol,GLOBAL,,,density_kg_per_litre,0.789,kg/litre,NIST,Ethanol density at 20°C
+NCV_COG_GLOBAL,v0.2.0,NCV (energy content),coke_oven_gas,GLOBAL,,,ncv_tj_per_gg,17.5,TJ/Gg,IPCC 2006 Table 2.2,Coke oven gas NCV (per tonne equivalent)
+NCV_BFG_GLOBAL,v0.2.0,NCV (energy content),blast_furnace_gas,GLOBAL,,,ncv_tj_per_gg,2.47,TJ/Gg,IPCC 2006 Table 2.2,Blast furnace gas NCV (very low calorific value)
+NCV_MSW_GLOBAL,v0.2.0,NCV (energy content),municipal_waste,GLOBAL,,,ncv_tj_per_gg,10.0,TJ/Gg,IPCC 2006 Table 2.2,Municipal solid waste NCV (non-biomass fraction default)
+NCV_IND_WASTE_GLOBAL,v0.2.0,NCV (energy content),industrial_waste,GLOBAL,,,ncv_tj_per_gg,7.4,TJ/Gg,IPCC 2006 Table 2.2,Industrial waste NCV default
+NCV_WASTE_OIL_GLOBAL,v0.2.0,NCV (energy content),waste_oils,GLOBAL,,,ncv_tj_per_gg,40.0,TJ/Gg,IPCC 2006 Table 2.2,Waste oils NCV
+NCV_OIL_SHALE_GLOBAL,v0.2.0,NCV (energy content),oil_shale,GLOBAL,,,ncv_tj_per_gg,8.9,TJ/Gg,IPCC 2006 Table 2.2,Oil shale NCV
+NCV_NAPHTHA_GLOBAL,v0.2.0,NCV (energy content),naphtha,GLOBAL,,,ncv_tj_per_gg,44.5,TJ/Gg,IPCC 2006 Table 2.2,Naphtha NCV
+NCV_NAPHTHA_DENSITY,v0.2.0,density,naphtha,GLOBAL,,,density_kg_per_litre,0.720,kg/litre,ASTM D4052,Naphtha density
+NCV_PETCOKE_GLOBAL,v0.2.0,NCV (energy content),petroleum_coke,GLOBAL,,,ncv_tj_per_gg,32.5,TJ/Gg,IPCC 2006 Table 2.2,Petroleum coke NCV
+NCV_REFINERY_GAS_GLOBAL,v0.2.0,NCV (energy content),refinery_gas,GLOBAL,,,ncv_tj_per_gg,49.5,TJ/Gg,IPCC 2006 Table 2.2,Refinery gas NCV
+NCV_CNG_GLOBAL,v0.2.0,NCV (energy content),cng,GLOBAL,,,ncv_tj_per_gg,44.2,TJ/Gg,IPCC 2006 Table 2.2,CNG same as natural gas
+NCV_CNG_DENSITY,v0.2.0,density,cng,GLOBAL,,,density_kg_per_m3,0.717,kg/m3,ISO 15403,CNG density at standard conditions
+NCV_LNG_GLOBAL,v0.2.0,NCV (energy content),lng,GLOBAL,,,ncv_tj_per_gg,44.2,TJ/Gg,IPCC 2006 Table 2.2,LNG (same energy content as natural gas)
+NCV_LNG_DENSITY,v0.2.0,density,lng,GLOBAL,,,density_kg_per_litre,0.460,kg/litre,ISO 6578,LNG density (liquid at -162°C)
+NCV_DIESEL_OIL_GLOBAL,v0.2.0,NCV (energy content),diesel_oil,GLOBAL,,,ncv_tj_per_gg,43.0,TJ/Gg,IPCC 2006 Table 2.2,Diesel oil NCV
+NCV_DIESEL_OIL_DENSITY,v0.2.0,density,diesel_oil,GLOBAL,,,density_kg_per_litre,0.845,kg/litre,EN 590,Diesel oil density
+NCV_MOTOR_GASOLINE_GLOBAL,v0.2.0,NCV (energy content),motor_gasoline,GLOBAL,,,ncv_tj_per_gg,44.3,TJ/Gg,IPCC 2006 Table 2.2,Motor gasoline NCV
+NCV_MOTOR_GASOLINE_DENSITY,v0.2.0,density,motor_gasoline,GLOBAL,,,density_kg_per_litre,0.740,kg/litre,EN 228,Motor gasoline density
+NCV_NATURAL_GAS_DENSITY,v0.2.0,density,natural_gas,GLOBAL,,,density_kg_per_m3,0.717,kg/m3,ISO 6976,Natural gas density at standard conditions

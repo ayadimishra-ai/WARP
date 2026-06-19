@@ -1,0 +1,14 @@
+factor_id,scope,module,country,fuel_item,technology_process,gas,factor_value,unit_numerator,unit_denominator,preferred_rank,source_name,source_reference,notes
+WTT24_NATGAS_CO2E_PER_GJ,S3,other,GLOBAL,natural_gas,,CO2e,9.30,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for natural gas per GJ delivered
+WTT24_DIESEL_CO2E_PER_GJ,S3,other,GLOBAL,diesel_oil,,CO2e,7.30,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for diesel per GJ delivered
+WTT24_PETROL_CO2E_PER_GJ,S3,other,GLOBAL,motor_gasoline,,CO2e,5.60,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for petrol per GJ delivered
+WTT24_COAL_CO2E_PER_GJ,S3,other,GLOBAL,other_bituminous_coal,,CO2e,1.70,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for coal per GJ delivered
+WTT24_LPG_CO2E_PER_GJ,S3,other,GLOBAL,lpg,,CO2e,4.40,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for LPG per GJ delivered
+WTT24_KEROSENE_CO2E_PER_GJ,S3,other,GLOBAL,kerosene,,CO2e,6.10,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for kerosene per GJ delivered
+WTT24_JETFUEL_CO2E_PER_GJ,S3,other,GLOBAL,jet_fuel,,CO2e,6.10,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for jet fuel per GJ delivered
+WTT24_FUELOIL_CO2E_PER_GJ,S3,other,GLOBAL,fuel_oil,,CO2e,7.80,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for heavy fuel oil per GJ delivered
+WTT24_BIOMASS_CO2E_PER_GJ,S3,other,GLOBAL,wood,,CO2e,2.10,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for wood biomass per GJ (supply chain only)
+WTT24_BIODIESEL_CO2E_PER_GJ,S3,other,GLOBAL,biodiesel,,CO2e,3.20,kgCO2e,GJ,900,DEFRA 2024 WTT,UK Government GHG Conversion Factors 2024 WTT,Well-to-tank upstream for biodiesel per GJ
+WTT24_COKING_COAL_CO2E_PER_GJ,S3,other,GLOBAL,coking_coal,,CO2e,2.10,kgCO2e,GJ,900,DEFRA 2024 WTT,IPCC 2006 Vol.2 / DEFRA 2024,Well-to-tank upstream for coking coal per GJ
+WTT24_NATGAS_IN_CO2E_PER_GJ,S3,other,IN,natural_gas,,CO2e,10.20,kgCO2e,GJ,50,Ministry of Petroleum and Natural Gas India 2022,India-specific upstream EF for piped natural gas,Higher than global due to longer transmission distances and older infrastructure
+WTT24_COAL_IN_CO2E_PER_GJ,S3,other,IN,other_bituminous_coal,,CO2e,2.10,kgCO2e,GJ,50,Coal India Limited / CEA 2022,India-specific upstream coal EF,Includes mining fugitives and rail transport

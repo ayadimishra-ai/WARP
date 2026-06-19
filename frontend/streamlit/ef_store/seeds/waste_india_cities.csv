@@ -1,0 +1,21 @@
+city,state,pincode_prefixes,landfill_msw_pct,incineration_wte_pct,composting_pct,anaerobic_digestion_pct,recycling_mixed_pct,open_dump_pct,ef_kgco2e_per_tonne,primary_handler,notes,source
+Mumbai,Maharashtra,"400,401,402,403,404,410",85,0,8,2,5,0,415,Deonar/Mulund/Kanjurmarg landfill (MCGM),"Deonar largest landfill Asia. MCGM decentralised biogas pilots (10 plants). Formal recycling via MCGM ragpicker SHGs.",MCGM SWM Annual Report 2022-23
+Delhi,Delhi,"110,111",76,12,5,0,7,0,382,Bhalswa/Ghazipur/Okhla landfill (MCD),"Okhla WTE 23MW. Ghazipur landfill collapsed 2017 still active. MCD landfill dominates.",MCD Annual SWM Report 2022-23
+Bangalore,Karnataka,"560,561,562,563",58,0,30,5,7,0,295,BBMP Mandur/Mavallipura landfill,"BBMP decentralised composting 500+ bulk generators. Dry waste collection centres 200+. Best Indian city for waste segregation.",BBMP SWM Annual Report 2022
+Chennai,Tamil Nadu,"600,601,602,603",68,0,20,2,10,0,330,Perungudi/Kodungaiyur landfill (GCC),"GCC composting push. Perungudi waste-to-energy planned. High organic fraction composted.",Greater Chennai Corporation SWM 2023
+Hyderabad,Telangana,"500,501,502,503",73,0,15,2,10,0,355,Jawaharnagar landfill (GHMC),"GHMC biogas from food waste. Formal recyclers association active.",GHMC SWM Report 2022
+Pune,Maharashtra,"411,412,413,414,415",63,0,25,5,7,0,308,Uruli Devachi landfill (PMC),"PMC biogas SWM. Strong compost programme. Large-scale PCMC biogas plants.",PMC SWM Annual Report 2023
+Ahmedabad,Gujarat,"380,381,382,383",78,0,12,0,10,0,378,Pirana landfill (AMC),"Pirana: 85m high legacy landfill. Bioremediation ongoing. AMC wet waste to compost.",AMC SWM Report 2022
+Kolkata,West Bengal,"700,701,702,703,704",83,0,10,0,7,0,405,Dhapa landfill (KMC),"Dhapa oldest active landfill India. KMC composting limited. Informal recycling via kabadiwalas.",KMC SWM Annual Report 2022
+Surat,Gujarat,"395,394,396",68,20,7,0,5,0,322,Khajod landfill (SMC),"Surat WTE plant 35MW operational. SMC zero-landfill target.",SMC Annual Report 2022-23
+Jaipur,Rajasthan,"302,303,304,305",80,0,10,0,8,2,385,Langadiyawas landfill (JMC),"JMC composting. High food waste fraction. Open dumping in periphery.",JMC SWM Report 2022
+Lucknow,Uttar Pradesh,"226,227,228",77,0,10,0,5,8,375,Shivri landfill (LMC),"Open dumping in peripheral areas significant. LMC composting nascent.",LMC SWM Report 2022
+Indore,Madhya Pradesh,"452,453,454",10,0,55,25,10,0,65,Trenching ground (IMC),"Indore: 7-time Swachh Survekshan winner. 75% waste segregated. Processing capacity: composting + biogas dominant. Model city.",IMC SWM Annual Report 2023
+Nagpur,Maharashtra,"440,441,442,443",70,5,15,5,5,0,337,Bhandewadi landfill (NMC),"NMC WTE plant. CSIR-NEERI biogas pilot.",NMC SWM Report 2022
+Kochi,Kerala,"682,683,684,685,686",60,0,25,10,5,0,288,Brahmapuram landfill (KMC),"Brahmapuram fire 2023. Kerala push for decentralised composting. High organic fraction.",KMC SWM Report 2022-23
+Coimbatore,Tamil Nadu,"641,642,643",65,0,22,5,8,0,313,Vellalore landfill (CoC),"CoC composting via SHGs. Vellalore closed/processing.",CoC SWM Annual Report 2022
+Visakhapatnam,Andhra Pradesh,"530,531,532,533",72,0,15,3,10,0,348,Kapuluppada landfill (GVMC),"GVMC composting. Coastal city -- marine litter also significant.",GVMC SWM Report 2022
+Patna,Bihar,"800,801,802,803",82,0,8,0,5,5,398,Ramaipur landfill (PMC),"High open dumping in peripheral areas. PMC composting pilot only.",PMC SWM Report 2022
+Bhopal,Madhya Pradesh,"462,463,464",75,0,15,0,8,2,363,Adampur landfill (BMC),"BMC composting. MP has state composting push.",BMC SWM Report 2022
+Chandigarh,Punjab/Haryana,"160,161",68,5,20,2,5,0,322,Dadumajra landfill (MC Chandigarh),"Advanced SWM system. WTE operational. High recycling rate.",MC Chandigarh SWM 2022
+tier2_default,National,,78,0,12,0,8,2,365,National municipal corporation average,"MoEFCC estimate for tier-2 cities not individually listed.",MoEFCC CPCB Annual Report on SWM 2022

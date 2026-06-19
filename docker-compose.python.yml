@@ -35,44 +35,21 @@ services:
       - ./backend:/app
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-  streamlit-ghg:
+  streamlit-sklite:
     image: python:3.12-slim
     working_dir: /app
     volumes:
       - ./frontend/streamlit:/app
+      - sklite_data:/app/data
     ports:
       - "8501:8501"
     environment:
       API_BASE_URL: http://backend:8000/api/v1
+      SKLITE_API_CORS_ORIGINS: http://backend:8000,http://localhost:8000
     command: >
       bash -c "pip install -r requirements.txt -q &&
-               streamlit run ghg/dashboard.py --server.port=8501 --server.address=0.0.0.0"
-
-  streamlit-esg:
-    image: python:3.12-slim
-    working_dir: /app
-    volumes:
-      - ./frontend/streamlit:/app
-    ports:
-      - "8502:8502"
-    environment:
-      API_BASE_URL: http://backend:8000/api/v1
-    command: >
-      bash -c "pip install -r requirements.txt -q &&
-               streamlit run esg/score_dashboard.py --server.port=8502 --server.address=0.0.0.0"
-
-  streamlit-ops:
-    image: python:3.12-slim
-    working_dir: /app
-    volumes:
-      - ./frontend/streamlit:/app
-    ports:
-      - "8503:8503"
-    environment:
-      API_BASE_URL: http://backend:8000/api/v1
-    command: >
-      bash -c "pip install -r requirements.txt -q &&
-               streamlit run ops/monthly_activity.py --server.port=8503 --server.address=0.0.0.0"
+               streamlit run main.py --server.port=8501 --server.address=0.0.0.0"
 
 volumes:
   pgdata:
+  sklite_data:

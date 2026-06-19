@@ -1,0 +1,543 @@
+﻿Method,Scope 3 category,Method variant,Equation (canonical),Activity data required (fields),EF/parameters required (factor keys),Calculation steps,Spec status
+Cat 1 — Purchased goods & services — Average-data EF,Cat 1 — Purchased goods & services,Average-data,"Emissions = Σ (mass of purchased good/service × EF per unit mass)
+OR
+Emissions = Σ (units of purchased good/service × EF per reference unit)","• Mass or number of units of purchased goods or services for a given year (e.g., kg, hours spent, pieces)","• Cradle-to-gate emission factors of the purchased goods or services per unit of mass or unit of product (e.g., kg CO2e/kg or kg CO2e/hour spent)","1) For each purchased good/service type, capture activity data as either mass (kg) or units (piece/hour/etc.).
+2) Select a cradle-to-gate EF in matching units.
+3) Multiply activity × EF.
+4) Sum across purchased goods and services.",Draft
+Cat 1 — Purchased goods & services — Hybrid (only supplier S1+S2 + waste + residual EF),Cat 1 — Purchased goods & services,Hybrid,"Emissions = Σ supplier_scope1+2_allocated
++
+Σ (supplier_waste_mass × EF_waste_activity)
++
+Σ (purchased_good_mass_or_units × EF_purchased_good_excl_supplierS1S2_and_waste)","• Allocated scope 1 and scope 2 emissions of tier 1 supplier relating to purchased good/service (kg CO2e)
+• Mass of waste from tier 1 supplier relating to purchased good (kg)
+• Mass or quantity of units of purchased good/service (kg, units, or $ basis depending on EF)
+• Reporting year; mapping from supplier to purchased items","• EF_waste_activity (kg CO2e/kg waste)
+• EF_purchased_good_excluding_supplier_scope1_scope2_and_supplier_waste (kg CO2e/kg OR per unit OR per $)","1) Collect supplier-allocated Scope 1+2 emissions for the purchased good/service.
+2) Collect supplier waste outputs attributable to the purchased good/service (kg).
+3) Select EF for waste activity (kg CO2e/kg) consistent with end-of-life boundary.
+4) Compute waste emissions = waste_mass × EF_waste.
+5) Collect purchased good quantity (kg/units) (or $ if EF is value-based).
+6) Select residual EF for the purchased good that explicitly EXCLUDES supplier scope 1, scope 2, and supplier waste emissions.
+7) Compute residual emissions = quantity × residual EF.
+8) Total = supplier S1+S2 + waste emissions + residual emissions. Sum across goods/services.",Draft
+Cat 1 — Purchased goods & services — Hybrid (supplier activity data for all activities),Cat 1 — Purchased goods & services,Hybrid,"Σ supplier scope 1&2 (allocated to purchased good/service)
++
+Σ (material inputs × EF_material)
++
+Σ (incoming transport distance × mass/volume × EF_vehicle)
++
+Σ (supplier waste outputs × EF_waste)
++
+other emissions as applicable","• Allocated scope 1 and 2 data (including emissions from electricity use and fuel use and any process and fugitive emissions) by supplier relating to the good or service purchased
+• Mass or quantity of material inputs (bill of materials) used by supplier to produce purchased goods
+• Mass or quantity of fuel inputs used by supplier to produce purchased goods (if needed to support supplier scope 1 allocation)
+• Distance from origin of raw material inputs to supplier (exclude supplier→reporting company transport; that is Category 4)
+• Quantities of waste output by supplier to produce purchased goods
+• Other emissions emitted in provision of the purchased goods as applicable","Depending on supplier data availability, may need:
+• Cradle-to-gate emission factors for materials used by tier 1 supplier (supplier-specific or industry-average secondary database)
+• Life cycle emission factors for fuel used by incoming transport of input materials to tier 1 supplier
+• Emission factors for waste outputs by tier 1 supplier
+• Other emission factors as applicable (e.g., process emissions)
+Also, if product-level factors are used instead of component build-up, collect either:
+• Cradle-to-gate EF per unit mass/unit product (kg CO2e/kg, kg CO2e/unit)
+OR
+• Cradle-to-gate EF per unit economic value (kg CO2e/$)","1) Collect allocated Scope 1 and 2 emissions of tier 1 supplier relating to the purchased good/service.
+2) Collect bill of materials (mass/quantity of material inputs used by tier 1 supplier for the purchased good/service).
+3) For each material input, multiply input quantity × cradle-to-gate EF for the material.
+4) Collect incoming transport data for material inputs to tier 1 supplier (distance, mass/volume, vehicle type).
+5) For each transport leg, compute: distance × mass/volume × vehicle EF.
+6) Collect waste outputs by tier 1 supplier relating to the purchased good/service and multiply by waste EFs.
+7) Add any other applicable emissions in provision of the good/service.
+8) Sum all components across purchased goods and services.",Draft
+Cat 1 — Purchased goods & services — Spend-based (EEIO),Cat 1 — Purchased goods & services,Spend-based (EEIO),Emissions = Σ (value of purchased good/service ($) × EF per unit economic value (kg CO2e/$)),"• Amount spent on purchased goods or services, by product type, using market values (e.g., $)","• Cradle-to-gate emission factors of the purchased goods or services per unit of economic value (e.g., kg CO2e/$)","1) Extract spend by product type (market value) for reporting year.
+2) Map spend categories to an EF category.
+3) Select cradle-to-gate EF (kg CO2e/$).
+4) Multiply spend × EF and sum.",Draft
+Cat 1 — Purchased goods & services — Supplier-specific EF,Cat 1 — Purchased goods & services,Supplier-specific,Σ (quantities of good purchased × supplier-specific product emission factor of purchased good or service),• Quantities or units of goods or services purchased,"• Supplier-specific emission factors for the purchased goods or services (e.g., from a reliable cradle-to-gate GHG inventory, product footprint, or internal LCA report)","1) For each purchased good/service, get quantity purchased (e.g., kg or units).
+2) Get supplier-specific product emission factor for the purchased good/service (e.g., kg CO2e/kg).
+3) Multiply quantity × supplier EF.
+4) Sum across purchased goods and services.",Draft
+Cat 2 — Capital goods — Average-data,Cat 2 — Capital goods,Average-data,"Emissions = Σ (mass of capital good × EF per unit mass)
+OR
+Emissions = Σ (units of capital good × EF per reference unit)","• Mass or number of units of capital goods for a given year (e.g., kg, pieces)","• Cradle-to-gate emission factors of the capital goods per unit of mass or unit of product (e.g., kg CO2e/kg or kg CO2e/piece)","1) Capture capital goods purchased by type as mass or units.
+2) Select matching cradle-to-gate EF.
+3) Multiply activity × EF.
+4) Sum across capital goods.",Draft
+Cat 2 — Capital goods — Average-data EF,Cat 2 — Capital goods,Average-data,Emissions = ∑(quantity_capital_goods × EF_avg_capital_good),reporting_year; capital_good_type; quantity; unit,avg_cradle_to_gate_ef (kgCO2e/kg or per unit),"1) Identify capital goods purchased in reporting year per capitalization policy.
+2) Capture quantity (kg/units) by capital good type.
+3) Select average cradle-to-gate EF.
+4) Multiply quantity × EF.
+5) Sum across capital goods.",Draft
+Cat 2 — Capital goods — Hybrid (only supplier S1+S2 + waste + residual EF),Cat 2 — Capital goods,Hybrid,"Emissions = Σ supplier_scope1+2_allocated
++
+Σ (supplier_waste_mass × EF_waste_activity)
++
+Σ (capital_good_mass_or_units × EF_capital_good_excl_supplierS1S2_and_waste)","• Allocated scope 1 and scope 2 emissions of tier 1 supplier relating to capital good (kg CO2e)
+• Mass of waste from tier 1 supplier relating to the capital good (kg)
+• Mass or quantity of units of capital good (kg, units, or $ basis depending on EF)
+• Reporting year; mapping from supplier to capital goods","• EF_waste_activity (kg CO2e/kg waste)
+• EF_capital_good_excluding_supplier_scope1_scope2_and_supplier_waste (kg CO2e/kg OR per unit OR per $)","1) Collect supplier-allocated Scope 1+2 emissions for the capital good.
+2) Collect supplier waste outputs attributable to the capital good (kg).
+3) Select EF for waste activity (kg CO2e/kg).
+4) Compute waste emissions = waste_mass × EF_waste.
+5) Collect capital good quantity (kg/units) (or $ if value-based EF).
+6) Select residual EF for capital good that explicitly excludes supplier S1+S2 and supplier waste emissions.
+7) Compute residual emissions = quantity × residual EF.
+8) Total = supplier S1+S2 + waste emissions + residual emissions. Sum across capital goods.",Draft
+Cat 2 — Capital goods — Hybrid (supplier activity data for all activities),Cat 2 — Capital goods,Hybrid,"Σ supplier scope 1&2 (allocated to capital good)
++
+Σ (material inputs × EF_material)
++
+Σ (incoming transport distance × mass/volume × EF_vehicle)
++
+Σ (supplier waste outputs × EF_waste)
++
+other emissions as applicable","• Allocated scope 1 and 2 data by supplier relating to the capital good purchased (incl. electricity, fuel, process, fugitive)
+• Mass/quantity of material inputs used by supplier to produce capital goods
+• Mass/quantity of fuel inputs used by supplier to produce capital goods
+• Distance from origin of raw material inputs to supplier (exclude supplier→reporting company transport; that is Category 4)
+• Quantities of waste output by supplier to produce capital goods
+• Other emissions emitted in provision of capital goods as applicable","Depending on supplier data availability:
+• Cradle-to-gate EFs for materials used by tier 1 supplier (supplier-specific or industry-average)
+• Life cycle EFs for fuel used by incoming transport of input materials to tier 1 supplier
+• EFs for waste outputs by tier 1 supplier
+• Other EFs as applicable (process emissions)
+Also, if using product-level factors instead of component build-up:
+• Cradle-to-gate EF per unit mass/unit product OR per $","1) Collect allocated supplier Scope 1+2 emissions for the capital good.
+2) Collect material inputs and compute Σ(material_qty × EF_material).
+3) Collect incoming transport of material inputs and compute Σ(distance × mass/volume × EF_vehicle).
+4) Collect supplier waste outputs and compute Σ(waste_mass × EF_waste).
+5) Add other applicable emissions.
+6) Sum all components across capital goods.",Draft
+Cat 2 — Capital goods — Spend-based,Cat 2 — Capital goods,Spend-based (EEIO),Emissions = Σ (value of capital good ($) × EF per unit economic value (kg CO2e/$)),"• Amount spent on capital goods, by product type, using market values (e.g., $)","• Cradle-to-gate emission factors of the capital goods per unit of economic value (e.g., kg CO2e/$)
+• Inflation data where applicable to convert market values between EEIO EF year and activity year","1) Extract spend on capital goods by type.
+2) Map spend type to EF category/EEIO sector.
+3) Normalize spend to EF base year if required.
+4) Multiply spend × EF and sum.",Draft
+Cat 2 — Capital goods — Supplier-specific,Cat 2 — Capital goods,Supplier-specific,Emissions = Σ (quantities of capital good purchased × supplier-specific product emission factor of capital good),• Quantities or units of capital goods purchased in the reporting year,"• Supplier-specific emission factors for the capital goods (e.g., from reliable cradle-to-gate GHG inventory, product footprint, internal LCA report)","1) For each capital good type, capture quantity purchased (kg or units).
+2) Obtain supplier-specific product EF for the capital good (kg CO2e/kg or per unit), cradle-to-gate.
+3) Multiply quantity × EF.
+4) Sum across capital goods.",Draft
+Cat 3A — Upstream emissions of purchased fuels,Cat 3 — Fuel- & energy-related (not in S1/S2),Average-data,"Σ (fuel consumed × upstream fuel emission factor)
+where upstream fuel emission factor = life cycle emission factor − combustion emission factor",• Quantities and types of fuel consumed,"Supplier-specific method:
+• Fuel-provider-specific emission factors on extraction, production and transportation of fuels per unit of fuel consumed (e.g., kg CO2e/kWh), by fuel type and country/region
+Average-data method:
+• Average emission factors for upstream emissions per unit of consumption (e.g., kg CO2e/kWh)","1) For each fuel type consumed, capture quantity consumed.
+2) Select upstream fuel emission factor (supplier-specific if available; otherwise average-data).
+3) If only lifecycle + combustion are available, compute upstream EF = lifecycle − combustion.
+4) Multiply fuel consumed × upstream EF.
+5) Sum across fuel types.",Draft
+Cat 3B — Upstream emissions of purchased electricity/steam/heating/cooling,Cat 3 — Fuel- & energy-related (not in S1/S2),Average-data,"Emissions = Σ(electricity_consumed × EF_upstream_electricity)
++ Σ(steam_consumed × EF_upstream_steam)
++ Σ(heating_consumed × EF_upstream_heating)
++ Σ(cooling_consumed × EF_upstream_cooling)
+where upstream EF = life cycle EF − combustion EF − T&D losses (subtract T&D only if included in life cycle EF)","• Total quantities of electricity, steam, heating or cooling purchased and consumed per unit of consumption (e.g., kWh/MWh), broken down by supplier, grid region or country","Supplier-specific method:
+• Utility-specific EFs for extraction, production and transportation of fuels consumed per unit generated (kg CO2e/kWh)
+Average-data method:
+• Grid-region/country/regional upstream EFs per unit consumption (kg CO2e/kWh)
+Plus (if deriving upstream EF):
+• life cycle EF
+• combustion emissions factor
+• T&D losses inclusion flag","1) Collect electricity/steam/heating/cooling consumption, broken down by supplier/region/country.
+2) Select upstream emission factors per energy type (supplier-specific if available; else grid-region/country/regional).
+3) If provided as lifecycle EFs, verify whether T&D losses are included.
+4) If upstream EF must be derived, compute upstream EF = lifecycle − combustion − (T&D losses if included).
+5) Multiply consumption × upstream EF for each energy type and sum.",Draft
+Cat 3C — Transmission & distribution (T&D) losses,Cat 3 — Fuel- & energy-related (not in S1/S2),Average-data,"Emissions = Σ(electricity_consumed × EF_lifecycle_electricity × T&D_loss_rate)
++ Σ(steam_consumed × EF_lifecycle_steam × T&D_loss_rate)
++ Σ(heating_consumed × EF_lifecycle_heating × T&D_loss_rate)
++ Σ(cooling_consumed × EF_lifecycle_cooling × T&D_loss_rate)","• Electricity, steam, heating or cooling consumed (kWh/MWh), broken down by grid region or country; and/or • Scope 2 emissions data","• Life cycle emission factor for each energy type (kg CO2e/kWh)
+• T&D loss rate (%)
+Supplier-specific: utility-specific T&D loss rate for the grid
+Average-data: country/regional/global T&D loss rate","1) Collect consumption by energy type and grid region/country.
+2) Select lifecycle EF for each energy type.
+3) Select appropriate T&D loss rate (utility-specific preferred; else country → regional → global).
+4) Multiply consumption × lifecycle EF × loss rate and sum across energy types.",Draft
+Cat 4 — Upstream distribution/storage — Average-data,Cat 4 — Upstream transport & distribution,Average-data,Emissions = Σ(volume_stored × avg_days_stored × EF_storage (kg CO2e per m³-day or pallet-day or TEU-day)),"• Volume of purchased goods stored (m²/m³/pallet/TEU) OR number of pallets
+• Average number of days stored
+• Throughput-based data (as needed to estimate volume-days)","• Storage emission factor per unit stored per day, expressed as:
+  - kg CO2e per pallet-day, OR
+  - kg CO2e per m²-day / m³-day, OR
+  - kg CO2e per TEU-day","1) Estimate storage volume and average storage duration (days).
+2) Select appropriate storage EF matching the unit basis.
+3) Multiply volume × days × EF.
+4) Sum across storage facilities.",Draft
+Cat 4 — Upstream distribution/storage — Site-specific,Cat 4 — Upstream transport & distribution,Site-specific,"Facility emissions = (fuel_kWh × EF_fuel) + (electricity_kWh × EF_electricity) + (refrigerant_leakage_kg × GWP)
+Allocated facility emissions = (volume_company_goods_m3 / total_volume_goods_m3) × facility_emissions
+Total emissions = Σ allocated facility emissions","• Site-specific fuel use (kWh)
+• Site-specific electricity use (kWh)
+• Site-specific refrigerant leakage (kg)
+• Average occupancy rate / average total volume stored
+• Volume of reporting company’s purchased goods in facility (m³)
+• Total volume of goods in facility (m³)","• Site/region-specific EFs for fuels (kg CO2e/kWh) and electricity (kg CO2e/kWh)
+• Refrigerant GWP / emission factors (kg CO2e/kg leaked)","1) Compute storage facility emissions from fuel, electricity, and refrigerant leakage.
+2) Allocate emissions by volume share of reporting company goods.
+3) Sum allocated emissions across all storage facilities.",Draft
+Cat 4 — Upstream transportation — Distance-based,Cat 4 — Upstream transport & distribution,Distance-based,Emissions = Σ(mass_or_volume_goods × distance_leg_km × EF_mode_or_vehicle (kg CO2e per tonne-km or TEU-km)),"• Mass or volume of products transported (tonnes or TEU)
+• Distances travelled per leg (supplier provided, maps/calculators, port-to-port distances)
+• Mode of transport / vehicle type per leg","• Emission factor by transport mode or vehicle type, in units of CO2/CH4/N2O per tonne-km or TEU-km (convert to CO2e as needed)","1) Collect transport legs with mass/volume, distance, and mode/vehicle.
+2) Select EF per mode/vehicle.
+3) Multiply mass/volume × distance × EF per leg.
+4) Sum across modes/vehicle types.",Draft
+Cat 4 — Upstream transportation — Fuel-based,Cat 4 — Upstream transport & distribution,Fuel-based,"Emissions = Σ(fuel_litres × EF_fuel)
++ Σ(electricity_kWh × EF_electricity_grid)
++ Σ(refrigerant_leakage_kg × GWP_refrigerant)
+
+If fuel data unavailable:
+Fuel_from_spend = fuel_spend / avg_fuel_price
+Fuel_from_distance = Σ(distance_km × fuel_efficiency_l_per_km)
+
+Allocated fuel use = total_fuel_consumed × (mass_or_volume_company_goods / mass_or_volume_total_goods)
+(Optional) Unladen backhaul emissions = Σ(fuel_backhaul × EF_fuel)","• Quantities of fuel consumed (litres) by fuel type; OR fuel spend + avg fuel price; OR distance travelled + fuel efficiency
+• Quantity of electricity consumed (kWh) (if applicable)
+• Quantity of refrigerant leakage (kg) (if applicable)
+• Mass of purchased goods in the vehicle (tonnes) and total mass/volume transported (for allocation)
+• Info on refrigerated transport (yes/no)
+• (Optional) distance travelled unladen + unladen fuel efficiency","• Fuel emission factors (kg CO2e/litre) (include scope 1 & 2 of fuel; may optionally include cradle-to-gate)
+• Electricity grid emission factors (kg CO2e/kWh) for electric vehicles
+• Refrigerant leakage factors: GWP per refrigerant (kg CO2e/kg leaked)
+• Average fuel price ($/litre) (if deriving fuel from spend)
+• Fuel efficiency (litre/km) (if deriving fuel from distance)","1) Collect direct fuel litres by type; if missing derive from spend or distance.
+2) Compute total transport emissions: fuel + electricity + refrigerant leakage.
+3) Allocate emissions to reporting company: multiply by mass/volume share (or dimensional/chargeable mass if justified).
+4) Optionally add unladen backhaul emissions if included.
+5) Sum across fuel types and transport steps.",Draft
+Cat 4 — Upstream transportation — Spend-based,Cat 4 — Upstream transport & distribution,Spend-based (EEIO),Emissions = Σ(spend_on_transportation_by_type × EEIO_EF_transport (kg CO2e/$)),"• Amount spent on transportation by type (road/rail/air/barge/etc.) using market values ($)
+• (If needed) inflation data to convert between EEIO EF year and activity year","• Cradle-to-gate emission factors of transportation type per $ (kg CO2e/$)
+• Inflation indices (if required)","1) Collect spend by transportation type.
+2) Map spend types to EEIO categories.
+3) Normalize spend to EEIO base year if required.
+4) Multiply spend × EF and sum.",Draft
+Cat 5 — Waste generated in operations — Average-data (treatment mix),Cat 5 — Waste generated in operations,Average-data,Σ (total mass of waste (tonnes) × proportion of total waste treated by waste treatment method × emission factor of waste treatment method (kg CO2e/tonne)),"• Total mass of waste generated in operations
+• Proportion of this waste being treated by different methods (e.g., % landfilled, incinerated, recycled, etc.)",• Average waste treatment-specific emission factors based upon all waste disposal types (kg CO2e/tonne),"1) Record total mass of waste generated (tonnes).
+2) Record treatment shares for each method (% landfill/incineration/recycling/etc.).
+3) Select EF per treatment method (kg CO2e/tonne).
+4) Multiply total mass × share × EF for each method.
+5) Sum across treatment methods.",Draft
+Cat 5 — Waste generated in operations — Supplier-specific (waste treatment company),Cat 5 — Waste generated in operations,Supplier-specific,Σ allocated scope 1 and 2 emissions of waste treatment company,• Allocated scope 1 and 2 emissions of waste-treatment company (allocated to the waste collected from the reporting company),• None (reporting company collects emissions data from waste treatment companies; the waste company already used emission factors to calculate emissions),"1) Identify waste treatment providers handling waste from the reporting company.
+2) Obtain the provider’s allocated Scope 1 and Scope 2 emissions attributable to the reporting company’s waste.
+3) Sum allocated emissions across waste treatment providers.",Draft
+Cat 5 — Waste generated in operations — Waste-type-specific,Cat 5 — Waste generated in operations,Average-data,Σ (waste produced (tonnes or m3) × waste type and waste treatment specific emission factor (kg CO2e/tonne or m3)),"• Waste produced (e.g., tonne, m3) and type of different waste generated in operations
+• For each waste type, specific waste treatment method applied (e.g., landfilled, incinerated, recycled, etc.)","• Waste type-specific and waste treatment-specific emission factors (kg CO2e/tonne or kg CO2e/m3)
+• Emission factors should include end-of-life processes only
+• Emission factors may include emissions from transportation of waste (record flag)","1) For each waste type generated, record waste quantity (tonnes or m3).
+2) Record the treatment method for each waste type.
+3) Select EF specific to (waste type × treatment method) with end-of-life-only boundary.
+4) Multiply waste quantity × EF.
+5) Sum across waste types.",Draft
+Cat 6 — Business travel — Distance-based,Cat 6 — Business travel,Distance-based,"Σ (distance_travelled_by_vehicle_type (vehicle-km or passenger-km) × EF_vehicle_type (kg CO2e/vehicle-km or kg CO2e/passenger-km))
++
+(optional) Σ (hotel_nights × EF_hotel (kg CO2e/night))","• Total distance travelled by each mode of transport (air, train, bus, car, etc.) for all employees in reporting year
+• Countries of travel (since EFs vary by country)
+• Specific vehicle types used for travel (since EFs vary by vehicle type)
+(optional) • Annual number of hotel nights","• Emission factors (kg CO2e per km or passenger-km) for each mode (aircraft, rail, metro, bus, taxi, etc.)
+• For electric vehicles (if applicable), electricity emission factors per km or passenger-km
+(optional) • Hotel emission factor (kg CO2e/night)","1) Aggregate distance travelled by mode/vehicle type (vehicle-km or passenger-km).
+2) Select EF for each mode/vehicle type, matching country where possible.
+3) Multiply distance × EF for each mode.
+4) Optionally add hotels: hotel nights × EF_hotel.
+5) Sum across vehicle types for Cat 6 total.",Draft
+Cat 6 — Business travel — Fuel-based,Cat 6 — Business travel,Fuel-based,"Σ (fuel_consumed_liters × EF_fuel (kg CO2e/liter))
++
+Σ (electricity_consumed_kWh × EF_electricity_grid (kg CO2e/kWh))
++
+Σ (refrigerant_leakage_kg × GWP_refrigerant (kg CO2e/kg))
++
+(optional) Σ (hotel_nights × EF_hotel (kg CO2e/night))
+
+If fuel data unavailable:
+Fuel_from_spend = fuel_spend / avg_fuel_price
+Fuel_from_distance = Σ(distance_km × fuel_efficiency_l_per_km)","• Quantities of fuel consumed by fuel type (liters)
+• Amount spent on fuel and average cost of fuel (if deriving liters)
+• Fugitive emissions (e.g., refrigerant leakage) (kg)
+If applicable:
+• Distance travelled (km)
+• Average fuel efficiency of vehicle (liters/km)
+(optional)
+• Annual number of hotel nights (nights)","• Life cycle fuel emission factors (kg CO2e/liter or per energy unit)
+• Electricity emission factors for grid (kg CO2e/kWh)
+• Fugitive emission factors / GWPs (kg CO2e/kg refrigerant leakage)
+(optional)
+• Hotel emission factor (kg CO2e/night)
+(if deriving liters)
+• Average fuel price ($/liter)","1) Collect fuel litres by type; if unavailable, derive litres from spend/price or from distance×fuel efficiency.
+2) Multiply fuel litres × EF_fuel and sum across fuel types.
+3) Add electricity emissions where applicable: kWh × EF_grid.
+4) Add fugitive emissions where applicable: refrigerant leakage × GWP.
+5) Optionally add hotels: hotel nights × EF_hotel.
+6) Sum all components for Cat 6 total.",Draft
+Cat 7 — Employee commuting — Average-data,Cat 7 — Employee commuting,Average-data,Σ (total_employees × %employees_using_mode × one_way_distance × 2 × working_days_per_year × EF_mode (kg CO2e per vehicle-km or passenger-km)),"• Number of employees
+• Average one-way commuting distance per day
+• Average breakdown of transport modes used by employees (% mode split)
+• Average number of working days per year",• Emission factors for each mode of transport (usually per passenger-km; CO2/CH4/N2O or CO2e),"1) Capture total employees, average one-way distance, working days/year, and mode split.
+2) For each mode, compute employees×%mode×distance×2×days.
+3) Multiply by EF_mode.
+4) Sum across modes.",Draft
+Cat 7 — Employee commuting — Distance-based (+ optional teleworking),Cat 7 — Employee commuting,Distance-based,"Step 1: total_distance_by_vehicle_type = Σ(daily_one_way_home_to_work_km × 2 × commuting_days_per_year)
+Step 2: commuting_emissions = Σ(total_distance_by_vehicle_type × EF_vehicle_type)
++
+(optional teleworking) Σ(energy_consumed_kWh × EF_energy (kg CO2e/kWh))","• Total distance travelled by employees over the reporting period
+• Mode of transport used for commuting (train, subway, bus, car, bicycle, etc.)
+• Daily one-way distance home↔work and commuting days per year (or equivalent aggregated distance)
+(optional teleworking)
+• Quantities of energy consumed during teleworking (kWh) by energy source","• Emission factors for each commuting mode (usually per passenger-km; CO2/CH4/N2O or CO2e)
+(optional teleworking)
+• Emission factors for teleworking energy sources (kg CO2e/kWh)","1) Compute total distance by mode/vehicle type using daily one-way distance × 2 × commuting days.
+2) Select EF per mode (passenger-km or vehicle-km as applicable).
+3) Multiply total distance × EF per mode.
+4) Optionally add teleworking energy emissions by energy source.
+5) Sum across modes.",Draft
+Cat 7 — Employee commuting — Fuel-based,Cat 7 — Employee commuting,Fuel-based,"Σ (fuel_consumed_liters × EF_fuel (kg CO2e/liter))
++
+Σ (electricity_consumed_kWh × EF_electricity_grid (kg CO2e/kWh))
++
+Σ (refrigerant_leakage_kg × GWP_refrigerant (kg CO2e/kg))
+
+If fuel data unavailable:
+Fuel_from_spend = fuel_spend / avg_fuel_price
+Fuel_from_distance = Σ(distance_km × fuel_efficiency_l_per_km)","• Quantities of fuel consumed (liters) and fuel type
+• Amount spent on fuel and average cost of fuel (if deriving liters)
+• (If applicable) distance travelled and average fuel efficiency","• Life cycle fuel emission factors (kg CO2e/liter or energy basis)
+• For electric vehicles (if applicable), electricity emission factors (kg CO2e/kWh)","1) Collect fuel litres (or derive from spend/price or distance×efficiency).
+2) Multiply litres × EF_fuel.
+3) Add electricity component if applicable.
+4) Sum across commuting-related fuels/energy.",Draft
+Cat 8 — Upstream leased assets — Asset-specific,Cat 8 — Upstream leased assets,Site-specific,"For each leased asset:
+Scope1_asset = Σ(fuel_liters × EF_fuel) + Σ(refrigerant_leakage_kg × EF_refrigerant) + process_emissions
+Scope2_asset = Σ(electricity/steam/heating/cooling_kWh × EF_energy)
+Then total = Σ (Scope1_asset + Scope2_asset)
+
+If leased building not sub-metered:
+Energy_use_leased_space = (reporting_company_area_m2 / building_total_area_m2) × building_occupancy_rate × building_total_energy_use_kWh","• Asset-specific fuel use; electricity/steam/heating/cooling use; process emissions; fugitive emissions (refrigerant leakage)
+OR asset-specific Scope 1 and Scope 2 emissions data
+• (For non-submetered building allocation) reporting company area, building total area, building occupancy rate, building total energy use","• Site/region-specific emission factors for electricity and fuels per unit consumption (kg CO2e/kWh, kg CO2e/liter)
+• Emission factors for fugitive and process emissions (kg CO2e/kg refrigerant leakage, etc.)","1) For each leased asset, compute Scope 1 from fuel + refrigerant leakage + process.
+2) Compute Scope 2 from purchased electricity/steam/heating/cooling.
+3) Sum Scope 1+2 for each asset, then sum across assets.
+4) If leased building space not sub-metered, allocate energy use using area share × occupancy × building total energy and then compute emissions.",Draft
+Cat 8 — Upstream leased assets — Average-data,Cat 8 — Upstream leased assets,Average-data,"Buildings: Σ (floor_space_by_building_type_m2 × EF_building_type (kg CO2e/m2/year))
+Other assets / no floor space: Σ (asset_count_by_type × EF_asset_type (kg CO2e/asset/year))","• Floor space of each leased asset (m2)
+• Number of leased assets, by building type; and/or
+• Number of leased assets that give rise to Scope 2 emissions (e.g., company cars, trucks, etc.)","• Average emission factors by floor space (kg CO2e/m2/year)
+• Average emission factors by building type (kg CO2e/building/year) (if used)
+• Emission factors by asset type (kg CO2e/asset/year)","1) For buildings where floor space is available: multiply floor space × EF_building_type and sum across building types.
+2) For non-building assets (or buildings with no floor space data): multiply asset count × EF_asset_type and sum across asset types.
+3) Sum building and non-building totals for Cat 8.",Draft
+Cat 8 — Upstream leased assets — Lessor-specific,Cat 8 — Upstream leased assets,Site-specific,"For each lessor:
+Scope1_lessor = Σ(fuel_liters × EF_fuel) + Σ(refrigerant_leakage_kg × EF_refrigerant) + process_emissions
+Scope2_lessor = Σ(electricity/steam/heating/cooling_kWh × EF_energy)
+Allocated lessor emissions = (leased_asset_metric / total_lessor_asset_metric) × (Scope1_lessor + Scope2_lessor)
+Total = Σ allocated lessor emissions","• Lessor’s fuel use, electricity use, process emissions and fugitive emissions (refrigerant leakage), OR lessor’s Scope 1 and Scope 2 emissions data
+• Physical or financial data for allocation (e.g., total area/volume/quantity of lessor’s assets and total area/volume/quantity of leased assets)","• Site/region-specific EFs for electricity and fuels (kg CO2e/kWh, kg CO2e/liter)
+• EFs for fugitive and process emissions (kg CO2e/kg refrigerant leakage etc.)","1) For each lessor, compute Scope 1 emissions from fuel + refrigerant leakage + process.
+2) Compute Scope 2 emissions from electricity/steam/heating/cooling.
+3) Compute total lessor emissions = Scope1+Scope2.
+4) Allocate lessor emissions to leased assets using physical/financial allocation factor (leased metric / total lessor assets).
+5) Sum allocated emissions across lessors.",Draft
+Cat 9 — Downstream distribution/storage — Average-data,Cat 9 — Downstream transport & distribution,Average-data,Σ (volume_stored (m3/pallet/TEU) × avg_days_stored × EF_storage (kg CO2e per m3-day or pallet-day or TEU-day)),"• Volume of goods stored (m2/m3/pallet/TEU) or pallets
+• Average number of days stored
+• Throughput-based data (if needed)",• Storage EF per pallet-day OR per m2/m3-day OR per TEU-day,"1) Estimate volume-days.
+2) Multiply volume × days × EF.
+3) Sum across facilities.",Draft
+Cat 9 — Downstream distribution/storage — Site-specific,Cat 9 — Downstream transport & distribution,Site-specific,"Facility emissions = (fuel_kWh × EF_fuel) + (electricity_kWh × EF_electricity) + (refrigerant_leakage_kg × EF_refrigerant_or_GWP)
+Allocated facility emissions = (volume_company_goods_m3 / total_volume_goods_m3) × facility_emissions
+Total = Σ allocated facility emissions","• Site-specific fuel, electricity use
+• Site-specific refrigerant leakage
+• Average occupancy rate / average volume stored
+• Volume of reporting company goods in facility; total volume in facility","• Site/region-specific EFs for fuels and electricity (kg CO2e/kWh; kg CO2e/liter where applicable)
+• Refrigerant emission factors / GWP (kg CO2e/kg leaked)","1) Compute facility emissions from fuel + electricity + refrigerants.
+2) Allocate by volume share.
+3) Sum across facilities.",Draft
+Cat 9 — Downstream transportation — Distance-based,Cat 9 — Downstream transport & distribution,Distance-based,Σ (mass_or_volume_goods (tonnes or TEU) × distance_leg_km × EF_mode_or_vehicle (kg CO2e per tonne-km or TEU-km)),"• Mass or volume of products sold (tonnes or TEU)
+• Distances travelled per leg (supplier data, maps, port-to-port)
+• Mode/vehicle type per leg",• Emission factor by mode/vehicle type per tonne-km or TEU-km (CO2/CH4/N2O or CO2e),"1) Collect legs: mass/volume, distance, mode.
+2) Multiply mass/volume × distance × EF.
+3) Sum across legs.",Draft
+Cat 9 — Downstream transportation — Fuel-based,Cat 9 — Downstream transport & distribution,Fuel-based,"Emissions = Σ(fuel_litres × EF_fuel)
++ Σ(electricity_kWh × EF_grid)
++ Σ(refrigerant_leakage_kg × GWP_refrigerant)
+
+If fuel data unavailable:
+Fuel_from_spend = fuel_spend / avg_fuel_price
+Fuel_from_distance = Σ(distance_km × fuel_efficiency_l_per_km)
+
+Allocated fuel use = total_fuel_consumed × (mass/volume_company_goods / mass/volume_goods_transported)
+(Optional) backhaul emissions = Σ(fuel_backhaul × EF_fuel)","• Quantities of fuel consumed (litres) and fuel type; OR fuel spend + avg fuel price; OR distance travelled + fuel efficiency
+• Amount of refrigerant leakage (kg)
+If applicable: distance travelled, average fuel efficiency, mass of goods in vehicle (tonnes), refrigerated transport flag","• Fuel emission factors (kg CO2e/litre)
+• Electricity grid factors (kg CO2e/kWh) (if EV)
+• Refrigerant leakage factors / GWP (kg CO2e/kg)
+• Average fuel price ($/litre) (if deriving)","1) Collect/derive fuel litres.
+2) Compute total emissions from fuel + electricity + refrigerant leakage.
+3) Allocate emissions to reporting company goods by mass/volume share.
+4) Optionally include backhaul.
+5) Sum across legs.",Draft
+Cat 9 — Downstream transportation — Spend-based,Cat 9 — Downstream transport & distribution,Spend-based (EEIO),Σ (spend_on_transportation_by_type × EEIO_EF_transport (kg CO2e/$)),"• Amount spent on transportation by type ($)
+• Inflation data where applicable",• EEIO / cradle-to-gate EF per $ for transportation type (kg CO2e/$),"1) Collect spend by transport type.
+2) Normalize spend to EF base year if required.
+3) Multiply spend × EF and sum.",Draft
+Cat 10 — Processing of sold products — Average-data,Cat 10 — Processing of sold products,Average-data,Σ (mass of sold intermediate product (kg) × EF_processing (kg CO2e/kg of final product)),"• For each sold intermediate product type:
+  - processes involved downstream to transform into usable final product
+  - info needed for allocation (mass, economic value, etc.)","Either:
+• Average emission factors for downstream processes (kg CO2e per kg of final product)
+OR
+• Life cycle emission factors of sold products and final products (to derive processing component)","1) Identify downstream processing route(s) per intermediate product.
+2) Select EF_processing for the route.
+3) Multiply mass sold × EF_processing.
+4) Apply allocation if required.
+5) Sum across intermediate products.",Draft
+Cat 10 — Processing of sold products — Site-specific,Cat 10 — Processing of sold products,Site-specific,"Σ(fuel_consumed × EF_fuel_lifecycle)
++ Σ(electricity_consumed × EF_electricity_lifecycle)
++ Σ(refrigerant_leakage × GWP)
++ Σ(process emissions)
++ (where possible) Σ(waste_output_mass × EF_waste)","• Types and quantities of intermediate goods sold
+Downstream data (either):
+• Site-specific GHG emissions data from downstream partners, OR
+• Site-specific activity data: quantities of electricity and fuels consumed; mass of waste generated; activity data for process/fugitive emissions","If site-specific activity data collected:
+• Emission factors for fuels
+• Emission factors for electricity
+• (where possible) emission factors for waste outputs
+• emission factors for process/fugitive emissions (if applicable)
+If partner provides emissions directly: none needed (but record method).","1) Collect intermediate products sold.
+2) Collect downstream partner emissions or activity data.
+3) If activity data: multiply each activity by its EF (fuel, electricity, refrigerants, waste) and add process emissions.
+4) Sum across downstream sites/processes.",Draft
+Cat 11 — Use of sold products — Direct use-phase (products that consume energy),Cat 11 — Use of sold products,Other,"Σ (lifetime_expected_uses × number_sold × fuel_per_use_kWh × EF_fuel (kg CO2e/kWh))
++
+Σ (lifetime_expected_uses × number_sold × electricity_per_use_kWh × EF_electricity (kg CO2e/kWh))
++
+Σ (lifetime_expected_uses × number_sold × refrigerant_leakage_per_use_kg × GWP_refrigerant (kg CO2e/kg))","• Total lifetime expected uses of product(s)
+• Quantities of products sold
+• Fuel used per use of product (kWh)
+• Electricity consumption per use of product (kWh)
+• Refrigerant leakage per use of product (kg)","• Emission factors for fuels (kg CO2e/kWh)
+• Emission factors for electricity (kg CO2e/kWh)
+• Emission factors / GWPs for refrigerants (kg CO2e/kg)","1) For each product group, define lifetime expected uses and units sold.
+2) For each energy source, compute lifetime energy = lifetime_uses × units_sold × energy_per_use.
+3) Multiply lifetime energy by the appropriate EF for fuel/electricity.
+4) Compute refrigerant emissions = lifetime_uses × units_sold × leak_per_use × GWP.
+5) Sum fuel + electricity + refrigerant components across products.",Draft
+Cat 11 — Use of sold products — Fuels and feed-stocks (combustion),Cat 11 — Use of sold products,Fuel-based,"Σ (total_quantity_fuel_or_feedstock_sold (e.g., kWh) × combustion_EF_fuel_or_feedstock (kg CO2e/kWh))",• Total quantities of fuels/feedstocks sold (by fuel type),"• Combustion emission factors of fuel/feedstock (kg CO2e per unit, e.g., kg CO2e/kWh)","1) Collect quantities of fuels/feedstocks sold by type.
+2) Select combustion EF per fuel/feedstock.
+3) Multiply quantity × EF.
+4) Sum across fuels/feedstocks.",Draft
+Cat 11 — Use of sold products — GHGs contained/emitted during use,Cat 11 — Use of sold products,Other,"For each product or product group:
+Use-phase emissions = (GHG_contained_per_product × number_sold × %released_over_lifetime × GWP_GHG)
+Then total = Σ(use-phase emissions across products/groups)
+Note: if %released unknown, assume 100%.","• Total quantities of products sold
+• Quantity of GHG contained per product
+• % of GHG released over product lifetime (if unknown, assume 100%)",• GWP of the GHG contained in product (kg CO2e per kg GHG),"1) For each product/group, capture number sold and GHG mass contained per unit.
+2) Determine fraction released over lifetime (or assume 1.0).
+3) Multiply contained mass × units × fraction released × GWP.
+4) Sum across products/groups.",Draft
+Cat 11 — Use of sold products — Indirect use-phase (scenario-weighted),Cat 11 — Use of sold products,Other,"Σ_scenarios( lifetime_uses × scenario_share × number_sold × fuel_per_use_in_scenario × EF_fuel )
++
+Σ_scenarios( lifetime_uses × scenario_share × number_sold × electricity_per_use_in_scenario × EF_electricity )
++
+Σ_scenarios( lifetime_uses × scenario_share × number_sold × refrigerant_leak_per_use_in_scenario × EF_refrigerant_or_GWP )
++
+Σ_scenarios( lifetime_uses × scenario_share × number_sold × indirect_GHG_emitted_kg × GWP_GHG )","• Average number of uses over lifetime of product
+• Use-phase scenarios and weights (% of lifetime uses)
+• Fuel/electricity consumption per use in each scenario
+• Refrigerant leakage per use in each scenario
+• Indirect GHGs emitted in each scenario (kg)","• Combustion / electricity emission factors (kg CO2e per kWh)
+• Refrigerant EF/GWP
+• GWP of indirect GHGs","1) Define scenarios and weights summing to 1.0.
+2) For each scenario, compute lifetime uses × scenario share × units sold.
+3) Multiply by per-use energy and relevant EFs for fuels/electricity.
+4) Add refrigerant + indirect GHG components.
+5) Sum across scenarios.",Draft
+Cat 11 — Use of sold products — Intermediate products (direct energy consuming final products),Cat 11 — Use of sold products,Other,Σ (intermediate_products_sold × lifetime_uses_final_product × emissions_per_use_of_sold_intermediate_product (kg CO2e/use)),"• Type(s) of final product(s) produced from reporting company’s intermediate product(s)
+• % of intermediate product sales going to each final product type
+• Activity data needed to calculate use-phase emissions of final product (same as direct/indirect use-phase methods)","• Depending on final product type, emission factors required are the same as other Cat 11 use-phase methods (fuels, electricity, refrigerants, GWPs).","1) Identify final product types and allocation shares for intermediate products.
+2) For each final product type, estimate lifetime uses and emissions per use attributable to the intermediate product.
+3) Multiply intermediate products sold × lifetime uses × emissions per use.
+4) Sum across final product types (weighted by shares).",Draft
+Cat 12 — End-of-life of sold products — Waste-treatment mix (waste-type-specific),Cat 12 — End-of-life of sold products,Average-data,Σ (total_mass_sold_products_and_packaging_end_of_life_kg × %treated_by_method × EF_treatment_method (kg CO2e/kg)),"• Total mass of sold products and packaging from point of sale to end-of-life after consumer use (kg), including packaging to point of retail and any packaging disposed prior to end-of-life of final product
+• Proportion of this waste treated by different methods (% landfilled/incinerated/recycled/etc.)",• Average waste treatment-specific emission factors based upon all waste disposal types (kg CO2e/kg),"1) Estimate total mass of sold products + packaging that becomes waste at end-of-life.
+2) Determine disposal/treatment shares by method.
+3) Select EF per treatment method (kg CO2e/kg).
+4) Multiply mass × share × EF for each method.
+5) Sum across treatment methods.",Draft
+Cat 13 — Downstream leased assets — Asset-specific,Cat 13 — Downstream leased assets,Site-specific,"For each leased asset:
+Scope1_asset = Σ(fuel_liters × EF_fuel) + Σ(refrigerant_leakage_kg × EF_refrigerant) + process_emissions
+Scope2_asset = Σ(electricity/steam/heating/cooling_kWh × EF_energy)
+Total = Σ (Scope1_asset + Scope2_asset)
+
+If leased building not sub-metered:
+Energy_use_leased_space = (reporting_company_area_m2 / building_total_area_m2) × building_occupancy_rate × building_total_energy_use_kWh","• Asset-specific fuel use; electricity/steam/heating/cooling use; process and fugitive emissions (refrigerant leakage), OR asset-specific Scope 1 and Scope 2 emissions data
+• (Non-submetered buildings) reporting company area, building total area, occupancy rate, building total energy use","• Site/region-specific EFs for fuels and electricity/steam/heating/cooling (kg CO2e/liter; kg CO2e/kWh)
+• EFs for fugitive/process emissions (incl. refrigerant GWPs)","1) For each downstream leased asset, compute Scope 1 from fuel + refrigerants + process.
+2) Compute Scope 2 from purchased electricity/steam/heating/cooling.
+3) Sum Scope 1+2 per asset and across assets.
+4) If not sub-metered, allocate building energy from area share × occupancy × building total energy, then compute emissions.",Draft
+Cat 13 — Downstream leased assets — Average-data,Cat 13 — Downstream leased assets,Average-data,"Buildings: Σ (floor_space_by_building_type_m2 × EF_building_type (kg CO2e/m2/year))
+Other assets / no floor space: Σ (asset_count_by_type × EF_asset_type (kg CO2e/asset/year))","• Floor space of each leased asset
+• Number of leased assets by building type; and/or
+• Number of leased assets that give rise to Scope 2 emissions (e.g., company cars, trucks, etc.)","• Average emission factors by floor space (kg CO2e/m2/year)
+• Average emission factors by building type (kg CO2e/building/year)
+• Emission factors by asset type (kg CO2e/asset/year)","1) Apply floor-space EFs to leased buildings (if area data exists).
+2) Apply per-asset EFs to non-building assets / where area missing.
+3) Sum totals.",Draft
+Cat 13 — Downstream leased assets — Lessee-specific,Cat 13 — Downstream leased assets,Site-specific,"For each lessee:
+Scope1_lessee = Σ(fuel_liters × EF_fuel) + Σ(refrigerant_leakage_kg × EF_refrigerant) + process_emissions
+Scope2_lessee = Σ(electricity/steam/heating/cooling_kWh × EF_energy)
+Allocated lessee emissions = (leased_asset_metric / total_lessee_asset_metric) × (Scope1_lessee + Scope2_lessee)
+Total = Σ allocated lessee emissions","• Lessee fuel use, electricity use, process emissions and fugitive emissions (refrigerant leakage), OR lessee Scope 1 and Scope 2 emissions data
+• Physical/financial allocation data: leased asset metric (area/volume/quantity) and total lessee asset metric","• Site/region-specific EFs for energy sources (kg CO2e/kWh; kg CO2e/liter)
+• EFs for fugitive/process emissions","1) Compute Scope 1+2 for each lessee (or accept lessee-reported S1+S2).
+2) Allocate lessee emissions to leased assets using leased metric / total lessee assets.
+3) Sum allocated emissions across lessees.",Draft
+Cat 14 — Franchises — Average-data,Cat 14 — Franchises,Average-data,"Leased buildings (floor space available): Σ (floor_space_by_building_type_m2 × EF_building_type (kg CO2e/m2/year))
+Other assets / no floor space: Σ (asset_or_building_count × avg_emissions_per_asset_type (kg CO2e/asset/year))","• Floor space of each franchise (by building type) OR number of franchises by building type
+• Number of franchise assets that give rise to Scope 2 emissions (e.g., company cars, trucks)","• Average emission factors by floor space (kg CO2e/m2/year)
+• Average emission factors by building type (kg CO2e/building/year)
+• Emission factors by asset type (kg CO2e/asset/year)","1) Apply floor-space EFs where area data exists.
+2) Apply per-building/per-asset average EFs where only counts exist.
+3) Sum across franchises/assets.",Draft
+Cat 14 — Franchises — Franchise-specific,Cat 14 — Franchises,Site-specific,"Σ (scope 1 emissions + scope 2 emissions of each franchise)
+
+If buildings not sub-metered:
+Energy_use_franchise_kWh = (franchise_area_m2 / building_total_area_m2) × building_occupancy_rate × building_total_energy_use_kWh","Either:
+• Scope 1 and Scope 2 emissions data from franchisees, OR
+• Site-specific fuel use, electricity use, and other process/fugitive emissions activity data
+If not sub-metered:
+• franchise area; building total area; building occupancy rate; building total energy use","If collecting fuel/energy data:
+• Site/region-specific EFs for electricity and fuels (kg CO2e/kWh; kg CO2e/liter)
+• EFs for process emissions (e.g., refrigeration/air conditioning; refrigerant GWPs)
+If franchise provides emissions directly: none needed.","1) Collect franchise Scope 1+2 emissions (preferred).
+2) If only energy/activity data: compute fuel + electricity + fugitive/process emissions using EFs.
+3) If not sub-metered, allocate building energy by area share × occupancy × total energy.
+4) Sum across franchises.",Draft
+"Cat 15 — Investments — Average-data (equity investments, EEIO)",Cat 15 — Investments,Spend-based (EEIO),Σ ( (investee_revenue_$ × EF_sector (kg CO2e/$ revenue)) × equity_share_fraction ),"• Sector(s) investee operates in
+• Investee revenue (by sector if multi-sector)
+• Investor equity share (%)",• EEIO emission factors for relevant sectors (kg CO2e/$ revenue),"1) Map investee revenue to EEIO sector(s).
+2) Multiply revenue × sector EF.
+3) Multiply by equity share.
+4) Sum across investees (and sectors).",Draft
+"Cat 15 — Investments — Average-data (project finance / debt with known use, annual)",Cat 15 — Investments,Spend-based (EEIO),"Construction phase: Σ ( (construction_cost_$ × EF_construction_sector (kg CO2e/$)) × share_total_costs )
+Operational phase: Σ ( (project_revenue_$ × EF_operating_sector (kg CO2e/$)) × share_total_costs )","• Project construction cost in reporting year (if construction phase) OR project revenue in reporting year (if operational phase)
+• Investor proportional share of total project costs (equity + debt)","• EEIO emission factors for relevant construction sector (kg CO2e/$)
+• EEIO emission factors for relevant operating sector (kg CO2e/$)","1) Determine phase (construction vs operational).
+2) Multiply cost or revenue by sector EF.
+3) Multiply by investor share of total project costs.
+4) Sum across projects.",Draft
+Cat 15 — Investments — Investment-specific (equity investments),Cat 15 — Investments,Site-specific,Σ (scope 1 and scope 2 emissions of equity investment × equity_share_fraction),"• Scope 1 and Scope 2 emissions of investee company
+• Investor’s proportional share of equity in the investee
+• If significant: investee Scope 3 emissions (or estimate via average-data method)",• None (reporting company collects emissions data from investees),"1) Collect investee Scope 1+2 emissions for reporting year.
+2) Determine equity share (%).
+3) Multiply emissions × equity share.
+4) Sum across equity investments.",Draft
+"Cat 15 — Investments — Project-specific (project finance / debt with known use, annual)",Cat 15 — Investments,Site-specific,Σ (project_scope1+2_emissions_in_year × share_of_total_project_costs_fraction),"• Scope 1 and 2 emissions that occur in reporting year for relevant projects
+• Investor proportional share of total project costs (equity + debt)",• None (collect emissions data from investees/projects),"1) Collect project Scope 1+2 emissions for reporting year.
+2) Determine investor share of total project costs.
+3) Multiply emissions × share.
+4) Sum across projects.",Draft
+Cat 15 — Investments — Project-specific (projected lifetime),Cat 15 — Investments,Other,Σ ( (projected_annual_emissions × projected_lifetime_years) × share_of_total_project_costs_fraction ),"• Expected average annual emissions of project
+• Expected lifetime of project
+• Investor share of total project costs (%)
+• Assumptions on operation (e.g., capacity factor, heat rate, fuel carbon content) as applicable","• None if projected annual emissions are provided/derived separately; otherwise depends on project type (e.g., fuel carbon content, heat rate)","1) Estimate projected annual emissions (project-specific engineering assumptions as needed).
+2) Multiply by projected lifetime (years).
+3) Multiply by investor share of total project costs.
+4) Sum across projects.",Draft

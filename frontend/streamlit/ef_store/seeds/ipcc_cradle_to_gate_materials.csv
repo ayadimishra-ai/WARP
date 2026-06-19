@@ -1,0 +1,66 @@
+factor_id,scope,module,country,geography_level,fuel_item,technology_process,gas,factor_value,unit_numerator,unit_denominator,source_name,preferred_rank,notes
+CTG_STEEL_VIRGIN_CO2E,S3,other,GLOBAL,global,steel_virgin,cradle_to_gate,CO2e,2.89,kgCO2e,kg,ecoinvent 3.9 / DEFRA 2024,40,Virgin steel (BOF route) cradle-to-gate. ecoinvent 3.9 / World Steel Association 2023
+CTG_STEEL_RECYCLED_CO2E,S3,other,GLOBAL,global,steel_recycled,cradle_to_gate,CO2e,0.73,kgCO2e,kg,ecoinvent 3.9 / DEFRA 2024,40,Recycled steel (EAF route) cradle-to-gate. ecoinvent 3.9
+CTG_STEEL_AVERAGE_CO2E,S3,other,GLOBAL,global,steel,cradle_to_gate,CO2e,2.10,kgCO2e,kg,ecoinvent 3.9 / World Steel,40,Average steel (global mix ~30% scrap). World Steel Association 2023
+CTG_ALUMINIUM_VIRGIN_CO2E,S3,other,GLOBAL,global,aluminium_virgin,cradle_to_gate,CO2e,11.46,kgCO2e,kg,ecoinvent 3.9 / IAI 2023,40,Primary aluminium cradle-to-gate. International Aluminium Institute 2023
+CTG_ALUMINIUM_RECYCLED_CO2E,S3,other,GLOBAL,global,aluminium_recycled,cradle_to_gate,CO2e,0.68,kgCO2e,kg,ecoinvent 3.9 / IAI 2023,40,Secondary (recycled) aluminium. IAI 2023
+CTG_ALUMINIUM_AVERAGE_CO2E,S3,other,GLOBAL,global,aluminium,cradle_to_gate,CO2e,8.24,kgCO2e,kg,ecoinvent 3.9 / IAI 2023,40,Average aluminium (global mix ~35% secondary). IAI 2023
+CTG_COPPER_CO2E,S3,other,GLOBAL,global,copper,cradle_to_gate,CO2e,4.14,kgCO2e,kg,ecoinvent 3.9 / ICA 2023,40,Copper concentrate to refined copper. International Copper Association 2023
+CTG_IRON_CO2E,S3,other,GLOBAL,global,iron,cradle_to_gate,CO2e,2.50,kgCO2e,kg,ecoinvent 3.9,40,Cast iron cradle-to-gate. ecoinvent 3.9
+CTG_ZINC_CO2E,S3,other,GLOBAL,global,zinc,cradle_to_gate,CO2e,4.31,kgCO2e,kg,ecoinvent 3.9 / IZA 2023,40,Zinc (hydrometallurgical). International Zinc Association 2023
+CTG_NICKEL_CO2E,S3,other,GLOBAL,global,nickel,cradle_to_gate,CO2e,13.30,kgCO2e,kg,ecoinvent 3.9 / Nickel Institute,40,Primary nickel (Class 1). Nickel Institute LCA 2020
+CTG_TITANIUM_CO2E,S3,other,GLOBAL,global,titanium,cradle_to_gate,CO2e,34.50,kgCO2e,kg,ecoinvent 3.9,40,Titanium sponge (Kroll process). ecoinvent 3.9
+CTG_STAINLESS_STEEL_CO2E,S3,other,GLOBAL,global,stainless_steel,cradle_to_gate,CO2e,6.15,kgCO2e,kg,ecoinvent 3.9 / Worldstainless 2023,40,Stainless steel (austenitic 304) cradle-to-gate. Worldstainless EPD 2023
+CTG_PLASTIC_PET_CO2E,S3,other,GLOBAL,global,plastic_pet,cradle_to_gate,CO2e,2.73,kgCO2e,kg,ecoinvent 3.9 / DEFRA 2024,40,PET (polyethylene terephthalate) virgin pellets. ecoinvent 3.9
+CTG_PLASTIC_HDPE_CO2E,S3,other,GLOBAL,global,plastic_hdpe,cradle_to_gate,CO2e,2.10,kgCO2e,kg,ecoinvent 3.9 / DEFRA 2024,40,HDPE (high-density polyethylene) virgin pellets. ecoinvent 3.9
+CTG_PLASTIC_PP_CO2E,S3,other,GLOBAL,global,plastic_pp,cradle_to_gate,CO2e,1.95,kgCO2e,kg,ecoinvent 3.9 / DEFRA 2024,40,Polypropylene virgin pellets. ecoinvent 3.9
+CTG_PLASTIC_PVC_CO2E,S3,other,GLOBAL,global,plastic_pvc,cradle_to_gate,CO2e,2.41,kgCO2e,kg,ecoinvent 3.9 / DEFRA 2024,40,PVC (polyvinyl chloride) virgin pellets. ecoinvent 3.9
+CTG_PLASTIC_ABS_CO2E,S3,other,GLOBAL,global,plastic_abs,cradle_to_gate,CO2e,3.29,kgCO2e,kg,ecoinvent 3.9,40,ABS (acrylonitrile butadiene styrene). ecoinvent 3.9
+CTG_PLASTIC_NYLON_CO2E,S3,other,GLOBAL,global,plastic_nylon,cradle_to_gate,CO2e,7.90,kgCO2e,kg,ecoinvent 3.9,40,Nylon 6,6 (polyamide). High EF due to N2O from adipic acid precursor. ecoinvent 3.9
+CTG_PLASTIC_RECYCLED_CO2E,S3,other,GLOBAL,global,plastic_recycled,cradle_to_gate,CO2e,0.35,kgCO2e,kg,DEFRA 2024,40,Recycled mixed plastics (mechanical recycling). DEFRA 2024
+CTG_PLASTIC_GENERAL_CO2E,S3,other,GLOBAL,global,plastic_general,cradle_to_gate,CO2e,3.14,kgCO2e,kg,DEFRA 2024,40,Average virgin plastic. DEFRA 2024
+CTG_RUBBER_NATURAL_CO2E,S3,other,GLOBAL,global,rubber_natural,cradle_to_gate,CO2e,3.18,kgCO2e,kg,ecoinvent 3.9,40,Natural rubber (latex to sheet). ecoinvent 3.9
+CTG_RUBBER_SYNTHETIC_CO2E,S3,other,GLOBAL,global,rubber_synthetic,cradle_to_gate,CO2e,3.60,kgCO2e,kg,ecoinvent 3.9,40,Synthetic rubber (SBR). ecoinvent 3.9
+CTG_GLASS_CO2E,S3,other,GLOBAL,global,glass,cradle_to_gate,CO2e,0.85,kgCO2e,kg,DEFRA 2024 / Glass Alliance Europe,40,Container glass average. Includes process CO2 from carbonates + energy
+CTG_FLAT_GLASS_CO2E,S3,other,GLOBAL,global,flat_glass,cradle_to_gate,CO2e,1.35,kgCO2e,kg,ecoinvent 3.9,40,Flat glass (float process). Higher energy intensity than container glass
+CTG_GLASS_FIBRE_CO2E,S3,other,GLOBAL,global,glass_fibre,cradle_to_gate,CO2e,1.85,kgCO2e,kg,ecoinvent 3.9,40,Glass fibre (fibreglass). ecoinvent 3.9
+CTG_CEMENT_CO2E,S3,other,GLOBAL,global,cement,cradle_to_gate,CO2e,0.83,kgCO2e,kg,IEA 2023 / GCCA,40,Average cement (OPC). Clinker fraction ~0.75 × 0.524 + energy. GCCA Getting the Numbers Right 2022
+CTG_CONCRETE_CO2E,S3,other,GLOBAL,global,concrete,cradle_to_gate,CO2e,0.16,kgCO2e,kg,DEFRA 2024 / GCCA,40,Ready-mix concrete average. Lower per kg due to aggregate dilution
+CTG_BRICK_CO2E,S3,other,GLOBAL,global,brick,cradle_to_gate,CO2e,0.24,kgCO2e,kg,ecoinvent 3.9 / DEFRA 2024,40,Clay brick (fired). ecoinvent 3.9
+CTG_PAPER_CO2E,S3,other,GLOBAL,global,paper,cradle_to_gate,CO2e,1.29,kgCO2e,kg,DEFRA 2024,40,Virgin paper (A4 equivalent, global mix). DEFRA 2024
+CTG_RECYCLED_PAPER_CO2E,S3,other,GLOBAL,global,recycled_paper,cradle_to_gate,CO2e,0.75,kgCO2e,kg,DEFRA 2024,40,Recycled paper. DEFRA 2024
+CTG_CARDBOARD_CO2E,S3,other,GLOBAL,global,cardboard,cradle_to_gate,CO2e,0.79,kgCO2e,kg,DEFRA 2024,40,Cardboard (corrugated). DEFRA 2024
+CTG_PACKAGING_AVG_CO2E,S3,other,GLOBAL,global,packaging_average,cradle_to_gate,CO2e,1.00,kgCO2e,kg,DEFRA 2024,40,Mixed packaging average. DEFRA 2024
+CTG_WOOD_CO2E,S3,other,GLOBAL,global,wood,cradle_to_gate,CO2e,0.31,kgCO2e,kg,DEFRA 2024,40,Sawn timber (excludes biogenic carbon sequestration). DEFRA 2024
+CTG_TIMBER_CO2E,S3,other,GLOBAL,global,timber,cradle_to_gate,CO2e,0.31,kgCO2e,kg,DEFRA 2024,40,Structural timber. DEFRA 2024
+CTG_MDF_CO2E,S3,other,GLOBAL,global,mdf,cradle_to_gate,CO2e,0.59,kgCO2e,kg,ecoinvent 3.9,40,Medium-density fibreboard. ecoinvent 3.9
+CTG_PLYWOOD_CO2E,S3,other,GLOBAL,global,plywood,cradle_to_gate,CO2e,0.45,kgCO2e,kg,ecoinvent 3.9,40,Plywood. ecoinvent 3.9
+CTG_CHEMICALS_GENERAL_CO2E,S3,other,GLOBAL,global,chemicals_general,cradle_to_gate,CO2e,2.00,kgCO2e,kg,ecoinvent 3.9,40,Generic chemical (bulk organic). ecoinvent 3.9 average
+CTG_AMMONIA_INDUSTRIAL_CO2E,S3,other,GLOBAL,global,ammonia_industrial,cradle_to_gate,CO2e,2.82,kgCO2e,kg,ecoinvent 3.9 / IEA 2023,40,Ammonia (purchased as feedstock/chemical). Includes process + energy
+CTG_CAUSTIC_SODA_CO2E,S3,other,GLOBAL,global,caustic_soda,cradle_to_gate,CO2e,1.24,kgCO2e,kg,ecoinvent 3.9,40,Caustic soda (NaOH via chloralkali process). ecoinvent 3.9
+CTG_CHLORINE_CO2E,S3,other,GLOBAL,global,chlorine,cradle_to_gate,CO2e,1.94,kgCO2e,kg,ecoinvent 3.9,40,Chlorine (membrane cell). ecoinvent 3.9
+CTG_SULPHURIC_ACID_CO2E,S3,other,GLOBAL,global,sulphuric_acid,cradle_to_gate,CO2e,0.17,kgCO2e,kg,ecoinvent 3.9,40,Sulphuric acid (contact process). ecoinvent 3.9
+CTG_FERTILISER_N_CO2E,S3,other,GLOBAL,global,fertiliser_nitrogen,cradle_to_gate,CO2e,4.80,kgCO2e,kg,ecoinvent 3.9 / IFA 2023,40,Nitrogen fertiliser (urea + ammonium nitrate average). IFA 2023
+CTG_FERTILISER_P_CO2E,S3,other,GLOBAL,global,fertiliser_phosphate,cradle_to_gate,CO2e,1.50,kgCO2e,kg,ecoinvent 3.9,40,Phosphate fertiliser (SSP). ecoinvent 3.9
+CTG_FERTILISER_K_CO2E,S3,other,GLOBAL,global,fertiliser_potash,cradle_to_gate,CO2e,0.45,kgCO2e,kg,ecoinvent 3.9,40,Potash fertiliser (KCl). ecoinvent 3.9
+CTG_SOLVENT_CO2E,S3,other,GLOBAL,global,solvent,cradle_to_gate,CO2e,2.30,kgCO2e,kg,ecoinvent 3.9,40,Solvent average (toluene proxy). ecoinvent 3.9
+CTG_COTTON_CO2E,S3,other,GLOBAL,global,cotton,cradle_to_gate,CO2e,5.89,kgCO2e,kg,Textile Exchange 2023,40,Raw cotton (ginned). Includes land use, N2O from fertiliser. Textile Exchange LCA 2023
+CTG_WOOL_CO2E,S3,other,GLOBAL,global,wool,cradle_to_gate,CO2e,26.00,kgCO2e,kg,Textile Exchange 2023,40,Wool (greasy to clean). Dominated by enteric fermentation CH4. Textile Exchange 2023
+CTG_POLYESTER_CO2E,S3,other,GLOBAL,global,polyester,cradle_to_gate,CO2e,5.50,kgCO2e,kg,Textile Exchange 2023,40,Polyester fibre (virgin). Textile Exchange 2023
+CTG_NYLON_TEXTILE_CO2E,S3,other,GLOBAL,global,nylon_textile,cradle_to_gate,CO2e,7.90,kgCO2e,kg,Textile Exchange 2023,40,Nylon 6,6 fibre. Textile Exchange 2023
+CTG_LEATHER_CO2E,S3,other,GLOBAL,global,leather,cradle_to_gate,CO2e,17.00,kgCO2e,kg,ecoinvent 3.9,40,Bovine leather (chrome tanned). Includes allocation of cattle rearing
+CTG_FOOD_AVERAGE_CO2E,S3,other,GLOBAL,global,food_average,cradle_to_gate,CO2e,2.50,kgCO2e,kg,DEFRA 2024,40,Average food product. DEFRA 2024 food and drink EF
+CTG_BEEF_CO2E,S3,other,GLOBAL,global,beef,cradle_to_gate,CO2e,27.00,kgCO2e,kg,Poore & Nemecek 2018 / DEFRA 2024,40,Beef (retail weight). Global weighted average. Poore & Nemecek Science 2018
+CTG_PORK_CO2E,S3,other,GLOBAL,global,pork,cradle_to_gate,CO2e,12.00,kgCO2e,kg,Poore & Nemecek 2018,40,Pork (retail weight). Poore & Nemecek Science 2018
+CTG_CHICKEN_CO2E,S3,other,GLOBAL,global,chicken,cradle_to_gate,CO2e,6.90,kgCO2e,kg,Poore & Nemecek 2018 / DEFRA 2024,40,Poultry (retail weight). Poore & Nemecek Science 2018
+CTG_LAMB_CO2E,S3,other,GLOBAL,global,lamb,cradle_to_gate,CO2e,39.20,kgCO2e,kg,Poore & Nemecek 2018,40,Lamb/mutton (retail weight). High EF due to ruminant CH4
+CTG_FISH_CO2E,S3,other,GLOBAL,global,fish,cradle_to_gate,CO2e,5.40,kgCO2e,kg,Poore & Nemecek 2018,40,Fish (wild-caught average). Poore & Nemecek Science 2018
+CTG_RICE_CO2E,S3,other,GLOBAL,global,rice,cradle_to_gate,CO2e,2.90,kgCO2e,kg,Poore & Nemecek 2018,40,Rice (paddy to milled). Includes CH4 from flooded paddies
+CTG_WHEAT_CO2E,S3,other,GLOBAL,global,wheat,cradle_to_gate,CO2e,1.57,kgCO2e,kg,Poore & Nemecek 2018,40,Wheat (farm gate). Poore & Nemecek Science 2018
+CTG_VEGETABLES_CO2E,S3,other,GLOBAL,global,vegetables,cradle_to_gate,CO2e,2.00,kgCO2e,kg,Poore & Nemecek 2018,40,Vegetables average. Poore & Nemecek Science 2018
+CTG_ELECTRONICS_CO2E,S3,other,GLOBAL,global,electronics,cradle_to_gate,CO2e,30.00,kgCO2e,kg,ecoinvent 3.9 / DEFRA 2024,40,Electronics (per kg, average). High EF due to semiconductor manufacturing
+CTG_SERVER_CO2E,S3,other,GLOBAL,global,server,cradle_to_gate,CO2e,800.00,kgCO2e,unit,ecoinvent 3.9,40,Server (per unit, ~20kg). Embodied carbon per unit. ecoinvent 3.9
+CTG_LAPTOP_CO2E,S3,other,GLOBAL,global,laptop,cradle_to_gate,CO2e,350.00,kgCO2e,unit,ecoinvent 3.9 / Dell EPDs 2023,40,Laptop (per unit, ~2kg). Embodied carbon per unit. Dell EPDs 2023
+CTG_SMARTPHONE_CO2E,S3,other,GLOBAL,global,smartphone,cradle_to_gate,CO2e,70.00,kgCO2e,unit,ecoinvent 3.9 / Apple EPDs 2023,40,Smartphone (per unit). Apple/Samsung EPDs 2023
+CTG_PCBOARD_CO2E,S3,other,GLOBAL,global,pcb_assembly,cradle_to_gate,CO2e,45.00,kgCO2e,kg,ecoinvent 3.9,40,PCB assembly (per kg). High due to semiconductor components. ecoinvent 3.9
+CTG_LITHIUM_ION_BATTERY_CO2E,S3,other,GLOBAL,global,lithium_ion_battery,cradle_to_gate,CO2e,65.00,kgCO2e,kg,IEA 2023 / Benchmark Mineral Intelligence,40,Lithium-ion battery (NMC chemistry, per kg). IEA Global EV Outlook 2023

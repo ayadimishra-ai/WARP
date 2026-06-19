@@ -1,0 +1,46 @@
+factor_id,scope,module,country,geography_level,fuel_item,technology_process,gas,factor_value,unit_numerator,unit_denominator,source_name,preferred_rank,notes
+IPCC06_STAT_JET_FUEL_CO2,S1,stationary_combustion,GLOBAL,global,jet_fuel,,CO2,71500,kgCO2,TJ,IPCC 2006 Table 2.2,20,Jet kerosene. IPCC 2006 Guidelines Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_JET_FUEL_CH4,S1,stationary_combustion,GLOBAL,global,jet_fuel,,CH4,3,kgCH4,TJ,IPCC 2006 Table 2.2,20,Jet kerosene CH4 EF. IPCC 2006 Vol.2 Table 2.2
+IPCC06_STAT_JET_FUEL_N2O,S1,stationary_combustion,GLOBAL,global,jet_fuel,,N2O,0.6,kgN2O,TJ,IPCC 2006 Table 2.2,20,Jet kerosene N2O EF. IPCC 2006 Vol.2 Table 2.2
+IPCC06_STAT_AVIATION_GAS_CO2,S1,stationary_combustion,GLOBAL,global,aviation_gasoline,,CO2,70000,kgCO2,TJ,IPCC 2006 Table 2.2,20,Aviation gasoline (avgas). IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_AVIATION_GAS_CH4,S1,stationary_combustion,GLOBAL,global,aviation_gasoline,,CH4,3,kgCH4,TJ,IPCC 2006 Table 2.2,20,Aviation gasoline CH4 EF
+IPCC06_STAT_AVIATION_GAS_N2O,S1,stationary_combustion,GLOBAL,global,aviation_gasoline,,N2O,0.6,kgN2O,TJ,IPCC 2006 Table 2.2,20,Aviation gasoline N2O EF
+IPCC06_STAT_CHARCOAL_CO2,S1,stationary_combustion,GLOBAL,global,charcoal,,CO2,112000,kgCO2,TJ,IPCC 2006 Table 2.2,20,Charcoal CO2 EF. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_CHARCOAL_CH4,S1,stationary_combustion,GLOBAL,global,charcoal,,CH4,200,kgCH4,TJ,IPCC 2006 Table 2.2,20,Charcoal CH4 EF (high — incomplete combustion)
+IPCC06_STAT_CHARCOAL_N2O,S1,stationary_combustion,GLOBAL,global,charcoal,,N2O,4,kgN2O,TJ,IPCC 2006 Table 2.2,20,Charcoal N2O EF
+IPCC06_STAT_ETHANOL_CO2,S1,stationary_combustion,GLOBAL,global,ethanol,,CO2,70800,kgCO2,TJ,IPCC 2006 Table 2.2,20,Biogenic CO2 — per GHG Protocol reported separately. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_ETHANOL_CH4,S1,stationary_combustion,GLOBAL,global,ethanol,,CH4,3,kgCH4,TJ,IPCC 2006 Table 2.2,20,Ethanol CH4 EF
+IPCC06_STAT_ETHANOL_N2O,S1,stationary_combustion,GLOBAL,global,ethanol,,N2O,0.6,kgN2O,TJ,IPCC 2006 Table 2.2,20,Ethanol N2O EF
+IPCC06_STAT_COG_CO2,S1,stationary_combustion,GLOBAL,global,coke_oven_gas,,CO2,44400,kgCO2,TJ,IPCC 2006 Table 2.2,20,Coke oven gas. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_COG_CH4,S1,stationary_combustion,GLOBAL,global,coke_oven_gas,,CH4,1,kgCH4,TJ,IPCC 2006 Table 2.2,20,Coke oven gas CH4 EF
+IPCC06_STAT_COG_N2O,S1,stationary_combustion,GLOBAL,global,coke_oven_gas,,N2O,0.1,kgN2O,TJ,IPCC 2006 Table 2.2,20,Coke oven gas N2O EF
+IPCC06_STAT_BFG_CO2,S1,stationary_combustion,GLOBAL,global,blast_furnace_gas,,CO2,260000,kgCO2,TJ,IPCC 2006 Table 2.2,20,Blast furnace gas (high CO2 — low calorific gas). IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_BFG_CH4,S1,stationary_combustion,GLOBAL,global,blast_furnace_gas,,CH4,1,kgCH4,TJ,IPCC 2006 Table 2.2,20,Blast furnace gas CH4 EF
+IPCC06_STAT_BFG_N2O,S1,stationary_combustion,GLOBAL,global,blast_furnace_gas,,N2O,0.1,kgN2O,TJ,IPCC 2006 Table 2.2,20,Blast furnace gas N2O EF
+IPCC06_STAT_MSW_CO2,S1,stationary_combustion,GLOBAL,global,municipal_waste,,CO2,91700,kgCO2,TJ,IPCC 2006 Table 2.2,20,Municipal solid waste (non-biomass fraction). IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_MSW_CH4,S1,stationary_combustion,GLOBAL,global,municipal_waste,,CH4,30,kgCH4,TJ,IPCC 2006 Table 2.2,20,MSW CH4 EF
+IPCC06_STAT_MSW_N2O,S1,stationary_combustion,GLOBAL,global,municipal_waste,,N2O,4,kgN2O,TJ,IPCC 2006 Table 2.2,20,MSW N2O EF
+IPCC06_STAT_IND_WASTE_CO2,S1,stationary_combustion,GLOBAL,global,industrial_waste,,CO2,143000,kgCO2,TJ,IPCC 2006 Table 2.2,20,Industrial waste combustion (IPCC default). IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_IND_WASTE_CH4,S1,stationary_combustion,GLOBAL,global,industrial_waste,,CH4,30,kgCH4,TJ,IPCC 2006 Table 2.2,20,Industrial waste CH4 EF
+IPCC06_STAT_IND_WASTE_N2O,S1,stationary_combustion,GLOBAL,global,industrial_waste,,N2O,4,kgN2O,TJ,IPCC 2006 Table 2.2,20,Industrial waste N2O EF
+IPCC06_STAT_WASTE_OIL_CO2,S1,stationary_combustion,GLOBAL,global,waste_oils,,CO2,73300,kgCO2,TJ,IPCC 2006 Table 2.2,20,Waste oils combustion. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_WASTE_OIL_CH4,S1,stationary_combustion,GLOBAL,global,waste_oils,,CH4,3,kgCH4,TJ,IPCC 2006 Table 2.2,20,Waste oils CH4 EF
+IPCC06_STAT_WASTE_OIL_N2O,S1,stationary_combustion,GLOBAL,global,waste_oils,,N2O,0.6,kgN2O,TJ,IPCC 2006 Table 2.2,20,Waste oils N2O EF
+IPCC06_STAT_OIL_SHALE_CO2,S1,stationary_combustion,GLOBAL,global,oil_shale,,CO2,107000,kgCO2,TJ,IPCC 2006 Table 2.2,20,Oil shale and tar sands. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_OIL_SHALE_CH4,S1,stationary_combustion,GLOBAL,global,oil_shale,,CH4,3,kgCH4,TJ,IPCC 2006 Table 2.2,20,Oil shale CH4 EF
+IPCC06_STAT_OIL_SHALE_N2O,S1,stationary_combustion,GLOBAL,global,oil_shale,,N2O,0.6,kgN2O,TJ,IPCC 2006 Table 2.2,20,Oil shale N2O EF
+IPCC06_STAT_NAPHTHA_CO2,S1,stationary_combustion,GLOBAL,global,naphtha,,CO2,73300,kgCO2,TJ,IPCC 2006 Table 2.2,20,Naphtha. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_NAPHTHA_CH4,S1,stationary_combustion,GLOBAL,global,naphtha,,CH4,3,kgCH4,TJ,IPCC 2006 Table 2.2,20,Naphtha CH4 EF
+IPCC06_STAT_NAPHTHA_N2O,S1,stationary_combustion,GLOBAL,global,naphtha,,N2O,0.6,kgN2O,TJ,IPCC 2006 Table 2.2,20,Naphtha N2O EF
+IPCC06_STAT_PETCOKE_CO2,S1,stationary_combustion,GLOBAL,global,petroleum_coke,,CO2,97500,kgCO2,TJ,IPCC 2006 Table 2.2,20,Petroleum coke. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_PETCOKE_CH4,S1,stationary_combustion,GLOBAL,global,petroleum_coke,,CH4,3,kgCH4,TJ,IPCC 2006 Table 2.2,20,Petroleum coke CH4 EF
+IPCC06_STAT_PETCOKE_N2O,S1,stationary_combustion,GLOBAL,global,petroleum_coke,,N2O,0.6,kgN2O,TJ,IPCC 2006 Table 2.2,20,Petroleum coke N2O EF
+IPCC06_STAT_REFINERY_GAS_CO2,S1,stationary_combustion,GLOBAL,global,refinery_gas,,CO2,57600,kgCO2,TJ,IPCC 2006 Table 2.2,20,Refinery gas. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_REFINERY_GAS_CH4,S1,stationary_combustion,GLOBAL,global,refinery_gas,,CH4,1,kgCH4,TJ,IPCC 2006 Table 2.2,20,Refinery gas CH4 EF
+IPCC06_STAT_REFINERY_GAS_N2O,S1,stationary_combustion,GLOBAL,global,refinery_gas,,N2O,0.1,kgN2O,TJ,IPCC 2006 Table 2.2,20,Refinery gas N2O EF
+IPCC06_STAT_ORIMULSION_CO2,S1,stationary_combustion,GLOBAL,global,orimulsion,,CO2,77000,kgCO2,TJ,IPCC 2006 Table 2.2,20,Orimulsion. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_ORIMULSION_CH4,S1,stationary_combustion,GLOBAL,global,orimulsion,,CH4,3,kgCH4,TJ,IPCC 2006 Table 2.2,20,Orimulsion CH4 EF
+IPCC06_STAT_ORIMULSION_N2O,S1,stationary_combustion,GLOBAL,global,orimulsion,,N2O,0.6,kgN2O,TJ,IPCC 2006 Table 2.2,20,Orimulsion N2O EF
+IPCC06_STAT_COAL_SUB_CO2,S1,stationary_combustion,GLOBAL,global,sub_bituminous_coal,,CO2,96100,kgCO2,TJ,IPCC 2006 Table 2.2,20,Sub-bituminous coal. IPCC 2006 Vol.2 Ch.2 Table 2.2
+IPCC06_STAT_COAL_SUB_CH4,S1,stationary_combustion,GLOBAL,global,sub_bituminous_coal,,CH4,1,kgCH4,TJ,IPCC 2006 Table 2.2,20,Sub-bituminous coal CH4 EF
+IPCC06_STAT_COAL_SUB_N2O,S1,stationary_combustion,GLOBAL,global,sub_bituminous_coal,,N2O,1.5,kgN2O,TJ,IPCC 2006 Table 2.2,20,Sub-bituminous coal N2O EF

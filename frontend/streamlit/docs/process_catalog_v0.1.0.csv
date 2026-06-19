@@ -1,0 +1,523 @@
+﻿Process,Scope,Scope 3 category,Module,Activity modes supported,Required inputs (minimal),Implementation status,Method variant,Formula / method reference,Notes,Optional inputs (improve match),Outputs,Line items
+S1 — Mobile combustion (road),Scope 1,,mobile_combustion,"Distance-based, Energy-based, Mass-based, Volume-based","country, quantity, unit, fuel/item, vehicle/sub-process",In progress,,If EF is per TJ: convert fuel to TJ via NCV/density then apply. If EF is per km: apply directly; else derive using fuel economy sub-step.,We have India CO2 coefficients per TJ for some vehicle classes; need CH4/N2O + more fuels/units for full coverage.,"year, technology/process (e.g., Euro standard), fuel economy, occupancy/load (if distance-based)","kg CO2, kg CH4, kg N2O, total tCO2e; factor_id(s) + constants used + fallback flags",
+S1 — Stationary combustion (fuel burn),Scope 1,,stationary_combustion,"Energy-based, Mass-based, Volume-based","country, quantity, unit, fuel/item",Runnable in CSV runner,,Apply EF (per TJ) × energy. Convert to TJ using NCV + density when needed. IPCC defaults as GLOBAL fallback (2019 over 2006).,This is the base module for stationary fuel use in boilers/generators/furnaces etc.,"year, technology/process, NCV override, density override, IPCC category key","kg CO2, kg CH4, kg N2O, total tCO2e; factor_id(s) + constants used + fallback flags",
+S2 — Purchased electricity (grid),Scope 2,,purchased_electricity,Energy-based,"country, quantity, unit (kWh/MWh)",Not implemented,,Apply grid EF (kgCO2e/kWh). India should be sourced from CEA; GLOBAL defaults used only if missing.,Waiting on CEA factor insertion into factor store + year/version handling.,"year, grid region/state, market-based instrument data","kg CO2e (or kg CO2/CH4/N2O if factor split is available), total tCO2e; factor_id + fallback flags",
+S3 Cat 5 — Waste generated (landfill model),Scope 3,Cat 5 — Waste generated in operations,waste_landfill,Mass-based,"country, waste mass, waste type/composition, disposal pathway, year(s)",Not implemented,,IPCC 2006/2019 waste FOD model (multi-parameter). EFDB rows are mostly worksheet parameters.,This illustrates why we need process→subprocess steps: it’s not one EF; it’s a chain of parameters + equations.,"DOC, DOCf, MCF, oxidation factor, methane recovery, climate zone","kg CH4, total tCO2e; parameter IDs used + fallback flags",
+S1 — Fugitive emissions (energy),Scope 1,,fugitive_energy,"Mass-based, Other, Volume-based","country, activity quantity, unit, sub-process (e.g., coal mining underground/surface; O&G segment)",Not implemented,,Mostly worksheet/segment factors; varies by subcategory (coal mining vs oil/gas systems).,"Placeholder to be filled process-by-process (coal mining, oil & gas, refining).","mine type, gassiness, recovery/oxidation, technology/practices","kg CH4 (and CO2 where applicable), total tCO2e; factor_id(s) + fallback flags",
+IPPU — Cement (process CO2),Scope 1,,ippu_process,Mass-based,"country, clinker production (tonne) OR cement production + clinker ratio",Not implemented,,IPCC Vol.3 cement calcination method (process emissions). Add fuel combustion separately via stationary combustion module.,Direct coefficient may exist (tCO2/t clinker) but may also be computed from chemistry depending on tier.,"CaO content, MgO content, kiln type, CKD bypass, clinker fraction","kg CO2, total tCO2e; factor_id(s) + fallback flags",
+AFOLU — Enteric fermentation (Tier 1),Scope 1,,,Other,"country, animal type, headcount, period",Not implemented,,Tier 1: EF (kg CH4/head/year) × headcount × time fraction.,This will need a dedicated AFOLU module family; placeholder record for catalog completeness.,"regional defaults (Asia vs Global), animal productivity class","kg CH4, total tCO2e; factor_id(s) + fallback flags",
+"S3 Cat 8 — Upstream leased assets (buildings, avg EF by floor area)",Scope 3,Cat 8 — Upstream leased assets,other,Other,"• Reporting year
+• Geography of leased space (country; optional: grid region/city)
+• Building type (office/warehouse/retail/data center/etc.)
+• Floor area by building type (m²)
+• Time fraction leased in year (if partial-year)",Not implemented,Average-data,"GHG Protocol Scope 3 Technical Guidance — Category 8.
+Average-data (leased buildings; floor space available):
+Emissions = ∑(Floor area (m²) × EF_building_type (kg CO2e/m²/year) × time_fraction)
+Notes: If EF already includes electricity/fuels, do not add separately.","User choice hierarchy:
+1) Asset-specific / lessor-provided S1+S2 data (preferred)
+2) Average-data by floor area (this process)
+3) Average-data per building (if only building count)
+
+Factor selection:
+EF must match building type + geography + year; else fallback.
+
+Edge cases:
+• Embedded utilities vs tenant-paid utilities (avoid double counting)
+• Sub-metering available → treat as asset-specific","• Method choice: building-type EF vs proxy from energy intensity
+• Occupancy rate (if shared space)
+• Allocation basis if multi-tenant: area share / headcount share / revenue share
+• Sub-metering flag
+• Evidence/source-quality tier for EF (national stats vs industry avg vs LCA)","• Total kg CO2e (and tCO2e)
+• Breakdown by building type
+• EF source reference + factor_id(s)
+• Fallback flags (country→region→global)
+• Audit trace (inputs → conversions → multiplication steps)",
+S3 Cat 10 — Processing of sold intermediate products (site-specific),Scope 3,Cat 10 — Processing of sold products,other,"Energy-based, Mass-based, Other","• Reporting year
+• Geography of downstream processing (country)
+• Intermediate product(s) sold: quantity + unit
+• Downstream process activity data OR downstream-reported emissions:
+  - Fuels consumed (by fuel type + unit)
+  - Electricity consumed (kWh)
+  - Optional: refrigerant leakage (kg)
+  - Optional: waste generated (kg by waste type)",Not implemented,Site-specific,"GHG Protocol Scope 3 Technical Guidance — Category 10.
+Site-specific (Formula 10.1):
+Emissions = Σ(fuel×EF_fuel) + Σ(elec×EF_elec) + Σ(refrigerant_leak×GWP) + process emissions + Σ(waste×EF_waste)
+If downstream partner provides calculated emissions, store as reported and record methodology metadata.","User choices:
+• Site-specific (preferred when partner data exists) vs average-data.
+
+Edge cases:
+• If downstream uses other inputs besides sold intermediate product, allocation is mandatory.
+• Attribute processing only (exclude use-phase & end-of-life).","• Allocation basis for co-processing: mass / economic value / other physical
+• Grid region for electricity EF
+• Distinguish Scope 1 vs Scope 2 of processor
+• Process emissions/fugitives (if applicable)
+• Boundary confirmation to avoid double counting","• Total kg CO2e (and tCO2e)
+• Breakdown: fuels + electricity + refrigerants + process + waste
+• Factor IDs used + GWP set
+• Allocation method + audit trace",
+S3 Cat 10 — Processing of sold intermediate products (average-data),Scope 3,Cat 10 — Processing of sold products,other,Mass-based,"• Reporting year
+• Geography of downstream processing (country/region, if EF is region-specific)
+• Intermediate product(s) sold: mass (kg) by product/process route",Not implemented,Average-data,"GHG Protocol Scope 3 Technical Guidance — Category 10.
+Average-data (Formula 10.2):
+Emissions = ∑(mass_sold_intermediate (kg) × EF_processing (kg CO2e/kg final product))
+Note: Ensure EF boundaries match the defined processing stages.","User choices:
+• Use average-data when partner data unavailable.
+
+Edge cases:
+• If EF is per kg of final product, and intermediate product is only a fraction, allocation/conversion is required.","• Downstream process stage mapping (which processes are included)
+• Allocation basis if multiple inputs drive processing emissions
+• Quality tier of secondary EF (database/industry association/LCA)
+• Boundary confirmation (avoid double counting with Cat 10 site-specific or Cat 11)","• Total kg CO2e (and tCO2e)
+• Breakdown by intermediate product/process route
+• EF IDs/sources used + audit trace",
+"S3 Cat 9 — Downstream transport (distance-based, tonne-km)",Scope 3,Cat 9 — Downstream transport & distribution,other,"Distance-based, Mass-based","• Reporting year
+• Geography context (country/region of transport legs)
+• Mass shipped after point of sale (tonnes)
+• Distance by leg (km)
+• Transport mode/vehicle class per leg",Not implemented,Distance-based,"GHG Protocol Scope 3 Technical Guidance — Category 9.
+Distance-based method:
+Emissions = ∑(mass (tonnes) × distance (km) × EF_mode (kg CO2e/tonne-km))
+Boundary: if company pays to retailer → Category 4, not Category 9.","User choices:
+• Method: fuel-based / distance-based / spend-based (default distance-based when data limited)
+
+Edge cases:
+• Intermediate products: include legs from point of sale to end consumer or next business customer (per guidance)
+• Customer travel to stores is optional; model separately if included
+
+Factor selection:
+EF must match mode + vehicle class + region; else fallback.","• Refrigerated transport flag
+• Backhaul/unladen assumption
+• Load factor (parcel/LTL)
+• Chargeable/dimensional mass method
+• Distance estimation method (maps, port-to-port, gov stats)","• Total kg CO2e (and tCO2e)
+• Breakdown by leg and mode
+• EF IDs/sources used (kgCO2e/tonne-km)
+• Fallback flags + audit trace",
+S3 Cat 8 — Upstream leased assets (avg EF per asset),Scope 3,Cat 8 — Upstream leased assets,other,Other,"• Reporting year
+• Geography (country; optional: region)
+• Asset types + counts (e.g., cars, forklifts, leased equipment)
+• Time fraction in year (if partial-year)",Not implemented,Average-data,"GHG Protocol Scope 3 Technical Guidance — Category 8.
+Average-data (non-building assets OR no floor-space):
+Emissions = ∑(asset_count × EF_asset_type (kg CO2e/asset/year) × time_fraction)","User choices:
+• Prefer asset-specific (fuel/electricity) data when available; otherwise use average-data per asset.
+
+Edge cases:
+• If asset uses fuel/electricity directly and you have consumption data, model as asset-specific to avoid over/under-counting.
+
+Factor selection:
+EF must match asset type + geography + year; else fallback country→region→global.","• Asset subtype/technology (ICE/EV; size class)
+• Usage intensity (km/year, hours/year)
+• Fuel type / electricity grid region
+• Allocation basis if shared assets
+• Evidence/source-quality tier for EF","• Total kg CO2e (and tCO2e)
+• Breakdown by asset type
+• EF source reference + factor_id(s)
+• Fallback flags + audit trace",
+"S3 Cat 11 — Use of sold products (direct, energy consuming products)",Scope 3,Cat 11 — Use of sold products,other,"Energy-based, Other","• Reporting year
+• Product group(s) sold (SKU or grouped)
+• Units sold
+• Expected lifetime uses per unit (hours/cycles/km)
+• Energy per use (kWh electricity and/or fuel per use)
+• Geography of use (country or sales-weighted mix)",Not implemented,Other,"GHG Protocol Scope 3 Technical Guidance — Category 11.
+Direct use-phase for energy-consuming products (Formula 11.1):
+Emissions = Σ(lifetime_uses×units_sold×electricity_per_use×EF_electricity)
+        + Σ(lifetime_uses×units_sold×fuel_per_use×EF_fuel)
+        + Σ(lifetime_uses×units_sold×refrigerant_leak_per_use×GWP)","Key user choices:
+• Grouping strategy (SKU vs product family)
+• Geography resolution for electricity EF
+
+Edge cases:
+• Leased products may be reported as Cat 11 instead of Cat 13 (avoid double counting)
+• Fuels/feedstocks sold for combustion use separate Cat 11 fuels/feedstocks process.","• Multiple use scenarios + shares (sensitivity)
+• Product lifetime distribution (min/typ/max)
+• Regional/country grid EFs
+• Refrigerant leakage per use (if applicable)
+• Maintenance emissions (optional)","• Lifetime emissions for products sold in reporting year (kg/t CO2e)
+• Breakdown by product group and scenario
+• Factors used (grid EF, fuel EF, GWP set)
+• Audit trace + assumptions log",
+"S3 Cat 11 — Use of sold products (direct, fuels & feedstocks combustion)",Scope 3,Cat 11 — Use of sold products,stationary_combustion,"Energy-based, Mass-based, Volume-based","• Reporting year
+• Geography of combustion (country or sales-weighted mix)
+• Fuel/feedstock type
+• Quantity sold + unit (energy/mass/volume)
+• If mass/volume: NCV/density (if conversion needed)",In progress,Fuel-based,"GHG Protocol Scope 3 Technical Guidance — Category 11.
+Fuels & feedstocks combustion-only (Formula 11.2):
+Emissions = ∑(quantity_sold × combustion_EF)
+Boundary: combustion only (exclude upstream production to avoid double counting with Cat 3 / upstream categories).","User choices:
+• Use stationary vs mobile combustion factors depending on end-use if known; otherwise use conservative/default.
+
+Edge cases:
+• If fuel sold is used as feedstock (not combusted), emissions may be zero for this process.
+
+Factor selection:
+Use country factors if available else ladder to regional/global; prefer 2019 over 2006 where both exist.","• End-use sector / combustion technology (if factors vary)
+• Biofuel fraction / biogenic CO2 treatment
+• Oxidation factor if non-default
+• Evidence tier for factors","• kg CO2, kg CH4, kg N2O, total tCO2e
+• Factor IDs used + fallback flags
+• Audit trace of unit conversions + selection ladder",
+S3 Cat 12 — End-of-life of sold products (waste-treatment mix),Scope 3,Cat 12 — End-of-life of sold products,other,Mass-based,"• Reporting year
+• Geography of disposal (country/region)
+• Mass of products sold at end-of-life (kg) by material/waste type
+• Packaging mass (kg) by type
+• Disposal pathway shares (% landfill/incineration/recycling/compost/etc.)",Not implemented,Average-data,"GHG Protocol Scope 3 Technical Guidance — Category 12.
+Waste-treatment mix (Formula 12.1):
+Emissions = ∑_treatment( mass_sold_waste (kg) × share_treatment × EF_treatment (kg CO2e/kg) )","User choices:
+• Waste-type-specific vs average-data.
+
+Edge cases:
+• For products consumed (food/drink), end-of-life waste mass may be < mass sold.
+• For products combusted for energy, disposal may be near zero but combustion belongs elsewhere.","• Regional consumer disposal behavior dataset
+• Food/drink waste fraction (if applicable)
+• Separate treatment shares for packaging vs product
+• Whether to include/avoid recycling credits (define approach)
+• Transport-to-waste-site inclusion flag (if EF includes it)","• Total kg CO2e (and tCO2e)
+• Breakdown by waste type and treatment method
+• EF IDs/sources + fallback flags
+• Audit trace",
+"S3 Cat 14 — Franchises (franchise-specific, S1+S2 emissions)",Scope 3,Cat 14 — Franchises,other,Other,"• Reporting year
+• Franchise list (unique identifiers)
+• For each franchise: scope 1 + scope 2 emissions OR energy consumption by fuel/electricity",Not implemented,Site-specific,"GHG Protocol Scope 3 Technical Guidance — Category 14.
+Franchise-specific (Formula 14.1):
+Emissions = ∑_franchise( Scope1_franchise + Scope2_franchise )
+If not sub-metered: estimate energy from floor-space share × building energy (per guidance).","User choices:
+• Franchise-specific vs average-data (floor space / per franchise type).
+
+Sampling:
+• If too many franchises to collect individually, use Appendix A sampling + extrapolation. Record sampling interval / strata and extrapolation formula.
+
+Edge cases:
+• If franchise emissions are already within organizational boundary Scopes 1–2 (depending on consolidation approach), exclude here to avoid double counting.","• Sampling plan (if many franchises) + extrapolation method
+• Allocation basis if franchise serves multiple brands (revenue, floor area, throughput)
+• Sub-metering flag; if none: floor-space allocation
+• Include significant franchise upstream emissions (optional, if material)","• Total kg CO2e (and tCO2e)
+• Breakdown by franchise / franchise group
+• Sampling/extrapolation trace (if used)
+• Audit log for allocations",
+"S3 Cat 15 — Investments (equity, investment-specific)",Scope 3,Cat 15 — Investments,other,Other,"• Reporting year
+• Investee scope 1 + scope 2 emissions (tCO2e)
+• Investor equity share (%)
+• Portfolio snapshot rule (e.g., year-end holdings or average holdings)",Not implemented,Site-specific,"GHG Protocol Scope 3 Technical Guidance — Category 15.
+Investment-specific equity method (Formula 15.1):
+Emissions = ∑( investee_scope1+2 × equity_share )","User choices:
+• Prefer investment-specific when investee emissions available; else use average-data EEIO (separate process).
+
+Edge cases:
+• Avoid double counting with Scopes 1–2 if equity-share consolidation already used.","• Include investee scope 3 if significant (define threshold)
+• Threshold for small holdings (e.g., exclude <1% if disclosed)
+• Data provenance (investee inventory vs estimator)
+• Currency/inflation handling (if using average-data EEIO elsewhere)","• Attributed tCO2e to investor
+• Breakdown by investee
+• Audit trace (equity share used, snapshot date)",
+S3 Cat 13 — Downstream leased assets (asset-specific S1+S2),Scope 3,Cat 13 — Downstream leased assets,other,Other,"• Reporting year
+• Leased asset inventory (owned by reporting company; leased to others)
+• For each asset: lessee-provided fuel + electricity use OR lessee scope 1 + scope 2 emissions (allocated to the asset)
+• Time fraction leased in year",Not implemented,Site-specific,"GHG Protocol Scope 3 Technical Guidance — Category 13 refers to Category 8 methods.
+Asset-specific approach:
+1) Compute/collect lessee scope 1 + scope 2 emissions for the leased asset (or allocate from aggregated lessee emissions)
+2) Sum across assets: ∑(asset emissions × time_fraction)","Cat 13 is for lessors (reporting company owns the asset). If you choose to report leased products under Cat 11 instead, exclude from Cat 13 to avoid double counting.","• Allocation method where lessee reports aggregated emissions: floor area share / usage share / other physical basis
+• Sub-metering flag
+• Geography (grid region) for electricity factor if using activity data
+• Sampling plan if many assets","• Total kg CO2e (and tCO2e)
+• Breakdown by asset/building type
+• Allocation + sampling trace
+• Audit log (data source, assumptions)",
+"S3 Cat 15 — Investments (equity, average-data EEIO)",Scope 3,Cat 15 — Investments,other,Other,"• Reporting year
+• Investee sector classification(s)
+• Investee revenue by sector ($)
+• Investor equity share (%)
+• EEIO EF for sector (kg CO2e/$)",Not implemented,Spend-based (EEIO),"GHG Protocol Scope 3 Technical Guidance — Category 15.
+Average-data (Formula 15.2):
+Emissions = ∑( (Revenue × EEIO_EF_sector) × equity_share )","Use when investee cannot provide scope 1+2. EEIO is coarse; good for screening + prioritization, not tracking investee performance over time.","• Geography-specific EEIO dataset (country/region)
+• Inflation/exchange-rate normalization between EEIO year and reporting year
+• Boundary choice: scope1+2 only vs full upstream (if disaggregation not possible, use full and disclose)
+• Screening threshold to prioritize high-impact holdings","• Attributed tCO2e to investor
+• Breakdown by investee + sector
+• EEIO dataset reference + assumptions log",
+S3 Cat 15 — Project finance / debt with known use (project-specific annual),Scope 3,Cat 15 — Investments,other,Other,"• Reporting year
+• Project list (known use of proceeds)
+• Project scope 1+2 emissions in reporting year (tCO2e)
+• Investor share of total project costs (% of equity+debt)",Not implemented,Site-specific,"GHG Protocol Scope 3 Technical Guidance — Category 15.
+Project-specific annual (Formula 15.3):
+Emissions = ∑( project_scope1+2_in_year × share_of_total_project_costs )",Applies to project finance and corporate debt with known use of proceeds tied to a project.,"• Include project scope 3 if significant (define threshold)
+• Data provenance (mandatory facility reporting, project operator inventory)
+• Portfolio snapshot rule","• Attributed tCO2e to investor for reporting year
+• Breakdown by project
+• Audit log (share of total costs, data source)",
+S3 Cat 15 — Project finance / debt with known use (average-data EEIO annual),Scope 3,Cat 15 — Investments,other,Other,"• Reporting year
+• Project phase (construction vs operation)
+• Construction cost (if construction) OR project revenue (if operation)
+• EEIO EF for relevant sector (kg CO2e/$)
+• Investor share of total project costs (%)",Not implemented,Spend-based (EEIO),"GHG Protocol Scope 3 Technical Guidance — Category 15.
+Average-data annual (Formula 15.4):
+Construction: ∑((construction_cost × EEIO_EF_construction) × share_total_costs)
+Operation: ∑((revenue × EEIO_EF_operating_sector) × share_total_costs)",Use as last resort when project emissions not available. Not valid if project has no revenue during operation.,"• Geography-specific EEIO dataset
+• Inflation/exchange-rate normalization
+• Boundary choice (scope1+2 vs full upstream)
+• Screening threshold","• Attributed tCO2e to investor for reporting year
+• Breakdown by project
+• Assumptions log",
+"S3 Cat 15 — Project finance (projected lifetime emissions, initial year only)",Scope 3,Cat 15 — Investments,other,Other,"• Initial financing year
+• Projected annual emissions (tCO2e/year)
+• Projected lifetime (years; may be a range)
+• Initial sponsor/lender share of total project costs (%)",Not implemented,Other,"GHG Protocol Scope 3 Technical Guidance — Category 15.
+Projected lifetime (initial year only):
+Lifetime emissions = (projected_annual_emissions × lifetime_years) × share_total_project_costs",Report only in the initial year the project is financed; do not repeat annually (avoids double counting).,"• Scenario ranges (min/typ/max capacity factor)
+• Heat rate + fuel carbon content (for power plants)
+• Disclosure note: do not amortize; avoid double counting with annual emissions","• Projected lifetime tCO2e attributed to investor (reported separately from scope 3 annual totals)
+• Assumptions + scenario range log",
+S3 Cat 1 — Purchased goods & services (spend-based EEIO),Scope 3,Cat 1 — Purchased goods & services,other,Other,"• Reporting year
+• Spend by category ($)
+• EEIO EF by category (kg CO2e/$)",Not implemented,Spend-based (EEIO),"Scope 3 Technical Guidance — Cat 1 spend-based:
+Emissions = ∑(spend × EEIO EF)",Good for screening. Coarse; not suitable for tracking supplier improvements unless updated with supplier-specific methods.,"• Inflation/exchange-rate normalization between spend year and EEIO year
+• Region-specific EEIO dataset
+• Mapping table from GL codes to EEIO sectors","• kg CO2e by spend category
+• Total Cat 1 emissions
+• EEIO dataset reference + assumptions log",
+S3 Cat 3A — Upstream emissions of purchased fuels,Scope 3,Cat 3 — Fuel- & energy-related (not in S1/S2),other,"Energy-based, Mass-based, Volume-based","• Reporting year
+• Fuel types consumed in Scopes 1/2 (quantity + unit)
+• Upstream fuel EF (kg CO2e/unit) OR life cycle EF and combustion EF to derive upstream EF",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 3A:
+Upstream EF = life cycle EF − combustion EF
+Emissions = ∑(fuel consumed × upstream EF)",Avoid double counting: combustion emissions are in Scope 1; this is upstream extraction/production/transport only.,"• Supplier-specific upstream EF
+• Country/region of fuel production
+• Whether EF includes T&D losses (for electricity-related parts)
+• Conversion constants (NCV/density)","• kg CO2e (upstream only) by fuel type
+• Total Cat 3A emissions
+• Audit trace showing upstream EF derivation if used",
+S3 Cat 2 — Capital goods (average-data per mass/unit),Scope 3,Cat 2 — Capital goods,other,"Mass-based, Other","• Reporting year
+• Capital good type
+• Quantity purchased (kg/unit)
+• Average cradle-to-gate EF (kg CO2e/kg or per unit)",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 2 average-data:
+Emissions = ∑(mass/units of capital goods × EF)",Report total cradle-to-gate emissions of capital goods purchased in the reporting year (not amortized).,"• Capitalization policy (what qualifies)
+• Asset lifetime (for intensity metrics; reporting still in year of purchase)
+• Supplier/region mix
+• Boundary confirmation","• kg CO2e by capital good type
+• Total Cat 2 emissions
+• EF dataset references + audit trace",
+S3 Cat 1 — Purchased goods & services (supplier-specific EF),Scope 3,Cat 1 — Purchased goods & services,other,"Mass-based, Other","• Reporting year
+• Purchased good/service identifier (category/SKU)
+• Quantity purchased (kg/unit)
+• Supplier-specific product EF (kg CO2e/kg or per unit)",Not implemented,Supplier-specific,"Scope 3 Technical Guidance — Cat 1 supplier-specific:
+Emissions = ∑(quantity purchased × supplier-specific EF)",Preferred method when reliable supplier product footprints exist. Ensure boundary alignment to avoid double counting with Cat 4 transport or other categories.,"• Supplier verification/assurance status
+• Boundary of supplier EF (cradle-to-gate vs gate-to-gate)
+• Allocation rules if EF covers multiple products
+• Geography of production (if supplier provides region-specific EF)
+• Data quality score","• kg CO2e and tCO2e by purchased item + supplier
+• Total Cat 1 emissions
+• EF provenance + audit trace",
+S3 Cat 1 — Purchased goods & services (average-data EF per mass/unit),Scope 3,Cat 1 — Purchased goods & services,other,"Mass-based, Other","• Reporting year
+• Purchased item type
+• Quantity purchased (kg/unit)
+• Average cradle-to-gate EF (kg CO2e/kg or per unit)",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 1 average-data:
+Emissions = ∑(mass or units purchased × average EF)",Use when supplier-specific not available. Prefer material/product LCA databases over broad sector averages.,"• Supplier/region mix to choose better secondary EF
+• Inflation year / EF dataset year
+• Boundary confirmation (cradle-to-gate)
+• Data quality tier","• kg CO2e by purchased item type
+• Total Cat 1 emissions
+• EF dataset reference + audit trace",
+S3 Cat 3B — Upstream emissions of purchased electricity/steam/heat/cooling,Scope 3,Cat 3 — Fuel- & energy-related (not in S1/S2),purchased_electricity,Energy-based,"• Reporting year
+• Electricity/steam/heat/cooling consumed (kWh) by country/grid
+• Upstream EF for purchased energy (kg CO2e/kWh) OR life cycle EF minus generation EF minus T&D losses (as applicable)",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 3B:
+Upstream EF = life cycle EF − generation EF − T&D losses (only if included in life cycle EF)
+Emissions = ∑(energy consumed × upstream EF)",Treat as separate from Scope 2 (generation emissions) to avoid double counting.,"• Supplier-specific upstream factors
+• T&D loss rate (%) by grid
+• Confirm whether life cycle EF already includes T&D losses
+• Market-based vs location-based context (if used elsewhere)","• kg CO2e upstream by energy type + grid
+• Total Cat 3B emissions
+• Audit trace (EF selection + T&D handling)",
+S3 Cat 3C — Transmission & distribution (T&D) losses,Scope 3,Cat 3 — Fuel- & energy-related (not in S1/S2),purchased_electricity,Energy-based,"• Reporting year
+• Electricity/steam/heat/cooling consumed (kWh)
+• Life cycle EF for energy (kg CO2e/kWh)
+• T&D loss rate (%)",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 3C:
+Emissions = ∑(energy consumed × life cycle EF × T&D loss rate)",Subtract losses only where required by boundary setup; disclose assumptions.,"• Utility-specific loss rate
+• Country vs regional vs global loss rate fallback ladder
+• Confirm whether life cycle EF includes upstream components","• kg CO2e attributable to T&D losses by grid
+• Total Cat 3C emissions
+• Audit trace",
+S3 Cat 4 — Upstream transport (distance-based tonne-km),Scope 3,Cat 4 — Upstream transport & distribution,other,"Distance-based, Mass-based","• Reporting year
+• Mass of purchased goods transported (tonnes)
+• Distance by leg (km)
+• Mode/vehicle class per leg
+• Geography for EF selection",Not implemented,Distance-based,"Scope 3 Technical Guidance — Cat 4 distance-based:
+Emissions = ∑(mass × distance × EF_mode (kg CO2e/tonne-km))",Cat 4 includes transport services purchased by reporting company (upstream).,"• Refrigerated transport
+• Chargeable/dimensional mass
+• Backhaul assumption
+• Supplier-provided distances vs estimated distances","• kg CO2e by leg/mode
+• Total Cat 4 transport emissions
+• EF IDs/sources + audit trace",
+S3 Cat 4 — Upstream distribution/storage (average-data),Scope 3,Cat 4 — Upstream transport & distribution,other,Other,"• Reporting year
+• Volume of goods stored (m³ / pallet / TEU)
+• Average days stored (days)
+• Storage EF (kg CO2e per m³-day / pallet-day / TEU-day)",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 4 distribution average-data:
+Emissions = ∑(volume stored × days stored × EF_storage)",Prefer site-specific facility energy data when available (separate process can be added later).,"• Facility type (warehouse, cold storage)
+• Geography (grid region)
+• Temperature control flag
+• Throughput-based estimation method","• kg CO2e by storage facility type
+• Total Cat 4 distribution emissions
+• EF reference + audit trace",
+S3 Cat 4 — Upstream transport (spend-based EEIO),Scope 3,Cat 4 — Upstream transport & distribution,other,Other,"• Reporting year
+• Spend on transportation services by type ($)
+• EEIO EF for transportation type (kg CO2e/$)",Not implemented,Spend-based (EEIO),"Scope 3 Technical Guidance — Cat 4 spend-based:
+Emissions = ∑(spend × EEIO EF_transport)",Last-resort method; cannot distinguish vehicle efficiencies or routes.,"• Inflation/exchange-rate normalization
+• Map logistics GL codes to transport modes
+• Region-specific EEIO dataset","• kg CO2e by spend category
+• Total Cat 4 transport emissions
+• Assumptions log",
+S3 Cat 2 — Capital goods (spend-based EEIO),Scope 3,Cat 2 — Capital goods,other,Other,"• Reporting year
+• Spend on capital goods by category ($)
+• EEIO EF by category (kg CO2e/$)",Not implemented,Spend-based (EEIO),"Scope 3 Technical Guidance — Cat 2 spend-based:
+Emissions = ∑(spend × EEIO EF)",Use for screening when quantity data absent. Coarse method.,"• Inflation/exchange-rate normalization
+• Region-specific EEIO dataset
+• GL→EEIO sector mapping
+• Capitalization policy","• kg CO2e by spend category
+• Total Cat 2 emissions
+• EEIO dataset reference + assumptions log",
+S3 Cat 4 — Upstream transport (fuel-based),Scope 3,Cat 4 — Upstream transport & distribution,other,"Energy-based, Other, Volume-based","• Reporting year
+• Fuel consumed by transport service (litres by fuel type) and/or electricity consumed (kWh)
+• (If allocating) mass/volume share of reporting company goods in the vehicle",Not implemented,Fuel-based,"Scope 3 Technical Guidance — Cat 4 fuel-based:
+Emissions = ∑(fuel litres × EF_fuel) + ∑(electricity kWh × EF_grid) + ∑(refrigerant leak × GWP)
+Allocated emissions = total transport emissions × (company goods mass/total mass) (or volume-based)",Use when fuel/electricity data from logistics providers is available. If only spend exists use spend-based method.,"• Refrigerant leakage for refrigerated transport
+• Fuel efficiency + distance to infer fuel when fuel not available
+• Backhaul/unladen assumption
+• Allocation method: mass/volume/chargeable mass","• kg CO2e by fuel/electricity
+• Allocated kg CO2e to reporting company
+• Audit trace (allocation + EF selection)",
+S3 Cat 2 — Capital goods (supplier-specific EF),Scope 3,Cat 2 — Capital goods,other,"Mass-based, Other","• Reporting year
+• Capital good identifier
+• Quantity purchased (kg/unit)
+• Supplier-specific product EF (kg CO2e/kg or per unit)",Not implemented,Supplier-specific,"Scope 3 Technical Guidance — Cat 2 supplier-specific:
+Emissions = ∑(quantity × supplier-specific EF)",Preferred where suppliers provide verified product footprints for capital goods. Report in year of acquisition (not amortized).,"• Supplier verification status
+• Boundary of EF (cradle-to-gate)
+• Allocation rules if EF covers multiple assets
+• Geography of production
+• Data quality score","• kg CO2e by capital good
+• Total Cat 2 emissions
+• EF provenance + audit trace",
+S3 Cat 4 — Upstream distribution/storage (site-specific facility energy + allocation),Scope 3,Cat 4 — Upstream transport & distribution,purchased_electricity,"Energy-based, Other","• Reporting year
+• For each storage facility: electricity (kWh) + fuels (by type/unit) + (if applicable) refrigerant leakage (kg)
+• Allocation basis: volume of reporting company goods stored (m³) and total facility stored volume (m³) OR alternative allocation basis",Not implemented,Site-specific,"Scope 3 Technical Guidance — Cat 4 distribution site-specific:
+Facility emissions = (fuel kWh × EF_fuel) + (electricity kWh × EF_elec) + (refrigerant leak × GWP)
+Allocated facility emissions = (company volume / total volume) × facility emissions
+Total = ∑ allocated facility emissions",Use when facility energy data available; otherwise use average-data storage EFs.,"• Occupancy rate / average throughput
+• Facility type (ambient vs cold storage)
+• Grid region for electricity EF
+• Allocation choice: volume share vs pallet share vs area share
+• Include/exclude inbound/outbound handling energy (define boundary)","• kg CO2e per facility (allocated)
+• Total Cat 4 distribution emissions
+• Audit trace (allocation + EFs)",
+S3 Cat 5 — Waste generated in operations (supplier-specific / waste contractor emissions),Scope 3,Cat 5 — Waste generated in operations,other,Other,"• Reporting year
+• Allocated scope 1+2 emissions provided by waste treatment contractor for the reporting company's waste",Not implemented,Supplier-specific,"Scope 3 Technical Guidance — Cat 5 supplier-specific:
+Emissions = ∑(allocated contractor scope 1+2 emissions)",No EFs needed if contractor provides computed emissions; verify boundary and allocation.,"• Allocation basis + method documentation
+• Contractor verification status
+• Waste stream coverage (which sites/streams included)","• Total kg/t CO2e from contractor-reported data
+• Audit trace (allocation + provenance)",
+S3 Cat 6 — Business travel (distance-based passenger-km + hotels),Scope 3,Cat 6 — Business travel,other,"Distance-based, Other","• Reporting year
+• Travel distance by mode (passenger-km) or trip distance (km) + number of passengers
+• Mode/vehicle class (air/rail/bus/car)
+• Hotel nights (optional)
+• EFs per passenger-km by mode; EF per hotel night (if included)",Not implemented,Distance-based,"Scope 3 Technical Guidance — Cat 6 distance-based:
+Emissions = ∑(passenger_km × EF_mode) + ∑(hotel_nights × EF_hotel_night)","Prefer distance-based when trip distance and mode available. If only spend, use spend-based EEIO (can be added later).","• Class of travel (economy/business)
+• Radiative forcing factor policy for air travel
+• Country-specific rail/road factors
+• Include rental car fuel-based data if available","• kg CO2e by travel mode + hotels
+• Total Cat 6 emissions
+• EF references + audit trace",
+S3 Cat 5 — Waste generated in operations (waste-type-specific),Scope 3,Cat 5 — Waste generated in operations,waste_landfill,"Mass-based, Other","• Reporting year
+• Waste mass by waste type (tonnes or kg)
+• Treatment method per waste type (landfill/incineration/recycling/compost/etc.)
+• EF by (waste type × treatment method) (kg CO2e/tonne or kg)",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 5 waste-type-specific:
+Emissions = ∑(waste_mass × EF_waste_type,treatment)",Most accurate when waste streams and treatments are known.,"• Include transport-to-treatment in EF (and disclose)
+• Regional treatment-specific factors
+• Moisture content / DOC for landfill models (if using model-based EFs)","• kg CO2e by waste type and treatment
+• Total Cat 5 emissions
+• EF references + audit trace",
+S3 Cat 5 — Waste generated in operations (average-data by treatment mix),Scope 3,Cat 5 — Waste generated in operations,waste_landfill,Mass-based,"• Reporting year
+• Total waste mass (tonnes)
+• Treatment shares (% landfill/incineration/recycling/etc.)
+• EF per treatment method (kg CO2e/tonne)",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 5 average-data:
+Emissions = ∑(total_waste_mass × share_treatment × EF_treatment)",Use when waste types are unknown but disposal mix is known.,"• Waste composition breakdown (if available)
+• Geography-specific waste pathway factors
+• Separate hazardous vs non-hazardous streams","• kg CO2e by treatment method
+• Total Cat 5 emissions
+• Assumptions log",
+S3 Cat 6 — Business travel (fuel-based / energy-based),Scope 3,Cat 6 — Business travel,other,"Energy-based, Other, Volume-based","• Reporting year
+• Fuel consumed (litres by fuel type) and/or electricity consumed (kWh) for travel modes (where available)
+• Refrigerant leakage (if applicable)
+• Hotel nights (optional)",Not implemented,Fuel-based,"Scope 3 Technical Guidance — Cat 6 fuel-based:
+Emissions = ∑(fuel litres × EF_fuel) + ∑(electricity kWh × EF_grid) + ∑(refrigerant leak × GWP) + ∑(hotel_nights × EF_hotel)","Use when actual fuel/energy data is available (e.g., company fleet for business travel).","• Allocate shared travel emissions (carpool, charter)
+• Fuel spend + avg fuel price to estimate litres (if needed)
+• Distance + fuel efficiency to estimate litres (if needed)","• kg CO2e by fuel/electricity/hotel
+• Total Cat 6 emissions
+• Audit trace of any fuel estimation steps",
+S3 Cat 7 — Employee commuting (distance-based),Scope 3,Cat 7 — Employee commuting,other,"Distance-based, Other","• Reporting year
+• Employee commuting distance (one-way km)
+• Working days per year
+• Mode split (car/bus/rail/metro/etc.) or mode per employee/sample
+• EF per passenger-km by mode",Not implemented,Distance-based,"Scope 3 Technical Guidance — Cat 7 distance-based:
+Total distance by mode = ∑(one_way_km × 2 × commuting_days)
+Emissions = ∑(distance_by_mode × EF_mode)
+(Optional) add teleworking energy emissions if included.","If full employee-level data not feasible, use stratified sampling and extrapolate.","• Sampling design (Appendix A)
+• Car occupancy / carpool rates
+• Remote work days + home energy adders (optional)
+• Country-specific factors per mode","• kg CO2e by mode
+• Total Cat 7 emissions
+• Sampling/extrapolation trace (if used)",
+S3 Cat 7 — Employee commuting (average-data),Scope 3,Cat 7 — Employee commuting,other,Other,"• Reporting year
+• Total employees
+• Avg one-way commute distance (km)
+• Working days per year
+• Mode split (% by mode)
+• EF per passenger-km by mode",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 7 average-data:
+Emissions = ∑(employees × %mode × one_way_km × 2 × working_days × EF_mode)",Use when only aggregate HR + survey stats exist.,"• Separate by site/city
+• Separate by employee group (shift/office)
+• Country-specific EFs","• kg CO2e by mode
+• Total Cat 7 emissions
+• Assumptions log",
+S3 Cat 2 — Capital goods (hybrid: supplier S1+S2 + materials + transport + waste),Scope 3,Cat 2 — Capital goods,other,"Distance-based, Mass-based, Other","• Reporting year
+• Allocated supplier scope 1+2 emissions for the capital good
+• Material inputs quantities (kg)
+• Material EFs (kg CO2e/kg)
+• Incoming transport (tonne-km) + mode EFs
+• Waste outputs + waste EFs (where available)",Not implemented,Hybrid,"Scope 3 Technical Guidance — Cat 2 hybrid mirrors Cat 1 hybrid structure:
+Emissions = supplier_scope1+2_allocated + ∑(materials×EF) + ∑(transport×EF) + ∑(waste×EF) + other",Report in year of acquisition; do not amortize.,"• Allocation rules where supplier produces multiple assets
+• Boundary confirmation (exclude supplier→company transport if accounted elsewhere)
+• Data quality scores","• kg CO2e by capital good and by component
+• Audit trace",
+S3 Cat 1 — Purchased goods & services (hybrid: supplier S1+S2 + materials + transport + waste),Scope 3,Cat 1 — Purchased goods & services,other,"Distance-based, Mass-based, Other","• Reporting year
+• Allocated supplier scope 1+2 emissions for the purchased good/service
+• Bill of materials / material inputs quantities (kg)
+• Material cradle-to-gate EFs (kg CO2e/kg)
+• Incoming transport distances (km) + masses (tonnes) + mode EFs (kg CO2e/tonne-km)
+• Waste outputs at supplier (kg) + waste EFs (kg CO2e/kg)",Not implemented,Hybrid,"Scope 3 Technical Guidance — Cat 1 hybrid:
+Emissions = supplier_scope1+2_allocated
++ ∑(materials × EF_material)
++ ∑(inbound transport tonne-km × EF_mode)
++ ∑(waste × EF_waste)
++ other relevant emissions as applicable","Use when partial supplier data exists (e.g., S1+S2) but material and other upstream components must be added. Avoid double counting with Cat 4 (supplier→company transport) by defining boundary clearly.","• Supplier process energy data instead of emissions
+• Allocation rules for multi-product suppliers
+• Boundary confirmation (exclude supplier→company transport if already in Cat 4)
+• Data quality score per component","• kg CO2e total and by component (supplier S1+S2, materials, inbound transport, waste)
+• Audit trace + allocation notes",
+S3 Cat 7 — Employee commuting (fuel-based),Scope 3,Cat 7 — Employee commuting,other,"Energy-based, Other, Volume-based","• Reporting year
+• Fuel consumed for commuting (litres) and/or electricity (kWh) where available (e.g., company shuttle, employer-provided transport)
+• Fuel/electricity EFs",Not implemented,Fuel-based,"Scope 3 Technical Guidance — Cat 7 fuel-based:
+Emissions = ∑(fuel litres × EF_fuel) + ∑(electricity kWh × EF_elec) + ∑(refrigerant leak × GWP if applicable)","Less common than distance-based; use when actual fuel/energy data exists (e.g., employer-run transport).","• If fuel not known: commute distance + fuel efficiency to infer litres
+• Sampling design
+• Car occupancy / pooling rates","• kg CO2e commuting emissions
+• Audit trace of any estimations",
+S3 Cat 3D — Generation of purchased electricity/steam/heat/cooling sold to end users,Scope 3,Cat 3 — Fuel- & energy-related (not in S1/S2),purchased_electricity,Energy-based,"• Reporting year
+• Quantity of energy purchased for resale (kWh) by source/grid
+• Life cycle EF for the origin of purchased power (kg CO2e/kWh) OR generation-unit emissions data",Not implemented,Average-data,"Scope 3 Technical Guidance — Cat 3D:
+Emissions = ∑(energy purchased for resale (kWh) × life cycle EF (kg CO2e/kWh))",Applies where company purchases energy and sells to end users (downstream). Ensure not double counted with Scope 2 reporting.,"• Supplier/generation-unit-specific emission data
+• Distinguish market-based instruments
+• Boundary note: include lifecycle vs generation-only and disclose","• kg CO2e for energy purchased for resale
+• Breakdown by energy type/grid
+• EF references + assumptions",
+S3 Cat 6 — Business travel (spend-based EEIO),Scope 3,Cat 6 — Business travel,other,Other,"• Reporting year
+• Spend on travel by category ($) (air, rail, hotels, taxis, etc.)
+• EEIO EF per category (kg CO2e/$)",Not implemented,Spend-based (EEIO),"Scope 3 Technical Guidance — Cat 6 spend-based:
+Emissions = ∑(spend × EEIO EF)",Use when distance/fuel data unavailable; coarse method.,"• Inflation/exchange-rate normalization
+• Region-specific EEIO dataset
+• Map travel management system categories to EEIO sectors","• kg CO2e by spend category
+• Total Cat 6 emissions
+• Assumptions log",

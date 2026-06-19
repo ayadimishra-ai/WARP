@@ -1,0 +1,21 @@
+make,model,category,gvw_t,payload_t,fuel_type,fuel_l_per_100km_laden,fuel_l_per_100km_empty,axle_config,notes,source
+Tata,Prima 4428.S,HCV,44.0,28.0,diesel,35.0,18.0,6x4,Tata Prima flagship. 450HP engine. Highway long haul.,Tata Motors Product Spec 2023
+Tata,Prima 2523.K,HCV,25.0,15.0,diesel,28.0,15.0,6x2,Tata Prima medium haul. 230HP engine.,Tata Motors Product Spec 2023
+Tata,LPT 2518,MCV,25.0,15.5,diesel,26.0,14.0,4x2,Tata LPT. Common India distribution truck.,Tata Motors 2023
+Tata,Ace EV,LCV,1.0,0.5,electric,0.0,0.0,4x2,Electric LCV. Range 154km. 0 direct emissions.,Tata Motors EV Spec 2023
+Tata,Signa 4825.S,HCV,48.0,31.0,diesel,37.0,19.0,6x4,Tata Signa heavy haul. 450HP.,Tata Motors 2023
+Ashok Leyland,2518 8x2,HCV,25.0,16.0,diesel,27.0,14.5,8x2,AL 2518. Wide body. Common cement/steel haulage.,Ashok Leyland Product Manual 2023
+Ashok Leyland,3518 6x4,HCV,35.0,22.0,diesel,31.0,16.0,6x4,AL 3518. Tipper and flatbed variant.,Ashok Leyland 2023
+Ashok Leyland,Boss,MCV,12.0,7.5,diesel,20.0,11.0,4x2,Ashok Leyland Boss. Intra-city distribution.,Ashok Leyland 2023
+Ashok Leyland,Circuit EV,LCV,3.5,2.0,electric,0.0,0.0,4x2,Electric LCV. Zero direct emissions. Range 120km.,Ashok Leyland EV 2023
+Eicher,Pro 6031,HCV,30.0,18.0,diesel,29.0,15.5,6x2,Eicher Pro 6031. Mid-sized highway truck.,Eicher Trucks 2023
+Eicher,Pro 8031,HCV,30.0,19.0,diesel,30.0,16.0,6x4,Eicher Pro 8031. Heavier payload variant.,Eicher Trucks 2023
+Eicher,Pro 3019,MCV,11.5,7.0,diesel,19.0,10.5,4x2,Eicher Pro 3019. Common distribution vehicle.,Eicher Trucks 2023
+Mahindra,Furio 11,LCV,7.5,4.0,diesel,15.0,8.0,4x2,Mahindra Furio 11. Urban distribution.,Mahindra Trucks 2023
+Mahindra,Furio 17,MCV,11.0,6.5,diesel,18.0,10.0,4x2,Mahindra Furio 17. Sub-category leader.,Mahindra Trucks 2023
+Mahindra,Treo Zor EV,3W,0.55,0.25,electric,0.0,0.0,3W,Electric 3-wheeler cargo. Last mile delivery.,Mahindra EV 2023
+Bajaj,Maxima Cargo,3W,0.50,0.30,cng,0.0,0.0,3W,CNG 3-wheeler cargo. 0.55 kg CNG/100km.,Bajaj 2023
+BharatBenz,3123R,HCV,31.0,20.0,diesel,30.0,15.5,6x2,BharatBenz 3123. Daimler India. Efficient engine.,Daimler India 2023
+BharatBenz,4228R,HCV,42.0,27.0,diesel,34.0,17.5,6x4,BharatBenz 4228. Heavy duty tipper/flatbed.,Daimler India 2023
+Volvo,FH,HCV,49.0,31.0,diesel,32.0,16.0,6x4,Volvo FH India. Premium long haul. Euro 6.,Volvo Trucks India 2023
+MAN,TGS 4033,HCV,40.0,26.0,diesel,33.0,17.0,6x4,MAN TGS India. 330HP heavy haulage.,MAN Trucks India 2023

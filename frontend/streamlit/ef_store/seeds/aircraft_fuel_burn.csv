@@ -1,0 +1,21 @@
+icao_code,iata_code,name,manufacturer,fuel_kg_per_km,seats_typical,cargo_t_typical,category,notes,source
+B77W,777,Boeing 777-300ER,Boeing,6.20,360,0,widebody_pax,Common Air India/Emirates long haul. RR Trent 892 engines.,ICAO AEDB / Boeing Airport Planning 2023
+B789,789,Boeing 787-9,Boeing,5.30,296,0,widebody_pax,Air India. Fuel efficient composite airframe.,Boeing 787 Airplane Characteristics 2023
+B788,788,Boeing 787-8,Boeing,4.80,242,0,widebody_pax,Smaller 787 variant.,Boeing 2023
+B738,738,Boeing 737-800,Boeing,2.60,162,0,narrowbody_pax,IndiGo dominant fleet. CFM56-7B engines.,Boeing 737 Characteristics 2023
+B39M,7M9,Boeing 737 MAX 9,Boeing,2.40,178,0,narrowbody_pax,CFM LEAP-1B engines. Better fuel burn than 737-800.,Boeing 2023
+A321,321,Airbus A321,Airbus,2.80,180,0,narrowbody_pax,Air India domestic wide. CFM56/IAE V2500.,Airbus Aircraft Characteristics 2023
+A32N,32N,Airbus A320neo,Airbus,2.30,165,0,narrowbody_pax,IndiGo primary fleet. LEAP-1A / PW1100G.,Airbus ACN 2023
+A320,320,Airbus A320ceo,Airbus,2.50,150,0,narrowbody_pax,Older ceo variant still active in India fleets.,Airbus 2023
+A333,333,Airbus A330-300,Airbus,6.80,295,0,widebody_pax,Vistara/Air India medium wide body.,Airbus 2023
+A359,359,Airbus A350-900,Airbus,5.80,320,0,widebody_pax,Air India new fleet. Very efficient.,Airbus 2023
+A388,388,Airbus A380-800,Airbus,10.50,525,0,widebody_pax,Emirates to India. Largest pax aircraft.,Airbus 2023
+AT76,AT7,ATR 72-600,ATR,0.90,72,0,turboprop_pax,Regional routes India. SpiceJet/IndiGo regional.,ATR Fleet Technical Spec 2023
+CRJ9,CR9,Bombardier CRJ900,Bombardier,1.20,76,0,regional_pax,Smaller regional jet.,Bombardier 2023
+B748,74H,Boeing 747-8F,Boeing,11.20,0,137,widebody_cargo,Pure freighter variant.,Boeing 2023
+B77F,77F,Boeing 777F,Boeing,7.50,0,103,widebody_cargo,Main belly cargo freighter variant.,Boeing 2023
+A30B,A3B,Airbus A300-600F,Airbus,5.40,0,55,widebody_cargo,Older freighter still active.,Airbus 2023
+B752,752,Boeing 757-200,Boeing,3.20,200,0,narrowbody_pax,Older narrow body. Less common now.,Boeing 2023
+B763,763,Boeing 767-300,Boeing,5.00,270,0,widebody_pax,Medium wide body used by charter carriers.,Boeing 2023
+E195,E95,Embraer 195,Embraer,1.60,120,0,regional_pax,Used by some Indian carriers.,Embraer 2023
+Q400,DH4,Dash 8 Q400,Bombardier,1.00,78,0,turboprop_pax,Short regional routes India.,Bombardier 2023

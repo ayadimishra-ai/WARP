@@ -1,0 +1,51 @@
+iata,icao,name,city,country,lat,lon
+BOM,VABB,Chhatrapati Shivaji Maharaj International,Mumbai,IN,19.0896,72.8656
+DEL,VIDP,Indira Gandhi International,New Delhi,IN,28.5665,77.1031
+BLR,VOBL,Kempegowda International,Bangalore,IN,13.1986,77.7066
+MAA,VOMM,Chennai International,Chennai,IN,12.9941,80.1709
+HYD,VOHS,Rajiv Gandhi International,Hyderabad,IN,17.2403,78.4294
+CCU,VECC,Netaji Subhas Chandra Bose,Kolkata,IN,22.6547,88.4467
+AMD,VAAH,Sardar Vallabhbhai Patel International,Ahmedabad,IN,23.0772,72.6347
+COK,VOCI,Cochin International,Kochi,IN,10.1520,76.4019
+GOI,VAGO,Goa International (Dabolim),Goa,IN,15.3808,73.8314
+PNQ,VAPO,Pune International,Pune,IN,18.5820,73.9197
+JAI,VIJP,Jaipur International,Jaipur,IN,26.8242,75.8122
+LKO,VILK,Chaudhary Charan Singh,Lucknow,IN,26.7606,80.8893
+IDR,VAID,Devi Ahilyabai Holkar,Indore,IN,22.7218,75.8012
+NAG,VANP,Dr. Babasaheb Ambedkar,Nagpur,IN,21.0921,79.0470
+CCJ,VOCL,Calicut International,Kozhikode,IN,11.1368,75.9553
+TRV,VOTV,Trivandrum International,Thiruvananthapuram,IN,8.4821,76.9201
+SXR,VISR,Sheikh ul-Alam International,Srinagar,IN,33.9871,74.7742
+IXC,VIDD,Chandigarh International,Chandigarh,IN,30.6735,76.7885
+BBI,VEBS,Biju Patnaik International,Bhubaneswar,IN,20.2444,85.8178
+GAU,VEGT,Lokpriya Gopinath Bordoloi,Guwahati,IN,26.1061,91.5859
+LHR,EGLL,London Heathrow,London,GB,51.4775,-0.4614
+LGW,EGKK,London Gatwick,London,GB,51.1537,-0.1821
+MAN,EGCC,Manchester Airport,Manchester,GB,53.3537,-2.2750
+JFK,KJFK,John F Kennedy International,New York,US,40.6413,-73.7781
+LAX,KLAX,Los Angeles International,Los Angeles,US,33.9425,-118.4081
+ORD,KORD,O'Hare International,Chicago,US,41.9742,-87.9073
+FRA,EDDF,Frankfurt International,Frankfurt,DE,50.0379,8.5622
+CDG,LFPG,Charles de Gaulle,Paris,FR,49.0097,2.5479
+AMS,EHAM,Amsterdam Schiphol,Amsterdam,NL,52.3105,4.7683
+SIN,WSSS,Singapore Changi,Singapore,SG,1.3644,103.9915
+DXB,OMDB,Dubai International,Dubai,AE,25.2532,55.3657
+DOH,OTHH,Hamad International,Doha,QA,25.2731,51.6081
+AUH,OMAA,Abu Dhabi International,Abu Dhabi,AE,24.4330,54.6511
+HKG,VHHH,Hong Kong International,Hong Kong,HK,22.3080,113.9185
+PVG,ZSPD,Shanghai Pudong International,Shanghai,CN,31.1434,121.8052
+NRT,RJAA,Narita International,Tokyo,JP,35.7647,140.3864
+ICN,RKSI,Incheon International,Seoul,KR,37.4602,126.4407
+SYD,YSSY,Sydney Kingsford Smith,Sydney,AU,-33.9399,151.1753
+MEL,YMML,Melbourne International,Melbourne,AU,-37.6690,144.8410
+JNB,FAOR,O.R. Tambo International,Johannesburg,ZA,-26.1392,28.2460
+NBO,HKJK,Jomo Kenyatta International,Nairobi,KE,-1.3192,36.9275
+GRU,SBGR,São Paulo Guarulhos,São Paulo,BR,-23.4356,-46.4731
+YYZ,CYYZ,Toronto Pearson International,Toronto,CA,43.6777,-79.6248
+KUL,WMKK,Kuala Lumpur International,Kuala Lumpur,MY,2.7456,101.7099
+BKK,VTBS,Suvarnabhumi International,Bangkok,TH,13.6811,100.7475
+CGK,WIII,Soekarno-Hatta International,Jakarta,ID,-6.1256,106.6558
+MNL,RPLL,Ninoy Aquino International,Manila,PH,14.5086,121.0194
+DAC,VGHS,Hazrat Shahjalal International,Dhaka,BD,23.8433,90.3978
+CMB,VCBI,Bandaranaike International,Colombo,LK,7.1808,79.8841
+KHI,OPKC,Jinnah International,Karachi,PK,24.9065,67.1609

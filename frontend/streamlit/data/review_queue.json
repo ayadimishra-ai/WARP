@@ -1,0 +1,44 @@
+[
+  {
+    "id": "RQ-001",
+    "org_id": "demo-acme-mfg-001",
+    "record_type": "Scope 2",
+    "title": "FY2024 Scope 2 - Chennai Plant electricity (Q3)",
+    "submitter": "acme_contrib",
+    "submitted_at": "2025-01-10T08:30:00Z",
+    "status": "Pending",
+    "priority": "High",
+    "notes": "Q3 meter data received - 3,100,000 kWh. Awaiting admin sign-off.",
+    "quantity": 3100000,
+    "unit": "kWh",
+    "tco2e_prelim": 2253.7
+  },
+  {
+    "id": "RQ-002",
+    "org_id": "demo-acme-mfg-001",
+    "record_type": "Scope 3 Cat 1",
+    "title": "FY2024 Cat 1 - Nova Chemicals spend data update",
+    "submitter": "acme_contrib",
+    "submitted_at": "2025-01-12T11:00:00Z",
+    "status": "Pending",
+    "priority": "Medium",
+    "notes": "Procurement updated annual spend - revised from \u20b928 Cr to \u20b932 Cr.",
+    "quantity": 384000,
+    "unit": "USD",
+    "tco2e_prelim": 261.1
+  },
+  {
+    "id": "RQ-003",
+    "org_id": "demo-acme-mfg-001",
+    "record_type": "Scope 1",
+    "title": "FY2024 S1 - Chennai Plant HFO backup generator (Q4)",
+    "submitter": "acme_contrib",
+    "submitted_at": "2025-01-14T15:45:00Z",
+    "status": "Returned",
+    "priority": "Low",
+    "notes": "Returned: fuel type unclear - is this HFO or LDO? Please clarify.",
+    "reviewer": "acme_admin",
+    "reviewed_at": "2025-01-15T09:00:00Z",
+    "reviewer_note": "Cannot approve without fuel type confirmation from facility manager."
+  }
+]

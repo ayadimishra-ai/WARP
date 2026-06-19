@@ -43,3 +43,20 @@ yarn-error.log*
 
 # Claude Code internal
 .claude/worktrees
+
+# sk.lite runtime data (SQLite databases and per-org JSON; regenerated at runtime)
+frontend/streamlit/data/*.sqlite
+frontend/streamlit/data/users.json
+frontend/streamlit/data/org_profiles.json
+frontend/streamlit/data/suppliers.json
+frontend/streamlit/data/supplier_submissions.json
+frontend/streamlit/data/logistics.json
+frontend/streamlit/data/reviews.sqlite
+frontend/streamlit/data/audit.sqlite
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.pytest_cache/

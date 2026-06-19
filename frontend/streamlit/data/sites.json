@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Pune Plant",
+    "type": "Manufacturing plant",
+    "city": "Pune",
+    "country": "IN",
+    "lat": 18.52,
+    "lon": 73.857,
+    "area_m2": 45000
+  },
+  {
+    "name": "Chennai Plant",
+    "type": "Manufacturing plant",
+    "city": "Chennai",
+    "country": "IN",
+    "lat": 13.083,
+    "lon": 80.271,
+    "area_m2": 32000
+  },
+  {
+    "name": "Delhi DC",
+    "type": "Warehouse / DC",
+    "city": "Delhi",
+    "country": "IN",
+    "lat": 28.614,
+    "lon": 77.209,
+    "area_m2": 12000
+  }
+]

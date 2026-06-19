@@ -1,0 +1,95 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.whl
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Streamlit
+.streamlit/secrets.toml
+
+# App data (per-user, not committed)
+data/ef_store.sqlite
+data/org_profiles.json
+data/*.sqlite
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.log.*
+
+# Temp files
+*.tmp
+*.temp
+
+# Distribution
+*.tar.gz
+*.zip
+dist_out/
+
+# Replit
+.replit.history
+.upm/
+__pycache__/
+.pythonlibs/
+.cache/
+.local/
+
+# Runtime data (never commit)
+data/*.sqlite
+data/users.json
+data/suppliers.json
+data/supplier_submissions.json
+data/logistics.json
+data/org_profiles.json
+data/reviews.sqlite
+data/audit.sqlite
+
+# Streamlit cache
+.streamlit/secrets.toml
+
+# Python
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/

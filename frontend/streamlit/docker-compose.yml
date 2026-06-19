@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  ghg-calculator:
+    build: .
+    container_name: ghg_calculator
+    ports:
+      - "8501:8501"
+    volumes:
+      # Persist databases outside the container
+      - ghg_data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  ghg_data:
+    driver: local
