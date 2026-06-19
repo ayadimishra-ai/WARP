@@ -17,8 +17,7 @@ from typing import Optional
 import streamlit as st
 
 try:
-    from passlib.context import CryptContext
-    _pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    import bcrypt as _bcrypt_lib
     _BCRYPT_AVAILABLE = True
 except ImportError:
     import hashlib
@@ -192,7 +191,7 @@ ROLE_DATA_ACCESS = {
 
 def _hash(password: str) -> str:
     if _BCRYPT_AVAILABLE:
-        return _pwd_ctx.hash(password)
+        return _bcrypt_lib.hashpw(password.encode("utf-8"), _bcrypt_lib.gensalt()).decode("utf-8")
     import hashlib
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -202,7 +201,7 @@ def _verify_password(plain: str, hashed: str) -> bool:
         return False
     if _BCRYPT_AVAILABLE:
         try:
-            return _pwd_ctx.verify(plain, hashed)
+            return _bcrypt_lib.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
         except Exception:
             return False
     import hashlib

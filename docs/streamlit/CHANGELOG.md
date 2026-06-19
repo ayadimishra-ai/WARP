@@ -5,6 +5,60 @@ the `claude/remodel-python-streamlit` branch of the WARP monorepo.
 
 ---
 
+## [2026-06-19] — Hotfix: replace passlib with direct bcrypt
+
+### Problem
+
+`passlib` is unmaintained (last release 2020) and contains an internal bug-detection
+routine that calls `bcrypt.hashpw()` with a 73-byte test secret. `bcrypt>=4.0.0`
+now hard-rejects secrets longer than 72 bytes with:
+
+```
+ValueError: password cannot be longer than 72 bytes, truncate manually
+```
+
+This crashed on first run before any user could log in.
+
+### Fix
+
+Removed `passlib[bcrypt]` entirely. `auth.py` now calls the `bcrypt` library
+directly:
+
+| Before | After |
+|---|---|
+| `from passlib.context import CryptContext` | `import bcrypt as _bcrypt_lib` |
+| `_pwd_ctx.hash(password)` | `_bcrypt_lib.hashpw(password.encode(), _bcrypt_lib.gensalt()).decode()` |
+| `_pwd_ctx.verify(plain, hashed)` | `_bcrypt_lib.checkpw(plain.encode(), hashed.encode())` |
+
+`requirements.txt`: removed `passlib[bcrypt]>=1.7.4`, kept `bcrypt>=4.0.0`.
+
+The security properties are identical — bcrypt with per-password salt — but
+using the actively maintained library directly eliminates the compatibility
+shim that was causing the crash.
+
+---
+
+## [2026-06-19] — NAV + ROLE_PAGES: wire 4 missing pages, complete role matrix
+
+Four page files existed on disk but were not registered in `NAV` in `main.py`,
+making them unreachable:
+
+| Label | Module |
+|---|---|
+| `🎯 Target register` | `streamlit_app._page_22_targets` |
+| `🏭 Supplier network` | `streamlit_app._page_23_value_chain` |
+| `📝 ESG data points` | `streamlit_app._page_20_esg_datapoints` |
+| `⚖️ Materiality` | `streamlit_app._page_21_materiality` |
+
+`auth.py` ROLE_PAGES updated:
+- **Contributor**: granted access to Target register, ESG data points, EF manager,
+  Supplier & ESG, ESG bridge, Risk, Logistics, Value chain map, Review queue,
+  Audit trail (all previously in NAV but blocked by ROLE_PAGES)
+- **Viewer**: granted access to Target register, Risk, Logistics, Value chain map
+- Removed stale `"📊  Dashboard"` key (page no longer exists under that label)
+
+---
+
 ## [2026-06-19] — Initial integration into WARP remodel branch
 
 ### Context

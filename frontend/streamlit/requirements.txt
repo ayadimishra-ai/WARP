@@ -9,7 +9,8 @@ streamlit>=1.35.0
 plotly>=5.18.0
 
 # Auth (bcrypt password hashing — replaces SHA-256)
-passlib[bcrypt]>=1.7.4
+# passlib is unmaintained and incompatible with bcrypt>=4.0 (72-byte limit error).
+# Use bcrypt directly instead.
 bcrypt>=4.0.0
 
 # Flight API (optional — used for flight number lookup)
