@@ -1,17 +1,32 @@
 """
-Page 13 — ESG-GHG Bridge: Materiality Matrix.
+Page 13 — ESG Bridge: Cross-Framework Disclosure Intelligence.
 
-Maps ESG reporting topics (ESRS / GRI / BRSR) to GHG Protocol categories,
-showing which GHG inventory processes contribute to each ESG disclosure topic.
+Seven views matching the Snowkap IQ crossmap workflow:
+  1  Conditionals & Triggers  — scope your obligations first
+  2  Canonical Checklist      — deduplicated collection to-do list
+  3  Cross-Framework Bridges  — canonical records with multi-fw equivalents
+  4  By Topic                 — topic-owner view across all frameworks
+  5  By Framework             — work within one framework at a time
+  6  All DPs                  — full inventory, sortable / filterable
+  7  ESRS-Only (No Crossmap)  — ESRS DPs with no equivalent elsewhere
+  +  GHG–ESG Coverage         — existing GHG inventory → ESG obligation link
 
-This is the bridge between quantitative GHG data and qualitative ESG narrative —
-the "how does my emissions inventory feed my ESG report" view.
+Data: 251 canonical disclosure points from the ESRS/GRI/BRSR/TCFD crossmap CSV.
+Completion status is tracked per org/year in session state (persisted to esg_store
+when available).
 """
 from __future__ import annotations
+
+import csv
+import re
+from pathlib import Path
+
 import streamlit as st
 
-# ── ESG topic → GHG category crossmap ───────────────────────────────────────
-# format: {topic_id: {label, framework, pillar, ghg_cats[], description}}
+# ── Seed CSV path ────────────────────────────────────────────────────────────
+_CROSSMAP_CSV = Path(__file__).parents[1] / "esg_store" / "seeds" / "disclosure_points.csv"
+
+# ── Legacy GHG→ESG crossmap (kept for test compatibility + GHG Coverage tab) ─
 CROSSMAP = {
     "E1.1": {
         "label": "GHG emissions — all scopes",
@@ -24,22 +39,21 @@ CROSSMAP = {
         "label": "Energy consumption & efficiency",
         "framework": "GRI", "pillar": "E",
         "ghg_cats": ["Scope 1 — Stationary combustion", "Scope 2 — Purchased electricity"],
-        "description": "GRI 302-1/302-3: fuel combustion (S1) + grid electricity (S2) + renewables share. Also in ESRS E1 and BRSR P6.",
+        "description": "GRI 302-1/302-3: fuel combustion (S1) + grid electricity (S2) + renewables share.",
         "maturity": ["Disclose", "Efficiency target", "RE100"],
     },
     "E1.3": {
         "label": "Climate transition risk",
         "framework": "TCFD", "pillar": "E",
-        "ghg_cats": ["Scope 3 — Cat 11 (use of sold products)",
-                     "Scope 3 — Cat 15 (investments)"],
-        "description": "TCFD Strategy pillar: high-carbon product revenue and financed emissions drive transition risk. Also covered in ESRS E1 and CDP C11.",
+        "ghg_cats": ["Scope 3 — Cat 11 (use of sold products)", "Scope 3 — Cat 15 (investments)"],
+        "description": "TCFD Strategy pillar: high-carbon product revenue and financed emissions drive transition risk.",
         "maturity": ["Identify", "Quantify", "Scenario analysis"],
     },
     "E2": {
         "label": "Pollution & air quality",
         "framework": "ESRS", "pillar": "E",
         "ghg_cats": ["Scope 1 — Fugitive emissions", "Scope 1 — IPPU"],
-        "description": "ESRS E2: HFC/HCFC fugitive releases and IPPU process emissions overlap with local air pollution disclosures.",
+        "description": "ESRS E2: HFC/HCFC fugitive releases and IPPU process emissions overlap with air pollution.",
         "maturity": ["Monitor", "Report", "Eliminate"],
     },
     "E3": {
@@ -53,7 +67,7 @@ CROSSMAP = {
         "label": "Biodiversity & land use",
         "framework": "ESRS", "pillar": "E",
         "ghg_cats": ["Scope 1 — AFOLU (enteric, manure)", "Scope 3 — Cat 1 (purchased goods)"],
-        "description": "ESRS E4: AFOLU emissions link to land-use and biodiversity impact of agricultural supply chains.",
+        "description": "ESRS E4: AFOLU emissions link to land-use and biodiversity impact.",
         "maturity": ["Identify", "Disclose"],
     },
     "E5": {
@@ -67,7 +81,7 @@ CROSSMAP = {
         "label": "Own workforce",
         "framework": "ESRS", "pillar": "S",
         "ghg_cats": ["Scope 3 — Cat 7 (employee commuting)"],
-        "description": "ESRS S1: Cat 7 commuting data supports workforce mobility disclosures. Also in GRI 401.",
+        "description": "ESRS S1: Cat 7 commuting data supports workforce mobility disclosures.",
         "maturity": ["Disclose", "WFH / EV policy"],
     },
     "S2": {
@@ -81,65 +95,65 @@ CROSSMAP = {
         "label": "Business conduct & governance",
         "framework": "ESRS", "pillar": "G",
         "ghg_cats": ["Scope 1", "Scope 2", "Scope 3"],
-        "description": "ESRS G1: robust GHG accounting across all scopes with third-party assurance is a governance best practice indicator. Also BRSR Principle 1.",
+        "description": "ESRS G1: robust GHG accounting with third-party assurance is a governance best practice indicator.",
         "maturity": ["Measure", "Assure", "Disclose"],
     },
     "BRSR_P6": {
         "label": "BRSR Principle 6 — Environment",
         "framework": "BRSR", "pillar": "E",
         "ghg_cats": ["Scope 1", "Scope 2", "Scope 3 — Cat 1–15"],
-        "description": "Indian listed companies (SEBI): mandatory S1+S2, voluntary S3 disclosure. Intensity metrics required.",
+        "description": "Indian listed companies (SEBI): mandatory S1+S2, voluntary S3. Intensity metrics required.",
         "maturity": ["Mandatory", "Extended boundary"],
     },
     "CDP_C6": {
         "label": "CDP C6 — Emissions data",
         "framework": "CDP", "pillar": "E",
         "ghg_cats": ["Scope 1", "Scope 2 (location + market)", "Scope 3 Cat 1–15"],
-        "description": "Full GHG Protocol inventory required. Market-based S2 disclosure mandatory from 2024. C-score depends on completeness.",
+        "description": "Full GHG Protocol inventory required. Market-based S2 mandatory from 2024. C-score depends on completeness.",
         "maturity": ["C-level", "B-level", "A-level"],
     },
     "GRI_305": {
         "label": "GRI 305 — Emissions",
         "framework": "GRI", "pillar": "E",
         "ghg_cats": ["Scope 1 (305-1)", "Scope 2 (305-2)", "Scope 3 (305-3)"],
-        "description": "GRI 305-1/2/3: tCO₂e by scope, GWP source, biogenic CO₂ separately. Qualitative narrative required.",
+        "description": "GRI 305-1/2/3: tCO₂e by scope, GWP source, biogenic CO₂ separately.",
         "maturity": ["Core", "Comprehensive"],
     },
     "SASB_GHG_1": {
         "label": "Scope 1 GHG emissions (SASB)",
         "framework": "SASB", "pillar": "E",
         "ghg_cats": ["Scope 1"],
-        "description": "Direct GHG emissions metric. Required across all SASB industry standards. Percentage covered by regulation also required.",
+        "description": "Direct GHG emissions metric. Required across all SASB industry standards.",
     },
     "SASB_GHG_2": {
         "label": "Scope 2 GHG emissions (SASB)",
         "framework": "SASB", "pillar": "E",
         "ghg_cats": ["Scope 2"],
-        "description": "Location-based and market-based Scope 2 separately. Energy mix and renewable percentage as context.",
+        "description": "Location-based and market-based Scope 2 separately.",
     },
     "SASB_EU": {
         "label": "Energy consumption (SASB EU)",
         "framework": "SASB", "pillar": "E",
         "ghg_cats": ["Scope 2", "Scope 1"],
-        "description": "Total energy consumed (MWh), renewable vs non-renewable split. Grid mix disclosure.",
+        "description": "Total energy consumed (MWh), renewable vs non-renewable split.",
     },
     "SASB_SC": {
         "label": "Supply chain emissions Cat 1 (SASB SC)",
         "framework": "SASB", "pillar": "E",
         "ghg_cats": ["Scope 3", "Scope 3 — Cat 1 (purchased goods)"],
-        "description": "Supplier-linked Scope 3 Cat 1/4 emissions. Percentage of suppliers disclosing emissions.",
+        "description": "Supplier-linked Scope 3 Cat 1/4 emissions.",
     },
     "SASB_FIN": {
         "label": "Financed emissions Cat 15 (SASB / PCAF)",
         "framework": "SASB", "pillar": "E",
         "ghg_cats": ["Scope 3 — Cat 15 (investments)"],
-        "description": "For banks, insurers, asset managers. PCAF Standard v3. Attribution factor × borrower/investee emissions.",
+        "description": "For banks, insurers, asset managers. PCAF Standard v3.",
     },
     "SASB_HS": {
         "label": "Health & Safety (SASB HS)",
         "framework": "SASB", "pillar": "S",
         "ghg_cats": ["Scope 1 — Stationary combustion", "Scope 1 — Fugitive emissions"],
-        "description": "TRIR, LTIR, fatalities. Scope 1 process and fugitive emissions create occupational chemical/air quality hazards.",
+        "description": "TRIR, LTIR, fatalities. S1 process and fugitive emissions create occupational hazards.",
     },
 }
 
@@ -147,42 +161,635 @@ _PILLAR_COLOR = {"E": "#16a34a", "S": "#2563eb", "G": "#f59e0b"}
 _FW_COLOR = {
     "ESRS": "#7c3aed", "BRSR": "#059669", "CDP": "#0284c7",
     "GRI": "#0891b2", "TCFD": "#6366f1", "SASB": "#f59e0b", "IFRS": "#0f4c81",
+    "IFRS S1": "#0f4c81", "IFRS S2": "#1a5c9a",
+}
+
+_STATUS_COLORS = {
+    "Not Started": "#6b7280",
+    "In Progress": "#d97706",
+    "Complete": "#16a34a",
+    "N/A": "#94a3b8",
+}
+
+_STATUS_ICONS = {
+    "Not Started": "⭕",
+    "In Progress": "🟡",
+    "Complete": "✅",
+    "N/A": "—",
 }
 
 
+# ── Data loading ──────────────────────────────────────────────────────────────
+
+_CROSSMAP_CACHE: list[dict] | None = None
+
+def _load_crossmap() -> list[dict]:
+    """Load full disclosure crossmap from CSV (module-level cache)."""
+    global _CROSSMAP_CACHE
+    if _CROSSMAP_CACHE is None:
+        if not _CROSSMAP_CSV.exists():
+            _CROSSMAP_CACHE = []
+        else:
+            with open(_CROSSMAP_CSV, encoding="utf-8-sig") as f:
+                _CROSSMAP_CACHE = [dict(r) for r in csv.DictReader(f)]
+    return _CROSSMAP_CACHE
+
+
+def _get_status(dp_id: str, org_key: str) -> str:
+    """Get completion status for a DP from session state."""
+    return st.session_state.get(f"_bridge_st_{org_key}_{dp_id}", "Not Started")
+
+
+def _set_status(dp_id: str, org_key: str, status: str) -> None:
+    """Persist completion status in session state."""
+    st.session_state[f"_bridge_st_{org_key}_{dp_id}"] = status
+
+
+def _topic_covered(topic: dict, covered_cats: set, covered_scopes: set) -> tuple[bool, list, list]:
+    """Return (fully_covered, covered_cats_list, gap_cats_list) for a GHG-ESG topic."""
+    tc, tg = [], []
+    for cat in topic["ghg_cats"]:
+        cat_lower = cat.lower()
+        matched = any(
+            ck.lower() in cat_lower or cat_lower in ck.lower()
+            for ck in covered_cats | covered_scopes
+        )
+        (tc if matched else tg).append(cat)
+    return (len(tg) == 0, tc, tg)
+
+
+# ── Colour helpers ────────────────────────────────────────────────────────────
+
+def _fw_badge(fw: str, is_light: bool) -> str:
+    color = _FW_COLOR.get(fw, "#64748b")
+    return (
+        f"<span style='background:{color};color:white;padding:2px 8px;"
+        f"border-radius:99px;font-size:11px;font-weight:700;margin:1px'>{fw}</span>"
+    )
+
+
+def _pillar_badge(pillar: str) -> str:
+    mapping = {
+        "Environmental": ("E", "#16a34a"),
+        "Social": ("S", "#2563eb"),
+        "Governance": ("G", "#f59e0b"),
+        "Cross-cutting": ("✕", "#6366f1"),
+    }
+    code, color = mapping.get(pillar, ("?", "#6b7280"))
+    return (
+        f"<span style='background:{color};color:white;padding:2px 8px;"
+        f"border-radius:99px;font-size:11px;font-weight:700'>{code}</span>"
+    )
+
+
+def _status_badge(status: str) -> str:
+    color = _STATUS_COLORS.get(status, "#6b7280")
+    icon = _STATUS_ICONS.get(status, "?")
+    return (
+        f"<span style='background:{color}22;color:{color};border:1px solid {color}55;"
+        f"padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600'>"
+        f"{icon} {status}</span>"
+    )
+
+
+# ── DP detail expander ────────────────────────────────────────────────────────
+
+def _render_dp_card(row: dict, org_key: str, show_status: bool = True) -> None:
+    """Render one disclosure point as an expander with full detail."""
+    dp_id   = row.get("DP ID", "")
+    dp_name = row.get("DP Name", dp_id)
+    src_fw  = row.get("Source Framework", "")
+    pillar  = row.get("ESG Pillar", "")
+    topic   = row.get("Topic", "")
+    status  = _get_status(dp_id, org_key)
+    icon    = _STATUS_ICONS.get(status, "⭕")
+    mapped  = row.get("Mapped Frameworks", "")
+    is_can  = row.get("Is Canonical", "").lower() in ("yes", "y", "true", "1")
+
+    canon_tag = " 🔑" if is_can else ""
+    title = f"{icon} **{dp_name[:80]}** · `{dp_id}`{canon_tag}"
+
+    with st.expander(title, expanded=False):
+        c1, c2 = st.columns([3, 1])
+
+        with c1:
+            # Identity
+            badges_html = (
+                _fw_badge(src_fw, True) + " " +
+                _pillar_badge(pillar) + " " +
+                _status_badge(status)
+            )
+            st.markdown(badges_html, unsafe_allow_html=True)
+            st.caption(f"**Topic:** {topic}  ·  **Sub-topic:** {row.get('Sub-Topic Tag', '—')}")
+
+            # Trigger & format
+            trigger = row.get("Trigger Condition", "").strip()
+            if trigger:
+                st.markdown(f"**Trigger:** {trigger}")
+
+            response_fmt = row.get("Response Format", "")
+            schema = row.get("Schema / Unit", "").strip()
+            if schema:
+                st.info(f"**Schema / Unit:** {schema}")
+
+            # Tonality
+            tonality = row.get("Tonality Requirement", "").strip()
+            if tonality:
+                with st.expander("✍️ Tonality guidance", expanded=False):
+                    st.write(tonality)
+
+            # Cross-framework bridge
+            bridge = row.get("Cross-Framework Bridge", "").strip()
+            if bridge:
+                with st.expander("🔗 Cross-framework bridge", expanded=False):
+                    st.write(bridge)
+
+            # Dedup notes
+            dedup = row.get("De-duplication Notes", "").strip()
+            if dedup:
+                with st.expander("📐 Deduplication notes (what differs per framework)", expanded=False):
+                    st.write(dedup)
+
+            # Framework-specific references
+            fw_refs = {
+                "BRSR Core": row.get("BRSR Core Reference", ""),
+                "CDP": row.get("CDP Reference", ""),
+                "GRI": row.get("GRI Reference", ""),
+                "IFRS S1": row.get("IFRS S1 Reference", ""),
+                "IFRS S2": row.get("IFRS S2 Reference", ""),
+                "TCFD": row.get("TCFD Reference", ""),
+            }
+            present_refs = {k: v for k, v in fw_refs.items() if v.strip()}
+            if present_refs:
+                st.markdown("**Framework references:**")
+                for fw_name, ref in present_refs.items():
+                    st.write(f"  · **{fw_name}:** {ref[:120]}")
+
+        with c2:
+            # Metadata
+            st.markdown(f"**Standard:** {row.get('Standard Reference', '—')[:80]}")
+            always = row.get("Always Disclose", "").lower() in ("yes", "y")
+            material_req = row.get("Materiality Required", "").lower() in ("yes", "y")
+            phased = row.get("Phased-in", "").lower() in ("yes", "y")
+            comp_req = row.get("Comparative Period Required", "").lower() in ("yes", "y")
+            assurance = row.get("Assurance Level", "—")
+
+            flags = []
+            if always:
+                flags.append("🔴 Always disclose")
+            if material_req:
+                flags.append("📊 Materiality required")
+            if phased:
+                flags.append("⏳ Phased-in")
+            if comp_req:
+                flags.append("📅 Comparative required")
+            for f in flags:
+                st.write(f)
+
+            if phased and row.get("Phased-in Details", "").strip():
+                st.caption(row["Phased-in Details"][:200])
+
+            st.caption(f"Assurance: {assurance}")
+            st.caption(f"Data type: {row.get('Data Type', '—')}")
+            st.caption(f"Response: {row.get('Response Format', '—')}")
+
+            # Mapped frameworks
+            if mapped.strip():
+                st.markdown("**Also in:**")
+                for fw in mapped.split(","):
+                    fw = fw.strip()
+                    if fw:
+                        st.markdown(_fw_badge(fw, True), unsafe_allow_html=True)
+
+            # Status update
+            if show_status:
+                st.markdown("---")
+                new_status = st.selectbox(
+                    "Completion",
+                    ["Not Started", "In Progress", "Complete", "N/A"],
+                    index=["Not Started", "In Progress", "Complete", "N/A"].index(
+                        _get_status(dp_id, org_key)
+                    ),
+                    key=f"_st_sel_{dp_id}_{org_key}",
+                    label_visibility="collapsed",
+                )
+                if new_status != status:
+                    _set_status(dp_id, org_key, new_status)
+                    st.rerun()
+
+
+# ── Summary bar ───────────────────────────────────────────────────────────────
+
+def _render_summary(rows: list[dict], org_key: str) -> None:
+    """Show status distribution metrics."""
+    total = len(rows)
+    statuses = [_get_status(r["DP ID"], org_key) for r in rows]
+    complete   = statuses.count("Complete")
+    in_prog    = statuses.count("In Progress")
+    not_started = statuses.count("Not Started")
+    na_count   = statuses.count("N/A")
+    pct = int(complete / max(total, 1) * 100)
+
+    m1, m2, m3, m4, m5, m6 = st.columns(6)
+    m1.metric("Total DPs", total)
+    m2.metric("✅ Complete", complete)
+    m3.metric("🟡 In Progress", in_prog)
+    m4.metric("⭕ Not Started", not_started)
+    m5.metric("— N/A", na_count)
+    m6.metric("Coverage", f"{pct}%")
+
+
+# ── Shared sidebar filters ────────────────────────────────────────────────────
+
+def _apply_filters(rows: list[dict], prefix: str) -> list[dict]:
+    """Apply sidebar-style inline filters to a list of DP rows."""
+    all_pillars = sorted({r.get("ESG Pillar", "") for r in rows if r.get("ESG Pillar")})
+    all_topics  = sorted({r.get("Topic", "") for r in rows if r.get("Topic")})
+    all_fws     = sorted({r.get("Source Framework", "") for r in rows if r.get("Source Framework")})
+    all_statuses = ["Not Started", "In Progress", "Complete", "N/A"]
+
+    fc1, fc2, fc3 = st.columns(3)
+    pillar_f = fc1.selectbox("Pillar", ["All"] + all_pillars, key=f"{prefix}_pillar")
+    topic_f  = fc2.selectbox("Topic",  ["All"] + all_topics,  key=f"{prefix}_topic")
+    fw_f     = fc3.selectbox("Source framework", ["All"] + all_fws, key=f"{prefix}_fw")
+
+    out = rows
+    if pillar_f != "All":
+        out = [r for r in out if r.get("ESG Pillar") == pillar_f]
+    if topic_f != "All":
+        out = [r for r in out if r.get("Topic") == topic_f]
+    if fw_f != "All":
+        out = [r for r in out if r.get("Source Framework") == fw_f]
+    return out
+
+
+# ── Main render ───────────────────────────────────────────────────────────────
+
 def render() -> None:
-    st.title("🌉 ESG–GHG Bridge")
+    st.title("🌉 ESG Bridge — Cross-Framework Disclosure Intelligence")
     st.caption(
-        "How your GHG inventory feeds your ESG disclosures. "
-        "Each row shows an ESG topic and the GHG Protocol categories that provide its evidence base."
+        "251 canonical disclosure points mapped across ESRS · GRI · BRSR · TCFD · "
+        "IFRS S1/S2 · CDP. Start with **Conditionals & Triggers** to scope your "
+        "obligations, then use the **Canonical Checklist** as your collection to-do list."
     )
 
     _is_light = st.session_state.get("_sk_theme", "light") == "light"
-    _dim_txt  = "#6b7280" if _is_light else "#94a3b8"
-    _card_bg  = "#f0f9ff" if _is_light else "#1a2235"
-    _card_txt = "#1f2937" if _is_light else "#e2e8f0"
-    _border   = "#e2e8f0" if _is_light else "#334155"
+
+    profile  = st.session_state.get("org_profile", {})
+    org_id   = profile.get("org_uuid") or profile.get("org_id") or "default"
+    inv_year = profile.get("reporting_year", 2024)
+    org_key  = f"{org_id}_{inv_year}"
+
+    # Load crossmap
+    all_dps = _load_crossmap()
+    if not all_dps:
+        st.warning(
+            "⚠️ Disclosure crossmap not found. Run `python setup.py` to initialise the database."
+        )
+        return
+
+    # ── Tabs ─────────────────────────────────────────────────────────────────
+    tabs = st.tabs([
+        "⚡ Conditionals & Triggers",
+        "✅ Collection Checklist",
+        "🔗 Cross-Framework Bridges",
+        "📂 By Topic",
+        "🏛️ By Framework",
+        "📋 All DPs",
+        "🔍 ESRS-Only",
+        "📊 GHG–ESG Coverage",
+    ])
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Tab 0: Conditionals & Triggers
+    # ─────────────────────────────────────────────────────────────────────────
+    with tabs[0]:
+        st.markdown(
+            "**Start here.** Use the trigger condition and phasing columns to determine "
+            "which disclosure points apply to your company — based on sector, size, and "
+            "materiality. For BRSR, distinguish Essential vs Leadership Indicators. "
+            "For ESRS, identify phased-in deferrals available to you."
+        )
+
+        f1, f2, f3, f4 = st.columns(4)
+        always_only = f1.toggle("Always disclose only", key="ct_always")
+        show_phased = f2.toggle("Show phased-in only", key="ct_phased")
+        matl_gate   = f3.toggle("Materiality-gated only", key="ct_matl")
+        pillar_ct   = f4.selectbox(
+            "Pillar", ["All", "Environmental", "Social", "Governance", "Cross-cutting"],
+            key="ct_pillar"
+        )
+
+        ct_rows = all_dps
+        if always_only:
+            ct_rows = [r for r in ct_rows if r.get("Always Disclose", "").lower() in ("yes", "y")]
+        if show_phased:
+            ct_rows = [r for r in ct_rows if r.get("Phased-in", "").lower() in ("yes", "y")]
+        if matl_gate:
+            ct_rows = [r for r in ct_rows if r.get("Materiality Required", "").lower() in ("yes", "y")]
+        if pillar_ct != "All":
+            ct_rows = [r for r in ct_rows if r.get("ESG Pillar", "") == pillar_ct]
+
+        st.markdown(f"**{len(ct_rows)} disclosure points match**")
+        _render_summary(ct_rows, org_key)
+        st.markdown("---")
+
+        for row in ct_rows:
+            always = row.get("Always Disclose", "").lower() in ("yes", "y")
+            phased = row.get("Phased-in", "").lower() in ("yes", "y")
+            matl   = row.get("Materiality Required", "").lower() in ("yes", "y")
+            trigger = row.get("Trigger Condition", "").strip()
+            status = _get_status(row["DP ID"], org_key)
+            icon = _STATUS_ICONS.get(status, "⭕")
+            tags = []
+            if always: tags.append("🔴 Always")
+            if phased: tags.append("⏳ Phased")
+            if matl:   tags.append("📊 Materiality")
+            tag_str = "  ·  ".join(tags) if tags else ""
+
+            title = f"{icon} `{row['DP ID']}` — {row.get('DP Name','')[:70]}  {tag_str}"
+            with st.expander(title, expanded=False):
+                st.markdown(f"**Trigger:** {trigger or 'See standard reference.'}")
+                if phased and row.get("Phased-in Details", "").strip():
+                    st.info(f"**Phased-in details:** {row['Phased-in Details'][:400]}")
+                fw_ref_display = " · ".join(filter(None, [
+                    row.get("GRI Reference", ""),
+                    row.get("BRSR Core Reference", ""),
+                    row.get("CDP Reference", ""),
+                ]))
+                if fw_ref_display:
+                    st.caption(f"Cross-refs: {fw_ref_display[:200]}")
+                new_st = st.selectbox(
+                    "Status", ["Not Started", "In Progress", "Complete", "N/A"],
+                    index=["Not Started", "In Progress", "Complete", "N/A"].index(status),
+                    key=f"ct_sel_{row['DP ID']}",
+                )
+                if new_st != status:
+                    _set_status(row["DP ID"], org_key, new_st)
+                    st.rerun()
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Tab 1: Canonical Collection Checklist
+    # ─────────────────────────────────────────────────────────────────────────
+    with tabs[1]:
+        st.markdown(
+            "**Your deduplicated data collection to-do list.** Each row here represents "
+            "one data collection exercise. Tick Completion Status as you go. "
+            "Collecting the canonical version satisfies all mapped frameworks."
+        )
+
+        canonical_rows = [r for r in all_dps if r.get("Is Canonical", "").lower() in ("yes", "y", "true", "1")]
+        status_filter = st.multiselect(
+            "Filter by status",
+            ["Not Started", "In Progress", "Complete", "N/A"],
+            default=["Not Started", "In Progress"],
+            key="checklist_status",
+        )
+
+        cl_rows = _apply_filters(canonical_rows, "cl")
+        if status_filter:
+            cl_rows = [r for r in cl_rows if _get_status(r["DP ID"], org_key) in status_filter]
+
+        st.markdown(f"**{len(cl_rows)} canonical DPs** (of {len(canonical_rows)} total canonical)")
+        _render_summary(canonical_rows, org_key)
+        st.markdown("---")
+
+        for row in cl_rows:
+            _render_dp_card(row, org_key, show_status=True)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Tab 2: Cross-Framework Bridges
+    # ─────────────────────────────────────────────────────────────────────────
+    with tabs[2]:
+        st.markdown(
+            "**Canonical records with multi-framework equivalents.** "
+            "Each row here maps one data collection exercise to the frameworks that use it. "
+            "Collect once → reformat for each framework in the *Mapped Frameworks* column."
+        )
+
+        bridge_rows = _apply_filters(all_dps, "br")
+        # Only show rows with multiple frameworks mapped
+        bridge_rows = [r for r in bridge_rows if len(r.get("Mapped Frameworks", "").split(",")) > 1]
+
+        # Framework pair filter
+        all_mapped_fws = sorted({
+            fw.strip() for r in bridge_rows
+            for fw in r.get("Mapped Frameworks", "").split(",") if fw.strip()
+        })
+        sel_fw = st.selectbox("Show DPs mapped to framework", ["All"] + all_mapped_fws, key="br_fw_filter")
+        if sel_fw != "All":
+            bridge_rows = [
+                r for r in bridge_rows
+                if sel_fw in [fw.strip() for fw in r.get("Mapped Frameworks", "").split(",")]
+            ]
+
+        st.markdown(f"**{len(bridge_rows)} cross-framework DPs**")
+
+        for row in bridge_rows:
+            mapped_fws = [fw.strip() for fw in row.get("Mapped Frameworks", "").split(",") if fw.strip()]
+            badges = " ".join(_fw_badge(fw, _is_light) for fw in mapped_fws)
+            status = _get_status(row["DP ID"], org_key)
+            icon = _STATUS_ICONS.get(status, "⭕")
+            title = f"{icon} `{row['DP ID']}` — {row.get('DP Name','')[:65]}"
+
+            with st.expander(title, expanded=False):
+                st.markdown(f"**Mapped to:** {badges}", unsafe_allow_html=True)
+                bridge = row.get("Cross-Framework Bridge", "").strip()
+                if bridge:
+                    st.write(bridge[:600] + ("..." if len(bridge) > 600 else ""))
+                dedup = row.get("De-duplication Notes", "").strip()
+                if dedup:
+                    st.caption(f"**Delta:** {dedup[:300]}")
+                # Per-framework refs
+                refs = {
+                    "BRSR": row.get("BRSR Core Reference", ""),
+                    "CDP": row.get("CDP Reference", ""),
+                    "GRI": row.get("GRI Reference", ""),
+                    "IFRS S1": row.get("IFRS S1 Reference", ""),
+                    "IFRS S2": row.get("IFRS S2 Reference", ""),
+                    "TCFD": row.get("TCFD Reference", ""),
+                }
+                present = [(k, v) for k, v in refs.items() if v.strip()]
+                if present:
+                    ref_md = "  ·  ".join(f"**{k}:** {v[:80]}" for k, v in present)
+                    st.caption(ref_md)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Tab 3: By Topic (Cross-Framework)
+    # ─────────────────────────────────────────────────────────────────────────
+    with tabs[3]:
+        st.markdown(
+            "**Topic-owner view.** All disclosure points relevant to a topic area, "
+            "regardless of source framework. Use when a sustainability function owner "
+            "wants to see everything relevant to their area across all frameworks."
+        )
+
+        topics_list = sorted({r.get("Topic", "") for r in all_dps if r.get("Topic")})
+        sel_topic = st.selectbox("Select topic", topics_list, key="bytopic_sel")
+        pillar_f = st.selectbox(
+            "Pillar filter",
+            ["All", "Environmental", "Social", "Governance", "Cross-cutting"],
+            key="bytopic_pillar"
+        )
+
+        topic_rows = [r for r in all_dps if r.get("Topic") == sel_topic]
+        if pillar_f != "All":
+            topic_rows = [r for r in topic_rows if r.get("ESG Pillar") == pillar_f]
+
+        # Group by framework
+        by_fw: dict[str, list] = {}
+        for r in topic_rows:
+            fw = r.get("Source Framework", "Other")
+            by_fw.setdefault(fw, []).append(r)
+
+        all_mapped_in_topic = sorted({
+            fw.strip() for r in topic_rows
+            for fw in r.get("Mapped Frameworks", "").split(",") if fw.strip()
+        })
+
+        st.markdown(f"**{len(topic_rows)} DPs** in **{sel_topic}** · Mapped to: "
+                    + " ".join(_fw_badge(fw, _is_light) for fw in all_mapped_in_topic),
+                    unsafe_allow_html=True)
+        _render_summary(topic_rows, org_key)
+        st.markdown("---")
+
+        for fw, fw_rows in by_fw.items():
+            st.markdown(f"#### {_fw_badge(fw, _is_light)} {fw}", unsafe_allow_html=True)
+            for row in fw_rows:
+                _render_dp_card(row, org_key, show_status=True)
+            st.markdown("")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Tab 4: By Framework
+    # ─────────────────────────────────────────────────────────────────────────
+    with tabs[4]:
+        st.markdown(
+            "**Work within one framework at a time.** "
+            "Shows DPs grouped by source framework → module → topic."
+        )
+
+        src_fws = sorted({r.get("Source Framework", "") for r in all_dps if r.get("Source Framework")})
+        sel_fw = st.selectbox("Framework", src_fws, key="bfw_sel")
+
+        bfw_rows = [r for r in all_dps if r.get("Source Framework") == sel_fw]
+        modules = sorted({r.get("Module / Section", "") for r in bfw_rows if r.get("Module / Section")})
+        sel_module = st.selectbox("Module / Section", ["All"] + modules, key="bfw_module")
+        if sel_module != "All":
+            bfw_rows = [r for r in bfw_rows if r.get("Module / Section") == sel_module]
+
+        # Group by module then topic
+        by_module: dict[str, list] = {}
+        for r in bfw_rows:
+            mod = r.get("Module / Section", "General")
+            by_module.setdefault(mod, []).append(r)
+
+        st.markdown(f"**{len(bfw_rows)} DPs** for **{sel_fw}**")
+        _render_summary(bfw_rows, org_key)
+        st.markdown("---")
+
+        for mod, mod_rows in sorted(by_module.items()):
+            st.markdown(f"#### {mod}")
+            for row in mod_rows:
+                _render_dp_card(row, org_key, show_status=True)
+            st.markdown("")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Tab 5: All DPs
+    # ─────────────────────────────────────────────────────────────────────────
+    with tabs[5]:
+        st.markdown("**Full disclosure point inventory.** Sort by any column.")
+
+        all_filtered = _apply_filters(all_dps, "all")
+
+        # Build a displayable dataframe
+        try:
+            import pandas as pd
+            df_data = []
+            for r in all_filtered:
+                status = _get_status(r["DP ID"], org_key)
+                df_data.append({
+                    "DP ID": r.get("DP ID", ""),
+                    "DP Name": r.get("DP Name", "")[:80],
+                    "Source FW": r.get("Source Framework", ""),
+                    "Module": r.get("Module / Section", ""),
+                    "Pillar": r.get("ESG Pillar", ""),
+                    "Topic": r.get("Topic", ""),
+                    "Always": r.get("Always Disclose", ""),
+                    "Materiality": r.get("Materiality Required", ""),
+                    "Canonical": r.get("Is Canonical", ""),
+                    "Phased-in": r.get("Phased-in", ""),
+                    "Format": r.get("Response Format", ""),
+                    "Mapped Frameworks": r.get("Mapped Frameworks", ""),
+                    "Status": status,
+                })
+            df = pd.DataFrame(df_data)
+            st.dataframe(df, use_container_width=True, height=500)
+            st.caption(f"{len(df)} rows")
+        except ImportError:
+            for row in all_filtered:
+                st.write(f"`{row['DP ID']}` — {row.get('DP Name','')[:80]}")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Tab 6: ESRS-Only (No Crossmap)
+    # ─────────────────────────────────────────────────────────────────────────
+    with tabs[6]:
+        st.markdown(
+            "**ESRS-specific requirements with no equivalent in other frameworks.** "
+            "These need standalone data collection — no existing GRI, BRSR, or TCFD "
+            "data will satisfy them."
+        )
+
+        esrs_rows = [r for r in all_dps if r.get("Source Framework") == "ESRS"]
+        # No crossmap = mapped frameworks is empty or only ESRS
+        esrs_only_rows = [
+            r for r in esrs_rows
+            if not any(
+                fw.strip() and fw.strip() not in ("ESRS", "Other")
+                for fw in r.get("Mapped Frameworks", "").split(",")
+            )
+        ]
+
+        pillar_eo = st.selectbox(
+            "Pillar",
+            ["All", "Environmental", "Social", "Governance", "Cross-cutting"],
+            key="esrsonly_pillar"
+        )
+        if pillar_eo != "All":
+            esrs_only_rows = [r for r in esrs_only_rows if r.get("ESG Pillar") == pillar_eo]
+
+        st.markdown(f"**{len(esrs_only_rows)} ESRS-only DPs** (no cross-framework equivalent)")
+        _render_summary(esrs_only_rows, org_key)
+        st.markdown("---")
+
+        for row in esrs_only_rows:
+            _render_dp_card(row, org_key, show_status=True)
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # Tab 7: GHG–ESG Coverage
+    # ─────────────────────────────────────────────────────────────────────────
+    with tabs[7]:
+        st.markdown(
+            "**How your GHG inventory feeds your ESG disclosures.** "
+            "Each row shows an ESG topic and the GHG categories that provide its evidence."
+        )
+        _render_ghg_esg_coverage(org_id, inv_year, _is_light)
+
+
+# ── GHG–ESG Coverage (existing functionality, extracted) ─────────────────────
+
+def _render_ghg_esg_coverage(org_id: str, inv_year: int, _is_light: bool) -> None:
+    """Render the legacy GHG inventory → ESG obligation crossmap."""
+    from streamlit_app._org_helper import fix_page, safe_get_summary, safe_get_all_records
 
     profile   = st.session_state.get("org_profile", {})
+    _, inventory = fix_page(profile, st.session_state.get("inventory"))
 
-    # ── org_id + inventory resolved from profile (handles "View as" correctly) ──
-    from streamlit_app._org_helper import fix_page, safe_get_summary, safe_get_all_records
-    org_id, inventory = fix_page(profile, st.session_state.get("inventory"))
-    if not org_id:
-        st.warning("Please log in to access this page.")
-        return
-    # Update local profile copy so forms write to the right org
-    profile = dict(profile)
-    profile["org_uuid"] = org_id
-    profile["org_id"]   = org_id
-    inv_year  = profile.get("reporting_year", 2024)
-
-    # Pull live inventory for granular gap assessment
-    covered_processes: set[str] = set()   # process strings actually in inventory
-    covered_scopes:    set[str] = set()   # top-level scope coverage
-    covered_cats:      set[str] = set()   # "Cat 1", "Cat 4", etc.
+    covered_processes: set[str] = set()
+    covered_scopes:    set[str] = set()
+    covered_cats:      set[str] = set()
     n_records = 0
     scope_tco2e: dict = {}
+
     if inventory:
         try:
             s = safe_get_summary(inventory, org_id, inv_year)
@@ -195,67 +802,41 @@ def render() -> None:
                     covered_scopes.add(sc)
                     proc = (r.get("process") or "").lower()
                     covered_processes.add(proc)
-                    # Extract Cat N from process string
-                    import re as _re
-                    cat_m = _re.search(r"cat\s*(\d+)", proc)
+                    cat_m = re.search(r"cat\s*(\d+)", proc)
                     if cat_m:
                         covered_cats.add("Cat " + cat_m.group(1))
                     if "stationary" in proc: covered_cats.add("Stationary")
                     if "mobile" in proc:     covered_cats.add("Mobile")
                     if "fugitive" in proc:   covered_cats.add("Fugitive")
                     if "ippu" in proc:       covered_cats.add("IPPU")
-                    if "electricity" in proc:covered_cats.add("Electricity")
+                    if "electricity" in proc: covered_cats.add("Electricity")
                 sc_key = sc if sc else "Unknown"
                 scope_tco2e[sc_key] = scope_tco2e.get(sc_key, 0) + t
         except Exception:
             pass
 
-    def _topic_covered(topic: dict) -> tuple[bool, list[str], list[str]]:
-        """Return (fully_covered, covered_cats_list, gap_cats_list) for a topic."""
-        topic_covered_cats = []
-        topic_gap_cats     = []
-        for cat in topic["ghg_cats"]:
-            # Check if any covered keyword matches this cat string
-            cat_lower = cat.lower()
-            matched = any(
-                ck.lower() in cat_lower or cat_lower in ck.lower()
-                for ck in covered_cats | covered_scopes
-            )
-            if matched:
-                topic_covered_cats.append(cat)
-            else:
-                topic_gap_cats.append(cat)
-        return (len(topic_gap_cats) == 0, topic_covered_cats, topic_gap_cats)
-
-    # ── Top summary ───────────────────────────────────────────────────────
     total_topics = len(CROSSMAP)
-    _topic_results = {tid: _topic_covered(t) for tid, t in CROSSMAP.items()}
+    _topic_results = {
+        tid: _topic_covered(t, covered_cats, covered_scopes)
+        for tid, t in CROSSMAP.items()
+    }
     covered_topics = sum(1 for fc, _, _ in _topic_results.values() if fc)
     partial_topics = sum(1 for fc, cc, gc in _topic_results.values() if cc and gc)
     gap_topics     = sum(1 for fc, cc, gc in _topic_results.values() if not cc)
-    coverage_pct = int(covered_topics / total_topics * 100) if total_topics else 0
 
     m1, m2, m3, m4, m5 = st.columns(5)
-    m1.metric("ESG topics mapped",      total_topics)
-    m2.metric("✅ Fully covered",       covered_topics)
-    m3.metric("🟡 Partial coverage",   partial_topics)
-    m4.metric("⭕ No data (gap)",       gap_topics)
-    m5.metric("Inventory records",      n_records)
+    m1.metric("ESG topics mapped",    total_topics)
+    m2.metric("✅ Fully covered",      covered_topics)
+    m3.metric("🟡 Partial coverage",  partial_topics)
+    m4.metric("⭕ No data (gap)",      gap_topics)
+    m5.metric("Inventory records",    n_records)
 
     if gap_topics > 0:
-        st.error(
-            f"⭕ **{gap_topics} ESG topics have no GHG data at all.** "
-            "These are disclosure gaps that must be addressed before ESG reporting."
-        )
+        st.error(f"⭕ **{gap_topics} ESG topics have no GHG data.** Enter missing inventory data.")
     if partial_topics > 0:
-        st.warning(
-            f"🟡 **{partial_topics} topics have partial coverage.** "
-            "Some required GHG categories are still missing — expand data entry."
-        )
+        st.warning(f"🟡 **{partial_topics} topics have partial coverage.** Expand data entry.")
     if covered_topics == total_topics:
         st.success("✅ All ESG topics have GHG data coverage.")
-    
-    # Scope-level tCO2e context
     if scope_tco2e:
         st.caption(
             "Inventory: "
@@ -264,42 +845,29 @@ def render() -> None:
 
     st.markdown("---")
 
-    # ── Filters ──────────────────────────────────────────────────────────
     f1, f2, f3 = st.columns(3)
     fw_options = ["All"] + sorted({t["framework"] for t in CROSSMAP.values()})
-    pillar_opt = f1.selectbox("Pillar", ["All", "E", "S", "G"], key="bridge_pillar")
-    fw_opt     = f2.selectbox("Framework", fw_options, key="bridge_fw")
-    gap_only   = f3.toggle("Show gaps only (no GHG data)", key="bridge_gap")
+    pillar_opt = f1.selectbox("Pillar", ["All", "E", "S", "G"], key="ghg_bridge_pillar")
+    fw_opt     = f2.selectbox("Framework", fw_options, key="ghg_bridge_fw")
+    gap_only   = f3.toggle("Show gaps only", key="ghg_bridge_gap")
 
-    topics = CROSSMAP.items()
+    topics_iter = list(CROSSMAP.items())
     if pillar_opt != "All":
-        topics = [(k, v) for k, v in topics if v["pillar"] == pillar_opt]
+        topics_iter = [(k, v) for k, v in topics_iter if v["pillar"] == pillar_opt]
     if fw_opt != "All":
-        topics = [(k, v) for k, v in topics if fw_opt in v["framework"]]
+        topics_iter = [(k, v) for k, v in topics_iter if fw_opt in v["framework"]]
     if gap_only:
-        topics = [(k, v) for k, v in topics
-                  if not _topic_results.get(k, (False, [], []))[0]]
+        topics_iter = [(k, v) for k, v in topics_iter
+                       if not _topic_results.get(k, (False, [], []))[0]]
 
-    st.markdown(f"**{len(list(topics))} topics**")
-
-    # ── Topic cards ───────────────────────────────────────────────────────
-    topics = list(topics)  # consume iterator once
-    for tid, topic in topics:
+    for tid, topic in topics_iter:
         pillar = topic["pillar"]
-        p_color = _PILLAR_COLOR.get(pillar, "#6b7280")
+        p_color  = _PILLAR_COLOR.get(pillar, "#6b7280")
         fw_color = _FW_COLOR.get(topic["framework"], "#6b7280")
         _fully, _cov_cats, _gap_cats = _topic_results.get(tid, (False, [], topic["ghg_cats"]))
-        if _fully:
-            status_icon = "✅"
-        elif _cov_cats:
-            status_icon = "🟡"
-        else:
-            status_icon = "⭕"
+        status_icon = "✅" if _fully else ("🟡" if _cov_cats else "⭕")
 
-        with st.expander(
-            f"{status_icon} **{topic['label']}**  ·  `{tid}`",
-            expanded=(not _fully),
-        ):
+        with st.expander(f"{status_icon} **{topic['label']}**  ·  `{tid}`", expanded=(not _fully)):
             tc1, tc2 = st.columns([3, 1])
             with tc1:
                 st.markdown(topic["description"])
@@ -310,16 +878,12 @@ def render() -> None:
                     else:
                         st.write(f"  ⭕ **{cat}** — **GAP: no data entered yet**")
                 if _gap_cats:
-                    st.error(
-                        f"**Action required:** Enter data for: "
-                        + ", ".join(_gap_cats)
-                    )
+                    st.error("**Action required:** Enter data for: " + ", ".join(_gap_cats))
             with tc2:
-                fw = topic["framework"]
                 st.markdown(
                     f"<span style='background:{fw_color};color:white;"
                     f"padding:4px 10px;border-radius:99px;font-size:12px;"
-                    f"font-weight:700'>{fw}</span>",
+                    f"font-weight:700'>{topic['framework']}</span>",
                     unsafe_allow_html=True,
                 )
                 st.markdown(
@@ -328,45 +892,34 @@ def render() -> None:
                     f"font-weight:700'>Pillar {pillar}</span>",
                     unsafe_allow_html=True,
                 )
-                st.markdown("**Maturity steps:**")
-                for i, step in enumerate(topic.get("maturity", []), 1):
-                    st.write(f"  {i}. {step}")
+                if topic.get("maturity"):
+                    st.markdown("**Maturity steps:**")
+                    for i, step in enumerate(topic["maturity"], 1):
+                        st.write(f"  {i}. {step}")
 
-    # ── Framework coverage matrix ─────────────────────────────────────────
+    # Framework × GHG scope coverage matrix
     st.markdown("---")
     st.markdown("#### Framework × GHG scope coverage matrix")
-    st.caption("✅ = GHG data present in inventory · ⭕ = data missing")
-
-    fw_list = ["ESRS", "BRSR", "CDP", "GRI", "TCFD"]
-    scope_list = ["Scope 1", "Scope 2", "Scope 3"]
-
     try:
         import pandas as pd
-
+        fw_list    = ["ESRS", "BRSR", "CDP", "GRI", "TCFD"]
+        scope_list = ["Scope 1", "Scope 2", "Scope 3"]
         matrix = {}
         for fw in fw_list:
             row = {}
             for scope in scope_list:
-                # Does any topic in this framework require this scope,
-                # and do we have that scope's data?
                 needs = any(
                     any(scope in cat for cat in t["ghg_cats"])
                     for t in CROSSMAP.values() if fw in t["framework"]
                 )
                 has = scope in covered_scopes
-                if not needs:
-                    row[scope] = "—"
-                elif has:
-                    row[scope] = "✅"
-                else:
-                    row[scope] = "⭕"
+                row[scope] = "—" if not needs else ("✅" if has else "⭕")
             matrix[fw] = row
         df = pd.DataFrame(matrix).T
         st.dataframe(df, use_container_width=True)
     except ImportError:
-        st.info("Install pandas for the coverage matrix.")
+        pass
 
-    # ── Action recommendations ────────────────────────────────────────────
     st.markdown("---")
     st.markdown("#### Recommended next actions")
     if "Scope 1" not in covered_scopes:

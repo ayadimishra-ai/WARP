@@ -87,13 +87,16 @@ def load_disclosure_points(conn: sqlite3.Connection, csv_path: str | Path = None
             conn.execute("""
                 INSERT OR REPLACE INTO disclosure_points (
                     dp_id, dp_name, source_framework, module_section, esg_pillar,
-                    topic, data_type, always_disclose, materiality_req, is_canonical,
-                    phased_in, phased_in_details, response_format, schema_unit,
-                    standard_reference, tonality_req, trigger_condition,
+                    topic, sub_topic_tag, data_type, always_disclose, materiality_req,
+                    is_canonical, phased_in, phased_in_details, response_format,
+                    schema_unit, standard_reference, tonality_req, trigger_condition,
                     calculation_std, comparative_req, disagg_required,
                     disagg_dimensions, assurance_level, metric_count,
-                    cross_framework_bridge, dedup_notes
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    cross_framework_bridge, dedup_notes, esrs_equivalent,
+                    evidence_req, framework_matl_map, framework_versions,
+                    brsr_core_ref, cdp_ref, gri_ref, ifrs_s1_ref, ifrs_s2_ref,
+                    tcfd_ref, tnfd_notes
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """, (
                 dp_id,
                 row.get("DP Name", "").strip(),
@@ -101,6 +104,7 @@ def load_disclosure_points(conn: sqlite3.Connection, csv_path: str | Path = None
                 row.get("Module / Section", "").strip(),
                 row.get("ESG Pillar", "").strip(),
                 row.get("Topic", "").strip(),
+                row.get("Sub-Topic Tag", "").strip(),
                 row.get("Data Type", "Qualitative").strip(),
                 yn(row.get("Always Disclose", "No")),
                 yn(row.get("Materiality Required", "No")),
@@ -118,8 +122,19 @@ def load_disclosure_points(conn: sqlite3.Connection, csv_path: str | Path = None
                 disagg_dims,
                 row.get("Assurance Level", "").strip(),
                 row.get("Metric Count", "").strip(),
-                row.get("Cross-Framework Bridge", "")[:2000],
-                row.get("De-duplication Notes", "")[:1000],
+                row.get("Cross-Framework Bridge", "").strip(),
+                row.get("De-duplication Notes", "").strip(),
+                row.get("ESRS Equivalent", "").strip(),
+                row.get("Evidence Requirements", "").strip(),
+                row.get("Framework Materiality Map", "").strip(),
+                row.get("Framework Versions", "").strip(),
+                row.get("BRSR Core Reference", "").strip(),
+                row.get("CDP Reference", "").strip(),
+                row.get("GRI Reference", "").strip(),
+                row.get("IFRS S1 Reference", "").strip(),
+                row.get("IFRS S2 Reference", "").strip(),
+                row.get("TCFD Reference", "").strip(),
+                row.get("TNFD Alignment Notes", "").strip(),
             ))
 
             # Framework map — parse "Mapped Frameworks" + "Cross-Framework Bridge"
@@ -136,10 +151,22 @@ def load_disclosure_points(conn: sqlite3.Connection, csv_path: str | Path = None
                     schema_variants[fw_key] = variant_text.strip()
 
             # Source framework is always primary
+            src_fw = row.get("Source Framework", "ESRS").strip().upper()
             conn.execute("""
-                INSERT OR REPLACE INTO dp_framework_map (dp_id, framework, is_primary)
-                VALUES (?, ?, 1)
-            """, (dp_id, row.get("Source Framework", "ESRS").strip().upper()))
+                INSERT OR REPLACE INTO dp_framework_map (dp_id, framework, framework_ref, is_primary)
+                VALUES (?, ?, ?, 1)
+            """, (dp_id, src_fw, row.get("Standard Reference", "").strip()[:500]))
+
+            # Build per-framework reference map from the new CSV columns
+            fw_ref_map = {
+                "BRSR": row.get("BRSR Core Reference", "").strip(),
+                "CDP": row.get("CDP Reference", "").strip(),
+                "GRI": row.get("GRI Reference", "").strip(),
+                "IFRS_S1": row.get("IFRS S1 Reference", "").strip(),
+                "IFRS_S2": row.get("IFRS S2 Reference", "").strip(),
+                "TCFD": row.get("TCFD Reference", "").strip(),
+                "ESRS": row.get("Standard Reference", "").strip(),
+            }
 
             for fw_raw in mapped_raw.split(","):
                 fw = fw_raw.strip()
@@ -153,10 +180,11 @@ def load_disclosure_points(conn: sqlite3.Connection, csv_path: str | Path = None
                     continue  # already inserted as primary
                 conn.execute("""
                     INSERT OR REPLACE INTO dp_framework_map
-                    (dp_id, framework, schema_variant, unit_variant, is_primary)
-                    VALUES (?, ?, ?, ?, 0)
+                    (dp_id, framework, framework_ref, schema_variant, unit_variant, is_primary)
+                    VALUES (?, ?, ?, ?, ?, 0)
                 """, (
                     dp_id, fw,
+                    fw_ref_map.get(fw, "")[:500],
                     schema_variants.get(fw, ""),
                     unit_variants_raw[:500],
                 ))
@@ -170,6 +198,18 @@ def load_disclosure_points(conn: sqlite3.Connection, csv_path: str | Path = None
 # ---------------------------------------------------------------------------
 # Disclosure Point queries
 # ---------------------------------------------------------------------------
+
+def get_all_disclosure_points(csv_path: str | Path = None) -> list[dict]:
+    """Load all disclosure points directly from the crossmap CSV (no DB needed)."""
+    csv_file = Path(csv_path) if csv_path else _CROSSMAP
+    if not csv_file.exists():
+        return []
+    rows = []
+    with open(csv_file, encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            rows.append(dict(r))
+    return rows
+
 
 def get_dp(conn: sqlite3.Connection, dp_id: str) -> dict | None:
     row = conn.execute("SELECT * FROM disclosure_points WHERE dp_id = ?", (dp_id,)).fetchone()

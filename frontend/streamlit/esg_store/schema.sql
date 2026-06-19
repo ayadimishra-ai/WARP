@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS disclosure_points (
     module_section      TEXT,                      -- E1 | S1 | ESRS 2 | General
     esg_pillar          TEXT,                      -- Environmental | Social | Governance | Cross-cutting
     topic               TEXT,                      -- Climate | Own Workforce | etc.
+    sub_topic_tag       TEXT,                      -- finer-grained topic tag
     data_type           TEXT,                      -- Quantitative | Qualitative | Both
     always_disclose     INTEGER DEFAULT 0,         -- 1 = always; 0 = materiality-gated
     materiality_req     INTEGER DEFAULT 0,         -- 1 = requires materiality assessment
@@ -55,6 +56,21 @@ CREATE TABLE IF NOT EXISTS disclosure_points (
     disagg_dimensions   TEXT,                      -- JSON array of required disaggregations
     assurance_level     TEXT,
     metric_count        TEXT,
+    -- Cross-framework intelligence
+    cross_framework_bridge  TEXT,                  -- full bridge narrative
+    dedup_notes         TEXT,                      -- what is different across frameworks
+    esrs_equivalent     TEXT,                      -- ESRS equivalent DP (for non-ESRS source rows)
+    evidence_req        TEXT,                      -- what evidence is required
+    framework_matl_map  TEXT,                      -- per-framework materiality explanation
+    framework_versions  TEXT,                      -- version info per framework
+    -- Framework-specific references
+    brsr_core_ref       TEXT,                      -- BRSR Core Reference
+    cdp_ref             TEXT,                      -- CDP question reference
+    gri_ref             TEXT,                      -- GRI standard reference
+    ifrs_s1_ref         TEXT,                      -- IFRS S1 paragraph reference
+    ifrs_s2_ref         TEXT,                      -- IFRS S2 paragraph reference
+    tcfd_ref            TEXT,                      -- TCFD recommendation reference
+    tnfd_notes          TEXT,                      -- TNFD alignment notes
     created_at          TEXT DEFAULT (datetime('now'))
 );
 
