@@ -1,0 +1,44 @@
+/* Snowkap ESG Platform — base styles */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-primary: #1B5E20;
+  --color-primary-light: #2E7D32;
+  --color-accent: #1565C0;
+  --color-error: #B71C1C;
+  --color-bg: #F5F7FA;
+  --color-surface: #FFFFFF;
+  --color-text: #1A1A2E;
+  --color-text-muted: #6B7280;
+  --radius: 8px;
+  --shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--color-bg); color: var(--color-text); }
+
+/* Auth layout */
+.auth-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+.auth-card { background: var(--color-surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 2.5rem; width: 100%; max-width: 400px; }
+.auth-logo { display: block; height: 40px; margin: 0 auto 1.5rem; }
+.auth-card h1 { text-align: center; font-size: 1.5rem; margin-bottom: 1.5rem; }
+.auth-link { display: block; text-align: center; margin-top: 1rem; color: var(--color-accent); font-size: .875rem; }
+
+/* Form elements */
+label { display: block; font-size: .875rem; font-weight: 500; margin-bottom: .25rem; margin-top: 1rem; }
+input[type="email"], input[type="password"], input[type="text"], select, textarea {
+  display: block; width: 100%; padding: .625rem .75rem;
+  border: 1px solid #D1D5DB; border-radius: var(--radius);
+  font-size: 1rem; transition: border-color .15s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--color-primary-light); }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: .625rem 1.25rem;
+       border: none; border-radius: var(--radius); font-size: 1rem; font-weight: 500; cursor: pointer; transition: background .15s; }
+.btn--primary { background: var(--color-primary-light); color: #fff; width: 100%; margin-top: 1.5rem; }
+.btn--primary:hover { background: var(--color-primary); }
+
+/* Alerts */
+.alert { padding: .75rem 1rem; border-radius: var(--radius); font-size: .875rem; margin-bottom: 1rem; }
+.alert--error { background: #FFEBEE; color: var(--color-error); border: 1px solid #EF9A9A; }
+.alert--success { background: #E8F5E9; color: var(--color-primary); border: 1px solid #A5D6A7; }

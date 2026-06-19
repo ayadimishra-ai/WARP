@@ -1,99 +1,104 @@
-# CLAUDE.md — WARP Monorepo Root
+# CLAUDE.md — Snowkap ESG Platform (Python Remodel Branch)
 
-This file guides Claude Code when working in the WARP monorepo root.
-For OPS-specific guidance see `ops/CLAUDE.md`.
+This branch (`claude/remodel-python-streamlit`) is the full architectural rewrite of the Snowkap stack to Python/FastAPI + Streamlit + HTML.
 
-## Build and Development Commands
+## New Architecture
 
-- **Package manager:** `yarn` only (npm blocked by engine config)
-- `yarn dev:web` — Next.js web app (apps/web)
-- `yarn dev:hasura` — Hasura console
-- `yarn codegen` — regenerate GraphQL types from `.gql` files
-- `yarn lint` — ESLint across all packages
-- `yarn format` — Prettier format
-- `yarn build` — full monorepo build
+| Layer | Technology | Path |
+|---|---|---|
+| Backend API | FastAPI (Python 3.12) | `backend/` |
+| Dashboards | Streamlit | `frontend/streamlit/` |
+| Auth / Form UI | HTML + Jinja2 templates | `frontend/templates/` |
+| Static assets | Vanilla CSS + JS | `frontend/static/` |
+| Database | PostgreSQL via SQLAlchemy + Alembic | `backend/app/db/`, `backend/alembic/` |
+| GraphQL (transitional) | Hasura (kept during migration) | `apps/hasura/` |
 
-## Architecture
+## Legacy reference code (DO NOT RUN — reference only)
 
-Turborepo monorepo with Yarn Workspaces. Two main products:
+| Path | What it was |
+|---|---|
+| `apps/` + `packages/` | WARP — Next.js 14 Pages Router |
+| `ops/` | OPS — Next.js 15 App Router |
+| `spa/` | SPA — React CRA portal shell |
+| `monorepo/` | Next-gen unified Next.js 15 App Router |
 
-1. **WARP** (root) — Next.js 14 Pages Router ESG/GHG assessment platform
-2. **OPS** (`ops/`) — Next.js 15 App Router multi-tenant data operations portal
+All security fixes are documented in `docs/warp/`, `docs/ops/`, `docs/spa/`, `docs/monorepo/`. Port those fixes into Python equivalents — do NOT reintroduce the same bugs.
 
-### WARP Tech Stack
+## Backend — FastAPI (`backend/`)
 
-| Layer | Tech | Notes |
-|-------|------|-------|
-| Framework | Next.js 14 Pages Router | `apps/web/pages/` |
-| Auth | NextAuth v4 + custom JWT (HS256) | `HASURA_GRAPHQL_JWT_SECRET` env var |
-| GraphQL | Hasura v2 | Admin secret in server SDK, JWT in browser |
-| UI | React 18, custom components | |
-| ESG engine | JSONata formula engine | `apps/web/pages/api/calculate-score/` |
-| File storage | AWS S3 | `packages/server/services/aws-s3.service.ts` |
-| Email | Nodemailer | `packages/server/services/notification.service.ts` |
-| AI | RARA API (document rating/validation) | `apps/web/pages/api/rara/` |
-
-### Directory Layout
-
-| Path | Purpose |
-|------|---------|
-| `apps/web/pages/api/` | API routes (Pages Router convention) |
-| `apps/web/pages/api/AI/` | AI curation and processing endpoints |
-| `apps/web/pages/api/calculate-score/` | ESG/GHG score calculation engine |
-| `apps/web/pages/api/awss3/` | S3 upload/download routes |
-| `apps/web/pages/api/v1/platform/` | Platform company/user management |
-| `apps/web/pages/api/rara/` | RARA document validation/rating |
-| `apps/web/pages/embed/` | Embeddable form and AI components |
-| `apps/web/pages/form/` | Assessment form pages |
-| `packages/server/guards/` | API route guards (error, method, auth, webhook) |
-| `packages/server/services/` | AWS S3, notification, user, company services |
-| `packages/graphql/` | Generated GraphQL types + server SDK |
-| `packages/shared/utils/` | Auth session parsing, DOM sanitiser, custom errors |
-| `packages/client/libs/` | Browser-side rate limiter |
-| `docs/` | Feature documentation (ai-features, document-repository, esg-post-deal-form) |
-
-### API Route Pattern (WARP)
-
-```typescript
-import ApiErrorGuard from "@warp/server/guards/api-error.guard";
-import ApiMethodGuard from "@warp/server/guards/api-method.guard";
-
-const handler: NextApiHandler = async (req, res) => { ... };
-
-export default ApiErrorGuard(
-  withEmailOrIpRateLimitWithProgressiveDelay(
-    ApiMethodGuard(handler, "POST"),
-    { limitInterval: 1, maxRequestCount: 60, progressiveDelay: true }
-  )
-);
+### Commands
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload          # dev server :8000
+alembic upgrade head               # run migrations
+alembic revision --autogenerate -m "description"
 ```
 
-For routes requiring user auth, verify JWT manually:
-```typescript
-import jwt from "jsonwebtoken";
-const token = (req.headers.authorization ?? "").replace("Bearer ", "");
-const claims = jwt.verify(token, process.env.HASURA_GRAPHQL_JWT_SECRET!);
+### Structure
+```
+backend/
+├── main.py                 ← FastAPI app, CORS, router mounting
+├── app/
+│   ├── api/
+│   │   ├── auth/           ← /api/v1/auth/*
+│   │   ├── warp/           ← /api/v1/warp/*
+│   │   ├── ops/            ← /api/v1/ops/*
+│   │   └── platform/       ← /api/v1/platform/*
+│   ├── models/             ← SQLAlchemy ORM models
+│   ├── schemas/            ← Pydantic request/response schemas
+│   ├── services/           ← Business logic (aws, email, rara)
+│   ├── db/session.py       ← Async engine + get_db dependency
+│   ├── core/config.py      ← Pydantic Settings
+│   └── guards/auth.py      ← JWT bearer guard + role guard
+├── alembic/                ← DB migrations
+└── requirements.txt
 ```
 
-### Auth
+### Critical invariants
+- **JWT**: always `decode_token()` with full verification — never `jwt.get_unverified_claims()`
+- **Secrets**: always `hmac.compare_digest()` — never `==` on secret strings
+- **RARA URL/key**: fetch from DB (`GlobalMaster` table) — never from request body (SSRF)
+- **CORS**: `allow_origins=[settings.PARENT_ORIGIN]` — never `["*"]`
+- **Errors**: `{"detail": "message"}` only — never stack traces or DB internals
+- **S3**: verify JWT before any S3 operation
+- **OTP**: never include OTP value in API response
 
-- JWT algorithm: HS256
-- Secret env var: `HASURA_GRAPHQL_JWT_SECRET`
-- Hasura claims key: `https://hasura.io/jwt/claims`
-- Claims include: `x-hasura-user-id`, `x-hasura-default-role`, `x-hasura-allowed-roles`, `x-hasura-company-id`
-- Always use `jwt.verify()` — never `jwt.decode()` (no signature check)
+### Auth pattern
+```python
+from app.guards.auth import get_current_user
+from fastapi import Depends
 
-### Import Aliases
+@router.post("/endpoint")
+async def my_endpoint(user: dict = Depends(get_current_user)) -> dict:
+    ...
+```
 
-- `@warp/server` → `packages/server`
-- `@warp/client` → `packages/client`
-- `@warp/graphql` → `packages/graphql`
-- `@warp/shared` → `packages/shared`
+## Streamlit Dashboards (`frontend/streamlit/`)
 
-### Critical Invariants
+```bash
+cd frontend/streamlit
+pip install -r requirements.txt
+streamlit run ghg/dashboard.py          # :8501
+streamlit run esg/score_dashboard.py    # :8502
+streamlit run ops/monthly_activity.py  # :8503
+```
 
-- **ESG score calculation** (`apps/web/pages/api/calculate-score/index.ts`): `recommendationWithFormfieldData` must be a local variable inside `calculateScore()`, never module-level. Shared module state corrupts scores across concurrent requests.
-- **dangerouslySetInnerHTML**: Always wrap with `domSanitiseValue()` from `@warp/shared/utils/dom-purifier/dom-purify.client.util`.
-- **postMessage**: Never use `"*"` as origin — use `NEXT_PUBLIC_PARENT_ORIGIN` env var via `platform-window-message.service.ts`.
-- **Hasura webhook guard** (`packages/server/guards/api-hasura-webhook-guard.ts`): Secret sourced from `HASURA_WEBHOOK_SECRET` env var; compared with `crypto.timingSafeEqual`.
-- **RARA routes**: URL and auth key must come from DB (`GlobalMaster` table) — never from request body (SSRF vector).
+Dashboards receive auth token via URL query param `?token=<JWT>&org_id=<UUID>`.
+
+## Docker Compose
+```bash
+docker-compose -f docker-compose.python.yml up
+```
+Ports: backend :8000, hasura :8080, postgres :5432, streamlit :8501-8503
+
+## Build backlog (priority order)
+1. SQLAlchemy models (from `docs/warp/database-schema.md`)
+2. Auth signin — DB lookup + JWT issuance
+3. ESG score calculator — port JSONata engine to Python
+4. Save answers + submit form endpoints
+5. OPS activity CRUD + emission aggregation
+6. Email service (aiosmtplib)
+7. S3 service (boto3)
+8. HTML form templates for assessment pages

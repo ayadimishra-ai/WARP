@@ -1,0 +1,46 @@
+# FastAPI core
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pydantic-settings==2.5.2
+
+# Database
+sqlalchemy==2.0.35
+alembic==1.13.3
+asyncpg==0.29.0          # async PostgreSQL driver
+psycopg2-binary==2.9.9   # sync fallback / Alembic
+
+# Auth
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.12  # form data / file uploads
+
+# AWS
+boto3==1.35.0
+botocore==1.35.0
+
+# HTTP client
+httpx==0.27.2
+
+# Email
+aiosmtplib==3.0.1
+jinja2==3.1.4             # email templates + HTML templates
+
+# GraphQL (Hasura client)
+gql[aiohttp]==3.5.0
+
+# Rate limiting
+slowapi==0.1.9
+
+# Security
+cryptography==43.0.1
+
+# Utilities
+python-dotenv==1.0.1
+orjson==3.10.7            # fast JSON
+structlog==24.4.0         # structured logging
+
+# Testing
+pytest==8.3.3
+pytest-asyncio==0.24.0
+httpx                     # test client (already above)
