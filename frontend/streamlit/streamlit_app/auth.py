@@ -93,27 +93,44 @@ ROLE_PAGES = {
 
     # Customer Contributor — data entry + analysis, no export/admin
     "Contributor": [
+        # Configure
         "⚙️  Setup",
+        "🗄️  EF manager",
+        # GHG Inventory
         "🔥  Scope 1 — Direct",
         "⚡  Scope 2 — Electricity",
         "🔗  Scope 3 — Value chain",
         "📋  Data manager",
         "🌱  Initiatives",
-        "📊  Dashboard",
+        # Analysis
         "📊  Emissions dashboard",
+        "🎯  Target register",
+        "🏢  Supplier & ESG",
+        "🌉  ESG bridge",
+        "⚠️  Risk dashboard",
+        "🗺️  Logistics map",
+        "🌐  Value chain map",
+        # Reporting
+        "📝  ESG data points",
         "🏭  SASB standards",
         "✅  Checklist",
+        "🔄  Review queue",
+        # Governance
+        "📜  Audit trail",
         "📚  Knowledge base",
     ],
 
-    # Customer Viewer — read-only
+    # Customer Viewer — read-only dashboards and reports
     "Viewer": [
-        "📊  Dashboard",
         "📊  Emissions dashboard",
+        "🎯  Target register",
         "📋  Data manager",
-        "✅  Checklist",
-        "🏭  SASB standards",
         "🌉  ESG bridge",
+        "⚠️  Risk dashboard",
+        "🗺️  Logistics map",
+        "🌐  Value chain map",
+        "🏭  SASB standards",
+        "✅  Checklist",
         "📚  Knowledge base",
     ],
 

@@ -432,18 +432,22 @@ NAV = {
     "🌱  Initiatives":         "streamlit_app._page_08_initiatives",
     # ── Analysis ──────────────────────────────────────────────────────────
     "📊  Emissions dashboard":  "streamlit_app._page_04_dashboard",
+    "🎯  Target register":      "streamlit_app._page_22_targets",
     "🏢  Supplier & ESG":       "streamlit_app._page_11_supplier",
     "🌉  ESG bridge":           "streamlit_app._page_13_esg_bridge",
     "⚠️  Risk dashboard":      "streamlit_app._page_18_risk",
     "🗺️  Logistics map":        "streamlit_app._page_17_logistics",
     "🌐  Value chain map":      "streamlit_app._page_20_value_chain",
+    "🏭  Supplier network":     "streamlit_app._page_23_value_chain",
     # ── Reporting ──────────────────────────────────────────────────────────
     "📤  Export & disclosures": "streamlit_app._page_06_export",
+    "📝  ESG data points":      "streamlit_app._page_20_esg_datapoints",
     "🏭  SASB standards":       "streamlit_app._page_10_sasb",
     "✅  Checklist":            "streamlit_app._page_09_checklist",
     "🔄  Review queue":         "streamlit_app._page_14_review",
     # ── Governance ────────────────────────────────────────────────────────
     "📜  Audit trail":          "streamlit_app._page_12_audit",
+    "⚖️  Materiality":          "streamlit_app._page_21_materiality",
     "📚  Knowledge base":       "streamlit_app._page_16_knowledge",
     "🏪  Supplier portal":      "streamlit_app._page_15_supplier_portal",
     "🏢  Platform Admin":       "streamlit_app._page_19_admin",
