@@ -1,7 +1,7 @@
 # Snowkap — Documentation Index
 
-> Four platforms. One ESG stack.
-> Last updated: 2026-06-18
+> Four platforms + Python remodel. One ESG stack.
+> Last updated: 2026-06-19
 
 ---
 
@@ -238,6 +238,37 @@ Issues flagged across both platforms during documentation. All marked `[QA]` in 
 |---|---|
 | [`docs/monorepo/CHANGELOG.md`](monorepo/CHANGELOG.md) | Non-WARP API routes — per-file bug/fix/severity log |
 | [`docs/monorepo/WARP-routes-CHANGELOG.md`](monorepo/WARP-routes-CHANGELOG.md) | WARP App Router routes — per-file bug/fix/severity log |
+
+---
+
+## sk.lite (Python Remodel) Documentation
+
+> Branch: `claude/remodel-python-streamlit`
+> Source: `frontend/streamlit/`
+
+| Document | What it covers |
+|---|---|
+| [`docs/streamlit/CHANGELOG.md`](streamlit/CHANGELOG.md) | Integration changelog — all changes made bringing sk.lite into the WARP repo; security fixes; infrastructure changes |
+| [`docs/streamlit/IMPLEMENTATION_GUIDE.md`](streamlit/IMPLEMENTATION_GUIDE.md) | Full feature guide — all 24 pages, calculation methodology, architecture, data flows, extension patterns, testing |
+
+### sk.lite Quick Reference
+
+```bash
+cd frontend/streamlit
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python setup.py          # seed emission factor database (once)
+streamlit run main.py    # http://localhost:8501
+```
+
+- **Pages:** 24 (Configure · GHG Inventory · Analysis · Reporting · Governance)
+- **Roles:** Platform Admin · Admin · Contributor · Viewer · Supplier
+- **Storage:** SQLite (auto-created; no database server required)
+- **Auth:** bcrypt via passlib — `data/users.json` (gitignored, auto-seeded)
+- **Tests:** 1200+ pytest tests — `pytest` from `frontend/streamlit/`
+- **Demo credentials:** `snowkap / Snowkap@2024`, `acme_admin / Acme@2024`
+
+---
 
 ### Monorepo Quick Reference
 
