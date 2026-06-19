@@ -35,24 +35,18 @@ def render():
         st.warning("Complete ⚙️ Setup first.")
         return
 
-    # ── org_id + inventory resolved from auth user (bypasses session timing) ──
-    from streamlit_app._org_helper import fix_page
-    org_id, inventory = fix_page(profile, st.session_state.get("inventory"))
-    if not org_id:
+    org_id    = profile.get("org_uuid") or profile.get("org_id") or "default"
+    from streamlit_app._org_helper import resolve_org_id, get_inv_store, fix_page
+    org_id = resolve_org_id(profile) or org_id
+    inventory = get_inv_store(org_id) if org_id != "default" else st.session_state.get("inventory")
+    if not inventory:
+        _, inventory = fix_page(profile, st.session_state.get("inventory"))
+    if not org_id or org_id == "default":
         st.warning("Please log in to access this page.")
         return
-    # Update local profile copy so forms write to the right org
     profile = dict(profile)
     profile["org_uuid"] = org_id
     profile["org_id"]   = org_id
-
-    inventory = st.session_state.inventory
-    org_id    = profile.get("org_uuid") or profile.get("org_uuid") or profile.get("org_id") or "default"
-    # ── Reliable org_id: bypass session timing ───────────────────────────
-    from streamlit_app._org_helper import resolve_org_id, get_inv_store
-    org_id = resolve_org_id(profile)
-    if org_id and org_id != "default":
-        inventory = get_inv_store(org_id)
     # ── Year selector ─────────────────────────────────────────────────────
     available_years = inventory.get_available_years(org_id=org_id)
     default_year    = profile["reporting_year"]

@@ -4,6 +4,7 @@ headless = true
 [client]
 showErrorDetails = true
 toolbarMode = "minimal"
+hideSidebarNav = true
 
 [theme]
 base = "light"

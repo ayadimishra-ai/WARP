@@ -36,7 +36,7 @@ def generate_report(
     """
     inv_year = inventory_year or org_profile.get("reporting_year", 2024)
     # Use explicitly passed org_id first (bypasses profile timing issue)
-    org_id = org_id or org_profile.get("org_uuid") or org_profile.get("org_uuid") or profile.get("org_id") or "default"
+    org_id = org_id or org_profile.get("org_uuid") or org_profile.get("org_id") or "default"
 
     summary = inventory.get_summary(org_id=org_id, inventory_year=inv_year)
     by_cat  = inventory.get_by_category(org_id=org_id, inventory_year=inv_year)

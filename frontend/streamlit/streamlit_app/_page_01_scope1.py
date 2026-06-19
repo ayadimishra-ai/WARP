@@ -693,3 +693,24 @@ def render():
     except Exception as _ex:
         st.caption(f"(Could not load saved records: {_ex})")
 
+    # ── Previously saved Scope 1 records (via inventory store) ──────────────
+    st.markdown("### 📋 Saved Scope 1 records")
+    try:
+        _inv = st.session_state.get("inventory")
+        _prof = st.session_state.get("org_profile", {})
+        _org_id = _prof.get("org_uuid") or _prof.get("org_id") or "default"
+        _year = _prof.get("reporting_year", 2024)
+        _all_recs = _inv.get_all_records(org_id=_org_id, inventory_year=_year) if _inv else []
+        _s1_recs = [r for r in _all_recs if getattr(r, "scope", "") == "Scope 1"]
+        if _s1_recs:
+            import pandas as _pd
+            _df = _pd.DataFrame([
+                {"Process": r.process, "Qty": r.quantity, "Unit": r.unit,
+                 "tCO₂e": r.t_CO2e, "Reporting Year": r.reporting_year}
+                for r in _s1_recs
+            ])
+            st.dataframe(_df, use_container_width=True)
+        else:
+            st.info("No Scope 1 records saved yet.")
+    except Exception as _e:
+        st.info("No records found.")

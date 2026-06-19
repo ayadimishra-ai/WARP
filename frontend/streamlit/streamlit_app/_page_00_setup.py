@@ -159,6 +159,7 @@ def render():
                 "Organisation name",
                 value=profile.get("org_name", ""),
                 placeholder="Acme Manufacturing Pvt Ltd",
+                key="setup_org_name",
             )
             current_uuid = profile.get("org_uuid", "")
             if current_uuid:
@@ -170,6 +171,7 @@ def render():
                 _industry_opts,
                 index=_industry_idx,
                 help="Used for SASB sector auto-selection, benchmarks, and ESG gap analysis.",
+                key="setup_industry",
             )
         with c2:
             _COUNTRY_OPTS = ["IN","US","GB","DE","AU","JP","BR","ZA","ID","CA","FR","CN","OTHER"]
@@ -187,6 +189,7 @@ def render():
                 "Primary operating country",
                 _COUNTRY_OPTS,
                 index=_COUNTRY_OPTS.index(_ctry_norm),
+                key="setup_country",
             )
             _CURR_OPTS = ["INR","USD","EUR","GBP","AUD","JPY"]
             _curr_norm = str(profile.get("currency", "INR") or "INR").strip().upper()
@@ -196,6 +199,7 @@ def render():
                 "Reporting currency",
                 _CURR_OPTS,
                 index=_CURR_OPTS.index(_curr_norm),
+                key="setup_currency",
             )
         st.caption(
             "Industry selection flows to SASB sector, benchmarks, "
@@ -213,6 +217,7 @@ def render():
                 "Reporting year (calendar)",
                 value=profile.get("reporting_year", 2024),
                 min_value=2000, max_value=2035, step=1,
+                key="setup_rep_year",
             )
             fiscal_year = st.text_input(
                 "Fiscal year label",
@@ -226,12 +231,14 @@ def render():
                 format_func=lambda x: {4:"AR4 (2007)", 5:"AR5 (2013)", 6:"AR6 (2021)"}[x],
                 index=[6, 5, 4].index(profile.get("gwp_ar", 6) if profile.get("gwp_ar", 6) in (4,5,6) else 6),
                 help="AR6 is the GHG Protocol default.",
+                key="setup_gwp_ar",
             )
             fx_to_usd = st.number_input(
                 "FX rate (1 local unit → USD)",
                 value=float(profile.get("fx_to_usd", 0.012)),
                 format="%.6f",
                 help="Used for spend-based Scope 3 (EEIO). Annual average rate.",
+                key="setup_fx",
             )
 
     # ==================================================================
@@ -257,6 +264,7 @@ def render():
             }.get,
             index=_BOUND_OPTS.index(_boundary_norm),
             horizontal=False,
+            key="setup_boundary",
         )
 
         st.markdown("---")
@@ -343,6 +351,7 @@ def render():
             horizontal=False,
             help="Determines which supply chain features are shown. "
                  "Legacy values like 'Manufacturer' or 'SaaS provider' map automatically.",
+            key="setup_org_role",
         )
 
         st.markdown("---")
@@ -510,6 +519,18 @@ def render():
                 "These selections tailor your SASB sector metrics, ESG bridge mapping, "
                 "checklist items, and export templates."
             )
+
+        # ── Framework badge strip (dark-mode-aware) ──────────────────────────
+        _is_light_s = st.session_state.get("_sk_theme", "light") == "light"
+        _ghg_bg   = "#dcfce7" if _is_light_s else "#064e3b"
+        _reg_bg   = "#fee2e2" if _is_light_s else "#450a0a"
+        _vol_bg   = "#dbeafe" if _is_light_s else "#1e3a5f"
+        st.markdown(
+            f"<span style='background:{_ghg_bg};border-radius:4px;padding:2px 8px;font-size:0.8rem'>GHG Protocol</span> "
+            f"<span style='background:{_reg_bg};border-radius:4px;padding:2px 8px;font-size:0.8rem'>BRSR</span> "
+            f"<span style='background:{_vol_bg};border-radius:4px;padding:2px 8px;font-size:0.8rem'>CDP</span>",
+            unsafe_allow_html=True,
+        )
 
     with step6:
         st.markdown("### Sites, plants & facilities")
@@ -837,6 +858,12 @@ def render():
             st.session_state.org_profile.update(new_profile)
             _save_profile_to_disk(_org_uuid, new_profile)
 
+            # Clear derived caches on org change
+            st.session_state.pop("sasb_override_sector", None)
+            st.session_state.pop("_inv_org_uuid", None)
+            # Clear review_queue cache on org change
+            st.session_state.pop("review_queue", None)
+
             # Ensure inventory store is initialised for this org
             from inventory.store import get_store
             inv_path = Path(__file__).parents[1] / "data" / "inventory.sqlite"
@@ -856,8 +883,16 @@ def render():
         if profile.get("setup_done"):
             _last_upd = profile.get("last_updated", "")
             _upd_str  = f" · Last saved: {_last_upd}" if _last_upd else ""
-            st.success(
-                f"✅ sk.lite is configured for **{profile.get('org_name','your organisation')}** "
+            _is_light_setup = st.session_state.get("_sk_theme", "light") == "light"
+            _banner_bg  = "#f0fdf4" if _is_light_setup else "#052e16"
+            _banner_txt = "#14532d" if _is_light_setup else "#86efac"
+            st.markdown(
+                f"<div style='background:{_banner_bg};border-radius:6px;padding:8px 12px;"
+                f"color:{_banner_txt};font-weight:600'>✅ Organisation profile saved.</div>",
+                unsafe_allow_html=True,
+            )
+            st.caption(
+                f"sk.lite is configured for **{profile.get('org_name','your organisation')}** "
                 f"· FY {profile.get('fiscal_year','—')} "
                 f"· {profile.get('primary_country','—')}"
                 + _upd_str

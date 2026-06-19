@@ -121,6 +121,7 @@ ROLE_PAGES = {
 
     # Customer Viewer — read-only dashboards and reports
     "Viewer": [
+        "📊  Dashboard",
         "📊  Emissions dashboard",
         "🎯  Target register",
         "📋  Data manager",

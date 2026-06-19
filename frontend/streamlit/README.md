@@ -6,6 +6,17 @@ Full-stack GHG inventory and ESG reporting tool. Covers Scope 1, 2, and all 15 G
 
 ---
 
+## Quick start on Replit
+
+Click **Run** — the `run.sh` script handles everything automatically:
+1. Installs dependencies (`pip install -r requirements.txt`)
+2. Seeds the emission factor database (`python setup.py`)
+3. Launches the app on port 8501
+
+> Replit config: `.replit` → `replit.nix` (Python 3.11)
+
+---
+
 ## Quick start (standalone — no backend required)
 
 All commands run from the **`frontend/streamlit/` directory** inside the WARP repo:
@@ -44,6 +55,7 @@ App opens at **http://localhost:8501**
 | `acme_viewer` | `Acme@2024` | Viewer | Read-only dashboards and reports |
 | `greentech_admin` | `GreenTech@2024` | Admin | Full access — GreenTech Solutions |
 | `supplier1` | `Supplier@2024` | Supplier | Supplier portal only |
+| `ghg_admin` | `ghgadmin2024` | Admin | Full access (legacy demo credential) |
 
 After sign-in as Admin: go to **⚙️ Setup** to load the Acme profile.
 As Platform Admin: go to **🏢 Platform Admin** → Switch org.
@@ -160,10 +172,20 @@ pytest -k "PCAF or SASB"
 
 ## Optional REST API (ERP integration)
 
+620+ emission factor records are pre-loaded in the database. The REST API allows ERP integration:
+
 ```bash
 cd frontend/streamlit
 pip install fastapi uvicorn
 uvicorn api:app --port 8000
+```
+
+Example request with curl:
+
+```bash
+curl -X POST http://localhost:8000/calculate \
+  -H "Content-Type: application/json" \
+  -d '{"process":"stationary_combustion","fuel":"Natural Gas","quantity":100,"unit":"GJ","org_id":"demo-acme-mfg-001"}'
 ```
 
 CORS origins are controlled via `SKLITE_API_CORS_ORIGINS` env var (comma-separated).
